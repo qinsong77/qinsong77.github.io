@@ -1,0 +1,72 @@
+// Bootstrap 媒体查询样式，后面的会覆盖前面的
+// Extra small devices (portrait phones, less than 576px)
+// No media query since this is the default in Bootstrap
+/*
+// Small devices (landscape phones, 576px and up)
+@media (min-width: 576px) {  }
+
+// Medium devices (tablets, 768px and up)
+@media (min-width: 768px) {  }
+
+// Large devices (desktops, 992px and up)
+@media (min-width: 992px) {  }
+
+// Extra large devices (large desktops, 1200px and up)
+@media (min-width: 1200px) {  }
+*/
+@media (max-width: 992px) {
+  .header > .header-container > .header-menu .nav-bar-menu {
+    display: inline-block;
+  }
+  .header > .header-container > .header-log > a {
+    padding-right: 10px;
+    padding-left: 0;
+  }
+  .header>.header-container{
+    flex-direction: row-reverse;
+  }
+  .blog-container > .blog-main-container{
+    margin-left: 0!important;
+    width: 100%!important;
+    padding: 0!important;
+  }
+  .blog-nav{
+    transform: translate(-210px, 0);
+  }
+}
+@media (max-width: 768px){
+  .header > .header-container > .header-menu .nav-bar-menu {
+    display: inline-block;
+  }
+  .header > .header-container > .header-log > a {
+    padding-right: 10px;
+    padding-left: 0;
+  }
+  .header>.header-container{
+    flex-direction: row-reverse;
+  }
+  .blog-container > .blog-main-container{
+    margin-left: 0!important;
+    width: 100%!important;
+    padding: 0!important;
+  }
+  .blog-nav{
+    transform: translate(-210px, 0);
+  }
+  .blog-nav-open{
+    transform: translate(-10px, 0);
+    box-shadow: $box-shadow;
+  }
+  .header-menu a>span{
+    display: none;
+  }
+  .blog-right-box{
+    display: none;
+  }
+  .article-link-card>img{
+    display: none;
+  }
+}
+
+
+

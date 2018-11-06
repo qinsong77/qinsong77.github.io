@@ -1,0 +1,54 @@
+@mixin css-var($text, $app-bg,$container-bg, $secondary-bg,$module-hover-bg,$primary) {
+
+  #{--color}: $text;
+
+  #{--app-bg}: $app-bg;
+  #{--container-bg}: $container-bg;
+  #{--secondary-bg}: $secondary-bg;
+  #{--secondary-bg-darken}: darken($secondary-bg, 30%);
+  #{--secondary-bg-lighten}: lighten($secondary-bg, 20%);
+  #{--module-hover-bg}:$module-hover-bg;
+  #{--module-hover-bg-darken-20}: darken($module-hover-bg, 20%);
+  #{--bg-opacity-m}: rgba($container-bg, 0.6);
+
+  #{--primary-color}: $primary;
+  #{--primary-color-secondary}: lighten($primary,20%);
+
+  #{--text-color}: $text;
+  #{--text-light}: lighten($text, 20%);
+  #{--text-dark}: darken($text, 20%);
+  #{--text-darken}: darken($text, 40%);
+  #{--text-secondary}: rgba($text, .54);
+  #{--text-disabled}: rgba($text, .38);
+  #{--text-dividers}: rgba($text, .26);
+  #{--text-invert}:invert($text);
+
+  #{--link-color}: $text;
+  #{--link-active-color}: $primary;
+  #{--link-hover-color}: invert($container-bg, 20%);
+}
+
+#app {
+
+  &.theme-default {
+    @include css-var(
+            $text: #000,
+            $app-bg: #f8f8f8,
+            $container-bg: #fff,
+            $secondary-bg: rgba(197, 197, 197, 0.5),
+            $module-hover-bg: rgba(148, 210, 173, 0.7),
+            $primary: #007bff
+    );
+  }
+
+  &.theme-dark {
+    @include css-var(
+            $text: #eee,
+            $app-bg: #3c3f41,
+            $container-bg: #293134,
+            $secondary-bg: rgba(90, 130, 130, 0.6),
+            $module-hover-bg: rgba(30, 30, 30, 0.7),
+            $primary: #ff718e
+    );
+  }
+}
