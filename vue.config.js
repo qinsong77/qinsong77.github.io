@@ -6,11 +6,12 @@ function resolve (dir) {
 }
 
 // 基础路径 注意发布之前要先修改这里
-let baseUrl = '/'
+let baseUrl = './'
 // 演示项目自动构建使用
 
 module.exports = {
-    baseUrl: baseUrl,
+    baseUrl: './docs',
+    indexPath: '../index.html',
     outputDir: 'docs',
     lintOnSave: true,
     productionSourceMap: true,
