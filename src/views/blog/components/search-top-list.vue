@@ -94,7 +94,7 @@
                     background-color: rgba(0, 136, 245, .6);
                 }
                 > .index {
-                    color: $text-invert;
+                    color: $text;
                     counter-increment: hot-article-list;
                     background: $secondary-bg;
                     width: 1.5em;

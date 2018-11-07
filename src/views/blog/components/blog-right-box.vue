@@ -1,7 +1,9 @@
 <template>
     <div class="blog-right-box">
         <div class="setting-container">
-            <i class="iconfont icon-setting"></i>
+            <router-link to="/setting">
+                设置<i class="iconfont icon-setting"></i>
+            </router-link>
             <!--<span class="setting-label">theme：</span>-->
             <switch-btn v-model="checked" style="margin-left: 7px">
                 <span slot="left">dark</span>

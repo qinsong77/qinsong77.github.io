@@ -76,7 +76,7 @@
         height: $header-height;
         line-height: $header-height;
         width: 100%;
-        background-color: $bg-opacity-m;
+        background-color: $container-bg-opacity;
         box-shadow: 0 1px 2px rgba(0,0,0,.1);
         > .header-container {
             @include margin-auto-width;
@@ -88,7 +88,7 @@
                     padding-left: 25px;
                     line-height: 1.4;
                     font-size: $font-size-h1;
-                    color: $primary;
+                    color: $primary-darken;
                     &:hover{
                         background: transparent;
                     }
@@ -137,8 +137,8 @@
                             transition: 0.2s all linear;
                         }
                         &:hover{
-                            color: $primary;
-                            background: $secondary-bg-lighten;
+                            color: $primary-lighten;
+                            background: $module-hover-bg;
                             &:before{
                                 width: 100%;
                                 left: 0;

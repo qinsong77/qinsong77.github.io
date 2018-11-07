@@ -68,8 +68,8 @@
             padding: 10px 15px;
             margin-bottom: 10px;
             &:hover {
-                border-left-color: $primary-color-secondary!important;
-                background: $secondary-bg-lighten;
+                border-left-color: $primary-lighten!important;
+                background-color: $module-hover-bg;
             }
             > i {
                 vertical-align: -.115em;

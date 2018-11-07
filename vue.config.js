@@ -6,11 +6,12 @@ function resolve (dir) {
 }
 
 // 基础路径 注意发布之前要先修改这里
-let baseUrl = './'
+console.log(process.env.NODE_ENV)
+let baseUrl = process.env.NODE_ENV === 'development' ? '/' : './docs'
 // 演示项目自动构建使用
 
 module.exports = {
-    baseUrl: './docs',
+    baseUrl: baseUrl,
     indexPath: '../index.html',
     outputDir: 'docs',
     lintOnSave: true,
@@ -30,11 +31,11 @@ module.exports = {
             .set('_v', resolve('src/views'))
             .set('_c', resolve('src/components'))
             .set('_com', resolve('src/common'))
-            // babel-polyfill 加入 entry
-            // const entry = config.entry('app')
-            // entry
-            //   .add('babel-polyfill')
-            //   .end()
+        // babel-polyfill 加入 entry
+        const entry = config.entry('app')
+        entry
+            .add('babel-polyfill')
+            .end()
     },
     css: {
         loaderOptions: {

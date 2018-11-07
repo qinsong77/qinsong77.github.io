@@ -1,18 +1,37 @@
-$container-pd:10px;
-$box-shadow:0 2px 12px 0 rgba(0,0,0,.1);
-$trans: all .3s ease-in-out;
 // PC Theme Color
 $app-bg: var(--app-bg);
 $container-bg:var(--container-bg);
+$container-bg-opacity: var(--container-bg-opacity);
+
 $secondary-bg:var(--secondary-bg);
 $secondary-bg-darken:var(--secondary-bg-darken);
 $secondary-bg-lighten:var(--secondary-bg-lighten);
+
 $module-hover-bg:var(--module-hover-bg);
-$module-hover-bg-darken-20: var(--module-hover-bg-darken-20);
-$bg-opacity-m: var(--bg-opacity-m);
-$primary: var(--primary-color);
+$module-hover-bg-darken: var(--module-hover-bg-darken);
+$module-hover-bg-complement: var(--module-hover-bg-complement);
 
+$primary: var(--primary);
+$primary-darken: var(--primary-darken);
+$primary-lighten: var(--primary-lighten);
 
+$info: var(--info);
+$success: var(--success);
+$warning: var(--warning);
+$error: var(--error);
+
+// Text
+$text: var(--text-color);
+$text-dark: var(--text-dark);
+$text-light: var(--text-light);
+$text-secondary: var(--text-secondary);
+$text-invert:var(--text-invert);
+$disabled: var(--text-disabled);
+$dividers: var(--text-dividers);
+
+$container-pd:10px;
+$box-shadow:0 2px 12px 0 rgba(0,0,0,.1);
+$trans: all .3s ease-in-out;
 
 
 // Typography
@@ -30,15 +49,7 @@ $font-size-h5: 1rem;
 $font-size-h6: $font-size-s;
 
 
-// Text
-$text: var(--text-color);
-$text-dark: var(--text-dark);
-$text-darken: var(--text-darken);
-$text-light: var(--text-light);
-$text-invert:var(--text-invert);
-$secondary: var(--text-secondary);
-$disabled: var(--text-disabled);
-$dividers: var(--text-dividers);
+
 
 
 $border: 1px solid $dividers;
@@ -47,15 +58,6 @@ $link-color: var(--link-color);
 $link-active-color:var(--link-active-color);
 $link-hover-color: var(--link-hover-color);
 
-// Colors
-$primary:$primary;
-$primary-color-secondary:var(--primary-color-secondary);
-$accent: #4caf50;
-$red: #ff5722;
-$yellow: #ffeb3b;
-$grey: #efefef;
-$black: #000;
-$black-light: #555;
 
 // Container
 $header-height: 56px;

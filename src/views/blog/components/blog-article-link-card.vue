@@ -18,42 +18,26 @@
 
 <script>
     export default {
-        name: 'blog-article-link-card',
-        data () {
-            return {}
-        },
-        computed: {},
-
-        created () {
-        },
-
-        mounted () {
-        },
-
-        methods: {}
+        name: 'blog-article-link-card'
     }
 </script>
 
 <style lang="scss">
     .article-link-card {
         background: $container-bg;
-        box-shadow: $box-shadow;
         display: flex;
         margin-top: 10px;
-        padding: 10px;
-        transition: transform .3s cubic-bezier(.215,.61,.355,1);
-        img {
-            cursor: pointer;
-            transition: transform .3s cubic-bezier(.215,.61,.355,1);
-            &:hover {
-                transform: scale(1.1);
+        padding: 15px;
+        transition: $trans;
+        &:hover {
+            box-shadow: $box-shadow;
+            >img{
+                transform: translateX(-10px);
             }
         }
-        &:hover {
-            background: $secondary-bg-lighten;
-            >img{
-                transform: scale(1.1);
-            }
+        img {
+            transition: transform .3s cubic-bezier(.215,.61,.355,1);
+            cursor: pointer;
         }
         .card-info {
             width: 100%;
@@ -69,7 +53,7 @@
                     transition: $trans;
                     &:hover{
                         text-decoration: underline;
-                        margin-left: 10px;
+                        margin-left: 15px;
                     }
                 }
             }

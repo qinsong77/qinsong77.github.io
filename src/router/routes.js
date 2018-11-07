@@ -1,10 +1,10 @@
 import layout from '_c/layout'
 
 const routes = [
-    {
-        path: '*',
-        redirect: '/'
-    },
+    // {
+    //     path: '*',
+    //     redirect: '/'
+    // },
     {
         path: '/',
         name: 'main',
@@ -44,6 +44,11 @@ const routes = [
                 path: '/me',
                 name: 'me',
                 component: () => import('_v/me')
+            },
+            {
+                path: '/setting',
+                name: 'setting',
+                component: () => import('_v/setting')
             }
         ]
     }

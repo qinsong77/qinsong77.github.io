@@ -28,7 +28,7 @@
             z-index:1;
         }
         padding-top: 56px;
-        height: 100vh;
+        /*height: 100vh;*/
         background: $app-bg;
         display: flex;
         justify-content: space-between;

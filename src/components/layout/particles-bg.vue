@@ -27,10 +27,10 @@
     .particles-bg{
         position: absolute;
         width: 100%;
-        height: 99vh;
+        height: 100%;
+        overflow: hidden;
         top:0;
         right: 0;
-        bottom:0;
         left:0;
         z-index: 0;
         background: transparent;

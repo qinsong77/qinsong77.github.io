@@ -10,7 +10,7 @@ import { getToken } from '../common/auth'
 Vue.use(Router)
 
 const router = new Router({
-    mode: 'hash',
+    mode: 'history',
     // linkActiveClass: 'active',
     // base: process.env.BASE_URL,
     scrollBehavior: () => ({ y: 0 }),
@@ -25,6 +25,6 @@ router.beforeEach((to, from, next) => {
 router.afterEach((to) => {
     document.title = to.meta.title || 'Sysuke\'s Blog'
 })
-router.onError((err) => {
-})
+// router.onError((err) => {
+// })
 export default router
