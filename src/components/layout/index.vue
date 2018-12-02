@@ -2,19 +2,22 @@
     <div class="app-container">
         <app-header/>
         <main class="app-main-container">
-            <router-view/>
+            <transition name="page" mode="out-in">
+                <router-view/>
+            </transition>
         </main>
         <app-footer/>
+        <particles-bg/>
     </div>
 </template>
 
 <script>
     import AppHeader from '_c/header'
     import AppFooter from '_c/footer'
-
+    import ParticlesBg from './particles-bg'
     export default {
         name: 'index',
-        components: { AppHeader, AppFooter }
+        components: { AppHeader, AppFooter, ParticlesBg }
     }
 </script>
 
@@ -28,7 +31,7 @@
             z-index:1;
         }
         padding-top: 56px;
-        /*height: 100vh;*/
+        min-height: 100vh;
         background: $app-bg;
         display: flex;
         justify-content: space-between;

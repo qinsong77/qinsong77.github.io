@@ -6,32 +6,33 @@
             </div>
             <div class="header-menu">
                 <ul>
-                    <li class="nav-bar-menu" @click="setShowNav" v-show="showNavByRoute">
-                        <a>
-                            <i class="iconfont icon-menu"></i>
-                        </a>
+                    <!-- 阻止单击事件继续传播 -->
+                    <li class="nav-bar-menu" @click.stop="setShowNav" v-show="showNavByRoute">
+                        <span>
+                            <icon icon="#icon-menu"/>
+                        </span>
                     </li>
                     <li>
                         <router-link to="/blog" title="博客">
-                            <i class="iconfont icon-tag-fill"></i>
+                            <icon icon="#icon-mind_map"/>
                             <span>博客</span>
                         </router-link>
                     </li>
                     <li>
                         <router-link to="/demos">
-                            <i class="iconfont icon-rocket-fill"></i>
+                            <icon icon="#icon-bottle"/>
                             <span>Demos</span>
                         </router-link>
                     </li>
                     <li>
                         <router-link to="/archive">
-                            <i class="iconfont icon-calendar-check-fill"></i>
+                            <icon icon="#icon-approval"/>
                             <span>Archive</span>
                         </router-link>
                     </li>
                     <li>
                         <router-link to="/me">
-                            <i class="iconfont icon-contacts-fill"></i>
+                            <icon icon="#icon-mms"/>
                             <span>Me</span>
                         </router-link>
                     </li>
@@ -58,6 +59,9 @@
                     this.showNavByRoute = false
                 }
             }
+        },
+        mounted () {
+
         },
         methods: {
             setShowNav () {
@@ -96,14 +100,12 @@
             }
             > .header-menu {
                 .nav-bar-menu{
+                    padding: 0 15px;
                     display: none;
                 }
                 ul {
                     position: relative;
                     display: flex;
-                    i{
-                        font-size: 23px;
-                    }
                     .router-link-active:before{
                         content: "";
                         position: absolute;
@@ -138,7 +140,6 @@
                         }
                         &:hover{
                             color: $primary-lighten;
-                            background: $module-hover-bg;
                             &:before{
                                 width: 100%;
                                 left: 0;
@@ -146,6 +147,9 @@
                             &:hover ~ &::before {
                                 left: 0;
                             }
+                        }
+                        &:active{
+                            background: $module-hover-bg;
                         }
                         >span{
                             margin-left: 5px;

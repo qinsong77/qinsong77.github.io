@@ -12,5 +12,15 @@ table { border-collapse:collapse; }
 *::before,
 *::after {
   box-sizing: border-box;
+  //transition: all .5s ease-in-out;
 }
 
+.clearfix:before,
+.clearfix:after {
+  content: ".";
+  display: block;
+  height: 0;
+  visibility: hidden;
+}
+.clearfix:after {clear: both;}
+.clearfix {zoom: 1;} /* IE < 8 */

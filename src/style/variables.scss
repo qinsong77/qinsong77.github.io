@@ -29,6 +29,9 @@ $text-invert:var(--text-invert);
 $disabled: var(--text-disabled);
 $dividers: var(--text-dividers);
 
+// Container
+$header-height: 56px;
+
 $container-pd:10px;
 $box-shadow:0 2px 12px 0 rgba(0,0,0,.1);
 $trans: all .3s ease-in-out;
@@ -59,8 +62,7 @@ $link-active-color:var(--link-active-color);
 $link-hover-color: var(--link-hover-color);
 
 
-// Container
-$header-height: 56px;
+
 
 
 

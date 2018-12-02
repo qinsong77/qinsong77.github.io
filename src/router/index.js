@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import routes from './routes'
-import { getToken } from '../common/auth'
 
 // 进度条
 // import NProgress from 'nprogress'
@@ -10,9 +9,9 @@ import { getToken } from '../common/auth'
 Vue.use(Router)
 
 const router = new Router({
-    mode: 'history',
+    mode: 'hash',
     // linkActiveClass: 'active',
-    // base: process.env.BASE_URL,
+    base: process.env.BASE_URL,
     scrollBehavior: () => ({ y: 0 }),
     routes: routes
 })

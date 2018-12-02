@@ -1,14 +1,10 @@
 <template>
     <div class="tags-container">
         <ul>
-            <li class="tag-li">
-                <a><i class="iconfont icon-chrome"></i>Chrome</a>
-            </li>
-            <li class="tag-li">
-                <a><i class="iconfont icon-code"></i>Code</a>
-            </li>
-            <li class="tag-li">
-                <a><i class="iconfont icon-star"></i>Star</a>
+            <li class="tag-li" v-for="tag in tags" :key="tag.id">
+                <a @click="toTagArticle(tag.id)">
+                    {{tag.name}}
+                </a>
             </li>
         </ul>
     </div>
@@ -18,17 +14,34 @@
     export default {
         name: 'tag-list',
         data () {
-            return {}
+            return {
+            }
+        },
+        props: {
+            tags: {
+                type: Array,
+                default: function () {
+                    return []
+                }
+            }
         },
         computed: {},
-
-        created () {
-        },
 
         mounted () {
         },
 
-        methods: {}
+        methods: {
+            toTagArticle (id) {
+                if (id) {
+                    this.$router.push({
+                        name: 'tag',
+                        params: {
+                            id: id
+                        }
+                    })
+                }
+            }
+        }
     }
 </script>
 
@@ -43,10 +56,11 @@
             a{
                 display: inline-block;
                 background-color: $secondary-bg;
-                padding: 5px 10px 5px 3px;
+                padding: 7px 10px;
                 transition: $trans;
                 &:hover{
                     background: $secondary-bg-darken;
+                    box-shadow: $box-shadow;
                 }
                 >i{
                     margin-right: 3px;

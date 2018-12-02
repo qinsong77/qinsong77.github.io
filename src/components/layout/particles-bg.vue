@@ -25,14 +25,14 @@
 
 <style lang="scss">
     .particles-bg{
-        position: absolute;
+        position: fixed;
         width: 100%;
         height: 100%;
         overflow: hidden;
         top:0;
         right: 0;
         left:0;
-        z-index: 0;
+        z-index: 0!important;
         background: transparent;
         opacity: 0.8;
     }

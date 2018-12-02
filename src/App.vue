@@ -1,13 +1,11 @@
 <template>
     <div id="app" :class="$store.state.app.theme">
         <router-view/>
-        <particles-bg/>
     </div>
 </template>
 
 <style lang="scss">
     #app {
-        position: relative;
         min-height: 100%;
         background: $app-bg;
         color: $text;
@@ -18,11 +16,13 @@
     }
     .router-link-active{
         color: $link-active-color;
+        >.iconfont{
+            color: $primary-darken;
+        }
     }
 </style>
 <script>
-    import ParticlesBg from './components/layout/particles-bg'
     export default {
-        components: { ParticlesBg }
+        name: 'app'
     }
 </script>

@@ -1,8 +1,8 @@
 <template>
     <div class="setting">
-        <switch-btn v-model="checked" style="margin-left: 7px;float: right">
-            <span slot="left">dark</span>
-            <span slot="right">light</span>
+        <switch-btn v-model="checked" style="margin:15px;float: right;">
+            <span slot="left">light</span>
+            <span slot="right">dark</span>
         </switch-btn>
 
         <h1>PC Theme Color</h1>
@@ -87,33 +87,37 @@
                 </tbody>
             </table>
         </div>
-    </div>
 
+        <icon-list/>
+    </div>
 </template>
 
 <script>
     import SwitchBtn from '_c/switchbtn'
+    import { mapGetters, mapMutations } from 'vuex'
+    import IconList from './icon-list'
     export default {
         name: 'index',
-        components: { SwitchBtn },
+        components: { IconList, SwitchBtn },
         data () {
             return {
-                color: '',
-                checked: false
+                color: ''
             }
         },
         computed: {
-        },
-
-        created () {
-
-        },
-        watch: {
-            checked (oldval, newVal) {
-                if (newVal) {
-                    this.$store.commit('setTheme', 'theme-default')
-                } else {
-                    this.$store.commit('setTheme', 'theme-dark')
+            ...mapGetters([
+                'checkTheme'
+            ]),
+            'checked': {
+                get () {
+                    return this.checkTheme
+                },
+                set (value) {
+                    if (value) {
+                        this.setTheme('theme-default')
+                    } else {
+                        this.setTheme('theme-dark')
+                    }
                 }
             }
         },
@@ -127,7 +131,11 @@
             }, 1000)
         },
 
-        methods: {}
+        methods: {
+            ...mapMutations([
+                'setTheme'
+            ])
+        }
     }
 </script>
 
