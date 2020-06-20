@@ -18,4 +18,14 @@ yarn-error.log*
 *.ntvs*
 *.njsproj
 *.sln
-*.sw*
+
+
+# Logs
+logs
+*.log
+npm-debug.log*
+node_modules/
+typings/
+.npm
+.eslintcache
+.node_repl_history
