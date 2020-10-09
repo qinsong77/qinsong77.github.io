@@ -1,7 +1,7 @@
 module.exports = {
 	// theme: 'reco',
-	title: 'Sysuke\' Blog',
-	description: 'person blog power by VuePress & GitHub Page',
+	title: 'Sysuke\' NoteBook',
+	description: 'person NoteBook power by VuePress & GitHub Page',
 	// 注入到当前页面的 HTML <head> 中的标签
 	head: [
 		['link', { rel: 'icon', href: '/favicon.ico' }], // 增加一个自定义的 favicon(网页标签的图标)
@@ -28,6 +28,10 @@ module.exports = {
 			{
 				text: 'algorithm',
 				link: '/algorithm/'
+			},
+			{
+				text: '后端',
+				link: '/backEnd/'
 			},
 			{
 				text: 'Demo',
@@ -75,7 +79,8 @@ module.exports = {
 					collapsable: false, // 可选的, 默认值是 true,
 					// sidebarDepth: 2,    // 可选的, 默认值是 1
 					children: [
-						['css/', 'BFC']
+						['css/', 'Summary'],
+						'css/BFC',
 					]
 				},
 				{
@@ -91,7 +96,19 @@ module.exports = {
 			'/algorithm/': [
 				'',
 				'binaryTree',
+				'sort',
 				'leetCode'
+			],
+			'/backEnd/': [
+				{
+					title: 'node',   // 必要的
+					// path: '/backEnd/node/',      // 可选的, 标题的跳转链接，应为绝对路径且必须存在
+					collapsable: false, // 可选的, 默认值是 true,
+					// sidebarDepth: 2,    // 可选的, 默认值是 1
+					children: [
+						['', 'Summary'],
+					]
+				}
 			]
 		}
 		

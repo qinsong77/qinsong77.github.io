@@ -180,8 +180,21 @@ function curry(func) {
 
 ### [深拷贝](https://segmentfault.com/a/1190000020255831)
 ```javascript
+
+// 数组浅拷贝可以用slice,concat, [...array]，对象可以用Object.assign. {...obj}
+const arr = [1, 2, 3]
+const arrCopy = arr.slice()
+arr.push(3)
+// arrCopy 为[1,2,3]
+
+var obj = {k: '1'}
+var obj2 = {...obj}
+// obj2 ==={k: "1"} true
+obj.ff = '12'
+// obj2 ==={k: "1"} true
+
 /*
-  递归，除了了嵌套引用，但会嵌套多层递归会爆栈
+  递归，解决了嵌套引用，但会嵌套多层递归会爆栈
 */
 function deepClone(target, hashMap = new WeakMap()){
 	if (target === null) return target // typeof null === 'object'
@@ -233,7 +246,7 @@ function copyBaseValue(target) {
 	return new target.constructor(target)
 }
 
-// 维护一个数组队列，while循环 https://yanhaijing.com/javascript/2018/10/10/clone-deep/
+// 维护一个栈(数组），while循环 https://yanhaijing.com/javascript/2018/10/10/clone-deep/
 function deepClone2(data, hashMap = new WeakMap()) {
 	
 	if (!needDeepClone(data)) return copyBaseValue(data)
