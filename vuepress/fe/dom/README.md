@@ -19,3 +19,6 @@ title: Dom
 
 ### 浏览器与Node的事件循环(Event Loop)的区别()
 > [介绍](https://juejin.im/post/6844903761949753352)
+
+### setTimeout和requestAnimationFrame
+> [介绍](https://juejin.im/post/6844904083204079630)
