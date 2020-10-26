@@ -1,7 +1,36 @@
 ---
 title: 手写实现
 ---
+## 目录
+- [Object.create的实现](#object-create的实现)
+- [instanceOf](#instanceof)
+- [new实现](#new实现)
+- [call,apply,bind的实现](#call-apply-bind的实现)
+  - [模拟实现call](#模拟实现call)
+  - [模拟实现apply](#模拟实现apply)
+  - [模拟实现bind](#模拟实现bind)
+- [es5实现继承](#es5-实现继承)
+- [函数柯里化](#函数柯里化)
+- [深拷贝](#深拷贝)
+- [手写 EventHub（发布-订阅）](#手写-eventhub（发布-订阅）)
+- [数组reduce实现](#数组reduce实现)
+- [数组去重](#数组去重)
+- [取并集，交集，差集，子集](#取并集，交集，差集，子集)
+- [数组扁平化](#数组扁平化)
+- [数组操作](#数组操作)
+- [JSONP的实现](#jsonp的实现)
+- [基于promise封装ajax](#基于promise封装ajax)
+- [异步循环打印](#异步循环打印)
+- [](#)
+- [](#)
+
+
+
 ### Object.create的实现
+Object.create原本的行为：
+
+![An image](./image/achieve/object_create.png)
+
 ```javascript
 if (typeof Object.create !== "function") {
     Object.create = function create(prototype) {
@@ -21,16 +50,26 @@ if (typeof Object.create !== "function") {
 ### instanceOf
 > instanceof 运算符用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上。
 >实际上，实例对象上的__proto__就是指向构造函数的prototype
+
+思路：
+
+步骤1：先取得当前类的原型，当前实例对象的原型链
+
+步骤2：一直循环（执行原型链的查找机制）
+ - 取得当前实例对象原型链的原型链（proto = proto.__proto__，沿着原型链一直向上查找）
+ - 如果当前实例的原型链__proto__上找到了当前类的原型prototype，则返回 true
+ - 如果一直找到Object.prototype.__proto__=== null，Object的基类(null)上面都没找到，则返回 false
 ```javascript
 function _instanceOf(instanceObject, classFunc) {
 	let protoType = classFunc.prototype
-	let proto = target.__proto__
+	let proto = instanceObject.__proto__
 	// 或者
 	// let proto = Object.getPrototypeOf(instanceObject)
 	while (true) {
 		if (proto === null) return false
 		if (proto === protoType) return true
-		proto = proto.__proto__ // 或者 proto = Object.getPrototypeOf(proto)
+		proto = proto.__proto__ 
+        // 或者 proto = Object.getPrototypeOf(proto)
 	}
 }
 ```
@@ -38,13 +77,16 @@ function _instanceOf(instanceObject, classFunc) {
 ### new实现
 
 ```javascript
-    function Create() {
-      // 创建一个空对象
+    function myNew() {
+      // 创建一个空对象，实例.__proto__ = 类.prototype
       const object = {}
       // 获取构造函数
       const Constructor = [].shift.call(arguments)
+      // 某些函数未必有 `prototype` 属性，比如箭头函数
+      if (!Constructor.prototype) throw new Error('First argument is not a constructor.')
       // 链接到原型
       object.__proto__ = Constructor.prototype
+      //  Object.setPrototypeOf(object, Constructor.prototype)
       // 绑定this 执行构造函数
       const result = Constructor.apply(object, arguments)
       // 确保new出来是个对象
@@ -55,10 +97,10 @@ function _instanceOf(instanceObject, classFunc) {
     	this.x = x
     	this.y = y
     }
-    const point = Create(Point, 1, 2)
+    const point = myNew(Point, 1, 2)
 ```
 
-## call, apply, bind 的实现
+## call,apply,bind的实现
 
 ### 模拟实现call
 > MDN: call() 方法使用一个指定的 this 值和单独给出的一个或多个参数来调用一个函数。
@@ -160,11 +202,44 @@ Function.prototype.myBind = function(asThis) {
 }
 ```
 
+
+### ES5 实现继承
+> 寄生组合继承是ES5的最佳实现
+
+所谓寄生组合式继承，即通过借用构造函数来继承属性，通过原型链的形式来继承方法。
+
+只调用了一次父类构造函数，效率更高。避免在子类.prototype上面创建不必要的、多余的属性，与其同时，原型链还能保持不变。
+
+```javascript
+function Parent(name) {
+	this.name = name
+	this.colors = ['red', 'blue', 'green']
+}
+
+Parent.prototype.getName = function () {
+	return this.name
+}
+
+function Child(name, age) {
+	Parent.call(this, name)
+	this.age = age
+}
+
+Child.prototype = Object.create(Parent.prototype)
+Child.prototype.constructor = Child
+
+Child.prototype.getAge = function () {
+	return this.age
+}
+
+let Tom = new Child('Tom', 17)
+Tom.getAge()
+```
+
 ### 函数柯里化
 
 ```javascript
 function curry(func) {
-  
   return function curried(...args) {
     if (args.length >= func.length) {
       return func.apply(this, args)
@@ -174,11 +249,21 @@ function curry(func) {
       }
     }
   }
-  
 }
+// 用例
+function sum(a, b, c) {
+  return a + b + c;
+}
+
+let curriedSum = curry(sum);
+
+alert( curriedSum(1, 2, 3) ); // 6，仍然可以被正常调用
+alert( curriedSum(1)(2,3) ); // 6，对第一个参数的柯里化
+alert( curriedSum(1)(2)(3) ); // 6，全柯里化
 ```
 
 ### [深拷贝](https://segmentfault.com/a/1190000020255831)
+> [使用proxy](https://github.com/KieSun/FE-advance-road/blob/master/wheels/deepClone/index.md)
 ```javascript
 
 // 数组浅拷贝可以用slice,concat, [...array]，对象可以用Object.assign. {...obj}
@@ -375,7 +460,7 @@ class EventHub {
     return this.cache[eventName].push(fn) -1; // push会返回数组length, 暂时用key作为键值
   }
   emit(eventName) {
-    this.cache[eventName].forEach((fn) => fn());
+    this.cache[eventName].forEach((cb) => cb());
   }
   off(eventName, fn) {
     const index = this.cache[eventName].findIndex(item => item === fn)
@@ -388,6 +473,69 @@ class EventHub {
 }
 ```
 
+### 数组reduce实现
+```javascript
+// 实现reduce
+// prev, next, currentIndex, array
+Array.prototype.myReduce = function (cb, prev) {
+	let i = 0
+	if (!prev) {
+		prev = prev || this[0]
+		i++
+	}
+	for (; i < this.length; i++) {
+		prev = cb(prev, this[i], i, this)
+	}
+	return prev
+}
+// 测试
+const sum = [1, 2, 3].myReduce((prev, next) => {
+	return prev + next
+})
+
+console.log(sum) // 6
+
+function unique(arr) {
+	return arr.myReduce((prev, cur) => prev.includes(cur) ? prev : [...prev, cur], [])
+}
+
+const arr2 = [1, 1, 'true', 'true', true, true, 15, 15, false, false, undefined, undefined, null, null, NaN, NaN, 'NaN', 0, 0, 'a', 'a', {}, {}]
+console.log(unique(arr2))
+```
+
+### 数组去重
+ - 1、使用set
+```javascript
+function unique(array) {
+  return Array.from(new Set(array))
+}
+```
+- 2、利用for嵌套for，然后splice去重（ES5中最常用）
+```javascript
+function unique(array) {
+	for (let i = 0; i < array.length; i++) {
+		for (let j = i + 1; j < array.length; j++) {
+			if (array[i] === array[j]) {
+				array.splice(j, 1)
+				j--
+			}
+		}
+	}
+	return array
+}
+```
+- 3、使用indexOf, push
+```javascript
+function unique(array) {
+	const arr = []
+	for (let i = 0; i < array.length; i++) {
+		if (arr.indexOf(array[i]) === -1) {
+			arr.push(array[i])
+		}
+	}
+	return arr
+}
+```
 ### 取并集，交集，差集，子集
 ```javascript
 // 取并集
@@ -498,6 +646,105 @@ function disorder(array) {
 		current--
 	}
 	return array
+}
+```
+
+### JSONP的实现
+
+需要服务端配合，返回能执行回调函数的js
+
+> 利用\<script>标签没有跨域限制的“漏洞”来达到与第三方通讯的目的。
+>当需要通讯时，本站脚本创建一个\<script>元素，地址指向第三方的API网址，
+>形如：\<script src="http://www.example.net/api?param1=1&param2=2">\</script> 
+>并提供一个回调函数来接收数据（函数名可约定，或通过地址参数传递）。    
+>第三方产生的响应为json数据的包装（故称之为jsonp，即json padding），
+>形如：callback({"name":"hax","gender":"Male"})这样浏览器会调用callback函数，并传递解析后json对象作为参数。本站脚本可在callback函数里处理所传入的数据。
+
+- 1.将传入的data数据转化为url字符串形式
+- 2.处理url中的回调函数
+- 3.创建一个script标签并插入到页面中
+- 4.挂载回调函数
+
+```javascript
+(function (window, document) {
+	'use strict'
+	var jsonp = function (url, data, callback) {
+		// 1.将传入的data数据转化为url字符串形式
+		// {id:1,name:'jack'} => id=1&name=jack
+		var dataStr = url.indexOf('?') === -1 ? '?' : '&'
+		for (var key in data) {
+			dataStr += key + '=' + data[key] + '&'
+		}
+		
+		// 2 处理url中的回调函数
+		// cbFuncName回调函数的名字 ：my_json_cb_名字的前缀 + 随机数（把小数点去掉）
+		var cbFuncName = 'my_json_cb_' + Math.random().toString().replace('.', '')
+		dataStr += 'callback=' + cbFuncName
+		
+		// 3.创建一个script标签并插入到页面中
+		var scriptEle = document.createElement('script')
+		scriptEle.src = url + dataStr
+		
+		// 4.挂载回调函数
+		window[cbFuncName] = function (data) {
+			callback(data)
+			// 处理完回调函数的数据之后，删除jsonp的script标签
+			document.body.removeChild(scriptEle)
+		}
+		
+		document.body.appendChild(scriptEle)
+	}
+	window.$jsonp = jsonp
+})(window, document)
+
+```
+
+### 基于Promise封装Ajax
+
+```javascript
+function ajax(method = 'get', url, params) {
+	return new Promise(((resolve, reject) => {
+		const xhr = new XMLHttpRequest()
+		const paramString = getStringParam(params)
+		if (method === 'get' && paramString) {
+			url.indexOf('?') ? url += paramString : url += `?${paramString}`
+		}
+		
+		xhr.open(method, url)
+		
+		xhr.onload = function () {
+			const result = {
+				status: xhr.status,
+				statusText: xhr.statusText,
+				headers: xhr.getAllResponseHeaders(),
+				data: xhr.response || xhr.responseText
+			}
+			if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304) {
+				resolve(result)
+			} else {
+				reject(result)
+			}
+		}
+		// 设置请求头
+		xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
+		// 跨域携带cookie
+		xhr.withCredentials = true
+		// 错误处理
+		xhr.onerror = function () {
+			reject(new TypeError('请求出错'))
+		}
+		xhr.timeout = function () {
+			reject(new TypeError('请求超时'))
+		}
+		xhr.onabort = function () {
+			reject(new TypeError('请求被终止'))
+		}
+		if (method === 'post') {
+			xhr.send(paramString)
+		} else {
+			xhr.send()
+		}
+	}))
 }
 ```
 

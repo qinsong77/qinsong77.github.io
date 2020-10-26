@@ -1,4 +1,5 @@
 module.exports = {
+	plugins: ['@vuepress/back-to-top'],
 	// theme: 'reco',
 	title: 'Sysuke\' NoteBook',
 	description: 'person NoteBook power by VuePress & GitHub Page',
@@ -32,6 +33,10 @@ module.exports = {
 			{
 				text: '后端',
 				link: '/backEnd/'
+			},
+			{
+				text: '面试',
+				link: '/interview/'
 			},
 			{
 				text: 'Demo',
@@ -89,7 +94,8 @@ module.exports = {
 					collapsable: false, // 可选的, 默认值是 true,
 					// sidebarDepth: 2,    // 可选的, 默认值是 1
 					children: [
-						['dom/', 'DOM']
+						['dom/', 'Summary'],
+						'dom/safety',
 					]
 				}
 			],
@@ -102,6 +108,17 @@ module.exports = {
 			'/backEnd/': [
 				{
 					title: 'node',   // 必要的
+					// path: '/backEnd/node/',      // 可选的, 标题的跳转链接，应为绝对路径且必须存在
+					collapsable: false, // 可选的, 默认值是 true,
+					// sidebarDepth: 2,    // 可选的, 默认值是 1
+					children: [
+						['', 'Summary'],
+					]
+				}
+			],
+			'/interview/': [
+				{
+					title: 'Summary',   // 必要的
 					// path: '/backEnd/node/',      // 可选的, 标题的跳转链接，应为绝对路径且必须存在
 					collapsable: false, // 可选的, 默认值是 true,
 					// sidebarDepth: 2,    // 可选的, 默认值是 1
