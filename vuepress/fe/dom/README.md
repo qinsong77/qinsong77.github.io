@@ -23,6 +23,7 @@ title: Dom
   - [Node 中的 Event loop](#node-%E4%B8%AD%E7%9A%84-event-loop)
 - [浏览器与Node的事件循环(Event Loop)的区别](#浏览器与node的事件循环-event-loop-的区别)
 - [Service Worker](#service-worker)
+- [setTimeout和requestAnimationFrame](#settimeout和requestanimationframe)
   
 ----
 
@@ -478,7 +479,6 @@ process.nextTick(() => {
 > [介绍](https://juejin.im/post/6844903761949753352)
 
 
-
 #### Service Worker
 
 > Service workers 本质上充当Web应用程序与浏览器之间的代理服务器，也可以在网络可用时作为浏览器和网络间的代理。它们旨在（除其他之外）使得能够创建有效的离线体验，拦截网络请求并基于网络是否可用以及更新的资源是否驻留在服务器上来采取适当的动作。他们还允许访问推送通知和后台同步API。
@@ -529,3 +529,7 @@ self.addEventListener("fetch", e => {
 当我们重新刷新页面可以发现我们缓存的数据是从 Service Worker 中读取的
 
 ![An image](../image/dom/7.png)
+
+
+### setTimeout和requestAnimationFrame
+> [介绍](https://juejin.im/post/6844904083204079630)
