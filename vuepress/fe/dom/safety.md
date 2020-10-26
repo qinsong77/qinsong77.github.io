@@ -134,7 +134,7 @@ console.log(html);
 3. 阻止第三方网站请求接口
 4. 请求时附带验证信息，比如验证码或者 token
 
-##### SameSite
+##### [SameSite](http://www.ruanyifeng.com/blog/2019/09/cookie-samesite.html)
 
 可以对 Cookie 设置 `SameSite` 属性。该属性设置 Cookie 不随着跨域请求发送，该属性可以很大程度减少 CSRF 的攻击，但是该属性目前并不是所有浏览器都兼容。
 
