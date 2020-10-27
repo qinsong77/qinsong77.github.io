@@ -21,7 +21,7 @@ title: 手写实现
 - [JSONP的实现](#jsonp的实现)
 - [基于promise封装ajax](#基于promise封装ajax)
 - [异步循环打印](#异步循环打印)
-- [](#)
+- [Promise](#promise)
 - [](#)
 
 

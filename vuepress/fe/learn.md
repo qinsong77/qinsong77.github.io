@@ -15,7 +15,12 @@ JavaScript目前有八种内置类型（包含ES6的symbol）：
 
 #### typeof null 为 'object'的bug
 > JavaScript中的数据在底层是以二进制存储，比如null所有存储值都是0，但是底层的判断机制，只要前三位为0，就会判定为object，所以才会有typeof null === 'object'这个bug。
-
+#### JS中“假”值列表，即if不执行(if 等流控制语句会自动执行其他类型值到布尔值的转换即Boolean(null))
+   - “”（空字符串）
+   - 0、-0、NaN(无线数字)
+   - null、undefined
+   - false
+注意Infinity为真
 ## 语言中所有的底层存储方式是是什么。
 
 - 数组(Array)
