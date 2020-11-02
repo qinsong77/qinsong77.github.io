@@ -112,7 +112,7 @@ Object.getPrototypeOf(dog1) === Dog.prototype   //推荐
 
 利用原型让一个引用类型继承另一个引用类型的属性和方法。
 
-每个构造函数都有一个原型对象，原型对象都包含一个指向构造函数想指针(constructor)，而实例对象都包含一个指向原型对象的内部指针(__proto__)。如果让原型对象等于另一个类型的实例，此时的原型对象将包含一个指向另一个原型的指针(__proto__)，另一个原型也包含着一个指向另一个构造函数的指针(constructor)。假如另一个原型又是另一个类型的实例……这就构成了实例与原型的链条。
+每个构造函数都有一个原型对象，原型对象都包含一个指向构造函数想指针(constructor)，而实例对象都包含一个指向原型对象的内部指针(`__proto__`)。如果让原型对象等于另一个类型的实例，此时的原型对象将包含一个指向另一个原型的指针(`__proto__`)，另一个原型也包含着一个指向另一个构造函数的指针(constructor)。假如另一个原型又是另一个类型的实例……这就构成了实例与原型的链条。
 
 原型链基本思路（图解）：
 ![An image](./image/prototype/yuanxinlian.png)
@@ -160,10 +160,10 @@ instanceof 能够判断出 [ ].\_proto_  指向 Array.prototype，而 Array.prot
 ![An image](./image/prototype/instanceof.png)
 
 ### Function 和 Object
-- function Object()也是个函数，所以我们可以认为Object()是通过 new Function() 出来的，所以Object()此时是实例对象，实例对象上面一定有__proto__属性，所以Object.__proto__ === Function.prototype
-- function Function()同样也是函数，我们也可以认为他是通过 new Function() 出来的，所以Function()此时是实例对象，实例对象上面一定有__proto__属性，所以Function.__proto__=== Function.prototype
+- function Object()也是个函数，所以我们可以认为Object()是通过 new Function() 出来的，所以Object()此时是实例对象，实例对象上面一定有__proto__属性，所以`Object.__proto__` === `Function.prototype`
+- function Function()同样也是函数，我们也可以认为他是通过 new Function() 出来的，所以Function()此时是实例对象，实例对象上面一定有__proto__属性，所以`Function.__proto__`=== `Function.prototype`
 - 我们说过任何东西都是new Object()所出来的，所以Function() 也是new Object() 出来的，此时Function()是实例对象，实例对象上面一定有__proto__属性，但是Function的__proto__属性的连线已经连到了Function的显式原型对象，所以它通过上图的红线进行连接，
-Function.__proto__.__proto__=== Object.prototype(true)
+`Function.__proto__.__proto__`=== `Object.prototype(true)`
 ![An image](./image/prototype/Funcion_Object.png)
 ![An image](./image/prototype/Fun_Obj.png)
 ## 总结

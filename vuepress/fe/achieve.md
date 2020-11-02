@@ -50,15 +50,15 @@ if (typeof Object.create !== "function") {
 ### instanceOf
 > instanceof 运算符用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上。
 >实际上，实例对象上的__proto__就是指向构造函数的prototype
-
+语法： result = variable instanceof constructor
 思路：
 
 步骤1：先取得当前类的原型，当前实例对象的原型链
 
 步骤2：一直循环（执行原型链的查找机制）
- - 取得当前实例对象原型链的原型链（proto = proto.__proto__，沿着原型链一直向上查找）
+ - 取得当前实例对象原型链的原型链（proto = `proto.__proto__`，沿着原型链一直向上查找）
  - 如果当前实例的原型链__proto__上找到了当前类的原型prototype，则返回 true
- - 如果一直找到Object.prototype.__proto__=== null，Object的基类(null)上面都没找到，则返回 false
+ - 如果一直找到`Object.prototype.__proto__`=== null，Object的基类(null)上面都没找到，则返回 false
 ```javascript
 function _instanceOf(instanceObject, classFunc) {
 	let protoType = classFunc.prototype
