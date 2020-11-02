@@ -12,7 +12,8 @@ title: 手写实现
 - [es5实现继承](#es5-实现继承)
 - [函数柯里化](#函数柯里化)
 - [深拷贝](#深拷贝)
-- [手写 EventHub（发布-订阅）](#手写-eventhub（发布-订阅）)
+- [手写EventHub（发布-订阅）](#手写eventhub-发布-订阅)
+- [单例模式](#单例模式)
 - [数组reduce实现](#数组reduce实现)
 - [数组去重](#数组去重)
 - [取并集，交集，差集，子集](#取并集，交集，差集，子集)
@@ -22,7 +23,7 @@ title: 手写实现
 - [基于promise封装ajax](#基于promise封装ajax)
 - [异步循环打印](#异步循环打印)
 - [Promise](#promise)
-- [](#)
+- [图片懒加载](#图片懒加载)
 
 
 
@@ -76,6 +77,14 @@ function _instanceOf(instanceObject, classFunc) {
 
 ### new实现
 
+要创建 Person 的实例，应使用 new 操作符。以这种方式调用构造函数会执行如下操作。(JS高级程序设计描述)
+- (1) 在内存中创建一个新对象。
+- (2) 这个新对象内部的`[[Prototype]]`特性被赋值为构造函数的 prototype 属性。
+- (3) 构造函数内部的 this 被赋值为这个新对象（即 this 指向新对象）。
+- (4) 执行构造函数内部的代码（给新对象添加属性）。
+- (5) 如果构造函数返回非空对象，则返回该对象；否则，返回刚创建的新对象
+
+构造函数与普通函数唯一的区别就是调用方式不同。
 ```javascript
     function myNew() {
       // 创建一个空对象，实例.__proto__ = 类.prototype
@@ -445,7 +454,7 @@ function deepClone2(data, hashMap = new WeakMap()) {
 }
 ```
 
-### 手写 EventHub（发布-订阅）
+### 手写EventHub（发布-订阅）
 核心思路是：
 
  - 使用一个对象作为缓存
@@ -471,6 +480,128 @@ class EventHub {
     this.cache[eventName].splice(index, 1);
   }
 }
+
+// 观察者模式
+function EventEmitter() {
+	this._maxListeners = 10
+	this._events = Object.create(null)
+}
+
+// 向事件队列添加事件
+// prepend为true表示向事件队列头部添加事件
+EventEmitter.prototype.addListener = function (type, listener, prepend) {
+	if (!this._events) {
+		this._events = Object.create(null)
+	}
+	if (this._events[type]) {
+		if (prepend) {
+			this._events[type].unshift(listener)
+		} else {
+			this._events[type].push(listener)
+		}
+	} else {
+		this._events[type] = [listener]
+	}
+}
+
+// 移除某个事件
+EventEmitter.prototype.removeListener = function (type, listener) {
+	if (Array.isArray(this._events[type])) {
+		if (!listener) {
+			delete this._events[type]
+		} else {
+			this._events[type] = this._events[type].filter(e => e !== listener && e.origin !== listener)
+		}
+	}
+}
+
+// 向事件队列添加事件，只执行一次
+EventEmitter.prototype.once = function (type, listener) {
+	const only = (...args) => {
+		listener.apply(this, args)
+		this.removeListener(type, listener)
+	}
+	only.origin = listener
+	this.addListener(type, only)
+}
+
+// 执行某类事件
+EventEmitter.prototype.emit = function (type, ...args) {
+	if (Array.isArray(this._events[type])) {
+		this._events[type].forEach(fn => {
+			fn.apply(this, args)
+		})
+	}
+}
+
+// 设置最大事件监听个数
+EventEmitter.prototype.setMaxListeners = function (count) {
+	this.maxListeners = count
+}
+
+// test
+var emitter = new EventEmitter()
+
+var onceListener = function (args) {
+	console.log('我只能被执行一次', args, this)
+}
+
+var listener = function (args) {
+	console.log('我是一个listener', args, this)
+}
+
+emitter.once('click', onceListener)
+emitter.addListener('click', listener)
+
+emitter.emit('click', '参数')
+emitter.emit('click')
+
+emitter.removeListener('click', listener)
+emitter.emit('click')
+
+```
+
+#### JavaScript自定义事件
+
+`DOM`也提供了类似上面`EventEmitter`的API，基本使用：
+```javascript
+//1、创建事件
+var myEvent = new Event('myEvent')
+
+//2、注册事件监听器
+elem.addEventListener('myEvent', function (e) {
+	
+})
+
+//3、触发事件
+elem.dispatchEvent(myEvent)
+```
+
+### 单例模式
+使用闭包实现
+```javascript
+function Singleton(name) {
+	this.name = name
+}
+
+Singleton.prototype.getName = function () {
+	return this.name
+}
+
+Singleton.getInstance = (function () {
+	let instance
+	return function (name) {
+		if (!instance) {
+			instance = new Singleton(name)
+		}
+		return instance
+	}
+})()
+
+var a = Singleton.getInstance('tom')
+var b = Singleton.getInstance('Tom')
+
+console.log(a === b)  
 ```
 
 ### 数组reduce实现
@@ -768,4 +899,76 @@ const start = async function () {
 }
 
 start()
+```
+### 图片懒加载
+
+#### 监听图片高度
+图片，用一个其他属性存储真正的图片地址：
+```html
+  <img src="loading.gif" data-src="https://cdn.pixabay.com/photo/2015/09/09/16/05/forest-931706_1280.jpg" alt="">
+  <img src="loading.gif" data-src="https://cdn.pixabay.com/photo/2014/08/01/00/08/pier-407252_1280.jpg" alt="">
+  <img src="loading.gif" data-src="https://cdn.pixabay.com/photo/2014/12/15/17/16/pier-569314_1280.jpg" alt="">
+  <img src="loading.gif" data-src="https://cdn.pixabay.com/photo/2010/12/13/10/09/abstract-2384_1280.jpg" alt="">
+  <img src="loading.gif" data-src="https://cdn.pixabay.com/photo/2015/10/24/11/09/drop-of-water-1004250_1280.jpg">
+```
+通过图片offsetTop和window的innerHeight，scrollTop判断图片是否位于可视区域。
+
+或者使用API [Element.getBoundingClientRect()](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/getBoundingClientRect)
+```javascript
+var img = document.getElementsByTagName('img')
+var n = 0 //存储图片加载到的位置，避免每次都从第一张图片开始遍历
+lazyload() //页面载入完毕加载可是区域内的图片
+// 节流函数，保证每200ms触发一次
+function throttle(event, time) {
+	let timer = null
+	return function (...args) {
+		if (!timer) {
+			timer = setTimeout(() => {
+				timer = null
+				event.apply(this, args)
+			}, time)
+		}
+	}
+}
+
+window.addEventListener('scroll', throttle(lazyload, 200))
+
+function lazyload() { //监听页面滚动事件
+	var seeHeight = window.innerHeight //可见区域高度
+	var scrollTop = document.documentElement.scrollTop || document.body.scrollTop //滚动条距离顶部高度
+	for (var i = n; i < img.length; i++) {
+		console.log(img[i].offsetTop, seeHeight, scrollTop)
+		if (img[i].offsetTop < seeHeight + scrollTop) {
+			if (img[i].getAttribute('src') == 'loading.gif') {
+				img[i].src = img[i].getAttribute('data-src')
+			}
+			n = i + 1
+		}
+	}
+}
+```
+
+#### [IntersectionObserver](https://developer.mozilla.org/zh-CN/docs/Web/API/IntersectionObserver)
+IntersectionObserver接口 (从属于Intersection Observer API) 提供了一种异步观察目标元素与其祖先元素或顶级文档视窗(viewport)交叉状态的方法。祖先元素与视窗(viewport)被称为根(root)。
+
+Intersection Observer可以不用监听scroll事件，做到元素一可见便调用回调，在回调里面我们来判断元素是否可见。
+
+```javascript
+if (IntersectionObserver) {
+	let lazyImageObserver = new IntersectionObserver((entries, observer) => {
+		entries.forEach((entry, index) => {
+			let lazyImage = entry.target
+			// 如果元素可见            
+			if (entry.intersectionRatio > 0) {
+				if (lazyImage.getAttribute('src') == 'loading.gif') {
+					lazyImage.src = lazyImage.getAttribute('data-src')
+				}
+				lazyImageObserver.unobserve(lazyImage)
+			}
+		})
+	})
+	for (let i = 0; i < img.length; i++) {
+		lazyImageObserver.observe(img[i])
+	}
+}
 ```
