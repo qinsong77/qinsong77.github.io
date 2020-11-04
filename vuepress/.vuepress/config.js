@@ -121,7 +121,8 @@ module.exports = {
 				'',
 				'binaryTree',
 				'sort',
-				'leetCode'
+				'leetCode',
+				'dynamic',
 			],
 			'/backEnd/': [
 				{
@@ -146,6 +147,6 @@ module.exports = {
 				}
 			]
 		}
-		
+
 	}
 }

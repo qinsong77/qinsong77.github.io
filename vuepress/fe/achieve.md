@@ -22,8 +22,8 @@ title: 手写实现
 - [JSONP的实现](#jsonp的实现)
 - [基于promise封装ajax](#基于promise封装ajax)
 - [异步循环打印](#异步循环打印)
-- [Promise](#promise)
 - [图片懒加载](#图片懒加载)
+- [Promise](#promise)
 
 
 
@@ -971,4 +971,42 @@ if (IntersectionObserver) {
 		lazyImageObserver.observe(img[i])
 	}
 }
+```
+
+### promise
+
+#### promise 实现进度通知
+```javascript
+class TrackAblePromise extends Promise {
+	constructor(executor){
+		const notifyHandlers = []
+		super((resolve, reject) => {
+			return executor(resolve, reject, (status) => {
+				notifyHandlers.map((handler) => handler(status))
+			})
+		})
+		this.notifyHandlers = notifyHandlers
+	}
+
+	notify (notifyHandler) {
+		this.notifyHandlers.push(notifyHandler)
+		return this
+	}
+}
+
+let p = new TrackAblePromise((resolve, reject, notify) => {
+	function countDown(x){
+		if (x > 0) {
+			notify(`${ 20 * x} % remaining`)
+			setTimeout(() => countDown(x - 1), 1000)
+		} else {
+			resolve()
+		}
+	}
+	countDown(5)
+})
+
+p.notify((x) => setTimeout(console.log, 0 , 'progress:', x))
+
+p.then(() => console.log('completed'))
 ```
