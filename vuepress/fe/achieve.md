@@ -1014,6 +1014,10 @@ p.then(() => console.log('completed'))
 #### 手写promise
 > [文章](https://juejin.im/post/6844903665686282253)
 ```javascript
+// 定义Promise的三种状态常量
+const PENDING = 'PENDING'
+const FULFILLED = 'FULFILLED'
+const REJECTED = 'REJECTED'
 class MyPromise {
 	constructor(handle){
 		if (typeof handle !== 'function') {
