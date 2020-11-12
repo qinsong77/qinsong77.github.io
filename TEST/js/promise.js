@@ -327,3 +327,45 @@ var p4 = new MyPromise(((resolve, reject) => {
 p4
 	.then(result => console.log(result))
 	.catch(error => console.log(error))
+
+
+
+class MPromise {
+	constructor(handle){
+		if (typeof handle !== 'function') {
+			throw new Error('promise must accept a function as parameter')
+		}
+		this.STATE = {
+			PENDING: 'PENDING',
+			FULFILLED : 'FULFILLED', // fulfilled
+			REJECTED: 'REJECTED' // rejected
+		}
+		this.status = this.STATE.PENDING
+		this.value = undefined
+		// 添加成功回调函数队列
+		this.fulfilledQueues = []
+		// 添加失败回调函数队列
+		this.rejectedQueues = []
+
+		try {
+			handle(this.resolve.bind(this), this.reject.bind(this))
+		} catch (err) {
+			this.reject(err)
+		}
+	}
+	resolve (val) {
+		if (this.status !== this.STATE.PENDING) return
+		this.status = this.STATE.FULFILLED
+		this.value = val
+	}
+	reject (err) {
+		if (this.status !== this.STATE.PENDING) return
+		this.status = this.STATE.REJECTED
+		this.value = err
+	}
+	then (onFulfilled, onRejected) {
+		const { status, value } = this
+		return new MPromise((onFulfilledNext, onRejectedNext) => {
+		})
+	}
+}

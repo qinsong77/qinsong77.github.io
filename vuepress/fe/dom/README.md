@@ -150,6 +150,8 @@ mc.addEventListener('message', event => {
 #### 浏览器缓存
 > [介绍](https://juejin.im/post/6844903829620686856)
 
+#### [web储存方案](https://juejin.im/post/6844904192549584903)
+
 #### cookie到WebStorage、IndexedDB
 > [介绍](https://juejin.im/post/6844903812092674061)
 

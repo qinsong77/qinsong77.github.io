@@ -2,7 +2,7 @@
 title: 学习笔记
 ---
 
-## 内置类型
+### 内置类型
 JavaScript目前有八种内置类型（包含ES6的symbol）：
 - null
 - undefined
@@ -15,13 +15,13 @@ JavaScript目前有八种内置类型（包含ES6的symbol）：
 
 #### typeof null 为 'object'的bug
 > JavaScript中的数据在底层是以二进制存储，比如null所有存储值都是0，但是底层的判断机制，只要前三位为0，就会判定为object，所以才会有typeof null === 'object'这个bug。
-#### JS中“假”值列表，即if不执行(if 等流控制语句会自动执行其他类型值到布尔值的转换即Boolean(null))
+### JS中“假”值列表，即if不执行(if 等流控制语句会自动执行其他类型值到布尔值的转换即Boolean(null))
    - “”（空字符串）
    - 0、-0、NaN(无线数字)
    - null、undefined
    - false
 注意Infinity为真
-## 语言中所有的底层存储方式是是什么。
+### 语言中所有的底层存储方式是是什么。
 
 - 数组(Array)
 数组是一种聚合数据类型，它是将具有相同类型的若干变量有序地组织在一起的集合。数组可以说是最基本的数据结构，在各种编程语言中都有对应。一个数组可以分解为多个数组元素，按照数据元素的类型，数组可以分为整型数组、字符型数组、浮点型数组、指针数组和结构数组等。数组还可以有一维、二维以及多维等表现形式。
@@ -47,13 +47,24 @@ JavaScript目前有八种内置类型（包含ES6的symbol）：
 - 散列表(Hash)
 散列表源自于散列函数(Hash function)，其思想是如果在结构中存在关键字和T相等的记录，那么必定在F(T)的存储位置可以找到该记录，这样就可以不用进行比较操作而直接取得所查记录
 
-## JavaScript使用的是 堆(Heap) 和 栈( Stack)
+#### JavaScript使用的是 堆(Heap) 和 栈( Stack)
 JavaScript基本类型数据都是直接按值存储在栈中的(Undefined、Null、不是new出来的布尔、数字和字符串)，每种类型的数据占用的内存空间的大小是确定的，并由系统自动分配和自动释放。这样带来的好处就是，内存可以及时得到回收，相对于堆来说 ，更加容易管理内存空间。
 
 JavaScript引用类型数据被存储于堆中 (如对象、数组、函数等，它们是通过拷贝和new出来的）。其实，说存储于堆中，也不太准确，因为，引用类型的数据的地址指针是存储于栈中的，当我们想要访问引用类型的值的时候，需要先从栈中获得对象的地址指针，然后，在通过地址指针找到堆中的所需要的数据。
 
 
-## this的指向（https://juejin.im/post/6844903496253177863）
+#### instanceof 运算符用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上
+语法
+> object instanceof constructor
+>
+
+#### [set, map, weakMap, weakSet](https://juejin.im/post/6844904169417998349)
+
+#### 使用Object.prototype.hasOwnProperty.call(obj, key) 比用obj.hasOwnProperty安全
+
+#### 没有副作用的方法和函数被称为纯函数。
+
+### this的指向（https://juejin.im/post/6844903496253177863）
 > 在 ES5 中，其实 this 的指向，始终坚持一个原理：this 永远指向最后调用它的那个对象。
 #### 改变 this 的指向的方法
 - 使用 ES6 的箭头函数
@@ -61,19 +72,167 @@ JavaScript引用类型数据被存储于堆中 (如对象、数组、函数等�
 - 使用 apply、call、bind
 - new 实例化一个对象
 
+```javascript
+function foo() {
+	console.log(this.a)
+}
+var a = 1
+foo() // 1
 
-## instanceof 运算符用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上
-语法
-> object instanceof constructor
->
+var obj = {
+	a: 2,
+	foo: foo
+}
+obj.foo() // 2
 
-#### set, map, weakMap, weakSet(https://juejin.im/post/6844904169417998349)
+// 以上两者情况 `this` 只依赖于调用函数前的对象，优先级是第二个情况大于第一个情况
 
-#### 使用Object.prototype.hasOwnProperty.call(obj, key) 比用obj.hasOwnProperty安全
+// 以下情况是优先级最高的，`this` 只会绑定在 `c` 上，不会被任何方式修改 `this` 指向
+var c = new foo()
+c.a = 3
+console.log(c.a) // 3
 
-#### 没有副作用的方法和函数被称为纯函数。
+function a() {
+    return () => {
+        return () => {
+        	console.log(this)
+        }
+    }
+}
+console.log(a()()()) // windows
+// 箭头函数其实是没有 this 的，这个函数中的 this 只取决于他外面的第一个不是箭头函数的函数的 this。在这个例子中，因为调用 a 符合前面代码中的第一个情况，所以 this 是 window。并且 this 一旦绑定了上下文，就不会被任何代码改变。
+```
 
-#### web储存方案 https://juejin.im/post/6844904192549584903
+
+## [JavaScript 执行机制](https://juejin.im/post/6844903512845860872)
+
+### 执行上下文
+相关文章
+- [JavaScript 执行机制 —— 变量提升](https://juejin.im/post/6844903958553559053)
+- [JavaScript执行上下文-执行栈](https://juejin.im/post/6844904199063339015)
+
+浏览器执行JS函数其实是分两个过程的。一个是创建阶段Creation Phase,一个是执行阶段Execution Phase。
+当执行 JS 代码时，会产生三种执行上下文
+
+- 全局执行上下文
+- 函数执行上下文
+- eval 执行上下文
+
+每个执行上下文中都有三个重要的属性
+
+- 变量对象（VO），包含变量、函数声明和函数的形参，该属性只能在全局上下文中访问
+- 作用域链（JS 采用词法作用域，也就是说变量的作用域是在定义时就决定了）
+- this
+
+```javascript
+var a = 10
+function foo(i) {
+  var b = 20
+}
+foo()
+```
+
+对于上述代码，执行栈中有两个上下文：全局上下文和函数 `foo` 上下文。
+
+```javascript
+stack = [
+    globalContext,
+    fooContext
+]
+```
+
+对于全局上下文来说，VO 大概是这样的
+
+```javascript
+globalContext.VO === globe
+globalContext.VO = {
+    a: undefined,
+	foo: <Function>,
+}
+```
+
+对于函数 `foo` 来说，VO 不能访问，只能访问到活动对象（AO）
+
+```javascript
+fooContext.VO === foo.AO
+fooContext.AO {
+    i: undefined,
+	b: undefined,
+    arguments: <>
+}
+// arguments 是函数独有的对象(箭头函数没有)
+// 该对象是一个伪数组，有 `length` 属性且可以通过下标访问元素
+// 该对象中的 `callee` 属性代表函数本身
+// `caller` 属性代表函数的调用者
+```
+
+对于作用域链，可以把它理解成包含自身变量对象和上级变量对象的列表，通过 `[[Scope]]` 属性查找上级变量
+
+```javascript
+fooContext.[[Scope]] = [
+    globalContext.VO
+]
+fooContext.Scope = fooContext.[[Scope]] + fooContext.VO
+fooContext.Scope = [
+    fooContext.VO,
+    globalContext.VO
+]
+```
+
+接下来让我们看一个老生常谈的例子，`var`
+
+```javascript
+b() // call b
+console.log(a) // undefined
+
+var a = 'Hello world'
+
+function b() {
+	console.log('call b')
+}
+```
+
+想必以上的输出大家肯定都已经明白了，这是因为函数和变量提升的原因。通常提升的解释是说将声明的代码移动到了顶部，这其实没有什么错误，便于大家理解。但是更准确的解释应该是：在生成执行上下文时，会有两个阶段。第一个阶段是创建的阶段（具体步骤是创建 VO），JS 解释器会找出需要提升的变量和函数，并且给他们提前在内存中开辟好空间，函数的话会将整个函数存入内存中，变量只声明并且赋值为 undefined，所以在第二个阶段，也就是代码执行阶段，我们可以直接提前使用。
+
+在提升的过程中，相同的函数会覆盖上一个函数，并且函数优先于变量提升
+
+```javascript
+b() // call b second
+
+function b() {
+	console.log('call b fist')
+}
+function b() {
+	console.log('call b second')
+}
+var b = 'Hello world'
+```
+
+`var` 会产生很多错误，所以在 ES6中引入了 `let`。`let` 不能在声明前使用，但是这并不是常说的 `let` 不会提升，`let` 提升了声明但没有赋值，因为临时死区导致了并不能在声明前使用。
+
+对于非匿名的立即执行函数需要注意以下一点
+
+```javascript
+var foo = 1
+(function foo() {
+    foo = 10
+    console.log(foo)
+}()) // -> ƒ foo() { foo = 10 ; console.log(foo) }
+```
+
+因为当 JS 解释器在遇到非匿名的立即执行函数时，会创建一个辅助的特定对象，然后将函数名称作为这个对象的属性，因此函数内部才可以访问到 `foo`，但是这个值又是只读的，所以对它的赋值并不生效，所以打印的结果还是这个函数，并且外部的值也没有发生更改。
+
+ ```javascript
+specialObject = {};
+  
+Scope = specialObject + Scope;
+  
+foo = new FunctionExpression;
+foo.[[Scope]] = Scope;
+specialObject.foo = foo; // {DontDelete}, {ReadOnly}
+  
+delete Scope[0]; // remove specialObject from the front of scope chain
+ ```
 
 ## 事件循环
 - https://xieyufei.com/2019/12/30/Quiz-Eventloop.html
@@ -89,7 +248,7 @@ JavaScript引用类型数据被存储于堆中 (如对象、数组、函数等�
 > 事件循环实现异步
 >事件循环就是用来做调度的，浏览器和NodeJS中的事件循坏就好像操作系统的调度器一样。
 ### 事件循环的流程大致如下
--    1、所有任务都在主线程上执行，形成一个执行栈。
+-   1、所有任务都在主线程上执行，形成一个执行栈。
 -   2、主线程发现有异步任务，就在“任务队列”之中加入一个任务事件。
 -   3、一旦“执行栈”中的所有同步任务执行完毕，系统就会读取“任务队列”（先进先出原则）。那些对应的异步任务，结束等待状态，进入执行栈并开始执行。
 -   4、主线程不断重复上面的第三步，这样的一个循环称为事件循环。
@@ -121,11 +280,10 @@ JavaScript引用类型数据被存储于堆中 (如对象、数组、函数等�
 - MutationObserver(html5新特性)
 
 >在node环境下，process.nextTick的优先级高于Promise，也就是说：在宏任务结束后会先执行微任务队列中的nextTickQueue，然后才会执行微任务中的Promise。
-### 执行上下文
-浏览器执行JS函数其实是分两个过程的。一个是创建阶段Creation Phase,一个是执行阶段Execution Phase。
-### setInterval(http://caibaojian.com/setinterval.html),requestAnimationFrame代替绘制动画
 
-### Object.create()方法创建一个新对象，使用现有的对象来提供新创建的对象的__proto__(https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
+### [setInterval](http://caibaojian.com/setinterval.html),requestAnimationFrame代替绘制动画
+
+### Object.create()方法创建一个新对象，使用现有的对象来提供新创建的对象的[\__proto__](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
 ```javascript
 // 创建一个原型为null的空对象
 const pureObj  = Object.create(null)
@@ -144,6 +302,7 @@ const pureObj  = Object.create(null)
  - CommonJS 模块处理循环加载的方法是返回的是当前已经执行的部分的值，而不是代码全部执行后的值，两者可能会有差异。因为CommonJS 输入的是被输出值的拷贝，不是引用,只会在第一次加载时运行一次，以后再加载，就返回第一次运行的结果，除非手动清除系统缓存。
 
 ### JavaScript Number类型
+ 文章[JavaScript 深入之浮点数精度](https://github.com/mqyqingfeng/Blog/issues/155)
 
 在 JavaScript 里面，数字均为双精度浮点类型（double-precision 64-bit binary format IEEE 754），即一个介于±2−1023和±2+1024之间的数字，或约为±10−308到±10+308，数字精度为53位。整数数值仅在±(253 - 1)的范围内可以表示准确。
 
@@ -268,3 +427,83 @@ function fibImpl(a, b, n){
 
 ### 闭包
 > 闭包指的是那些引用了另一个函数作用域中变量的函数，通常是在嵌套函数中实现的。
+
+闭包的定义很简单：函数 A 返回了一个函数 B，并且函数 B 中使用了函数 A 的变量，函数 B 就被称为闭包。
+
+```javascript
+function A() {
+  let a = 1
+  function B() {
+      console.log(a)
+  }
+  return B
+}
+```
+
+你是否会疑惑，为什么函数 A 已经弹出调用栈了，为什么函数 B 还能引用到函数 A 中的变量。因为函数 A 中的变量这时候是存储在堆上的。现在的 JS 引擎可以通过逃逸分析辨别出哪些变量需要存储在堆上，哪些需要存储在栈上。
+
+经典面试题，循环中使用闭包解决 `var` 定义函数的问题
+
+```javascript
+for ( var i=1; i<=5; i++) {
+	setTimeout( function timer() {
+		console.log( i );
+	}, i*1000 );
+}
+```
+
+首先因为 `setTimeout` 是个异步函数，所有会先把循环全部执行完毕，这时候 `i` 就是 6 了，所以会输出一堆 6。
+
+解决办法两种，第一种使用闭包
+
+```javascript
+for (var i = 1; i <= 5; i++) {
+  (function(j) {
+    setTimeout(function timer() {
+      console.log(j);
+    }, j * 1000);
+  })(i);
+}
+```
+
+第二种就是使用 `setTimeout `  的第三个参数
+
+```javascript
+for ( var i=1; i<=5; i++) {
+	setTimeout( function timer(j) {
+		console.log( j );
+	}, i*1000, i);
+}
+```
+
+第三种就是使用 `let` 定义  `i` 了
+
+```javascript
+for ( let i=1; i<=5; i++) {
+	setTimeout( function timer() {
+		console.log( i );
+	}, i*1000 );
+}
+```
+
+因为对于 `let` 来说，他会创建一个块级作用域，相当于
+
+```js
+{ // 形成块级作用域
+  let i = 0
+  {
+    let ii = i
+    setTimeout( function timer() {
+        console.log( ii );
+    }, i*1000 );
+  }
+  i++
+  {
+    let ii = i
+  }
+  i++
+  {
+    let ii = i
+  }
+}
+```
