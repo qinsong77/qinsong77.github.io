@@ -293,7 +293,7 @@ const pureObj  = Object.create(null)
 
 ### [前端模块化](https://juejin.im/post/6844903744518389768)
 
-
+[文章2](https://juejin.im/post/6844903576309858318)
 
  #### [ES6 模块与 CommonJS 模块的差异](https://es6.ruanyifeng.com/#docs/module-loader#ES6-%E6%A8%A1%E5%9D%97%E4%B8%8E-CommonJS-%E6%A8%A1%E5%9D%97%E7%9A%84%E5%B7%AE%E5%BC%82)
  - CommonJS 模块输出的是一个值的拷贝，ES6 模块输出的是值的引用。
