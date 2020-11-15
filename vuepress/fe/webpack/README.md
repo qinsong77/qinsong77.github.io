@@ -7,3 +7,4 @@ title: Summary of webpack
 >
 ### [由浅入深配置webpack4](https://juejin.im/post/6859888538004783118)
 
+### [手写webpack核心原理](https://juejin.im/post/6854573217336541192)
