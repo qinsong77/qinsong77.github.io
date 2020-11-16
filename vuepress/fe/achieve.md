@@ -11,6 +11,7 @@ title: 手写实现
   - [模拟实现bind](#模拟实现bind)
 - [es5实现继承](#es5-实现继承)
 - [函数柯里化](#函数柯里化)
+- [组合函数的实现](#组合函数的实现)
 - [深拷贝](#深拷贝)
 - [手写EventHub（发布-订阅）](#手写eventhub-发布-订阅)
 - [单例模式](#单例模式)
@@ -271,6 +272,41 @@ let curriedSum = curry(sum);
 alert( curriedSum(1, 2, 3) ); // 6，仍然可以被正常调用
 alert( curriedSum(1)(2,3) ); // 6，对第一个参数的柯里化
 alert( curriedSum(1)(2)(3) ); // 6，全柯里化
+```
+
+### 组合函数的实现
+
+```javascript
+function compose(...funcs) {
+  return function (x) {
+    return funcs.reduce(function (arg, fn) {
+      return fn(arg);
+    }, x);
+  };
+}
+
+// 例子
+function lowerCase(input) {
+  return input && typeof input === "string" ? input.toLowerCase() : input;
+}
+
+function upperCase(input) {
+  return input && typeof input === "string" ? input.toUpperCase() : input;
+}
+
+function trim(input) {
+  return typeof input === "string" ? input.trim() : input;
+}
+
+function split(input, delimiter = ",") {
+  return typeof input === "string" ? input.split(delimiter) : input;
+}
+
+// compose函数的实现，请参考 “组合函数的实现” 部分。
+const trimLowerCaseAndSplit = compose(trim, lowerCase, split);
+trimLowerCaseAndSplit(" a,B,C "); // ["a", "b", "c"]
+
+
 ```
 
 ### [深拷贝](https://segmentfault.com/a/1190000020255831)
