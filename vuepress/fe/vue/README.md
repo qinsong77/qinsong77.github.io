@@ -2,6 +2,9 @@
 title: Vue
 ---
 
+
+### [Vue源码全解](https://juejin.im/post/6846687602679119885)
+
 ### [核心响应式原理](https://cn.vuejs.org/v2/guide/reactivity.html)
 > vue采用数据劫持结合发布者-订阅者模式的方式，通过Object.defineProperty()来劫持各个属性的setter，getter，在数据变动时发布消息给订阅者，触发相应的监听回调。
 > 每个组件实例都对应一个 watcher 实例，它会在组件渲染的过程中把“接触”过的数据 property 记录为依赖。之后当依赖项的 setter 触发时，会通知 watcher，从而使它关联的组件重新渲染。

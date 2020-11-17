@@ -8,6 +8,7 @@ title: 常用笔记
 在事件被触发n秒后再执行回调，如果在这n秒内又被触发，则重新计时。
 核心思想：每次事件触发都会删除原有定时器，建立新的定时器。通俗意思就是反复触发函数，只认最后一次，从最后一次开始计时。
 
+[文章](https://github.com/mqyqingfeng/Blog/issues/22)
 ```javascript
   function debounce(fn, delay) {
             let timer = null
@@ -27,6 +28,8 @@ title: 常用笔记
 #### 函数节流(throttle)(时间戳和定时版)
 节流的意思是让函数有节制地执行，而不是毫无节制的触发一次就执行一次。在一段时间内，只执行一次。
 规定在一个单位时间内，只能触发一次函数。如果这个单位时间内触发多次函数，只有一次生效。
+
+[文章](https://github.com/mqyqingfeng/Blog/issues/26)
 ```javascript
   function throttle(fn, delay) {
             let flag = true,
