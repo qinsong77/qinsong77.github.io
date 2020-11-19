@@ -1,5 +1,5 @@
 ---
-title: Summary of webpack
+title: Summary
 ---
 
 ### Webpack中publicPath详解

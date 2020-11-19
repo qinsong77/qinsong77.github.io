@@ -6,6 +6,7 @@ title: Summary of CSS
 > [介绍](https://juejin.im/post/6866914148387651592)
 
 flex左侧固定，右侧自适应，设置`min-width: 0;`保证内容不超出外层容器，如果没有设置min-width，当内容大于剩余盒子宽度时会超出父盒子，设置min-width保证内容局限在父盒子内。
+flex:1的含义：`flex:1 =  flex: 1 1 0% =flex-grow: 1;flex-shrink: 1;flex-basis: 0%;`
 ```html
 <div class="flex">
   <div class="left">我在左边，自适应布局</div>
