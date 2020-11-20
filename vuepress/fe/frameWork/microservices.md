@@ -13,6 +13,8 @@ title: 微前端
                          应该是http://11.12.6.24:32149/css/styles.169c8319.css才对。
 也可配置nginx 重新路径 比如使用alias
 
+[k8s ingress原理及ingress-nginx部署测试](https://segmentfault.com/a/1190000019908991)
+
 [Nginx 配置中nginx和alias的区别分析]https://blog.csdn.net/tuoni123/article/details/79712246
 ```nginx
 server {
