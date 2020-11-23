@@ -188,5 +188,6 @@ console.log(Person.prototype.constructor === Person)
 console.log(Person.__proto__ === Function.prototype) // true
 ```
 
-参考https://zhuanlan.zhihu.com/p/22787302
-https://juejin.im/post/6844904093828251662
+参考
+- [文章1](https://zhuanlan.zhihu.com/p/22787302)
+- [文章2](https://juejin.im/post/6844904093828251662)

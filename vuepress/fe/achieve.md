@@ -248,6 +248,8 @@ let Tom = new Child('Tom', 17)
 Tom.getAge()
 ```
 
+## [高阶的函数技术](https://juejin.cn/post/6892886272377880583)
+
 ### 函数柯里化
 
 ```javascript

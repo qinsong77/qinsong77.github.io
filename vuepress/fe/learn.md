@@ -15,12 +15,18 @@ JavaScript目前有八种内置类型（包含ES6的symbol）：
 
 #### typeof null 为 'object'的bug
 > JavaScript中的数据在底层是以二进制存储，比如null所有存储值都是0，但是底层的判断机制，只要前三位为0，就会判定为object，所以才会有typeof null === 'object'这个bug。
+#### instanceof 运算符用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上
+语法
+> object instanceof constructor
+
+#### 使用Object.prototype.hasOwnProperty.call(obj, key) 比用obj.hasOwnProperty安全，因为非对象不会报错。
+
 ### JS中“假”值列表，即if不执行(if 等流控制语句会自动执行其他类型值到布尔值的转换即Boolean(null))
    - “”（空字符串）
    - 0、-0、NaN(无线数字)
    - null、undefined
    - false
-注意Infinity为真
+   - 注意Infinity为真
 ### 语言中所有的底层存储方式是是什么。
 
 - 数组(Array)
@@ -53,63 +59,16 @@ JavaScript基本类型数据都是直接按值存储在栈中的(Undefined、Nul
 JavaScript引用类型数据被存储于堆中 (如对象、数组、函数等，它们是通过拷贝和new出来的）。其实，说存储于堆中，也不太准确，因为，引用类型的数据的地址指针是存储于栈中的，当我们想要访问引用类型的值的时候，需要先从栈中获得对象的地址指针，然后，在通过地址指针找到堆中的所需要的数据。
 
 
-#### instanceof 运算符用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上
-语法
-> object instanceof constructor
->
-
 #### [set, map, weakMap, weakSet](https://juejin.im/post/6844904169417998349)
 
-#### 使用Object.prototype.hasOwnProperty.call(obj, key) 比用obj.hasOwnProperty安全
-
-#### 没有副作用的方法和函数被称为纯函数。
-
-### this的指向（https://juejin.im/post/6844903496253177863）
-> 在 ES5 中，其实 this 的指向，始终坚持一个原理：this 永远指向最后调用它的那个对象。
-#### 改变 this 的指向的方法
-- 使用 ES6 的箭头函数
-- 在函数内部使用 _this = this
-- 使用 apply、call、bind
-- new 实例化一个对象
-
-```javascript
-function foo() {
-	console.log(this.a)
-}
-var a = 1
-foo() // 1
-
-var obj = {
-	a: 2,
-	foo: foo
-}
-obj.foo() // 2
-
-// 以上两者情况 `this` 只依赖于调用函数前的对象，优先级是第二个情况大于第一个情况
-
-// 以下情况是优先级最高的，`this` 只会绑定在 `c` 上，不会被任何方式修改 `this` 指向
-var c = new foo()
-c.a = 3
-console.log(c.a) // 3
-
-function a() {
-    return () => {
-        return () => {
-        	console.log(this)
-        }
-    }
-}
-console.log(a()()()) // windows
-// 箭头函数其实是没有 this 的，这个函数中的 this 只取决于他外面的第一个不是箭头函数的函数的 this。在这个例子中，因为调用 a 符合前面代码中的第一个情况，所以 this 是 window。并且 this 一旦绑定了上下文，就不会被任何代码改变。
-```
 
 
-## [JavaScript 执行机制](https://juejin.im/post/6844903512845860872)
+
 
 ### 执行上下文
 相关文章
 - [JavaScript 执行机制 —— 变量提升](https://juejin.im/post/6844903958553559053)
-- [JavaScript执行上下文-执行栈](https://juejin.im/post/6844904199063339015)
+- [[译]理解 JavaScript 中的执行上下文和执行栈](https://juejin.cn/post/6844903682283143181)
 
 浏览器执行JS函数其实是分两个过程的。一个是创建阶段Creation Phase,一个是执行阶段Execution Phase。
 当执行 JS 代码时，会产生三种执行上下文
@@ -234,12 +193,53 @@ specialObject.foo = foo; // {DontDelete}, {ReadOnly}
 delete Scope[0]; // remove specialObject from the front of scope chain
  ```
 
+### [this的指向](https://juejin.im/post/6844903496253177863)
+> 在 ES5 中，其实 this 的指向，始终坚持一个原理：this 永远指向最后调用它的那个对象。
+#### 改变 this 的指向的方法
+- 使用 ES6 的箭头函数
+- 在函数内部使用 _this = this
+- 使用 apply、call、bind
+- new 实例化一个对象
+
+```javascript
+function foo() {
+	console.log(this.a)
+}
+var a = 1
+foo() // 1
+
+var obj = {
+	a: 2,
+	foo: foo
+}
+obj.foo() // 2
+
+// 以上两者情况 `this` 只依赖于调用函数前的对象，优先级是第二个情况大于第一个情况
+
+// 以下情况是优先级最高的，`this` 只会绑定在 `c` 上，不会被任何方式修改 `this` 指向
+var c = new foo()
+c.a = 3
+console.log(c.a) // 3
+
+function a() {
+    return () => {
+        return () => {
+        	console.log(this)
+        }
+    }
+}
+console.log(a()()()) // windows
+// 箭头函数其实是没有 this 的，这个函数中的 this 只取决于他外面的第一个不是箭头函数的函数的 this。在这个例子中，因为调用 a 符合前面代码中的第一个情况，所以 this 是 window。并且 this 一旦绑定了上下文，就不会被任何代码改变。
+```
+
 ## 事件循环
-- https://xieyufei.com/2019/12/30/Quiz-Eventloop.html
-- https://juejin.im/post/6844903971228745735
-- https://juejin.im/post/6844903711106400264
-- https://juejin.im/post/6844903752621637645
+### [JavaScript 执行机制](https://juejin.im/post/6844903512845860872)
+- [文章1](https://xieyufei.com/2019/12/30/Quiz-Eventloop.html)
+- [文章2](https://juejin.im/post/6844903971228745735)
+- [文章3](https://juejin.im/post/6844903711106400264)
+- [文章4](https://juejin.im/post/6844903752621637645)
 - [mdn](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/EventLoop)
+
 [浏览器与Node的事件循环(Event Loop)有何区别](https://juejin.im/post/6844903761949753352)
 >JavaScript 是单线程、异步、非阻塞、解释型脚本语言。JS引擎会将JS脚本进行编译和执行
 >JavaScript 的设计就是为了处理浏览器网页的交互（DOM操作的处理、UI动画等），决定了它是一门单线程语言。如果有多个线程，它们同时在操作 DOM，那网页将会一团糟。
@@ -283,7 +283,42 @@ delete Scope[0]; // remove specialObject from the front of scope chain
 
 ### [setInterval](http://caibaojian.com/setinterval.html),requestAnimationFrame代替绘制动画
 
-### Object.create()方法创建一个新对象，使用现有的对象来提供新创建的对象的[\__proto__](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
+```javascript
+async function asyncA(){
+	console.log('1')
+	await asyncB()
+	console.log('2')
+}
+
+async function asyncB(){
+	console.log('3')
+}
+
+console.log('4')
+setTimeout(() => {
+	console.log('5')
+	Promise.resolve().then(function(){
+		console.log('6')
+	})
+}, 0)
+setTimeout(() => {
+	console.log('7')
+	Promise.resolve().then(function(){
+		console.log('8')
+	})
+}, 0)
+asyncA()
+new Promise(function(resolve){
+	console.log('9')
+	resolve()
+}).then(function(){
+	console.log('10')
+})
+console.log('11')
+// 结果 4  1  3  9 11  2 10 5 6 7 8
+```
+
+#### Object.create()方法创建一个新对象，使用现有的对象来提供新创建的对象的[`__proto__`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
 ```javascript
 // 创建一个原型为null的空对象
 const pureObj  = Object.create(null)
@@ -429,6 +464,9 @@ function fibImpl(a, b, n){
 
 ### 闭包
 > 闭包指的是那些引用了另一个函数作用域中变量的函数，通常是在嵌套函数中实现的。
+
+- [[译]发现 JavaScript 中闭包的强大威力](https://juejin.cn/post/6844903769646317576)
+- [破解前端面试（80% 应聘者不及格系列）：从闭包说起](https://juejin.cn/post/6844903474212143117)
 
 闭包的定义很简单：函数 A 返回了一个函数 B，并且函数 B 中使用了函数 A 的变量，函数 B 就被称为闭包。
 

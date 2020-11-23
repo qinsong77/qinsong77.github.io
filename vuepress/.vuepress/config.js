@@ -1,4 +1,5 @@
 module.exports = {
+	port: '8091',
 	plugins: ['@vuepress/back-to-top'],
 	// theme: 'reco',
 	title: 'Sysuke\' NoteBook',
