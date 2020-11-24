@@ -3,11 +3,16 @@ title: Vue
 ---
 
 
+### [Vue.js 技术揭秘](https://ustbhuangyi.github.io/vue-analysis/)
+
 ### [Vue源码全解](https://juejin.im/post/6846687602679119885)
 
 ### [核心响应式原理](https://cn.vuejs.org/v2/guide/reactivity.html)
 > vue采用数据劫持结合发布者-订阅者模式的方式，通过Object.defineProperty()来劫持各个属性的setter，getter，在数据变动时发布消息给订阅者，触发相应的监听回调。
 > 每个组件实例都对应一个 watcher 实例，它会在组件渲染的过程中把“接触”过的数据 property 记录为依赖。之后当依赖项的 setter 触发时，会通知 watcher，从而使它关联的组件重新渲染。
+
+[vue MVVM原理](https://juejin.cn/post/6844903586103558158)
+
 ##### 总结
  - 1、在beforeCreate和created之间调用initState(vm)方法， 获取data并遍历,调用observe方法，ob = new Observer(value)进行依赖收集和派发更新
  - 2、在Observer中调用defineReactive使用defineProperty进行get和set操作，defineReactive中var dep = new Dep();
@@ -448,6 +453,103 @@ title: Vue
 >在Observe构造函数中，判断如果data的value如果是数组，1、如果该数组有__proto__属性，则直接把arrayMethods赋值给__proto__
 >2、如果没有，则调用copyAugment，遍历arrayMethods把方法直接赋值给改数组
 >3、遍历改数组，递归调用observe方法new Observer进行依赖收集
+
+```javascript
+
+  /**
+   * Define a property.
+   */
+  function def (obj, key, val, enumerable) {
+    Object.defineProperty(obj, key, {
+      value: val,
+      enumerable: !!enumerable,
+      writable: true,
+      configurable: true
+    });
+  }
+
+  var arrayProto = Array.prototype;
+  var arrayMethods = Object.create(arrayProto);
+
+  var methodsToPatch = [
+    'push',
+    'pop',
+    'shift',
+    'unshift',
+    'splice',
+    'sort',
+    'reverse'
+  ];
+
+  /**
+   * Intercept mutating methods and emit events
+   */
+  methodsToPatch.forEach(function (method) {
+    // cache original method
+    var original = arrayProto[method];
+    def(arrayMethods, method, function mutator () {
+      var args = [], len = arguments.length;
+      while ( len-- ) args[ len ] = arguments[ len ];
+
+      var result = original.apply(this, args);
+      var ob = this.__ob__;
+      var inserted;
+      switch (method) {
+        case 'push':
+        case 'unshift':
+          inserted = args;
+          break
+        case 'splice':
+          inserted = args.slice(2);
+          break
+      }
+      if (inserted) { ob.observeArray(inserted); }
+      // notify change
+      ob.dep.notify();
+      return result
+    });
+  });
+
+  var arrayKeys = Object.getOwnPropertyNames(arrayMethods);
+
+  var Observer = function Observer (value) {
+    this.value = value;
+    this.dep = new Dep();
+    this.vmCount = 0;
+    def(value, '__ob__', this);
+    if (Array.isArray(value)) { // 数组的处理
+      if (hasProto) {
+        protoAugment(value, arrayMethods);
+      } else {
+        copyAugment(value, arrayMethods, arrayKeys);
+      }
+      this.observeArray(value);
+    } else {
+      this.walk(value);
+    }
+  };
+  /**
+   * Augment a target Object or Array by intercepting
+   * the prototype chain using __proto__
+   */
+  function protoAugment (target, src) {
+    /* eslint-disable no-proto */
+    target.__proto__ = src;
+    /* eslint-enable no-proto */
+  }
+
+  /**
+   * Augment a target Object or Array by defining
+   * hidden properties.
+   */
+  /* istanbul ignore next */
+  function copyAugment (target, src, keys) {
+    for (var i = 0, l = keys.length; i < l; i++) {
+      var key = keys[i];
+      def(target, key, src[key]);
+    }
+  }
+```
     
 
 ### [Vue中$nextTick源码解析](https://juejin.im/post/6844904147804749832)
@@ -617,3 +719,5 @@ title: Vue
 
 
 ### [手写Vue-router核心原理](https://juejin.im/post/6854573222231605256)
+
+### [实现双向绑定Proxy比defineProperty优劣如何](https://juejin.cn/post/6844903601416978439)
