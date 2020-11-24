@@ -8,11 +8,15 @@ title: 动态规划
  * @param {number} N
  * @return {number}
  */
+// 1、暴力递归
+
 var fib = function(N){
 	if (N < 1) return 0
 	if (N <= 2) return 1
 	return fib(N - 1) + fib(N - 2)
 }
+
+// 2、带备忘录的递归解法
 
 var fib = function(N){
 	const memo = [0, 1, 1]
@@ -23,6 +27,9 @@ var fib = function(N){
 	}
 	return fibonacci(N, memo)
 }
+
+
+// 3、dp 数组的迭代解法
 
 var fib = function(N){
 	const dp = new Array(N)
@@ -35,6 +42,7 @@ var fib = function(N){
 	return dp[N]
 }
 
+// 4、迭代解法
 
 var fib = function(N){
 	if (N === 0) return 0

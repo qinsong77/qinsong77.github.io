@@ -14,4 +14,5 @@ home: true
 - React
 - Webpack
 - node.js、koa2
+- http、Nginx
 - ...
