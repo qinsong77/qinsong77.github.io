@@ -10,3 +10,5 @@ title: Summary
 ### [由浅入深配置webpack4](https://juejin.im/post/6859888538004783118)
 
 ### [手写webpack核心原理](https://juejin.im/post/6854573217336541192)
+
+### [Vite 原理分析](https://juejin.cn/post/6881078539756503047)
