@@ -4,7 +4,7 @@ title: Vue
 ### 面试题
 - [1](https://juejin.cn/post/6844904138208182285)
 
-### [Vue.js 技术揭秘](https://ustbhuangyi.github.io/vue-analysis/)
+### [Vue.js 技术揭秘](http://caibaojian.com/vue-analysis)
 
 ### [Vue源码全解](https://juejin.im/post/6846687602679119885)
 
