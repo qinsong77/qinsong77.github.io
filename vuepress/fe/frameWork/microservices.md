@@ -400,7 +400,7 @@ module.exports = {
           {
             module: '@cmi/one-ui',
             entry: `${process.env.CDN_DOMIAN}/one-ui/one-ui.min.js`,
-            global: 'OnenetUI'
+            global: 'one-ui'
           },
           {
             module: '@cmi/one-ui/dist/styles/one-ui.css',
