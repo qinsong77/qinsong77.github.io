@@ -547,3 +547,113 @@ for ( let i=1; i<=5; i++) {
   }
 }
 ```
+
+### 数组
+
+::: tip
+注意： 除了抛出异常以外，没有办法中止或跳出 forEach() 循环。如果你需要中止或跳出循环，forEach() 方法不是应当使用的工具。
+
+若需要提前终止循环，可以使用：
+
+- 一个简单的 for 循环
+- for...of / for...in 循环
+- Array.prototype.every()
+- Array.prototype.some()
+- Array.prototype.find()
+- Array.prototype.findIndex()
+   
+:::
+
+如果数组在forEach迭代时被修改了，则其他元素会被跳过。
+
+```javascript
+var words = ['one', 'two', 'three', 'four'];
+words.forEach(function(word) {
+  console.log(word);
+  if (word === 'two') {
+    words.shift();
+  }
+});
+// one
+// two
+// four
+```
+
+####forEach 与async
+ 问题描述
+ ```javascript
+var getNumbers = () => {
+  return Promise.resolve([1, 2, 3])
+}
+var multi = num => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (num) {
+        resolve(num * num)
+      } else {
+        reject(new Error('num not specified'))
+      }
+    }, 1000)
+  })
+}
+async function test () {
+  var nums = await getNumbers()
+  nums.forEach(async x => {
+    var res = await multi(x)
+    console.log(res)
+  })
+}
+test()
+```
+
+代码执行的结果是：1 秒后，一次性输出1，4，9。
+
+解决问题
+
+方式一
+
+可以改造一下 forEach，确保每一个异步的回调执行完成后，才执行下一个
+
+```javascript
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array)
+  }
+}
+async function test () {
+  var nums = await getNumbers()
+  asyncForEach(nums, async x => {
+    var res = await multi(x)
+    console.log(res)
+  })
+}
+```
+方式二
+
+使用 `for-of` 替代 `for-each`。
+
+`for-of` 可以遍历各种集合对象的属性值，要求被遍历的对象需要实现迭代器 (iterator) 方法，例如` myObject[Symbol.iterator]()` 用于告知 JS 引擎如何遍历该对象。一个拥有 `[Symbol.iterator]() `方法的对象被认为是可遍历的。
+```javascript
+var zeroesForeverIterator = {
+  [Symbol.iterator]: function () {
+    return this;
+  },
+  next: function () {
+    return {done: false, value: 0};
+  }
+};
+```
+如上就是一个最简单的迭代器对象；for-of 遍历对象时，先调用遍历对象的迭代器方法 `[Symbol.iterator]()`，该方法返回一个迭代器对象(迭代器对象中包含一个 next 方法)；然后调用该迭代器对象上的 next 方法。
+
+每次调用 next 方法都返回一个对象，其中 done 和 value 属性用来表示遍历是否结束和当前遍历的属性值，当 done 的值为 true 时，遍历就停止了。
+
+```javascript
+async function test () {
+  var nums = await getNumbers()
+  for(let x of nums) {
+    var res = await multi(x)
+    console.log(res)
+  }
+}
+```
+文章[当 async/await 遇上 forEach](https://objcer.com/2017/10/12/async-await-with-forEach/)

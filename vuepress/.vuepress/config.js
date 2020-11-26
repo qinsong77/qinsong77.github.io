@@ -97,6 +97,7 @@ module.exports = {
 					children: [
 						['dom/', 'Summary'],
 						'dom/safety',
+						'dom/canvas',
 					]
 				},
 				{

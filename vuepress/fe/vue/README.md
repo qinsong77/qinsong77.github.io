@@ -21,6 +21,7 @@ title: Vue
  - 3、在beforeMount和mounted之间new Watcher(),watcher实例化的时候，会执行this.get()方法，把Dep.target赋值为当前渲染watcher并压入栈(为了恢复用)。
  接着执行vm._render()方法，生成渲染VNode,并且在这个过程中对vm上的数据访问，这个时候就触发了数据对象的getter(执行了Dep.target.addDep(this)方法，
  将watcher订阅到这个数据持有的dep的subs中，为后续数据变化时通知到拉下subs做准备).然后递归遍历添加所有子项的getter。
+ ::: details 点击查看代码
 ```javascript
 /* 依赖ep */
 
@@ -446,7 +447,7 @@ title: Vue
     }
   };
 ```
-
+:::
 ### 数组响应式变化原理
 > 使用Object.create复制Array的原型对象prototype得到arrayMethods, 遍历一个7个数组方法的数组，包括push,pop,shift,unshift,splice,
 >reverse这些能改变数组的方法,使用函数劫持，在遍历时使用Object.defineProperty重写复制的原型对象arrayMethods对应方法的value,即重写方法，使用Array.prototype
@@ -454,7 +455,7 @@ title: Vue
 >在Observe构造函数中，判断如果data的value如果是数组，1、如果该数组有__proto__属性，则直接把arrayMethods赋值给__proto__
 >2、如果没有，则调用copyAugment，遍历arrayMethods把方法直接赋值给改数组
 >3、遍历改数组，递归调用observe方法new Observer进行依赖收集
-
+ ::: details 点击查看代码
 ```javascript
 
   /**
@@ -552,7 +553,7 @@ title: Vue
   }
 ```
     
-
+:::
 ### [Vue中$nextTick源码解析](https://juejin.im/post/6844904147804749832)
 >Vue 在更新 DOM 时是异步执行的。只要侦听到数据变化，Vue 将开启一个队列，并缓冲在同一事件循环中发生的所有数据变更。如果同一个 watcher 被多次触发，只会被推入到队列中一次。
 >这种在缓冲时去除重复数据对于避免不必要的计算和 DOM 操作是非常重要的。然后，在下一个的事件循环“tick”中，Vue 刷新队列并执行实际 (已去重的) 工作。
@@ -563,6 +564,66 @@ title: Vue
 ### [keep-alive原理](https://juejin.im/post/6862206197877964807)
 
 ### [生命周期](https://juejin.im/post/6844903780736040973)
+- `beforeCreate`之前合并配置，初始化生命周期，初始化事件中心，初始化渲染
+- `created`之前初始化 data、props、computed、watcher
+ ::: details 点击查看代码
+```javascript
+Vue.prototype._init = function (options) {
+      var vm = this;
+      // a uid
+      vm._uid = uid$3++;
+
+      var startTag, endTag;
+      /* istanbul ignore if */
+      if (config.performance && mark) {
+        startTag = "vue-perf-start:" + (vm._uid);
+        endTag = "vue-perf-end:" + (vm._uid);
+        mark(startTag);
+      }
+
+      // a flag to avoid this being observed
+      vm._isVue = true;
+      // merge options
+      if (options && options._isComponent) {
+        // optimize internal component instantiation
+        // since dynamic options merging is pretty slow, and none of the
+        // internal component options needs special treatment.
+        initInternalComponent(vm, options);
+      } else {
+        vm.$options = mergeOptions(
+          resolveConstructorOptions(vm.constructor),
+          options || {},
+          vm
+        );
+      }
+      /* istanbul ignore else */
+      {
+        initProxy(vm);
+      }
+      // expose real self
+      vm._self = vm;
+      initLifecycle(vm);
+      initEvents(vm);
+      initRender(vm);
+      callHook(vm, 'beforeCreate');
+      initInjections(vm); // resolve injections before data/props
+      initState(vm);
+      initProvide(vm); // resolve provide after data/props
+      callHook(vm, 'created');
+
+      /* istanbul ignore if */
+      if (config.performance && mark) {
+        vm._name = formatComponentName(vm, false);
+        mark(endTag);
+        measure(("vue " + (vm._name) + " init"), startTag, endTag);
+      }
+
+      if (vm.$options.el) {
+        vm.$mount(vm.$options.el);
+      }
+    };
+```
+:::
 
 ### Vue中组件生命周期调用顺序
 >组件的调用顺序都是**先父后子**,渲染完成的顺序是**先子后父**
@@ -582,7 +643,7 @@ title: Vue
 
 - 判断是数组则调用splice方法触发响应式更新
 - 对象则调用defineReactive$$1设置getter和setter,并通过target获取初始化时的Observer__Ob__，调用ob.dep.notify()通知更新。
-
+ ::: details 点击查看代码
 ```javascript
   /**
    * Set a property on an object. Adds the new property and
@@ -715,6 +776,7 @@ title: Vue
   }
 
 ```
+:::
 
 ### [Virtual Dom](https://juejin.im/post/6844903874688450568)
 
