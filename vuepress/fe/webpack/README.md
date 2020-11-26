@@ -2,6 +2,8 @@
 title: Summary
 ---
 
+### [webpack小书](https://www.timsrc.com/article/2/webpack-book)
+
 ### [Webpack揭秘](https://juejin.cn/post/6844903685407916039)
 
 ### Webpack中publicPath详解

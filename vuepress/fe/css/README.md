@@ -44,9 +44,12 @@ flex左侧固定，右侧自适应，设置`min-width: 0;`保证内容不超出�
   width: 200px;
 }
 </style>
-
-
-
-
 ```
+#### [从网易与淘宝的font-size思考前端设计稿与工作流](https://www.cnblogs.com/lyzg/p/4877277.html)
 
+#### 伪类和伪元素
+
+伪类和伪元素的根本区别在于：它们是否创造了新的元素
+
+伪类，指可以通过元素选择器，就可以实现的效果，如frist-child，active等。 而伪元素，是指需要通过创元素，才可以实现的效果，如first-letter,before，after等。
+具体元素跟写法有兴趣，可参考：<https://blog.csdn.net/qq_27674439/article/details/90608220>

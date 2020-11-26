@@ -33,23 +33,30 @@ Object.create原本的行为：
 
 ![An image](./image/achieve/object_create.png)
 
+
+[Object.create](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create)这个 polyfill 涵盖了主要的应用场景，它创建一个已经选择了原型的新对象，但没有把第二个参数考虑在内。
+
+请注意，尽管在 ES5 中 Object.create支持设置为[[Prototype]]为null，但因为那些ECMAScript5以前版本限制，此 polyfill 无法支持该特性。
 ```javascript
 if (typeof Object.create !== "function") {
-    Object.create = function create(prototype) {
-      // 排除传入的对象是 null 和 非object的情况
-        if (prototype === null || typeof prototype !== 'object') {
-        throw new TypeError(`Object prototype may only be an Object: ${prototype}`);
+    Object.create = function (proto, propertiesObject) {
+        if (typeof proto !== 'object' && typeof proto !== 'function') {
+            throw new TypeError('Object prototype may only be an Object: ' + proto);
+        } else if (proto === null) {
+            throw new Error("This browser's implementation of Object.create is a shim and doesn't support 'null' as the first argument.");
         }
-      // 让空对象的 __proto__指向 传进来的 对象(prototype)
-      // 目标 {}.__proto__ = prototype
-      function Temp() {};
-      Temp.prototype = prototype;
-      return new Temp;
-    }
+
+        if (typeof propertiesObject !== 'undefined') throw new Error("This browser's implementation of Object.create is a shim and doesn't support a second argument.");
+
+        function F() {}
+        F.prototype = proto;
+
+        return new F();
+    };
 }
 ```
 
-### instanceOf
+### [instanceOf](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/instanceof)
 > instanceof 运算符用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上。
 >实际上，实例对象上的__proto__就是指向构造函数的prototype
 语法： result = variable instanceof constructor
@@ -63,6 +70,7 @@ if (typeof Object.create !== "function") {
  - 如果一直找到`Object.prototype.__proto__`=== null，Object的基类(null)上面都没找到，则返回 false
 ```javascript
 function _instanceOf(instanceObject, classFunc) {
+    if (typeof instanceObject !== 'object' || instanceObject === null) return false
 	let protoType = classFunc.prototype
 	let proto = instanceObject.__proto__
 	// 或者

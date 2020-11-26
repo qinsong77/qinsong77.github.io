@@ -566,6 +566,7 @@ title: Vue
 ### [生命周期](https://juejin.im/post/6844903780736040973)
 - `beforeCreate`之前合并配置，初始化生命周期，初始化事件中心，初始化渲染
 - `created`之前初始化 data、props、computed、watcher
+- 在执行 `vm._render()` 函数渲染 VNode 之前，执行了 `beforeMount` 钩子函数，在执行完 `vm._update()` 把 VNode patch 到真实 DOM 后，执行 `mounted` 钩子。
  ::: details 点击查看代码
 ```javascript
 Vue.prototype._init = function (options) {
@@ -777,6 +778,8 @@ Vue.prototype._init = function (options) {
 
 ```
 :::
+
+#### [Vue.js的computed和watch是如何工作的](https://juejin.cn/post/6844903667884097543)
 
 ### [Virtual Dom](https://juejin.im/post/6844903874688450568)
 
