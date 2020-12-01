@@ -4,7 +4,7 @@ title: Vue
 ### 面试题
 - [1](https://juejin.cn/post/6844904138208182285)
 
-### [Vue.js 技术揭秘](http://caibaojian.com/vue-analysis)
+### [Vue.js 技术揭秘](https://ustbhuangyi.github.io/vue-analysis/)
 
 ### [Vue源码全解](https://juejin.im/post/6846687602679119885)
 
@@ -17,7 +17,7 @@ title: Vue
 ##### 总结
  - 1、在beforeCreate和created之间调用initState(vm)方法， 获取data并遍历,调用observe方法，ob = new Observer(value)进行依赖收集和派发更新
  - 2、在Observer中调用defineReactive使用defineProperty进行get和set操作，defineReactive中var dep = new Dep();
- Object.defineProperty 在getter时if (Dep.target) 则执行 dep.depend();setter的时候dep.notify()派发更新。
+ Object.defineProperty 在getter时if (Dep.target) 则执行 dep.depend()即Dep.target.addDep(this);setter的时候dep.notify()派发更新。
  - 3、在beforeMount和mounted之间new Watcher(),watcher实例化的时候，会执行this.get()方法，把Dep.target赋值为当前渲染watcher并压入栈(为了恢复用)。
  接着执行vm._render()方法，生成渲染VNode,并且在这个过程中对vm上的数据访问，这个时候就触发了数据对象的getter(执行了Dep.target.addDep(this)方法，
  将watcher订阅到这个数据持有的dep的subs中，为后续数据变化时通知到拉下subs做准备).然后递归遍历添加所有子项的getter。
@@ -257,7 +257,14 @@ title: Vue
 
 /*  */
 
-
+// watcher调用
+  new Watcher(vm, updateComponent, noop, {
+      before: function before () {
+        if (vm._isMounted && !vm._isDestroyed) {
+          callHook(vm, 'beforeUpdate');
+        }
+      }
+    }, true /* isRenderWatcher */);
 
   var uid$2 = 0;
 
@@ -462,8 +469,64 @@ title: Vue
       this.active = false;
     }
   };
+
+ /**
+   * Push a watcher into the watcher queue.
+   * Jobs with duplicate IDs will be skipped unless it's
+   * pushed when the queue is being flushed.
+   */
+  function queueWatcher (watcher) {
+    var id = watcher.id;
+    if (has[id] == null) {
+      has[id] = true;
+      if (!flushing) {
+        queue.push(watcher);
+      } else {
+        // if already flushing, splice the watcher based on its id
+        // if already past its id, it will be run next immediately.
+        var i = queue.length - 1;
+        while (i > index && queue[i].id > watcher.id) {
+          i--;
+        }
+        queue.splice(i + 1, 0, watcher);
+      }
+      // queue the flush
+      if (!waiting) {
+        waiting = true;
+
+        if (!config.async) {
+          flushSchedulerQueue();
+          return
+        }
+        nextTick(flushSchedulerQueue);
+      }
+    }
+  }
+
 ```
 :::
+
+##### 如何实现this.key 访问到vm._data.key的
+`initData`初始化data函数中调用`proxy(vm, "_data", key)`;
+
+```javascript
+function noop (a, b, c) {}
+var sharedPropertyDefinition = {
+    enumerable: true,
+    configurable: true,
+    get: noop,
+    set: noop
+  };
+function proxy (target, sourceKey, key) {
+    sharedPropertyDefinition.get = function proxyGetter () {
+      return this[sourceKey][key]
+    };
+    sharedPropertyDefinition.set = function proxySetter (val) {
+      this[sourceKey][key] = val;
+    };
+    Object.defineProperty(target, key, sharedPropertyDefinition);
+  }
+```
 ### 数组响应式变化原理
 > 使用Object.create复制Array的原型对象prototype得到arrayMethods, 遍历一个7个数组方法的数组，包括push,pop,shift,unshift,splice,
 >reverse这些能改变数组的方法,使用函数劫持，在遍历时使用Object.defineProperty重写复制的原型对象arrayMethods对应方法的value,即重写方法，使用Array.prototype
