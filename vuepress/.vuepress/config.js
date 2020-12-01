@@ -75,7 +75,7 @@ module.exports = {
 					collapsable: true, // 可选的, 默认值是 true,
 					// sidebarDepth: 2,    // 可选的, 默认值是 1
 					children: [
-						['vue/', '实用技巧'],
+						['vue/', '原理'],
 						'vue/alwaysNote',
 					]
 				},

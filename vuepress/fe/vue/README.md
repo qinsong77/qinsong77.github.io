@@ -1,8 +1,13 @@
 ---
 title: Vue
 ---
+
+
 ### 面试题
+- [「面试题」20+Vue面试题整理](https://juejin.cn/post/6844904084374290446)
 - [1](https://juejin.cn/post/6844904138208182285)
+- [30 道 Vue 面试题，内含详细讲解](https://juejin.cn/post/6844903918753808398)
+- [记录面试中一些回答不够好的题（Vue 居多） | 掘金技术征文](https://juejin.cn/post/6844903569422811150)
 
 ### [Vue.js 技术揭秘](https://ustbhuangyi.github.io/vue-analysis/)
 
@@ -21,6 +26,9 @@ title: Vue
  - 3、在beforeMount和mounted之间new Watcher(),watcher实例化的时候，会执行this.get()方法，把Dep.target赋值为当前渲染watcher并压入栈(为了恢复用)。
  接着执行vm._render()方法，生成渲染VNode,并且在这个过程中对vm上的数据访问，这个时候就触发了数据对象的getter(执行了Dep.target.addDep(this)方法，
  将watcher订阅到这个数据持有的dep的subs中，为后续数据变化时通知到拉下subs做准备).然后递归遍历添加所有子项的getter。
+ 
+ ![An image](./image/vue1.png)
+ ![An image](./image/vue3.png)
  ::: details 点击查看代码
 ```javascript
   function initState (vm) {
@@ -527,197 +535,205 @@ function proxy (target, sourceKey, key) {
     Object.defineProperty(target, key, sharedPropertyDefinition);
   }
 ```
-### 数组响应式变化原理
-> 使用Object.create复制Array的原型对象prototype得到arrayMethods, 遍历一个7个数组方法的数组，包括push,pop,shift,unshift,splice,
->reverse这些能改变数组的方法,使用函数劫持，在遍历时使用Object.defineProperty重写复制的原型对象arrayMethods对应方法的value,即重写方法，使用Array.prototype
->的原函数方法apply获取并返回结果，同时通过var ob = this.__ ob__获取Observer,调用ob.dep.notify()，通知更新；
->在Observe构造函数中，判断如果data的value如果是数组，1、如果该数组有__proto__属性，则直接把arrayMethods赋值给__proto__
->2、如果没有，则调用copyAugment，遍历arrayMethods把方法直接赋值给改数组
->3、遍历改数组，递归调用observe方法new Observer进行依赖收集
+### template是如何编译成render function的？
+
+Vue提供了两个版本，一个是Runtime+Compiler版本的，一个是Runtime only版本的。Runtime+Compiler是包含编译代码的，可以把编译过程放在运行时来做。而Runtime only是不包含编译代码的，所以需要借助webpack的vue-loader来把模版编译成render函数。
+
+编译主要有三个过程：
+- 1.解析模版字符串生成AST
+
+AST（在计算机科学中，抽象语法树（abstract syntax tree或者缩写为AST），或者语法树（syntax tree），是源代码的抽象语法结构的树状表现形式，这里特指编程语言的源代码。）
+```javascript
+  var ast = parse(template.trim(), options);
+```
+parse 会用正则等方式解析 template模板中的指令、class、style等数据，形成AST树。AST是一种用Javascript对象的形式来描述整个模版，整个parse的过程就是利用正则表达式来顺序地解析模版，当解析到开始标签，闭合标签，文本的时候会分别对应执行响应的回调函数，从而达到构造AST树的目的。
+
+举个例子：
+```html
+<div :class="c" class="demo" v-if="isShow">
+    <span v-for="item in sz">{{item}}</span>
+</div>
+```
+经过一系列的正则解析，会得到的AST如下：
+
+```javascript
+ {
+    /* 标签属性的map，记录了标签上属性 */
+    'attrsMap': {
+        ':class': 'c',
+        'class': 'demo',
+        'v-if': 'isShow'
+    },
+    /* 解析得到的:class */
+    'classBinding': 'c',
+    /* 标签属性v-if */
+    'if': 'isShow',
+    /* v-if的条件 */
+    'ifConditions': [
+        {
+            'exp': 'isShow'
+        }
+    ],
+    /* 标签属性class */
+    'staticClass': 'demo',
+    /* 标签的tag */
+    'tag': 'div',
+    /* 子标签数组 */
+    'children': [
+        {
+            'attrsMap': {
+                'v-for': "item in sz"
+            },
+            /* for循环的参数 */
+            'alias': "item",
+            /* for循环的对象 */
+            'for': 'sz',
+            /* for循环是否已经被处理的标记位 */
+            'forProcessed': true,
+            'tag': 'span',
+            'children': [
+                {
+                    /* 表达式，_s是一个转字符串的函数 */
+                    'expression': '_s(item)',
+                    'text': '{{item}}'
+                }
+            ]
+        }
+    ]
+}
+```
+当构造完AST之后，下面就是优化这颗AST树。
+- 2.optimize：优化AST语法树
+```javascript
+optimize(ast, options)
+```
+为什么此处会有优化过程？Vue是数据驱动，是响应式的，但是template模版中并不是所有的数据都是响应式的，也有许多数据是初始化渲染之后就不会有变化的，那么这部分数据对应的DOM也不会发生变化。后面有一个 update 更新界面的过程，在这当中会有一个 patch 的过程， diff 算法会直接跳过静态节点，从而减少了比较的过程，优化了 patch 的性能。
+```javascript
+ /**
+   * Goal of the optimizer: walk the generated template AST tree
+   * and detect sub-trees that are purely static, i.e. parts of
+   * the DOM that never needs to change.
+   *
+   * Once we detect these sub-trees, we can:
+   *
+   * 1. Hoist them into constants, so that we no longer need to
+   *    create fresh nodes for them on each re-render;
+   * 2. Completely skip them in the patching process.
+   */
+  function optimize (root, options) {
+    if (!root) { return }
+    isStaticKey = genStaticKeysCached(options.staticKeys || '');
+    isPlatformReservedTag = options.isReservedTag || no;
+    // first pass: mark all non-static nodes.
+    markStatic$1(root);
+    // second pass: mark static roots.
+    markStaticRoots(root, false);
+  }
+```
+可以看到，optimize实际上就做了2件事情，一个是调用markStatic()来标记静态节点，另一个是调用markStaticRoots()来标记静态根节点。
+
+- 3.code generate：将优化后的AST树转换成可执行的代码。
+
+```javascript
+ var code = generate(ast, options);
+```
+**template模版经历过parse->optimize->code generate三个过程之后，就可以得到render function函数了。**
+
+[Vue.js源码角度：剖析模版和数据渲染成最终的DOM的过程](https://juejin.cn/post/6844903664998416392)
  ::: details 点击查看代码
 ```javascript
+  function createCompilerCreator (baseCompile) {
+    return function createCompiler (baseOptions) {
+      function compile (
+        template,
+        options
+      ) {
+        var finalOptions = Object.create(baseOptions);
+        var errors = [];
+        var tips = [];
 
-  /**
-   * Define a property.
-   */
-  function def (obj, key, val, enumerable) {
-    Object.defineProperty(obj, key, {
-      value: val,
-      enumerable: !!enumerable,
-      writable: true,
-      configurable: true
-    });
+        var warn = function (msg, range, tip) {
+          (tip ? tips : errors).push(msg);
+        };
+
+        if (options) {
+          if (options.outputSourceRange) {
+            // $flow-disable-line
+            var leadingSpaceLength = template.match(/^\s*/)[0].length;
+
+            warn = function (msg, range, tip) {
+              var data = { msg: msg };
+              if (range) {
+                if (range.start != null) {
+                  data.start = range.start + leadingSpaceLength;
+                }
+                if (range.end != null) {
+                  data.end = range.end + leadingSpaceLength;
+                }
+              }
+              (tip ? tips : errors).push(data);
+            };
+          }
+          // merge custom modules
+          if (options.modules) {
+            finalOptions.modules =
+              (baseOptions.modules || []).concat(options.modules);
+          }
+          // merge custom directives
+          if (options.directives) {
+            finalOptions.directives = extend(
+              Object.create(baseOptions.directives || null),
+              options.directives
+            );
+          }
+          // copy other options
+          for (var key in options) {
+            if (key !== 'modules' && key !== 'directives') {
+              finalOptions[key] = options[key];
+            }
+          }
+        }
+
+        finalOptions.warn = warn;
+
+        var compiled = baseCompile(template.trim(), finalOptions);
+        {
+          detectErrors(compiled.ast, warn);
+        }
+        compiled.errors = errors;
+        compiled.tips = tips;
+        return compiled
+      }
+
+      return {
+        compile: compile,
+        compileToFunctions: createCompileToFunctionFn(compile)
+      }
+    }
   }
 
-  var arrayProto = Array.prototype;
-  var arrayMethods = Object.create(arrayProto);
+  /*  */
 
-  var methodsToPatch = [
-    'push',
-    'pop',
-    'shift',
-    'unshift',
-    'splice',
-    'sort',
-    'reverse'
-  ];
-
-  /**
-   * Intercept mutating methods and emit events
-   */
-  methodsToPatch.forEach(function (method) {
-    // cache original method
-    var original = arrayProto[method];
-    def(arrayMethods, method, function mutator () {
-      var args = [], len = arguments.length;
-      while ( len-- ) args[ len ] = arguments[ len ];
-
-      var result = original.apply(this, args);
-      var ob = this.__ob__;
-      var inserted;
-      switch (method) {
-        case 'push':
-        case 'unshift':
-          inserted = args;
-          break
-        case 'splice':
-          inserted = args.slice(2);
-          break
-      }
-      if (inserted) { ob.observeArray(inserted); }
-      // notify change
-      ob.dep.notify();
-      return result
-    });
+  // `createCompilerCreator` allows creating compilers that use alternative
+  // parser/optimizer/codegen, e.g the SSR optimizing compiler.
+  // Here we just export a default compiler using the default parts.
+  var createCompiler = createCompilerCreator(function baseCompile (
+    template,
+    options
+  ) {
+    var ast = parse(template.trim(), options);
+    if (options.optimize !== false) {
+      optimize(ast, options);
+    }
+    var code = generate(ast, options);
+    return {
+      ast: ast,
+      render: code.render,
+      staticRenderFns: code.staticRenderFns
+    }
   });
-
-  var arrayKeys = Object.getOwnPropertyNames(arrayMethods);
-
-  var Observer = function Observer (value) {
-    this.value = value;
-    this.dep = new Dep();
-    this.vmCount = 0;
-    def(value, '__ob__', this);
-    if (Array.isArray(value)) { // 数组的处理
-      if (hasProto) {
-        protoAugment(value, arrayMethods);
-      } else {
-        copyAugment(value, arrayMethods, arrayKeys);
-      }
-      this.observeArray(value);
-    } else {
-      this.walk(value);
-    }
-  };
-  /**
-   * Augment a target Object or Array by intercepting
-   * the prototype chain using __proto__
-   */
-  function protoAugment (target, src) {
-    /* eslint-disable no-proto */
-    target.__proto__ = src;
-    /* eslint-enable no-proto */
-  }
-
-  /**
-   * Augment a target Object or Array by defining
-   * hidden properties.
-   */
-  /* istanbul ignore next */
-  function copyAugment (target, src, keys) {
-    for (var i = 0, l = keys.length; i < l; i++) {
-      var key = keys[i];
-      def(target, key, src[key]);
-    }
-  }
-```
-    
-:::
-### [Vue中$nextTick源码解析](https://juejin.im/post/6844904147804749832)
->Vue 在更新 DOM 时是异步执行的。只要侦听到数据变化，Vue 将开启一个队列，并缓冲在同一事件循环中发生的所有数据变更。如果同一个 watcher 被多次触发，只会被推入到队列中一次。
->这种在缓冲时去除重复数据对于避免不必要的计算和 DOM 操作是非常重要的。然后，在下一个的事件循环“tick”中，Vue 刷新队列并执行实际 (已去重的) 工作。
->Vue 在内部对异步队列尝试使用原生的 Promise.then、MutationObserver 和 setImmediate，如果执行环境不支持，则会采用 setTimeout(fn, 0) 代替。
->
->vue更新Dom也会把更新队列添加到nextTick中去执行
-
-### [keep-alive原理](https://juejin.im/post/6862206197877964807)
-
-### [生命周期](https://juejin.im/post/6844903780736040973)
-- `beforeCreate`之前合并配置，初始化生命周期，初始化事件中心，初始化渲染
-- `created`之前初始化 data、props、computed、watcher
-- 在执行 `vm._render()` 函数渲染 VNode 之前，执行了 `beforeMount` 钩子函数，在执行完 `vm._update()` 把 VNode patch 到真实 DOM 后，执行 `mounted` 钩子。
- ::: details 点击查看代码
-```javascript
-Vue.prototype._init = function (options) {
-      var vm = this;
-      // a uid
-      vm._uid = uid$3++;
-
-      var startTag, endTag;
-      /* istanbul ignore if */
-      if (config.performance && mark) {
-        startTag = "vue-perf-start:" + (vm._uid);
-        endTag = "vue-perf-end:" + (vm._uid);
-        mark(startTag);
-      }
-
-      // a flag to avoid this being observed
-      vm._isVue = true;
-      // merge options
-      if (options && options._isComponent) {
-        // optimize internal component instantiation
-        // since dynamic options merging is pretty slow, and none of the
-        // internal component options needs special treatment.
-        initInternalComponent(vm, options);
-      } else {
-        vm.$options = mergeOptions(
-          resolveConstructorOptions(vm.constructor),
-          options || {},
-          vm
-        );
-      }
-      /* istanbul ignore else */
-      {
-        initProxy(vm);
-      }
-      // expose real self
-      vm._self = vm;
-      initLifecycle(vm);
-      initEvents(vm);
-      initRender(vm);
-      callHook(vm, 'beforeCreate');
-      initInjections(vm); // resolve injections before data/props
-      initState(vm);
-      initProvide(vm); // resolve provide after data/props
-      callHook(vm, 'created');
-
-      /* istanbul ignore if */
-      if (config.performance && mark) {
-        vm._name = formatComponentName(vm, false);
-        mark(endTag);
-        measure(("vue " + (vm._name) + " init"), startTag, endTag);
-      }
-
-      if (vm.$options.el) {
-        vm.$mount(vm.$options.el);
-      }
-    };
 ```
 :::
-
-### Vue中组件生命周期调用顺序
->组件的调用顺序都是**先父后子**,渲染完成的顺序是**先子后父**
->组件的销毁操作是先父后子，销毁完成的顺序是先子后父
-- 加载渲染过程(在父组件mounted执行子组件beforeCreate到mounted的过程)
-父beforeCreate->父created->父beforeMount->子beforeCreate->子created->子beforeMount- >子mounted->父mounted
-- 子组件更新过程
-父beforeUpdate->子beforeUpdate->子updated->父updated
-- 父组件更新过程
-父 beforeUpdate -> 父 updated
-- 销毁过程
-父beforeDestroy->子beforeDestroy->子destroyed->父destroyed
-- 路由守卫beforeRouteEnter的next回调会在组件mounted后执行
-
 
 ### this.$set() 与this.$del
 
@@ -858,11 +874,226 @@ Vue.prototype._init = function (options) {
 ```
 :::
 
-#### [Vue.js的computed和watch是如何工作的](https://juejin.cn/post/6844903667884097543)
+### 数组响应式变化原理
+> 使用Object.create复制Array的原型对象prototype得到arrayMethods, 遍历一个7个数组方法的数组，包括push,pop,shift,unshift,splice,
+>reverse这些能改变数组的方法,使用函数劫持，在遍历时使用Object.defineProperty重写复制的原型对象arrayMethods对应方法的value,即重写方法，使用Array.prototype
+>的原函数方法apply获取并返回结果，同时通过var ob = this.__ ob__获取Observer,调用ob.dep.notify()，通知更新；
+>在Observe构造函数中，判断如果data的value如果是数组，1、如果该数组有__proto__属性，则直接把arrayMethods赋值给__proto__
+>2、如果没有，则调用copyAugment，遍历arrayMethods把方法直接赋值给改数组
+>3、遍历改数组，递归调用observe方法new Observer进行依赖收集
+ ::: details 点击查看代码
+```javascript
 
-### [Virtual Dom](https://juejin.im/post/6844903874688450568)
+  /**
+   * Define a property.
+   */
+  function def (obj, key, val, enumerable) {
+    Object.defineProperty(obj, key, {
+      value: val,
+      enumerable: !!enumerable,
+      writable: true,
+      configurable: true
+    });
+  }
 
+  var arrayProto = Array.prototype;
+  var arrayMethods = Object.create(arrayProto);
+
+  var methodsToPatch = [
+    'push',
+    'pop',
+    'shift',
+    'unshift',
+    'splice',
+    'sort',
+    'reverse'
+  ];
+
+  /**
+   * Intercept mutating methods and emit events
+   */
+  methodsToPatch.forEach(function (method) {
+    // cache original method
+    var original = arrayProto[method];
+    def(arrayMethods, method, function mutator () {
+      var args = [], len = arguments.length;
+      while ( len-- ) args[ len ] = arguments[ len ];
+
+      var result = original.apply(this, args);
+      var ob = this.__ob__;
+      var inserted;
+      switch (method) {
+        case 'push':
+        case 'unshift':
+          inserted = args;
+          break
+        case 'splice':
+          inserted = args.slice(2);
+          break
+      }
+      if (inserted) { ob.observeArray(inserted); }
+      // notify change
+      ob.dep.notify();
+      return result
+    });
+  });
+
+  var arrayKeys = Object.getOwnPropertyNames(arrayMethods);
+
+  var Observer = function Observer (value) {
+    this.value = value;
+    this.dep = new Dep();
+    this.vmCount = 0;
+    def(value, '__ob__', this);
+    if (Array.isArray(value)) { // 数组的处理
+      if (hasProto) {
+        protoAugment(value, arrayMethods);
+      } else {
+        copyAugment(value, arrayMethods, arrayKeys);
+      }
+      this.observeArray(value);
+    } else {
+      this.walk(value);
+    }
+  };
+  /**
+   * Augment a target Object or Array by intercepting
+   * the prototype chain using __proto__
+   */
+  function protoAugment (target, src) {
+    /* eslint-disable no-proto */
+    target.__proto__ = src;
+    /* eslint-enable no-proto */
+  }
+
+  /**
+   * Augment a target Object or Array by defining
+   * hidden properties.
+   */
+  /* istanbul ignore next */
+  function copyAugment (target, src, keys) {
+    for (var i = 0, l = keys.length; i < l; i++) {
+      var key = keys[i];
+      def(target, key, src[key]);
+    }
+  }
+```
+    
+:::
+### [Vue中$nextTick源码解析](https://juejin.im/post/6844904147804749832)
+>Vue 在更新 DOM 时是异步执行的。只要侦听到数据变化，Vue 将开启一个队列，并缓冲在同一事件循环中发生的所有数据变更。如果同一个 watcher 被多次触发，只会被推入到队列中一次。
+>这种在缓冲时去除重复数据对于避免不必要的计算和 DOM 操作是非常重要的。然后，在下一个的事件循环“tick”中，Vue 刷新队列并执行实际 (已去重的) 工作。
+>Vue 在内部对异步队列尝试使用原生的 Promise.then、MutationObserver 和 setImmediate，如果执行环境不支持，则会采用 setTimeout(fn, 0) 代替。
+>
+>vue更新Dom也会把更新队列添加到nextTick中去执行
+
+### [keep-alive原理](https://juejin.im/post/6862206197877964807)
+
+
+### [生命周期](https://juejin.im/post/6844903780736040973)
+ ![An image](./image/vue2.png)
+- `beforeCreate`之前合并配置，初始化生命周期，初始化事件中心，初始化渲染
+- `created`之前初始化 data、props、computed、watcher
+- 在执行 `vm._render()` 函数渲染 VNode 之前，执行了 `beforeMount` 钩子函数，在执行完 `vm._update()` 把 VNode patch 到真实 DOM 后，执行 `mounted` 钩子。
+ ::: details 点击查看代码
+```javascript
+Vue.prototype._init = function (options) {
+      var vm = this;
+      // a uid
+      vm._uid = uid$3++;
+
+      var startTag, endTag;
+      /* istanbul ignore if */
+      if (config.performance && mark) {
+        startTag = "vue-perf-start:" + (vm._uid);
+        endTag = "vue-perf-end:" + (vm._uid);
+        mark(startTag);
+      }
+
+      // a flag to avoid this being observed
+      vm._isVue = true;
+      // merge options
+      if (options && options._isComponent) {
+        // optimize internal component instantiation
+        // since dynamic options merging is pretty slow, and none of the
+        // internal component options needs special treatment.
+        initInternalComponent(vm, options);
+      } else {
+        vm.$options = mergeOptions(
+          resolveConstructorOptions(vm.constructor),
+          options || {},
+          vm
+        );
+      }
+      /* istanbul ignore else */
+      {
+        initProxy(vm);
+      }
+      // expose real self
+      vm._self = vm;
+      initLifecycle(vm);
+      initEvents(vm);
+      initRender(vm);
+      callHook(vm, 'beforeCreate');
+      initInjections(vm); // resolve injections before data/props
+      initState(vm);
+      initProvide(vm); // resolve provide after data/props
+      callHook(vm, 'created');
+
+      /* istanbul ignore if */
+      if (config.performance && mark) {
+        vm._name = formatComponentName(vm, false);
+        mark(endTag);
+        measure(("vue " + (vm._name) + " init"), startTag, endTag);
+      }
+
+      if (vm.$options.el) {
+        vm.$mount(vm.$options.el);
+      }
+    };
+```
+:::
+
+### Vue中组件生命周期调用顺序
+>组件的调用顺序都是**先父后子**,渲染完成的顺序是**先子后父**
+>组件的销毁操作是先父后子，销毁完成的顺序是先子后父
+- 加载渲染过程(在父组件mounted执行子组件beforeCreate到mounted的过程)
+父beforeCreate->父created->父beforeMount->子beforeCreate->子created->子beforeMount- >子mounted->父mounted
+- 子组件更新过程
+父beforeUpdate->子beforeUpdate->子updated->父updated
+- 父组件更新过程
+父 beforeUpdate -> 父 updated
+- 销毁过程
+父beforeDestroy->子beforeDestroy->子destroyed->父destroyed
+- 路由守卫beforeRouteEnter的next回调会在组件mounted后执行
+
+
+### [Vue.js的computed和watch是如何工作的](https://juejin.cn/post/6844903667884097543)
+
+### [虚拟 DOM 到底是什么？(长文建议收藏)](https://mp.weixin.qq.com/s/oAlVmZ4Hbt2VhOwFEkNEhw)
+### [探索Virtual DOM的前世今生](https://zhuanlan.zhihu.com/p/35876032)
+### [让虚拟DOM和DOM-diff不再成为你的绊脚石](https://juejin.cn/post/6844903806132568072)
+### [面试官: 你对虚拟DOM原理的理解?](https://juejin.cn/post/6844903902429577229)
+### [详解vue的diff算法](https://juejin.cn/post/6844903607913938951)
 
 ### [手写Vue-router核心原理](https://juejin.im/post/6854573222231605256)
 
 ### [实现双向绑定Proxy比defineProperty优劣如何](https://juejin.cn/post/6844903601416978439)
+### [为什么Vue3.0不再使用defineProperty实现数据监听？](https://mp.weixin.qq.com/s/O8iL4o8oPpqTm4URRveOIA)
+
+
+### [Vuex、Flux、Redux、Redux-saga、Dva、MobX](https://zhuanlan.zhihu.com/p/53599723)
+### [8k字 | Redux/react-redux/redux中间件设计实现剖析](https://juejin.cn/post/6844904036013965325)
+
+### 数据改变到页面渲染的过程是怎么样的？
+- 看下面的图片👇，这是执行click函数改变一个数据之后发生的函数调用栈，从图上的说明可以比较清楚个了解这个响应式过程的大概流程。下面简单讲解一下：
+- 改变数据，触发这个被劫持过的数据的setter方法
+- 执行这个数据的订阅中心（dep）的notify方法
+- update方法里执行queueWatcher方法把watcher推入队列
+- 执行nextTick方法开始更新视图
+- run方法里设置dep.target为当前订阅对象
+- 调用get方法调用当前watcher的getter执行更新方法
+- updateComponent方法里调用了render方法开始执行渲染页面
+- patch、patchVnode、updateChildren方法都是比较VNode更新渲染的函数，不过重点的diff过程在updateChildren方法里。
+
+ ![An image](./image/vue4.png)
