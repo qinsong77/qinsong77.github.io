@@ -14,6 +14,9 @@ title: Vue
 ### [Vue源码全解](https://juejin.im/post/6846687602679119885)
 
 ### [核心响应式原理](https://cn.vuejs.org/v2/guide/reactivity.html)
+
+ ![An image](./image/vue1.png)
+
 > vue采用数据劫持结合发布者-订阅者模式的方式，通过Object.defineProperty()来劫持各个属性的setter，getter，在数据变动时发布消息给订阅者，触发相应的监听回调。
 > 每个组件实例都对应一个 watcher 实例，它会在组件渲染的过程中把“接触”过的数据 property 记录为依赖。之后当依赖项的 setter 触发时，会通知 watcher，从而使它关联的组件重新渲染。
 
@@ -27,7 +30,7 @@ title: Vue
  接着执行vm._render()方法，生成渲染VNode,并且在这个过程中对vm上的数据访问，这个时候就触发了数据对象的getter(执行了Dep.target.addDep(this)方法，
  将watcher订阅到这个数据持有的dep的subs中，为后续数据变化时通知到拉下subs做准备).然后递归遍历添加所有子项的getter。
  
- ![An image](./image/vue1.png)
+
  ![An image](./image/vue3.png)
  ::: details 点击查看代码
 ```javascript
@@ -555,7 +558,7 @@ parse 会用正则等方式解析 template模板中的指令、class、style等�
 </div>
 ```
 经过一系列的正则解析，会得到的AST如下：
-
+ ::: details 点击查看代码
 ```javascript
  {
     /* 标签属性的map，记录了标签上属性 */
@@ -602,6 +605,7 @@ parse 会用正则等方式解析 template模板中的指令、class、style等�
     ]
 }
 ```
+ :::
 当构造完AST之后，下面就是优化这颗AST树。
 - 2.optimize：优化AST语法树
 ```javascript
@@ -642,6 +646,25 @@ optimize(ast, options)
 [Vue.js源码角度：剖析模版和数据渲染成最终的DOM的过程](https://juejin.cn/post/6844903664998416392)
  ::: details 点击查看代码
 ```javascript
+  // `createCompilerCreator` allows creating compilers that use alternative
+  // parser/optimizer/codegen, e.g the SSR optimizing compiler.
+  // Here we just export a default compiler using the default parts.
+  var createCompiler = createCompilerCreator(function baseCompile (
+    template,
+    options
+  ) {
+    var ast = parse(template.trim(), options);
+    if (options.optimize !== false) {
+      optimize(ast, options);
+    }
+    var code = generate(ast, options);
+    return {
+      ast: ast,
+      render: code.render,
+      staticRenderFns: code.staticRenderFns
+    }
+  });    
+
   function createCompilerCreator (baseCompile) {
     return function createCompiler (baseOptions) {
       function compile (
@@ -712,26 +735,6 @@ optimize(ast, options)
     }
   }
 
-  /*  */
-
-  // `createCompilerCreator` allows creating compilers that use alternative
-  // parser/optimizer/codegen, e.g the SSR optimizing compiler.
-  // Here we just export a default compiler using the default parts.
-  var createCompiler = createCompilerCreator(function baseCompile (
-    template,
-    options
-  ) {
-    var ast = parse(template.trim(), options);
-    if (options.optimize !== false) {
-      optimize(ast, options);
-    }
-    var code = generate(ast, options);
-    return {
-      ast: ast,
-      render: code.render,
-      staticRenderFns: code.staticRenderFns
-    }
-  });
 ```
 :::
 
@@ -987,8 +990,6 @@ optimize(ast, options)
 >
 >vue更新Dom也会把更新队列添加到nextTick中去执行
 
-### [keep-alive原理](https://juejin.im/post/6862206197877964807)
-
 
 ### [生命周期](https://juejin.im/post/6844903780736040973)
  ![An image](./image/vue2.png)
@@ -1069,6 +1070,8 @@ Vue.prototype._init = function (options) {
 
 
 ### [Vue.js的computed和watch是如何工作的](https://juejin.cn/post/6844903667884097543)
+
+### [keep-alive原理](https://juejin.im/post/6862206197877964807)
 
 ### [虚拟 DOM 到底是什么？(长文建议收藏)](https://mp.weixin.qq.com/s/oAlVmZ4Hbt2VhOwFEkNEhw)
 ### [探索Virtual DOM的前世今生](https://zhuanlan.zhihu.com/p/35876032)
