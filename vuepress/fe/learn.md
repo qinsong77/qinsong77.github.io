@@ -657,3 +657,25 @@ async function test () {
 }
 ```
 文章[当 async/await 遇上 forEach](https://objcer.com/2017/10/12/async-await-with-forEach/)
+
+##### for in 和for of
+for in
+
+- for ... in 循环返回的值都是返回的是所有能够通过对象访问的、可枚举的属性，其中既包括存在于实例中的属性，也包括存在于原型中的属性。
+- 数组的键名是数字，但是for...in循环是以字符串作为键名“0”、“1”、“2”等等
+- 某些情况下, for ... in 循环会以任意的顺序遍历键名
+
+for of 特点
+- for of 不同与 forEach, 它可以与 break、continue和return 配合使用,也就是说 for of 循环可以随时退出循环。
+  
+- 提供了遍历所有数据结构的统一接口
+
+哪些数据结构部署了 Symbol.iterator属性了呢?只要有 iterator 接口的数据结构,都可以使用 for of循环。
+
+- 数组 Array
+- Map
+- Set
+- String
+- arguments对象
+- NodeList对象, 就是获取的dom列表集合
+以上这些都可以直接使用 for of 循环。 凡是部署了 iterator 接口的数据结构也都可以使用数组的 扩展运算符(...)、和解构赋值等操作。

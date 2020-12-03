@@ -66,7 +66,9 @@ module.exports = {
 						'learn',
 						'achieve',
 						'prototype',
-						'extend'
+						'extend',
+						'var_type',
+						'type_conversion'
 					]
 				},
 				{

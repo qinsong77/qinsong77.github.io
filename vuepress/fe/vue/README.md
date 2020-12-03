@@ -1069,6 +1069,31 @@ Vue.prototype._init = function (options) {
 - 路由守卫beforeRouteEnter的next回调会在组件mounted后执行
 
 
+### [vue Diff](https://mp.weixin.qq.com/s?__biz=MzUxNjQ1NjMwNw==&mid=2247484449&idx=1&sn=7f346b97a177218cc09fc50562ed121c&chksm=f9a66e3dced1e72b8a88fd0d78b5a5b8bd2e0ec95552e675d44923d368bba2ec438c520cd7be&token=946193943&lang=zh_CN#rd)
+对比 oldVnode 和 vnode
+- 1、没有旧节点
+> 没有旧节点，说明是页面刚开始初始化的时候，此时，根本不需要比较了，直接全部都是新建，所以只调用 `createElm`
+- 2、旧节点 和 新节点 自身一样（不包括其子节点）
+> 通过 `sameVnode` 判断节点是否一样，旧节点 和 新节点自身一样时，直接调用 `patchVnode` 去处理这两个节点
+> 当两个Vnode自身一样的时候，我们需要做什么？
+  首先，自身一样，我们可以先简单理解，是 Vnode 的两个属性 tag 和 key 一样
+  那么，我们是不知道其子节点是否一样的，所以肯定需要比较子节点
+   所以，patchVnode 其中的一个作用，就是比较子节点
+- 3、旧节点 和 新节点自身不一样
+> 当两个节点不一样的时候，不难理解，直接创建新节点，删除旧节点
+
+
+##### patchVnode(比较两个Vnode 的子节点)
+总的来说，这个函数的作用是
+- 1、Vnode 是文本节点，则更新文本（文本节点不存在子节点）
+
+- 2、Vnode 有子节点，则处理比较更新子节点, 此时有3种情况。
+  -  1、新旧节点 都有子节点，而且不一样,调用updateChildren（细节很多）
+  
+  -  2、只有新节点(不用毕竟，直接创建出所有新DOM，并且添加进父节点的)
+  
+  -  3、只有旧节点(把所有的旧节点删除,也就是直接把DOM 删除)
+
 ### [Vue.js的computed和watch是如何工作的](https://juejin.cn/post/6844903667884097543)
 
 ### [keep-alive原理](https://juejin.im/post/6862206197877964807)
