@@ -54,6 +54,7 @@ title: 常用笔记
 - 比如游戏中发射子弹的频率(1秒发射一颗)
 
 ## 下载文件
+可使用[FileSaver.js插件](https://juejin.cn/post/6901790184841412622)
 ```javascript
 export default function downLoadFile (fileName, data) {
   // 兼容ie11,edge
