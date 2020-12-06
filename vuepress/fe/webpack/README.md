@@ -16,7 +16,7 @@ title: Summary
 ### [Vite 原理分析](https://juejin.cn/post/6881078539756503047)
 
 
-#### [前端工程化](https://juejin.cn/post/6844904132512317453)
+### [前端工程化](https://juejin.cn/post/6844904132512317453)
 
 前端工程化可以分成四个方面来说，分别为模块化、组件化、规范化和自动化。
 
@@ -47,3 +47,50 @@ title: Summary
 #### 自动化
 从最早先的 grunt、gulp 等，再到目前的 webpack、parcel。这些自动化工具在自动化合并、构建、打包都能为我们节省很多工作。而这些只是前端自动化其中的一部分，前端自动化还包含了持续集成、自动化测试等方方面面。
 
+
+## core-js
+
+### core-js介绍
+其实core-js是我们能够使用新的API的最重要的包，然而一般情况它隐藏在webpack编译后的代码中，我们一般不会去查看，所以容易被遗忘，我们在webpack生成环境下，查看编译后的代码，可以看到例如includes就是从core-js导出到我们的代码去的。
+
+![](./image/core_js.png)
+
+#### core-js是什么
+- **它是JavaScript标准库的polyfill**
+- 它尽可能的进行模块化，让你能选择你需要的功能
+- **它可以不污染全局空间**
+- 它和babel高度集成，可以对core-js的引入进行最大程度的优化
+
+### [core-js@3 特性概览](https://github.com/zloirock/core-js/blob/master/docs/2019-03-19-core-js-3-babel-and-a-look-into-the-future.md#babelpreset-env)
+- 支持ECMAScript稳定功能，引入core-js@3冻结期间的新功能，比如flat
+
+- 加入到ES2016-ES2019中的提案，现在已经被标记为稳定功能
+
+- **更新了提案的实现，增加了proposals配置项，由于提案阶段不稳定，需要谨慎使用**
+
+- **增加了对一些web标准的支持，比如URL 和 URLSearchParams**
+
+- **现在支持原型方法，同时不污染原型****
+
+- 删除了过时的特性
+
+### core-js@3与babel
+以前我们实现API的时候，会引入整个polyfill,其实polyfill只是包括了以下两个包
+
+- `core-js`
+- `regenerator-runtime`
+
+`core-js@3`升级之后弃用了`@babel/polyfill`，以下是等价实现
+
+```javascript
+// babel.config.js
+presets: [
+  ["@babel/preset-env", {
+    useBuiltIns: "entry", // or "usage"
+    corejs: 3,
+  }]
+]
+
+import "core-js/stable";
+import "regenerator-runtime/runtime";
+```

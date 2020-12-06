@@ -1055,6 +1055,164 @@ Vue.prototype._init = function (options) {
 ```
 :::
 
+
+### [computed](https://juejin.cn/post/6844904116439744520)
+
+
+ ::: details 点击查看代码
+```javascript
+  var computedWatcherOptions = { lazy: true };
+
+  function initComputed (vm, computed) {
+    // $flow-disable-line
+    var watchers = vm._computedWatchers = Object.create(null);
+    // computed properties are just getters during SSR
+    var isSSR = isServerRendering();
+
+    for (var key in computed) {
+      var userDef = computed[key];
+      var getter = typeof userDef === 'function' ? userDef : userDef.get;
+      if (getter == null) {
+        warn(
+          ("Getter is missing for computed property \"" + key + "\"."),
+          vm
+        );
+      }
+
+      if (!isSSR) {
+        // create internal watcher for the computed property.
+        watchers[key] = new Watcher(
+          vm,
+          getter || noop,
+          noop,
+          computedWatcherOptions
+        );
+      }
+
+      // component-defined computed properties are already defined on the
+      // component prototype. We only need to define computed properties defined
+      // at instantiation here.
+      if (!(key in vm)) {
+        defineComputed(vm, key, userDef);
+      } else {
+        if (key in vm.$data) {
+          warn(("The computed property \"" + key + "\" is already defined in data."), vm);
+        } else if (vm.$options.props && key in vm.$options.props) {
+          warn(("The computed property \"" + key + "\" is already defined as a prop."), vm);
+        }
+      }
+    }
+  }
+
+  function defineComputed (
+    target,
+    key,
+    userDef
+  ) {
+    var shouldCache = !isServerRendering();
+    if (typeof userDef === 'function') {
+      sharedPropertyDefinition.get = shouldCache
+        ? createComputedGetter(key)
+        : createGetterInvoker(userDef);
+      sharedPropertyDefinition.set = noop;
+    } else {
+      sharedPropertyDefinition.get = userDef.get
+        ? shouldCache && userDef.cache !== false
+          ? createComputedGetter(key)
+          : createGetterInvoker(userDef.get)
+        : noop;
+      sharedPropertyDefinition.set = userDef.set || noop;
+    }
+    if (sharedPropertyDefinition.set === noop) {
+      sharedPropertyDefinition.set = function () {
+        warn(
+          ("Computed property \"" + key + "\" was assigned to but it has no setter."),
+          this
+        );
+      };
+    }
+    Object.defineProperty(target, key, sharedPropertyDefinition);
+  }
+
+  function createComputedGetter (key) {
+    return function computedGetter () {
+      var watcher = this._computedWatchers && this._computedWatchers[key];
+      if (watcher) {
+        if (watcher.dirty) {
+          watcher.evaluate();
+        }
+        if (Dep.target) {
+          watcher.depend();
+        }
+        return watcher.value
+      }
+    }
+  }
+
+  function createGetterInvoker(fn) {
+    return function computedGetter () {
+      return fn.call(this, this)
+    }
+  }
+
+  function initMethods (vm, methods) {
+    var props = vm.$options.props;
+    for (var key in methods) {
+      {
+        if (typeof methods[key] !== 'function') {
+          warn(
+            "Method \"" + key + "\" has type \"" + (typeof methods[key]) + "\" in the component definition. " +
+            "Did you reference the function correctly?",
+            vm
+          );
+        }
+        if (props && hasOwn(props, key)) {
+          warn(
+            ("Method \"" + key + "\" has already been defined as a prop."),
+            vm
+          );
+        }
+        if ((key in vm) && isReserved(key)) {
+          warn(
+            "Method \"" + key + "\" conflicts with an existing Vue instance method. " +
+            "Avoid defining component methods that start with _ or $."
+          );
+        }
+      }
+      vm[key] = typeof methods[key] !== 'function' ? noop : bind(methods[key], vm);
+    }
+  }
+
+  function initWatch (vm, watch) {
+    for (var key in watch) {
+      var handler = watch[key];
+      if (Array.isArray(handler)) {
+        for (var i = 0; i < handler.length; i++) {
+          createWatcher(vm, key, handler[i]);
+        }
+      } else {
+        createWatcher(vm, key, handler);
+      }
+    }
+  }
+
+  function createWatcher (
+    vm,
+    expOrFn,
+    handler,
+    options
+  ) {
+    if (isPlainObject(handler)) {
+      options = handler;
+      handler = handler.handler;
+    }
+    if (typeof handler === 'string') {
+      handler = vm[handler];
+    }
+    return vm.$watch(expOrFn, handler, options)
+  }
+```
+:::
 ### Vue中组件生命周期调用顺序
 >组件的调用顺序都是**先父后子**,渲染完成的顺序是**先子后父**
 >组件的销毁操作是先父后子，销毁完成的顺序是先子后父

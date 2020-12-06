@@ -4,3 +4,7 @@ console.log(require('os').homedir()) // HOME 目录
 // console.log(process.env.PATH.split(':').join('\n'));
 
 console.log(process.memoryUsage())
+
+const path = require('path')
+
+console.log(path.join(__dirname, 'dist'))
