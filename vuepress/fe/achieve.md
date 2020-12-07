@@ -154,7 +154,7 @@ function _instanceOf(instanceObject, classFunc) {
         context[fn] = this
         const result = context[fn](...args)
         delete context[fn]
-        return  result
+        return result
     }
 ```
 ### 模拟实现apply
@@ -221,7 +221,7 @@ Function.prototype.myBind = function(asThis) {
   }
   function resultFn() {
     var args2 = slice.call(arguments, 0);
-    return fn.call(
+    return fn.apply(
       resultFn.prototype.isPrototypeOf(this) ? this : asThis, // new 的情况下 this 改绑成 new 出来的对象实例
       args1.concat(args2)
     );

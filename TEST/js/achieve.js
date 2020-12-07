@@ -66,3 +66,38 @@ function binarySearch(arr, target){
 	}
 	return -1
 }
+
+Function.prototype.myCall = function (context, ...args) {
+	if (typeof this !== 'function') {
+		throw new TypeError('error')
+	}
+	context = context || context
+	const fn = Symbol()
+	context[fn] = this
+	const result = context[fn](...args)
+	delete context[fn]
+	return result
+}
+
+function f(...args) {
+	console.log(args)
+}
+f(1,2,3, 'test')
+
+
+Function.prototype.myBind = function (...args) {
+	const fn = this
+	if (typeof fn !== 'function') {
+		throw new TypeError('error')
+	}
+	
+	const obj = args.shift() || window
+	
+	return function (...args2) {
+		return fn.apply(obj, args.concat(args2))
+	}
+	
+}
+
+
+

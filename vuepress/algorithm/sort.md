@@ -49,7 +49,7 @@ function selectionSort (arr) {
 }
 ```
 ### 3、插入排序
-
+ ![An image](./image/insert_sort.gif)
 ```javascript
 function insertSort (arr) {
 
@@ -71,6 +71,8 @@ function insertSort (arr) {
 ```
 
 ### 4、归并排序
+ ![An image](./image/merge_sort.gif)
+ 
 Mozilla Firefox 使用归并排序作为 Array.prototype.sort 的实现
 >原始数组切分成较小的数组，直到每个小数组只
  有一个位置，接着将小数组归并成较大的数组，直到最后只有一个排序完毕的大数组。要使用递归。
@@ -141,7 +143,15 @@ function merge2(arr, temp, left, middle, right) {
 }
 ```
 ### 4、希尔排序
+1959年Shell发明，第一个突破O(n2)的排序算法，是简单插入排序的改进版。它与插入排序的不同之处在于，它会优先比较距离较远的元素。希尔排序又叫缩小增量排序。
 
+#### 4.1 算法描述
+先将整个待排序的记录序列分割成为若干子序列分别进行直接插入排序，具体算法描述：
+- 选择一个增量序列t1，t2，…，tk，其中ti>tj，tk=1；
+- 按增量序列个数k，对序列进行k 趟排序；
+- 每趟排序，根据对应的增量ti，将待排序列分割成若干长度为m 的子序列，分别对各子表进行直接插入排序。仅增量因子为1 时，整个序列作为一个表来处理，表长度即为整个序列的长度。
+
+ ![An image](./image/shell_sort.gif)
 ```javascript
 function shellSort(array) {
     const length = array.length;
@@ -163,7 +173,11 @@ function shellSort(array) {
 }
 ```
 
+
 ## 5、快速排序
+
+ ![An image](./image/quick_sort.gif)
+
 >快速排序也许是最常用的排序算法了。它的复杂度为 O(nlog(n))，且性能通常比其他复杂度
  为 O(nlog(n))的排序算法要好。和归并排序一样，快速排序也使用分而治之的方法，将原始数组
  分为较小的数组（但它没有像归并排序那样将它们分割开）。
