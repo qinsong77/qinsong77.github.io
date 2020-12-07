@@ -62,13 +62,13 @@ module.exports = {
 					// sidebarDepth: 2,    // 可选的, 默认值是 1
 					children: [
 						['', 'LearnAndNoteList'],
-						'alwaysNote',
 						'learn',
 						'achieve',
 						'prototype',
 						'extend',
 						'var_type',
-						'type_conversion'
+						'type_conversion',
+						'alwaysNote'
 					]
 				},
 				{

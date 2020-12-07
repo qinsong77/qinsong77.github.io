@@ -20,22 +20,22 @@ Object.getPrototypeOf(Tom) === Person.prototype // true
 const arr = [1,2,3]
 arr.__proto__ === Array.prototype
 
-// Array是函数对象，是Function的实例对象，Array是通过newFunction创建出来的。因为Array是Function的实例，所以Array.__proto__ === Function.prototype
+// Array是函数对象，是Function的实例对象，Array是通过new Function创建出来的。因为Array是Function的实例，所以Array.__proto__ === Function.prototype
 Array.__proto__ === Function.prototype
 ```
 
 > 普通对象
-- 最普通的对象：有__proto__属性（指向其原型链），没有prototype属性。
+- 最普通的对象：有`__proto__`属性（指向其原型链），没有`prototype`属性。
 - 原型对象(Person.prototype 原型对象还有constructor属性（指向构造函数对象）)
 
 > 函数对象
-- 凡是通过new Function()创建的都是函数对象
-- 拥有__proto__、prototype属性（指向原型对象）
+- 凡是通过`new Function()`创建的都是函数对象
+- 拥有`__proto__`、`prototyp`e属性（指向原型对象）
 - 包括Function、Object、Array、Date、String、自定义函数
-- 特例： Function.prototype(是原型对象，却是函数对象)
+- 特例： `Function.prototype`(是原型对象，却是函数对象)
 - 箭头函数没有prototype；箭头函数是匿名函数,是不能作为构造函数的,不能使用new；箭头函数不绑定arguments,取而代之用rest参数…解决；
-箭头函数不能当做Generator函数,不能使用yield关键字；
- 箭头函数会捕获其所在上下文的 this 值，作为自己的 this 值，任何方法都改变不了其指向，如call(), bind(), apply()，而普通函数的this指向调用它的那个对象。
+  箭头函数不能当做Generator函数,不能使用yield关键字；
+  箭头函数会捕获其所在上下文的 this 值，作为自己的 this 值，任何方法都改变不了其指向，如call(), bind(), apply()，而普通函数的this指向调用它的那个对象。
 
 ```javascript
 //函数对象  
@@ -53,9 +53,9 @@ console.log(typeof Date);   //function
 console.log(typeof Function);   //function  
 ```
 
-### 原型对象（函数的prototype属性）
+### 原型对象（函数的`prototype`属性）
 
-> 每创建一个函数都会有一个prototype属性，这个属性是一个指针，指向一个对象（通过该构造函数创建实例对象的原型对象）。原型对象是包含特定类型的所有实例共享的属性和方法。
+> 每创建一个函数都会有一个`prototype`属性，这个属性是一个指针，指向一个对象（通过该构造函数创建实例对象的原型对象）。原型对象是包含特定类型的所有实例共享的属性和方法。
 >原型对象的好处是，可以让所有实例对象共享它所包含的属性和方法。
 
 ```javascript
@@ -112,7 +112,8 @@ Object.getPrototypeOf(dog1) === Dog.prototype   //推荐
 
 利用原型让一个引用类型继承另一个引用类型的属性和方法。
 
-每个构造函数都有一个原型对象，原型对象都包含一个指向构造函数想指针(constructor)，而实例对象都包含一个指向原型对象的内部指针(`__proto__`)。如果让原型对象等于另一个类型的实例，此时的原型对象将包含一个指向另一个原型的指针(`__proto__`)，另一个原型也包含着一个指向另一个构造函数的指针(constructor)。假如另一个原型又是另一个类型的实例……这就构成了实例与原型的链条。
+每个构造函数都有一个原型对象，原型对象都包含一个指向构造函数想指针(`constructor`)，而实例对象都包含一个指向原型对象的内部指针(`__proto__`)。
+如果让原型对象等于另一个类型的实例，此时的原型对象将包含一个指向另一个原型的指针(`__proto__`)，另一个原型也包含着一个指向另一个构造函数的指针(constructor)。假如另一个原型又是另一个类型的实例……这就构成了实例与原型的链条。
 
 原型链基本思路（图解）：
 ![An image](./image/prototype/yuanxinlian.png)
@@ -156,14 +157,14 @@ new Person() instanceof Person; // true
 new Date() instanceof Object;// true
 new Person instanceof Object;// true
 ```
-instanceof 能够判断出 [ ].\_proto_  指向 Array.prototype，而 Array.prototype.\_proto_ 又指向了Object.prototype，最终 Object.prototype.\_proto_ 指向了null，标志着原型链的结束。因此，[]、Array、Object 就在内部形成了一条原型链：
+instanceof 能够判断出 `[]._proto_` 指向 `Array.prototype`，而 `Array.prototype._proto_` 又指向了`Object.prototype`，最终 `Object.prototype._proto_` 指向了`null`，标志着原型链的结束。因此，[]、Array、Object 就在内部形成了一条原型链：
 ![An image](./image/prototype/instanceof.png)
 
 ### Function 和 Object
 - function Object()也是个函数，所以我们可以认为Object()是通过 new Function() 出来的，所以Object()此时是实例对象，实例对象上面一定有__proto__属性，所以`Object.__proto__` === `Function.prototype`
 - function Function()同样也是函数，我们也可以认为他是通过 new Function() 出来的，所以Function()此时是实例对象，实例对象上面一定有__proto__属性，所以`Function.__proto__`=== `Function.prototype`
 - 我们说过任何东西都是new Object()所出来的，所以Function() 也是new Object() 出来的，此时Function()是实例对象，实例对象上面一定有__proto__属性，但是Function的__proto__属性的连线已经连到了Function的显式原型对象，所以它通过上图的红线进行连接，
-`Function.__proto__.__proto__`=== `Object.prototype(true)`
+`Function.__proto__.__proto__`=== `Object.prototype`是(true)
 ![An image](./image/prototype/Funcion_Object.png)
 ![An image](./image/prototype/Fun_Obj.png)
 ## 总结

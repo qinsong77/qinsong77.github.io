@@ -193,8 +193,8 @@ specialObject.foo = foo; // {DontDelete}, {ReadOnly}
 delete Scope[0]; // remove specialObject from the front of scope chain
  ```
 
-### [this的指向](https://juejin.im/post/6844903496253177863)
-> 在 ES5 中，其实 this 的指向，始终坚持一个原理：this 永远指向最后调用它的那个对象。
+### [this的指向](https://juejin.cn/post/6844904077818609678)
+> 在 ES5 中，其实 this 的指向，始终坚持一个原理：this 永远指向最后调用它的那个对象。[文章](https://juejin.im/post/6844903496253177863)
 #### 改变 this 的指向的方法
 - 使用 ES6 的箭头函数
 - 在函数内部使用 _this = this
@@ -238,7 +238,7 @@ console.log(a()()()) // windows
 - [文章2](https://juejin.im/post/6844903971228745735)
 - [文章3](https://juejin.im/post/6844903711106400264)
 - [文章4](https://juejin.im/post/6844903752621637645)
-- [mdn](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/EventLoop)
+- [文章5](https://juejin.cn/post/6844904100195205133)
 
 [浏览器与Node的事件循环(Event Loop)有何区别](https://juejin.im/post/6844903761949753352)
 >JavaScript 是单线程、异步、非阻塞、解释型脚本语言。JS引擎会将JS脚本进行编译和执行
@@ -267,6 +267,12 @@ console.log(a()()()) // windows
 
 
 - 渲染完毕后，JS引擎线程继续，开始下一个宏任务（从宏任务队列中获取）
+
+注意点
+1. 一个Event Loop可以有一个或多个事件队列，但是只有一个微任务队列。
+2. 微任务队列全部执行完会重新渲染一次
+3. 每个宏任务执行完都会重新渲染一次
+4. requestAnimationFrame处于渲染阶段，不在微任务队列，也不在宏任务队列
 ### 宏任务包括：
 - script(整体代码)
 - setTimeout, setInterval, setImmediate,

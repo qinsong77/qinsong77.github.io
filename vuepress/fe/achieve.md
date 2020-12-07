@@ -108,7 +108,16 @@ function _instanceOf(instanceObject, classFunc) {
       // 绑定this 执行构造函数
       const result = Constructor.apply(object, arguments)
       // 确保new出来是个对象
-      return typeof result === 'object' ? result : object
+      // 注意如果原构造函数有Object类型的返回值，包括Function, Array, Date, RegExg, Error
+      // 那么应该返回这个返回值
+      const isObject = typeof result === 'object' && result !== null
+      const isFunction = typeof result === 'function'
+      if(isObject || isFunction) {
+      	return result
+      }
+        
+      // 原构造函数没有Object类型的返回值，返回我们的新对象
+      return object
     }
     // test
     function Point(x, y) {
