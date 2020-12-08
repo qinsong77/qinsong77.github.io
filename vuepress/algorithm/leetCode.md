@@ -6,6 +6,7 @@ title: LeetCode
 - [1.两数之和](#_1-两数之和)
 - [2.回文数](#_2-回文数)
 - [3.字符串](#_3-字符串)
+  - [最长回文子串](#最长回文子串)
   - [最长不含重复字符的子字符串](#最长不含重复字符的子字符串)
 
 #### 1.[两数之和](https://leetcode-cn.com/problems/two-sum )
@@ -109,4 +110,53 @@ var twoSum = function(nums, target) {
 
 ## 3.字符串
 
-#### [最长不含重复字符的子字符串](https://leetcode-cn.com/problems/zui-chang-bu-han-zhong-fu-zi-fu-de-zi-zi-fu-chuan-lcof/)
+#### [最长回文子串](https://leetcode-cn.com/problems/longest-palindromic-substring/)
+
+#### [最长不含重复字符的子字符串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/)
+
+滑动窗口解法，可以维护一个数组或下标
+
+![](./leetcode_img/str1.png)
+ ::: details 点击查看代码
+```javascript
+var lengthOfLongestSubstring = function(s) {
+    let arr = [], max = 0
+    for(let i = 0; i < s.length; i++) {
+        let index = arr.indexOf(s[i])
+        if(index !== -1) {
+            arr.splice(0, index+1);
+        }
+        arr.push(s.charAt(i))
+        max = Math.max(arr.length, max) 
+    }
+    return max
+};
+
+var lengthOfLongestSubstring = function(s) {
+    let index = 0, max = 0
+    for(let i = 0, j = 0; j < s.length; j++) {
+        index = s.substring(i, j).indexOf(s[j]) 
+        if(index !== -1) { 
+            i = i + index + 1 
+        } 
+        max = Math.max(max, j - i + 1) 
+    }
+    return max
+};
+
+var lengthOfLongestSubstring = function(s) {
+    let map = new Map(), max = 0
+    for(let i = 0, j = 0; j < s.length; j++) {
+        if(map.has(s[j])) {
+            i = Math.max(map.get(s[j]) + 1, i)
+        }
+        max = Math.max(max, j - i + 1)
+        map.set(s[j], j)
+    }
+    return max
+};
+
+// https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/solution/zi-jie-leetcode3wu-zhong-fu-zi-fu-de-zui-chang-zi-/
+```
+ ::: 
+ 

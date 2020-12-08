@@ -287,7 +287,7 @@ console.log(a()()()) // windows
 
 >在node环境下，process.nextTick的优先级高于Promise，也就是说：在宏任务结束后会先执行微任务队列中的nextTickQueue，然后才会执行微任务中的Promise。
 
-### [setInterval](http://caibaojian.com/setinterval.html),requestAnimationFrame代替绘制动画
+### [setInterval](http://caibaojian.com/setinterval.html),[requestAnimationFrame](https://github.com/sisterAn/blog/issues/30)代替绘制动画
 
 ```javascript
 async function asyncA(){

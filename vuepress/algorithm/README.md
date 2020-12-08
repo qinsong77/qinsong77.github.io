@@ -4,6 +4,8 @@ title: 数据结构
 
 [学习目录](https://juejin.cn/post/6844903919722692621)
 
+[学习目录](https://github.com/sisterAn/JavaScript-Algorithms)
+
 [算法小抄](https://labuladong.gitbook.io/algo/)
 
 ### 时间复杂度
