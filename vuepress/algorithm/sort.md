@@ -170,6 +170,7 @@ function shellSort(array) {
     	}
     	gap = Math.floor(gap / 2);
     }
+    return array
 }
 ```
 

@@ -62,7 +62,7 @@ function quick(arr, left, right) {
 
 function partition(arr, left, right) {
 	const pivot = arr[Math.floor((left+right)/2)]
-	
+
 	let i = left
 	let j = right
 	while (i <=j) {
@@ -80,3 +80,24 @@ function partition(arr, left, right) {
 	}
 	return i
 }
+
+function shellSort(array) {
+	const length = array.length;
+	//间隔
+	let gap = (length / 2) | 0;
+	while (gap >= 1) {
+		//以gap作为间隔分组，然后插入排序;
+		for (let i = gap; i < length; i++) {
+			let temp = array[i];
+			let j = i;
+			while (j > gap - 1 && array[j - gap] > temp) {
+				array[j] = array[j - gap];
+				j -= gap;
+			}
+			array[j] = temp;
+		}
+		gap = Math.floor(gap / 2);
+	}
+	return array
+}
+console.log(shellSort([21, 3, 4, 89, 12, 5]))
