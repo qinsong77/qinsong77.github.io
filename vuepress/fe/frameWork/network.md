@@ -508,6 +508,8 @@ DNS 的作用就是通过域名查询到具体的 IP。
 
 PS：DNS 是基于 UDP 做的查询。
 
+# [CDN](https://juejin.cn/post/6844903605888090125)
+
 # 从输入 URL 到页面加载完成的过程
 
 [好文章](https://zhuanlan.zhihu.com/p/190320054)

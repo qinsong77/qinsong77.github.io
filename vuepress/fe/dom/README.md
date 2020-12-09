@@ -26,6 +26,7 @@ title: Dom
 - [setTimeout和requestAnimationFrame](#settimeout和requestanimationframe)
 - [defer与async的区别](#defer与async的区别)
 - [Preload&Prefetch](#Preload&Prefetch)
+- [websocket](https://juejin.cn/post/6854573221241421838)
   
 ----
 
