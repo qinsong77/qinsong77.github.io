@@ -68,6 +68,7 @@ module.exports = {
 						'extend',
 						'var_type',
 						'type_conversion',
+						'context_execution_stack_this',
 						'alwaysNote'
 					]
 				},
