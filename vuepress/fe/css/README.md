@@ -18,7 +18,21 @@ title: Summary of CSS
 
 > [介绍文章](https://juejin.im/post/6866914148387651592)
 
-flex:1的含义：`flex:1 =  flex: 1 1 0% =flex-grow: 1;flex-shrink: 1;flex-basis: 0%;`
+`flex` 属性是 `flex-grow`、`flex-shrink` 和 `flex-basis` 的缩写属性。有三个关键字属性：`initial(0 1 auto)`、 `auto(1 1 auto)`和 `none(0, 0, auto)`，默认值为 `initial`，即 `0 1 auto`。也可以单独定义属性值。
+
+- `flex-grow`: 定义项目的放大比例，其值为无单位数(≥0)。默认值为 0，表示存在剩余空间（flex 容器的大小减去所有项目加起来的大小），也不放大。若 flex-grow 为无单位正数，则根据兄弟项目的不同 flex-grow 系数，按比例进行分配。
+
+- `flex-shrink`: 定义了 flex 元素的收缩规则，其值为无单位数(≥0)。默认值为 1，表示容器空间不足时，项目按比例收缩，值越大收缩比例越大。若值为 0，表示该项目不收缩。
+
+- `flex-basis`：定义了在分配剩余空间之前，项目在主轴方向上的初始大小。浏览器根据这个属性，计算主轴是否有剩余空间。其值可以是带单位的长度值(≥0)，也可以是一个相对于其父弹性盒容器主轴尺寸的百分数(≥0%)。默认值为 auto，表示项目的本来大小。
+
+> 当一个元素同时被设置了 flex-basis (除值为 auto 外) 和 width (或者在 flex-direction: column 情况下设置了 height) , flex-basis 具有更高的优先级。
+
+flex 默认值是： `0 1 auto`
+
+flex:1的含义：`flex:1 =  flex: 1 1 0% =flex-grow: 1;flex-shrink: 1;flex-basis: 0%;`（即项目初始大小为 0，所以主轴方向上的剩余空间就是容器的大小，又因为项目的 `flex-grow `都为 1，所以项目等比例放大，最终表现为均匀分布在弹性盒子容器中。）
+
+
 
 flex左侧固定，右侧自适应，设置`min-width: 0;`保证内容不超出外层容器，如果没有设置min-width，当内容大于剩余盒子宽度时会超出父盒子，设置min-width保证内容局限在父盒子内。
 也可设置右侧`flex-shrink: 0;`不缩小
@@ -79,3 +93,18 @@ flex左侧固定，右侧自适应，设置`min-width: 0;`保证内容不超出�
 
 - 对于表单元素，浏览器也有默认的样式，包括宽度和高度
 - `<img>、<input>`属于行内替换元素。height/width/padding/margin均可用。效果等于块元素。
+
+### line-height1.5和line-height:150%的区别
+
+区别体现在子元素继承时，如下：
+
+- 父元素设置line-height:1.5会直接继承给子元素，子元素根据自己的font-size再去计算子元素自己的line-height。
+- 父元素设置line-height:150%是计算好了line-height值，然后把这个计算值给子元素继承，子元素继承拿到的就是最终的值了。此时子元素设置font-size就对其line-height无影响了。
+
+比如父元素设置属性：font- size:14px;line-height:1.5,child设置font-size:26px;
+
+那么父元素：line-height = 14px * 1.5 = 21px，子元素：line-height = 26px * 1.5 = 39px。
+
+父元素设置属性：font-size:14px;line-height:150%,child设置font-size:26px;
+
+那么父元素：line-height = 14px * 150% = 21px，子元素：line-height = 父元素的line-height = 21px。

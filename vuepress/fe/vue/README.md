@@ -987,8 +987,13 @@ optimize(ast, options)
 >Vue 在更新 DOM 时是异步执行的。只要侦听到数据变化，Vue 将开启一个队列，并缓冲在同一事件循环中发生的所有数据变更。如果同一个 watcher 被多次触发，只会被推入到队列中一次。
 >这种在缓冲时去除重复数据对于避免不必要的计算和 DOM 操作是非常重要的。然后，在下一个的事件循环“tick”中，Vue 刷新队列并执行实际 (已去重的) 工作。
 >Vue 在内部对异步队列尝试使用原生的 Promise.then、MutationObserver 和 setImmediate，如果执行环境不支持，则会采用 setTimeout(fn, 0) 代替。
->
 >vue更新Dom也会把更新队列添加到nextTick中去执行
+
+ ::: 总结描述
+ 事件循环是在执行执行完宏任务后（script是第一个宏认为），执行完所有的微任务，在执行GUI渲染，然后开启事件队列中的下一个宏认为。
+ 当执行this.xx = 'xx' 时，背后更新Dom的回调会加到callback数组中，当执行完脚本，会执行微任务队列，这时就会遍历callback运行所有的回调函数。
+ 
+ :::
  ::: details 点击查看代码
 ```javascript
   var isUsingMicroTask = false;

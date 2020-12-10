@@ -69,6 +69,7 @@ module.exports = {
 						'var_type',
 						'type_conversion',
 						'context_execution_stack_this',
+						'event_loop',
 						'alwaysNote'
 					]
 				},
