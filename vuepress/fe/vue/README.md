@@ -992,11 +992,11 @@ optimize(ast, options)
 >Vue 在内部对异步队列尝试使用原生的 Promise.then、MutationObserver 和 setImmediate，如果执行环境不支持，则会采用 setTimeout(fn, 0) 代替。
 >vue更新Dom也会把更新队列添加到nextTick中去执行
 
- ::: 总结描述
+::: tip 总结描述
  事件循环是在执行执行完宏任务后（script是第一个宏认为），执行完所有的微任务，在执行GUI渲染，然后开启事件队列中的下一个宏认为。
  当执行this.xx = 'xx' 时，背后更新Dom的回调会加到callback数组中，当执行完脚本，会执行微任务队列，这时就会遍历callback运行所有的回调函数。
+:::
  
- :::
  ::: details 点击查看代码
 ```javascript
   var isUsingMicroTask = false;

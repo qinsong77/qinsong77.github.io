@@ -369,3 +369,41 @@ class MPromise {
 		})
 	}
 }
+async function asyncA(){
+	console.log('1')
+	await asyncB()
+	console.log('2')
+}
+
+async function asyncB(){
+	console.log('3')
+}
+
+console.log('4')
+setTimeout(() => {
+	console.log('5')
+	Promise.resolve().then(function(){
+		console.log('6')
+	})
+}, 0)
+setTimeout(() => {
+	console.log('7')
+	Promise.resolve().then(function(){
+		console.log('8')
+	})
+}, 0)
+asyncA()
+new Promise(function(resolve){
+	resolve()
+	console.log('9')
+	new Promise((resolve) => {
+		console.log('12')
+		resolve(1)
+	}).then(res => {
+		console.log('13')
+	})
+}).then(function(){
+	console.log('10')
+})
+console.log('11')
+// 结果 4  1  3  9 11  2 10 5 6 7 8

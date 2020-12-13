@@ -5,6 +5,7 @@ title: 事件循环
 # 事件循环
 
 - [JavaScript 执行机制](https://juejin.im/post/6844903512845860872)
+- [文章1](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/)
 - [文章1](https://juejin.im/post/6844903971228745735)
 - [文章2](https://juejin.im/post/6844903711106400264)
 - [文章3](https://juejin.cn/post/6844904100195205133)
@@ -12,6 +13,7 @@ title: 事件循环
 
 
 [浏览器与Node的事件循环(Event Loop)有何区别](https://juejin.im/post/6844903761949753352)
+[深入解析 EventLoop 和浏览器渲染、帧动画、空闲回调的关系](https://mp.weixin.qq.com/s?__biz=MzI2MjcxNTQ0Nw==&mid=2247488677&idx=1&sn=19f1facc24f2621ccf56b5ee049de359&chksm=ea47b5fddd303ceb93dba07c031454efa632cfe66042e9def8a187a53cb6e46f36480657705d&mpshare=1&scene=23&srcid=1212JYxP5sNTkmyUIDw4A2lL&sharer_sharetime=1607767237746&sharer_shareid=1958dfa2b35b63c7a7463d11712f39df#rd)
 
 # 浏览器环境下js引擎的事件循环机制
 
@@ -88,8 +90,10 @@ GUI线程就是渲染页面的，他解析HTML和CSS，然后将他们构建成D
 1. 一个Event Loop可以有一个或多个事件队列，但是只有一个微任务队列。
 2. 微任务队列全部执行完会重新渲染一次
 3. 每个宏任务执行完都会重新渲染一次
-4. requestAnimationFrame处于渲染阶段，不在微任务队列，也不在宏任务队列
+4. requestAnimationFrame处于渲染阶段，不在微任务队列，也不在宏任务队列，requestAnimationFrame在重新渲染屏幕之前执行，非常适合用来做动画。
 5.microtask必然是在某个宏任务执行的时候创建的，而在下一个宏任务开始之前，浏览器会对页面重新渲染(task >> 渲染 >> 下一个task(从任务队列中取一个))。同时，在上一个宏任务执行完成后，渲染页面之前，会执行当前微任务队列中的所有微任务。
+6. requestIdleCallback在渲染屏幕之后执行，并且是否有空执行要看浏览器的调度，如果你一定要它在某个时间内执行，请使用 timeout参数。
+7. resize和scroll事件其实自带节流，它只在 Event Loop 的渲染阶段去执行事件。
 ### 宏任务包括：
 - script(整体代码)
 - setTimeout, setInterval, setImmediate,
@@ -132,11 +136,25 @@ setTimeout(() => {
 }, 0)
 asyncA()
 new Promise(function(resolve){
-	console.log('9')
 	resolve()
+	console.log('9')
+	new Promise((resolve) => {
+		console.log('12')
+		resolve(1)
+	}).then(res => {
+		console.log('13')
+	})
 }).then(function(){
 	console.log('10')
+    new Promise((resolve) => {
+		console.log('14')
+		resolve(1)
+	}).then(res => {
+		console.log('15')
+	})
 })
 console.log('11')
-// 结果 4  1  3  9 11  2 10 5 6 7 8
+// 结果 4  1  3  9 12 11  2  13  10  14 15 5 6 7 8
+// await 语句相当于在new Promise中，后面的语句在then中，所以1后输出3， 输出2在微任务中
+// 检查微任务队列，执行并清空微任务队列，如果在微任务的执行中又加入了新的微任务，也会在这一步一起执行。 所以10后输出 14 15
 ```
