@@ -13,6 +13,8 @@ title: Summary
 
 ### [手写webpack核心原理](https://juejin.im/post/6854573217336541192)
 ### [体积减少80%！释放webpack tree-shaking的真正潜力](https://juejin.cn/post/6844903769646317576)
+    
+### [轻松理解webpack热更新原理](https://mp.weixin.qq.com/s/2L9Y0pdwTTmd8U2kXHFlPA)
 
 ### [Vite 原理分析](https://juejin.cn/post/6881078539756503047)
 
