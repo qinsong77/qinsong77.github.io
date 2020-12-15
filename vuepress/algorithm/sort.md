@@ -233,6 +233,11 @@ function partition(array, left, right) {
 	return i
 }
 
+// [3,12,43,7,34,56,36] i = 0; j = 6; pivot = 7
+// [3,12,43,7,34,56,36] i = 1; j = 3; pivot = 7
+// [7,12,43,3,34,56,36] i = 2; j = 2; pivot = 7
+
+
 ```
 
 ```javascript

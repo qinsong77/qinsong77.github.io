@@ -1376,7 +1376,6 @@ Vue.prototype._init = function (options) {
 ### [面试官: 你对虚拟DOM原理的理解?](https://juejin.cn/post/6844903902429577229)
 ### [详解vue的diff算法](https://juejin.cn/post/6844903607913938951)
 
-### [手写Vue-router核心原理](https://juejin.im/post/6854573222231605256)
 
 ### [实现双向绑定Proxy比defineProperty优劣如何](https://juejin.cn/post/6844903601416978439)
 ### [为什么Vue3.0不再使用defineProperty实现数据监听？](https://mp.weixin.qq.com/s/O8iL4o8oPpqTm4URRveOIA)
@@ -1397,3 +1396,95 @@ Vue.prototype._init = function (options) {
 - patch、patchVnode、updateChildren方法都是比较VNode更新渲染的函数，不过重点的diff过程在updateChildren方法里。
 
  ![An image](./image/vue4.png)
+
+### [手写Vue-router核心原理](https://juejin.im/post/6854573222231605256)
+
+### [SPA 路由](https://juejin.im/post/6895882310458343431)
+#### hash 
+hash 是 URL 中 hash (#) 及后面的那部分，常用作锚点在页面内进行导航，改变 URL 中的 hash 部分不会引起页面刷新
+
+通过 `hashchange` 事件监听 URL 的变化, 页面第一次加载完不会触发 `hashchange`，可以使用`window.addEventListener('DOMContentLoaded', ()=>{})`，改变 URL 的方式只有这几种：
+1. 通过浏览器前进后退改变 URL;
+2. 通过`<a>`标签改变 URL;
+3. 通过`window.location`改变URL。
+
+[DOMContentLoaded和load的区别](https://www.cnblogs.com/gg-qq/p/11327972.html)
+
+`DOMContentLoaded` 事件在 html文档加载完毕，并且 html 所引用的内联 js、以及外链 js 的同步代码都执行完毕后触发。
+
+当页面 DOM 结构中的 js、css、图片，以及 js 异步加载的 js、css 、图片都加载完成之后，才会触发 `load` 事件。
+```html
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<ul>
+    <ul>
+        <!-- 定义路由 -->
+        <li><a href="#/home">home</a></li>
+        <li><a href="#/about">about</a></li>
+
+        <!-- 渲染路由对应的 UI -->
+        <div id="routeView"></div>
+    </ul>
+</ul>
+</body>
+<script>
+    let routerView = routeView
+    window.addEventListener('hashchange', ()=>{
+        let hash = location.hash;
+        routerView.innerHTML = hash
+    })
+    window.addEventListener('DOMContentLoaded', ()=>{
+        if(!location.hash){//如果不存在hash值，那么重定向到#/
+            location.hash="/"
+        }else{//如果存在hash值，那就渲染对应UI
+            let hash = location.hash;
+            routerView.innerHTML = hash
+        }
+    })
+</script>
+</html>
+
+```
+#### history
+history 提供了 `pushState` 和 `replaceState` 两个方法，这两个方法改变 URL 的 path 部分不会引起页面刷新;
+
+history 提供类似 `hashchange` 事件的 `popstate` 事件，但 `popstate` 事件有些不同：
+
+1. 通过浏览器前进后退改变 URL 时会触发 popstate 事件
+2. 通过pushState/replaceState或`<a>`标签改变 URL 不会触发 popstate 事件。
+3. 好在我们可以拦截 pushState/replaceState的调用和`<a>`标签的点击事件来检测 URL 变化，通过js 调用history的back，go，forward方法课触发该事件
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<ul>
+    <ul>
+        <li><a href='/home'>home</a></li>
+        <li><a href='/about'>about</a></li>
+
+        <div id="routeView"></div>
+    </ul>
+</ul>
+</body>
+<script>
+    let routerView = routeView
+    window.addEventListener('DOMContentLoaded', onLoad)
+    window.addEventListener('popstate', ()=>{
+        routerView.innerHTML = location.pathname
+    })
+    function onLoad () {
+        routerView.innerHTML = location.pathname
+        var linkList = document.querySelectorAll('a[href]')
+        linkList.forEach(el => el.addEventListener('click', function (e) {
+            e.preventDefault()
+            history.pushState(null, '', el.getAttribute('href'))
+            routerView.innerHTML = location.pathname
+        }))
+    }
+
+</script>
+</html>
+
+```

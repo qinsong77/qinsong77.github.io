@@ -410,14 +410,53 @@ async function test () {
 ```
 文章[当 async/await 遇上 forEach](https://objcer.com/2017/10/12/async-await-with-forEach/)
 
-##### for in 和for of
-for in
+#### for in 和for of
+
+##### for in
 
 - for ... in 循环返回的值都是返回的是所有能够通过对象访问的、可枚举的属性，其中既包括存在于实例中的属性，也包括存在于原型中的属性。
 - 数组的键名是数字，但是for...in循环是以字符串作为键名“0”、“1”、“2”等等
-- 某些情况下, for ... in 循环会以任意的顺序遍历键名
+- 特别情况下, for ... in 循环会以任意的顺序遍历键名
 
-for of 特点
+对象中的属性可分为`常规属性`和 `排序属性`
+
+例子
+```javascript
+function Foo() {
+  this[100] = 'test-100'
+  this[1] = 'test-1'
+  this["B"] = 'bar-B'
+  this[50] = 'test-50'
+  this[9] = 'test-9'
+  this[8] = 'test-8'
+  this[3] = 'test-3'
+  this[5] = 'test-5'
+  this["A"] = 'bar-A'
+  this["C"] = 'bar-C'
+}
+var bar = new Foo()
+for(key in bar){
+  console.log(`index:${key} value:${bar[key]}`)
+}
+// 输出是
+index:1 value:test-1
+index:3 value:test-3
+index:5 value:test-5
+index:8 value:test-8
+index:9 value:test-9
+index:50 value:test-50
+index:100 value:test-100
+index:B value:bar-B
+index:A value:bar-A
+index:C value:bar-C
+```
+在ECMAScript规范中定义了 「数字属性应该按照索引值⼤⼩升序排列，字符 串属性根据创建时的顺序升序排列。」在这⾥我们把对象中的数字属性称为 「排序属性」，在V8中被称为 elements，字符串属性就被称为 「常规属性」， 在V8中被称为 properties。在V8内部，为了有效地提升存储和访问这两种属性的性能，分别使⽤了两个 线性数据结构来分别保存排序 属性和常规属性，具体结构如下图所⽰：
+
+![](./image/v8_obj_save.png)
+在elements对象中，会按照顺序存放排序属性，properties属性则指向了properties对 象，在properties对象中，会按照创建时的顺序保存了常规属性。
+
+**总结一句: for in 循环特别适合遍历对象。**
+##### for of 特点
 - for of 不同与 forEach, 它可以与 break、continue和return 配合使用,也就是说 for of 循环可以随时退出循环。
   
 - 提供了遍历所有数据结构的统一接口

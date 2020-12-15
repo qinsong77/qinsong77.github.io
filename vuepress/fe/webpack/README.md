@@ -16,7 +16,7 @@ title: Summary
     
 ### [轻松理解webpack热更新原理](https://mp.weixin.qq.com/s/2L9Y0pdwTTmd8U2kXHFlPA)
 
-### [Vite 原理分析](https://juejin.cn/post/6881078539756503047)
+### [Vite 原理分析](https://juejin.cn/post/6881078539756503047)852
 
 
 ### [前端工程化](https://juejin.cn/post/6844904132512317453)

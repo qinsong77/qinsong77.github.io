@@ -87,3 +87,249 @@ export default {
       }
 </style>
 ```
+
+### echart 地图
+```vue
+<template>
+  <div class="position">
+    <van-tabs
+      type="card"
+      @click="tabClick"
+      v-model="type">
+      <van-tab
+        title="人员分布"
+        name="total"></van-tab>
+      <van-tab
+        title="疑似分布"
+        name="suspected"></van-tab>
+      <van-tab
+        title="确诊分布"
+        name="confirmed"></van-tab>
+    </van-tabs>
+    <v-chart :options="options"/>
+    <Table
+      v-if="showTable"
+      :thead="thead"
+      :tbody="tbody"/>
+  </div>
+</template>
+
+<script>
+import vChart from 'vue-echarts'
+import Table from './table'
+import { getPositionSt } from '@/common/api'
+import 'echarts/lib/chart/map'
+import 'echarts/lib/component/tooltip'
+import 'echarts/lib/component/legend'
+import 'echarts/lib/component/title'
+import 'echarts/lib/component/visualMap'
+import axios from 'axios'
+export default {
+  components: {
+    Table,
+    vChart
+  },
+  props: {
+    showTable: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data () {
+    return {
+      type: 'total',
+      provinces: ['shanghai', 'hebei', 'shanxi', 'neimenggu', 'liaoning', 'jilin', 'heilongjiang', 'jiangsu', 'zhejiang', 'anhui', 'fujian', 'jiangxi', 'shandong', 'henan', 'hubei', 'hunan', 'guangdong', 'guangxi', 'hainan', 'sichuan', 'guizhou', 'yunnan', 'xizang', 'shanxi1', 'gansu', 'qinghai', 'ningxia', 'xinjiang', 'beijing', 'tianjin', 'chongqing', 'xianggang', 'aomen', 'taiwan'],
+      provincesText: ['上海', '河北', '山西', '内蒙古', '辽宁', '吉林', '黑龙江', '江苏', '浙江', '安徽', '福建', '江西', '山东', '河南', '湖北', '湖南', '广东', '广西', '海南', '四川', '贵州', '云南', '西藏', '陕西', '甘肃', '青海', '宁夏', '新疆', '北京', '天津', '重庆', '香港', '澳门', '台湾'],
+      statistic: {
+        suspected: [], // 疑似分布
+        confirmed: [], // 确诊分布
+        total: [] // 人员分布
+      },
+      mapName: ''
+    }
+  },
+  computed: {
+    thead () {
+      return this.mapName === 'china' ? ['省市', '人员总数', '疑似', '确诊'] : ['市区', '人员总数', '疑似', '确诊']
+    },
+    options () {
+      const pieces = this.type === 'total'
+        ? [
+            { value: 0, label: '0人', color: '#D9E3FF' },
+            { gte: 1, lte: 9, label: '1-9人', color: '#A9C0FF' },
+            { gte: 10, lte: 49, label: '10-49人', color: '#7398FE' },
+            { gte: 50, lte: 199, label: '50-199人', color: '#4476FF' },
+            { gte: 200, label: '200+人', color: '#1F4BCB' }
+          ]
+        : this.type === 'suspected'
+        ? [
+            { value: 0, label: '0人', color: '#FDECCA' },
+            { gte: 1, lte: 4, label: '1-4人', color: '#EDCA9C' },
+            { gte: 5, lte: 9, label: '5-9人', color: '#F0B060' },
+            { gte: 10, lte: 19, label: '10-19人', color: '#E58F26' },
+            { gte: 20, label: '20+人', color: '#C07519' }
+          ]
+        : [
+            { value: 0, label: '0人', color: '#FABEBE' },
+            { gte: 1, lte: 4, label: '1-4人', color: '#FF9E9E' },
+            { gte: 5, lte: 9, label: '5-9人', color: '#FD6363' },
+            { gte: 10, lte: 19, label: '10-19人', color: '#EE4949' },
+            { gte: 20, label: '20+人', color: '#AD0F0F' }
+          ]
+      return {
+        title: {
+          show: this.mapName !== 'china',
+          text: this.statistic.provinceName,
+          textStyle: {
+            color: '#333',
+            fontSize: 13,
+            fontWeight: 300
+          },
+          top: 10
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter (params) {
+            if (params.name === '南海诸岛') return '' // 南海诸岛点击不显示item
+            return `${params.name}：${params.value || 0}人`
+          }
+        },
+        visualMap: {
+          type: 'piecewise',
+          itemWidth: 23,
+          itemHeight: 8,
+          padding: 0,
+          bottom: 20,
+          left: 0,
+          itemGap: 4,
+          textStyle: {
+            fontSize: 10,
+            color: '#999'
+          },
+          pieces: pieces
+        },
+        series: [
+          {
+            type: 'map',
+            map: this.mapName,
+            zoom: this.mapName === 'china' ? 1.3 : 1.2,
+            roam: false,
+            z: 0,
+            emphasis: {
+              label: {
+                show: false
+              },
+              itemStyle: {
+                areaColor: this.type === 'total' ? '#3F70FE' : this.type === 'suspected' ? '#FEBB39' : '#FE5E3F'
+              }
+            },
+            itemStyle: {
+              borderColor: '#FFF',
+              areaColor: this.type === 'total' ? '#D9E3FF' : this.type === 'suspected' ? '#FDECCA' : '#FABEBE'
+            },
+            data: this.statistic[this.type].map(item => {
+              if (this.mapName === 'china') {
+                return { name: item.name.replace(/(省|市|自治区|壮族|回族|维吾尔|特别行政区)/g, ''), value: item.count }
+              } else {
+                return { name: item.name, value: item.count }
+              }
+            })
+          }
+        ]
+      }
+    },
+    tbody () {
+      const suspected = {}
+      const confirmed = {}
+      this.statistic.suspected.forEach(item => (suspected[item.name] = item.count))
+      this.statistic.confirmed.forEach(item => (confirmed[item.name] = item.count))
+      return this.statistic.total.map(item => [
+        item.name.replace(/(自治区|壮族|回族|维吾尔|特别行政区)/g, ''),
+        item.count,
+        suspected[item.name] || 0,
+        confirmed[item.name] || 0
+      ]).sort((a, b) => b[1] - a[1])
+    }
+  },
+  created () {
+    getPositionSt().then(res => {
+      const { level, provinceName } = res.data.data
+      if (level === '3' && provinceName) { // 展示一个省的地图
+        // 获取省的拼音名字 name = '四川' => pinyinName = 'sichuan'
+        const transformedName = provinceName.replace(/(省|市|自治区|壮族|回族|维吾尔|特别行政区)/g, '')
+        const pinyinNamePingYing = this.provinces[this.provincesText.indexOf(transformedName)]
+        this.mapName = pinyinNamePingYing
+      } else {
+        this.mapName = 'china'
+      }
+      axios({
+        url: `/ncov/static/echarts/map/json/${this.mapName}.json`,
+        method: 'get',
+        dataType: 'json',
+        crossDomain: true,
+        cache: true
+      }).then(resJson => {
+        this.$nextTick(() => {
+          vChart.registerMap(this.mapName, resJson.data)
+          this.statistic = res.data.data
+        })
+      }).catch(e => {
+        this.$toast('地图资源加载错误')
+      })
+    })
+  },
+  methods: {
+    tabClick (name, title) {
+      this.onTrack('H5疫统计_疫情统计页_位置分布_切换分布', { '分布类型': title })
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.position {
+  padding: 20px;
+  background-color: #FFF;
+}
+.van-tabs ::v-deep {
+  .van-tabs__wrap {
+    height: 35px;
+  }
+  .van-tabs__nav--card {
+    margin: 0;
+    border: none;
+    height: 35px;
+  }
+  .van-tab {
+    color: #666;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 35px;
+    background-color: #F5F6F7;
+    border-right: 2px solid #FFF;
+    &.van-tab--active {
+      color: #FFF;
+    }
+    &:nth-of-type(1).van-tab--active {
+      background-color: #3F70FE;
+    }
+    &:nth-of-type(2).van-tab--active {
+      background-color: #FEBB39;
+    }
+    &:nth-of-type(3).van-tab--active {
+      background-color: #FE5E3F;
+    }
+  }
+  .van-tab:first-of-type {
+    border-radius: 10px 0 0 10px;
+  }
+  .van-tab:last-of-type {
+    border-radius: 0 10px 10px 0;
+  }
+}
+.echarts {
+  width: 100%;
+  height: 300px;
+}
+</style>
+```
