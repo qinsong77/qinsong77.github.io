@@ -38,11 +38,34 @@ function merge(left, right) {
 console.log(mergeSort([21, 3, 4, 89, 12, 5]))
 
 
-console.log(quickSort([21, 3, 4, 89, 12, 5], 0, 6))
+// console.log(quickSort([21, 3, 4, 89, 12, 5]))
 
 
+// function mergeSort2(arr){
+// 	if (arr.length > 1) {
+// 		const stack = []
+// 		for (let i = 0; i < arr.length; i++) {
+// 			if (arr[++i] !== undefined) {
+// 				stack.push([arr[i], arr[++i]])
+// 			} else stack.push([arr[i]])
+// 		}
+// 		while (stack.length > 1) {
+// 			const a = []
+// 			let m = stack.shift()
+// 			let n = stack.shift()
+// 			while (m.length > 0 && n.length > 0) {
+//
+// 			}
+// 			stack.unshift(a)
+// 		}
+// 		return stack[0]
+// 	} else return arr
+//
+// }
+//
+// console.log(mergeSort2([21, 3, 4, 89, 12, 5,13]))
 
-
+console.log(quickSort([3,12,43,7,34,56,36]))
 function quickSort(arr) {
 	return quick(arr, 0, arr.length -1)
 }
@@ -100,4 +123,4 @@ function shellSort(array) {
 	}
 	return array
 }
-console.log(shellSort([21, 3, 4, 89, 12, 5]))
+// console.log(shellSort([21, 3, 4, 89, 12, 5]))
