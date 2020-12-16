@@ -2,6 +2,9 @@
 title: Summary
 ---
 
+### [Webpack面试题](https://juejin.cn/post/6844904094281236487)
+### [从源码窥探Webpack4.x原理](https://juejin.cn/post/6844904046294204429)
+
 ### [webpack小书](https://www.timsrc.com/article/2/webpack-book)
 
 ### [Webpack揭秘](https://juejin.cn/post/6844903685407916039)
@@ -97,3 +100,46 @@ presets: [
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 ```
+
+## 简述 webpack 工作流程
+
+概念
+Entry：入口，Webpack 执行构建的第一步将从 Entry 开始，可抽象成输入。
+
+Module：模块，在 Webpack 里一切皆模块，一个模块对应着一个文件。Webpack 会从配置的 Entry 开始递归找出所有依赖的模块。
+
+Chunk：代码块，一个 Chunk 由多个模块组合而成，用于代码合并与分割。
+
+Loader：模块转换器，用于把模块原内容按照需求转换成新内容。
+
+Plugin：扩展插件，在 Webpack 构建流程中的特定时机注入扩展逻辑来改变构建结果或做你想要的事情。
+
+Output：输出结果，在 Webpack 经过一系列处理并得出最终想要的代码后输出结果。
+
+关于 webpack 的工作流程，简单来说可以概括为以下几步：
+
+1. 参数解析
+2. 找到入口文件
+3. 调用 Loader 编译文件
+4. 遍历 AST，收集依赖
+5. 生成 Chunk
+6. 输出文件
+
+style-loader 的功能就一个，在 DOM 里插入一个 `<style>` 标签，并且将 CSS 写入这个标签内。
+
+
+file-loader：把文件输出到一个文件夹中，在代码中通过相对 URL 去引用输出的文件;
+
+url-loader：和 file-loader 类似，但是能在文件很小的情况下以 base64 的方式把文件内容注入到代码中去;
+
+source-map-loader：加载额外的 Source Map 文件，以方便断点调试;
+
+image-loader：加载并且压缩图片文件;
+
+babel-loader：把 ES6 转换成 ES5;
+
+css-loader：处理js中引入的css,加载 CSS，支持模块化、压缩、文件导入等特性;
+
+style-loader：把 CSS 代码注入到 JavaScript 中，通过 DOM 操作去加载 CSS;
+
+eslint-loader：通过 ESLint 检查 JavaScript 代码;
