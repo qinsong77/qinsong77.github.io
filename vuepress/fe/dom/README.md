@@ -2,6 +2,8 @@
 title: Dom
 ---
 
+[「查缺补漏」高频考点浏览器面试题](https://juejin.cn/post/6854573215830933512)
+
 - [输入url到页面展示发生了什么](#输入url到页面展示发生了什么)
 - [事件机制](#%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6)
   - [事件触发有三个阶段](#事件触发有三个阶段)
@@ -25,7 +27,7 @@ title: Dom
 - [Service Worker](#service-worker)
 - [setTimeout和requestAnimationFrame](#settimeout和requestanimationframe)
 - [defer与async的区别](#defer与async的区别)
-- [Preload&Prefetch](#Preload&Prefetch)
+- [Preload&Prefetch](#preload-prefetch)
 - [websocket](https://juejin.cn/post/6854573221241421838)
   
 ----
@@ -539,8 +541,32 @@ self.addEventListener("fetch", e => {
 ### setTimeout和requestAnimationFrame
 > [介绍](https://juejin.im/post/6844904083204079630)
 
+屏幕刷新率是屏幕在每秒钟能刷新的次数，单位是赫兹（Hz），取决于显示器。
+
+动画帧率（FPS-Frame Per Second）：FPS 表示的是每秒钟画面更新次数，理论上说，FPS 越高，动画会越流畅，目前大多数设备的屏幕刷新率为 60 次/秒，所以通常来讲 FPS 为 60 frame/s 时动画效果最好，也就是每帧的消耗时间为 16.67ms。
+
+
 
 ### defer与async的区别
 defer与async的区别是：defer要等到整个页面在内存中正常渲染结束（DOM 结构完全生成，以及其他脚本执行完成），才会执行；async一旦下载完，渲染引擎就会中断渲染，执行这个脚本以后，再继续渲染。一句话，defer是“渲染完再执行”，async是“下载完就执行”。另外，如果有多个defer脚本，会按照它们在页面出现的顺序加载，而多个async脚本是不能保证加载顺序的。
 
+![An image](./image/defer_async.png)
+
 ### [Preload&Prefetch](https://blog.csdn.net/vivo_tech/article/details/109485871)
+
+#### `prefetch`(预提取)
+prefetch(链接预取）是一种浏览器机制，其利用浏览器空闲时间来下载或预取用户在不久的将来可能访问的文档。网页向浏览器提供一组预取提示，并在浏览器完成当前页面的加载后开始静默地拉取指定的文档并将其存储在缓存中。当用户访问其中一个预取文档时，便可以快速的从浏览器缓存中得到。
+
+prefetch作用是告诉浏览器加载下一页面可能会用到的资源,加速下一个页面的加载速度;
+
+##### `Preload`(预加载)
+1. preload 提供了一种声明式的命令，让浏览器提前加载指定资源(加载后并不执行)，需要执行时再执行，不阻塞渲染和document的onload事件
+2. as 属性不能忽略，如果忽略 as 属性，或者错误的 as 属性会使 preload 等同于 XHR 请求，浏览器不知道加载的是什么，因此会赋予此类资源非常低的加载优先级
+3. 对于字体文件，要带`crossorigin `属性，
+
+#### 区分
+1. preload 是告诉浏览器页面必定需要的资源，浏览器一定会加载这些资源
+
+2. prefetch 是告诉浏览器页面可能需要的资源，浏览器不一定会加载这些资源
+
+3. 在VUE SSR生成的页面中，首页的资源均使用preload，而路由对应的资源，则使用prefetch

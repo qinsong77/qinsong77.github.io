@@ -10,16 +10,16 @@ title: 常用笔记
 
 [文章](https://github.com/mqyqingfeng/Blog/issues/22)
 ```javascript
-  function debounce(fn, delay) {
-            let timer = null
-            return function (...args) {
-                let context = this
-                if(timer) clearTimeout(timer)
-                timer = setTimeout(function() {
-                    fn.apply(context, args)
-                },delay)
-            }
-        }
+function debounce(fn, delay) {
+    let timer = null
+    return function (...args) {
+        let context = this
+        if(timer) clearTimeout(timer)
+        timer = setTimeout(function() {
+            fn.apply(context, args)
+        },delay)
+    }
+}
 ```
 ##### 适合应用场景：
 - search搜索，用户不断输入值时，用防抖来节约Ajax请求,也就是输入框事件。
@@ -31,21 +31,21 @@ title: 常用笔记
 
 [文章](https://github.com/mqyqingfeng/Blog/issues/26)
 ```javascript
-  function throttle(fn, delay) {
-            let flag = true,
-                timer = null;
-            return function (...args) {
-                let context = this;
-                if (!flag) return;
-                flag = false;
-                clearTimeout(timer)
-                timer = setTimeout(() => {
-                    fn.apply(context, args);
-                    flag = true;
-                }, delay);
-            };
-        };
-  window.addEventListener('resize', throttle(() => console.log(new  Date().getTime()), 2000))
+function throttle(fn, delay) {
+    let flag = true,
+        timer = null;
+    return function (...args) {
+        let context = this;
+        if (!flag) return;
+        flag = false;
+        clearTimeout(timer)
+        timer = setTimeout(() => {
+            fn.apply(context, args);
+            flag = true;
+        }, delay);
+    };
+};
+window.addEventListener('resize', throttle(() => console.log(new  Date().getTime()), 2000))
 ```
 ##### 适合应用场景：
 
