@@ -32,11 +32,11 @@ title: Dom
   
 ----
 
-#### [输入URL到页面展示发生了什么](https://zhuanlan.zhihu.com/p/190320054)
+### [输入URL到页面展示发生了什么](https://zhuanlan.zhihu.com/p/190320054)
 >[git地址](https://github.com/venaissance/myBlog/issues/17)
 
-#### [事件机制](https://zh.javascript.info/introduction-browser-events)
-##### 事件触发有三个阶段
+### [事件机制](https://zh.javascript.info/introduction-browser-events)
+#### 事件触发有三个阶段
 - `window` 往事件触发处传播，遇到注册的捕获事件会触发
 - 传播到事件触发处时触发注册的事件
 - 从事件触发处往`window`传播，遇到注册的冒泡事件会触发
@@ -59,7 +59,7 @@ el.addEventListener(
 ````
 事件触发一般来说会按照上面的顺序进行，但是也有特例，如果给一个目标节点同时注册冒泡和捕获事件，事件触发会按照注册的顺序执行。
 
-##### 注册事件
+#### 注册事件
 通常我们使用`addEventListener`注册事件，该函数的第三个参数可以是布尔值，也可以是对象。
 对于布尔值 `useCapture` 参数来说，该参数默认值为`false`。`useCapture`决定了注册的事件是捕获事件还是冒泡事件。对于对象参数来说，可以使用以下几个属性
 
@@ -71,7 +71,7 @@ el.addEventListener(
 其实该函数也可以阻止捕获事件。stopImmediatePropagation 同样也能实现阻止事件，但是还能阻止该事件目标执行别的注册事件。
 
 
-##### [事件委托](https://zh.javascript.info/event-delegation)
+#### [事件委托](https://zh.javascript.info/event-delegation)
 如果一个节点中的子节点是动态生成的，那么子节点需要注册事件的话应该注册在父节点上
 ```html
 <ul id="ul">
@@ -82,7 +82,7 @@ el.addEventListener(
   <li>5</li>
 </ul>
 <script>
-  let ul = document.querySelector('##ul')
+  let ul = document.querySelector('#ul')
   ul.addEventListener('click', event => {
     console.log(event.target)
   })
@@ -92,11 +92,11 @@ el.addEventListener(
 - 节省内存
 - 不需要给子节点注销事件
 
-#### [跨域](https://juejin.im/post/6844904126246027278)
+### [跨域](https://juejin.im/post/6844904126246027278)
 因为浏览器出于安全考虑，有同源策略。也就是说，如果协议、域名或者端口有一个不同就是跨域，Ajax 请求会失败。
 
 常用方法解决方法
-##### JSONP
+#### JSONP
 JSONP 的原理很简单，就是利用`<script>`标签没有跨域限制的漏洞。通过`<script>`标签指向一个需要访问的地址并提供一个回调函数来接收数据当需要通讯时。
 ```html
 <script src="http://domain/api?param1=a&param2=b&callback=jsonp"></script>
@@ -124,18 +124,26 @@ jsonp('http://xxx', 'callback', function(value) {
   console.log(value)
 })
 ```
-##### CORS
+#### CORS
+> CORS（Cross-Origin Resource Sharing）跨域资源共享，定义了必须在访问跨域资源时，浏览器与服务器应该如何沟通。CORS背后的基本思想就是使用自定义的HTTP头部让浏览器与服务器进行沟通，从而决定请求或响应是应该成功还是失败。目前，所有浏览器都支持该功能，IE浏览器不能低于IE10。整个CORS通信过程，都是浏览器自动完成，不需要用户参与。对于开发者来说，CORS通信与同源的AJAX通信没有差别，代码完全一样。浏览器一旦发现AJAX请求跨源，就会自动添加一些附加的头信息，有时还会多出一次附加的请求，但用户不会有感觉。
+
+
 CORS 需要浏览器和后端同时支持。IE 8 和 9 需要通过 `XDomainRequest` 来实现。
 
 浏览器会自动进行 CORS 通信，实现 CORS 通信的关键是后端。只要后端实现了 CORS，就实现了跨域。
 
 服务端设置 Access-Control-Allow-Origin 就可以开启 CORS。 该属性表示哪些域名可以访问资源，如果设置通配符则表示所有网站都可以访问资源。
 
-##### document.domain
+#### WebSocket协议跨域
+
+> Websocket是HTML5的一个持久化的协议，它实现了浏览器与服务器的全双工通信，同时也是跨域的一种解决方案。WebSocket和HTTP都是应用层协议，都基于 TCP 协议。但是 「WebSocket 是一种双向通信协议，在建立连接之后，WebSocket 的 server 与 client 都能主动向对方发送或接收数据」。同时，WebSocket 在建立连接时需要借助 HTTP 协议，连接建立好了之后 client 与 server 之间的双向通信就与 HTTP 无关了。
+  
+
+#### document.domain
 该方式只能用于二级域名相同的情况下，比如 `a.test.com `和 `b.test.com` 适用于该方式。
 
 只需要给页面添加 document.domain = 'test.com' 表示二级域名都相同就可以实现跨域
-##### postMessage
+#### postMessage
 这种方式通常用于获取嵌入页面中的第三方页面数据。一个页面发送消息，另一个页面判断来源并接收消息
 ```javascript
 // 发送消息端
@@ -151,12 +159,12 @@ mc.addEventListener('message', event => {
 ```
 
 
-#### 浏览器缓存
+### 浏览器缓存
 > [介绍](https://juejin.im/post/6844903829620686856)
 
-#### [web储存方案](https://juejin.im/post/6844904192549584903)
+### [web储存方案](https://juejin.im/post/6844904192549584903)
 
-#### cookie到WebStorage、IndexedDB
+### cookie到WebStorage、IndexedDB
 > [介绍](https://juejin.im/post/6844903812092674061)
 
 cookie，localStorage，sessionStorage，indexDB
@@ -178,7 +186,7 @@ cookie，localStorage，sessionStorage，indexDB
 |  secure   |               只能在协议为 HTTPS 的请求中携带                |
 | same-site |    规定浏览器不能在跨域请求中携带 Cookie，减少 CSRF 攻击     |
 
-#### 浏览器页面渲染机制
+### 浏览器页面渲染机制
 > [介绍](https://juejin.im/post/6844903815758479374)
 
 浏览器的渲染机制一般分为以下几个步骤
@@ -197,13 +205,13 @@ cookie，localStorage，sessionStorage，indexDB
 ![An image](../image/dom/2.png)
 ![An image](../image/dom/3.png)
 
-##### Load 和 DOMContentLoaded 区别
+#### Load 和 DOMContentLoaded 区别
 
 Load 事件触发代表页面中的 DOM，CSS，JS，图片已经全部加载完毕。
 
 DOMContentLoaded 事件触发代表初始的 HTML 被完全加载和解析，不需要等待 CSS，JS，图片加载。
 
-##### 图层
+#### 图层
 
 一般来说，可以把普通文档流看成一个图层。特定的属性可以生成一个新的图层。**不同的图层渲染互不影响**，所以对于某些频繁需要渲染的建议单独生成一个新图层，提高性能。**但也不能生成过多的图层，会引起反作用。**
 
@@ -215,7 +223,7 @@ DOMContentLoaded 事件触发代表初始的 HTML 被完全加载和解析，不
 - 通过动画实现的 `opacity` 动画转换
 - `position: fixed`
 
-##### 重绘（Repaint）和回流（Reflow）
+#### 重绘（Repaint）和回流（Reflow）
 
 重绘和回流是渲染步骤中的一小节，但是这两个步骤对于性能影响很大。
 
@@ -247,7 +255,7 @@ DOMContentLoaded 事件触发代表初始的 HTML 被完全加载和解析，不
 
 以上内容来自于 [HTML 文档](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model)
 
-##### 减少重绘和回流
+#### 减少重绘和回流
 
 - 使用 `translate` 替代 `top`
 
@@ -294,7 +302,7 @@ DOMContentLoaded 事件触发代表初始的 HTML 被完全加载和解析，不
 ![An image](../image/dom/4.png)
 
 
-#### Event loop
+### Event loop
 众所周知 JS 是门非阻塞单线程语言，因为在最初 JS 就是为了和浏览器交互而诞生的。如果 JS 是门多线程的语言话，我们在多个线程中处理 DOM 就可能会发生问题（一个线程中新加节点，另一个线程中删除节点），当然可以引入读写锁解决这个问题。
 
 JS 在执行的过程中会产生执行环境，这些执行环境会被顺序的加入到执行栈中。如果遇到异步的代码，会被挂起并加入到 Task（有多种 task） 队列中。一旦执行栈为空，Event Loop 就会从 Task 队列中拿出需要执行的代码并放入执行栈中执行，所以本质上来说 JS 中的异步还是同步行为。
@@ -349,7 +357,7 @@ console.log('script end')
 - 然后开始下一轮 Event loop，执行宏任务中的异步代码
 通过上述的 Event loop 顺序可知，如果宏任务中的异步代码有大量的计算并且需要操作 DOM 的话，为了更快的 界面响应，我们可以把操作 DOM 放入微任务中
 
-#### Node 中的 Event loop
+### Node 中的 Event loop
 ```
 ┌───────────────────────┐
 ┌─>│        timers         │
@@ -482,11 +490,11 @@ process.nextTick(() => {
 })
 // nextTick, timer1, promise1
 ```
-#### 浏览器与Node的事件循环(Event Loop)的区别
+### 浏览器与Node的事件循环(Event Loop)的区别
 > [介绍](https://juejin.im/post/6844903761949753352)
 
 
-#### Service Worker
+### Service Worker
 
 > Service workers 本质上充当Web应用程序与浏览器之间的代理服务器，也可以在网络可用时作为浏览器和网络间的代理。它们旨在（除其他之外）使得能够创建有效的离线体验，拦截网络请求并基于网络是否可用以及更新的资源是否驻留在服务器上来采取适当的动作。他们还允许访问推送通知和后台同步API。
 
@@ -559,7 +567,7 @@ prefetch(链接预取）是一种浏览器机制，其利用浏览器空闲时�
 
 prefetch作用是告诉浏览器加载下一页面可能会用到的资源,加速下一个页面的加载速度;
 
-##### `Preload`(预加载)
+#### `Preload`(预加载)
 1. preload 提供了一种声明式的命令，让浏览器提前加载指定资源(加载后并不执行)，需要执行时再执行，不阻塞渲染和document的onload事件
 2. as 属性不能忽略，如果忽略 as 属性，或者错误的 as 属性会使 preload 等同于 XHR 请求，浏览器不知道加载的是什么，因此会赋予此类资源非常低的加载优先级
 3. 对于字体文件，要带`crossorigin `属性，

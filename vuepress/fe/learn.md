@@ -9,9 +9,9 @@ JavaScript目前有八种内置类型（包含ES6的symbol）：
 - string
 - number
 - boolean
-- object
 - symbol
 - BigInt
+- object
 
 #### typeof null 为 'object'的bug
 > JavaScript中的数据在底层是以二进制存储，比如null所有存储值都是0，但是底层的判断机制，只要前三位为0，就会判定为object，所以才会有typeof null === 'object'这个bug。

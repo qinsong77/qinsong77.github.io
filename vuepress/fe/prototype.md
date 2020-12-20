@@ -33,12 +33,12 @@ Array.__proto__ === Function.prototype
 
 > 函数对象
 - 凡是通过`new Function()`创建的都是函数对象
-- 拥有`__proto__`、`prototyp`e属性（指向原型对象）
+- 拥有`__proto__`、`prototype`属性（指向原型对象）
 - 包括Function、Object、Array、Date、String、自定义函数
 - 特例： `Function.prototype`(是原型对象，却是函数对象)
-- 箭头函数没有prototype；箭头函数是匿名函数,是不能作为构造函数的,不能使用new；箭头函数不绑定arguments,取而代之用rest参数…解决；
+- 箭头函数没有`prototype`；箭头函数是匿名函数,是不能作为构造函数的,不能使用`new`；箭头函数不绑定`arguments`,取而代之用rest参数`(…rest)`解决；
   箭头函数不能当做Generator函数,不能使用yield关键字；
-  箭头函数会捕获其所在上下文的 this 值，作为自己的 this 值，任何方法都改变不了其指向，如call(), bind(), apply()，而普通函数的this指向调用它的那个对象。
+  箭头函数会捕获其所在上下文的 `this` 值，作为自己的 this 值，任何方法都改变不了其指向，如`call()`, `bind()`, `apply()`，而普通函数的this指向调用它的那个对象。
 
 ```javascript
 //函数对象  

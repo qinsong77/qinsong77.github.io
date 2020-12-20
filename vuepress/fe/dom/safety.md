@@ -137,6 +137,13 @@ console.log(html);
 ##### [SameSite](http://www.ruanyifeng.com/blog/2019/09/cookie-samesite.html)
 
 可以对 Cookie 设置 `SameSite` 属性。该属性设置 Cookie 不随着跨域请求发送，该属性可以很大程度减少 CSRF 的攻击，但是该属性目前并不是所有浏览器都兼容。
+`SameSite`可以设置为三个值，`Strict`、`Lax`和`None`。
+
+1. 在`Strict`模式下，浏览器完全禁止第三方请求携带`Cookie`。比如请求`sanyuan.com`网站只能在`sanyuan.com`域名当中请求才能携带 Cookie，在其他网站请求都不能。
+2. 在`Lax`模式，就宽松一点了，但是只能在 `get 方法提交表单`或者`a 标签发送 get 请求`的情况下可以携带 Cookie，其他情况均不能。
+3. 在`None`模式下，Cookie将在所有上下文中发送，即允许跨域发送。
+
+
 
 #### 验证 Referer
 

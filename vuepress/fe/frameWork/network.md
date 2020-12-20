@@ -30,7 +30,7 @@ title: 网络相关
 - [HTTP](#http)
   - [HEAD方法和OPTIONS方法](#HEAD方法和OPTIONS方法)
   - [Post 和 Get 的区别](#post-%E5%92%8C-get-%E7%9A%84%E5%8C%BA%E5%88%AB)
-  - [HTTP状态码](#HTTP状态码)
+  - [HTTP状态码](#http状态码)
   - [HTTP 首部](#http-%E9%A6%96%E9%83%A8)
 - [HTTPS](#https)
   - [TLS](#tls)
