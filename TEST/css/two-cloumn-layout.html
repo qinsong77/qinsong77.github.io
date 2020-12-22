@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>两列布局</title>
+  <style>
+    body {
+      margin: 0;
+    }
+    html, body {
+      height: 100%;
+    }
+    #left {
+      overflow: auto;  /*触发bfc*/
+      height: 100%;
+      background-color: #f00;
+    }
+    #right {
+      margin-left: 10px;  /*margin需要定义在#right中*/
+      float: right;
+      width: 100px;
+      height: 500px;
+      background-color: #0f0;
+    }
+  </style>
+</head>
+<body>
+<div id="parent">
+  <div id="right">右列定宽</div>
+  <div id="left">
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+    <p>左列自适应</p>
+  </div>   <!--顺序要换一下-->
+</div>
+</body>
+</html>

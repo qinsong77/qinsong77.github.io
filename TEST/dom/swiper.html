@@ -75,6 +75,16 @@
     <li></li>
   </ul>
 </div>
+<div style="height: 100px;width: 100px;float: left;background: lightblue">我是一个左浮动的元素</div>
+<div style="width: 200px; height: 200px;background: #eee;overflow: hidden">我是一个没有设置浮动,
+  也没有触发 BFC 元素, width: 200px; height:200px; background: #eee;</div>
+<div style="border: #dddddd 10px solid;overflow: auto"><div style="height: 100px;width: 100px;float: left;background: lightblue">我是一个左浮动的元素</div>
+  <div style="width: 200px; height: 50px;background: #eee">我是一个没有设置浮动,
+    也没有触发 BFC 元素, width: 200px; height:200px; background: #eee;</div></div>
+<div style="border: 2px salmon dashed">
+  <div style="width: 200px; height: 200px;background: #eee;margin: 20px"></div>
+  <div style="width: 200px; height: 200px;background: #f3f4f5;margin: 20px"></div>
+</div>
 <script>
 	let wrap = document.querySelector('.wrap')//获取外框，以便设置图片滚动的宽度
 	let list = wrap.querySelector('.list')//图片列表

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>em&rem</title>
+  <style>
+    .p1 {
+      font-size: 16px;
+      line-height: 32px;
+    }
+    
+    .s1 {
+      font-size: 2em;
+    }
+    
+    .s2 {
+      font-size: 2em;
+      line-height: 2em;
+    }
+    
+    .p2 {
+      font-size: 16px;
+      line-height: 2;
+    }
+    
+    .s5 {
+      font-size: 2em;
+    }
+    
+    .s6 {
+      font-size: 2em;
+      line-height: 2em;
+    }
+  </style>
+</head>
+<body>
+<div class="p1">
+  <div class="s1">1</div>
+  <div class="s2">1</div>
+</div>
+<div class="p2">
+  <div class="s5">1</div>
+  <div class="s6">1</div>
+</div>
+<script>
+	class Point {
+		static re = 'parent'
+		constructor(x, y){
+			this.x = x
+			this.y = y
+		}
+
+		toString(){
+			return '(' + this.x + ', ' + this.y + ')'
+		}
+	}
+
+	class ColorPoint extends Point {
+		constructor(x, y, color){
+			super(x, y) // 调用父类的constructor(x, y)
+			this.color = color
+		}
+
+		// toString(){
+		// 	return this.color + ' ' + super.toString()
+		// }
+	}
+	console.log(ColorPoint.re)
+  let c = new ColorPoint(1,2,'red')
+  console.log(c.toString())
+  
+</script>
+</body>
+</html>
