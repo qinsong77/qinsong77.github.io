@@ -110,11 +110,37 @@ align-content: 定义了多根轴线的对齐方式，如果项目只有一根�
 }
 ```
 
-#### 伪类和伪元素
+### 定位position
+
+- static
+HTML 元素的默认值，即没有定位，遵循正常的文档流对象。静态定位的元素不会受到 top, bottom, left, right影响。
+- relative
+相对定位元素的定位是相对其正常位置。移动相对定位元素，但它原本所占的空间不会改变。相对定位元素经常被用来作为绝对定位元素的容器块。
+- absolute
+绝对定位的元素的位置相对于最近的已定位父元素（除了static的父元素），如果元素没有已定位的父元素，那么它的位置相对于<html>--**错误，经过测试是相对于浏览器窗口**:
+top, bottom, left, right百分比写法是**相对于父元素box的大小**;
+absolute 定位使元素的位置与文档流无关，因此不占据空间。absolute 定位的元素和其他元素重叠。
+- fixed
+元素的位置相对于浏览器窗口是固定位置。即使窗口是滚动的它也不会移动：fixed定位使元素的位置与文档流无关，因此不占据空间。
+ fixed定位的元素和其他元素重叠。
+- sticky
+粘性定位：position: sticky; 基于用户的滚动位置来定位。
+
+粘性定位的元素是依赖于用户的滚动，在 position:relative 与 position:fixed 定位之间切换。
+
+它的行为就像 position:relative; 而当页面滚动超出目标区域时，它的表现就像 position:fixed;，它会固定在目标位置。
+
+元素定位表现为在跨越特定阈值前为相对定位，之后为固定定位。
+
+这个特定阈值指的是 top, right, bottom 或 left 之一，换言之，指定 top, right, bottom 或 left 四个阈值其中之一，才可使粘性定位生效。否则其行为与相对定位相同。
+
+- inherit
+规定应该从父元素继承 position 属性的值。
+#### [伪类](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Pseudo-classes)和伪元素
 
 伪类和伪元素的根本区别在于：它们是否创造了新的元素
 
-伪类，指可以通过元素选择器，就可以实现的效果，如frist-child，active等。 而伪元素，是指需要通过创元素，才可以实现的效果，如first-letter,before，after等。
+伪类，指可以通过元素选择器，就可以实现的效果，如`first-child`，`active`, `:checked`，`:disabled`， `:nth-child()`等。 而伪元素，是指需要通过创元素，才可以实现的效果，如`first-letter`,`before`，`after`等。
 具体元素跟写法，可参考：<https://blog.csdn.net/qq_27674439/article/details/90608220>
 
 #### `<img>`是什么元素

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>Title</title>
+   <style>
+      .absolute_div {
+         position: absolute;
+         background: #282c34;
+         right: 20px;
+         bottom: 20px;
+      }
+      body {
+         height: 1300px;
+         background: #3eaf7c;
+      }
+      .sticky {
+         position: -webkit-sticky; /* Safari */
+         position: sticky;
+         top: 0;
+         bottom: 0;
+         background-color: green;
+         border: 2px solid #4CAF50;
+      }
+   </style>
+</head>
+<body>
+<div class="absolute_div">123</div>
+<div style="width: 300px;height: 500px;background: #3a5169;position: relative">
+   <div class="absolute_div">12563</div>
+   <div class="sticky">sticky</div>
+</div>
+<div class="sticky">sticky</div>
+</body>
+</html>
