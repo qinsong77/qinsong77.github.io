@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>clear float</title>
+   <style>
+      .container {
+         border: 2px dashed red;
+      }
+      .clearfix:after{
+         content: '';
+         display: block;
+         clear: both;
+      }
+      .float_div {
+         width: 100px;
+         height: 100px;
+         background: #282c34;
+      }
+      .float_left {
+         float: left;
+      }
+      .float_right {
+         float: right;
+      }
+      .bottom {
+         width: 300px;
+         height: 200px;
+         background: #2c3e50;
+      }
+   </style>
+</head>
+<body>
+<div class="container">
+   <div class="float_div float_left"></div>
+   <div>
+     this is test
+   </div>
+   <div class="float_div float_left"></div>
+   <div class="float_div float_right"></div>
+</div>
+<div class="bottom">bottom</div>
+</body>
+</html>

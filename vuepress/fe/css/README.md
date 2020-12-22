@@ -13,14 +13,28 @@ title: Summary of CSS
 
 ### [你未必知道的49个CSS知识点](https://juejin.im/post/6844903902123393032)
 
-### [rem](https://yanhaijing.com/css/2017/09/29/principle-of-rem-layout/)
-
 #### [从网易与淘宝的font-size思考前端设计稿与工作流](https://www.cnblogs.com/lyzg/p/4877277.html)
+
+### em&&[rem](https://yanhaijing.com/css/2017/09/29/principle-of-rem-layout/)
+
+px像素（Pixel）。相对长度单位。像素px是相对于显示器屏幕分辨率而言的。
+
+#### em
+
+**em**，`em`值的大小是动态的。当定义或继承`font-size`属性时，`1em`等于该元素的字体大小。如果你在网页中任何地方都没有设置文字大小的话，那它将等于浏览器默认文字大小，通常是`16px`。所以通常1em = 16px。2em = 32px。 如果你设置了body元素的字体大小为20px，那1em = 20px、2em = 40px。那个2就是当前em大小的倍数。
+
+`em`单位受父元素的影响，是因为font-size本身是继承属性。如果没有定义，就要基于父元素，直到html,html未设置则是浏览器的默认文字大小`16px`
+
+所有未经调整的浏览器都符合: 1em=16px。那么12px=0.75em,10px=0.625em。为了简化font-size的换算，需要在css中的body选择器中声明Font-size=62.5%，这就使em值变为 16px*62.5%=10px, 这样12px=1.2em, 10px=1em, 也就是说只需要将你的原来的px数值除以10，然后换上em作为单位就行了。
+
+### rem
+
+`rem`即 root em，顾名思义，就是根元素 `em` 大小。 `em` 相对于当前元素， `rem` 相对于根元素，本质差别在于当前元素是多变的，根元素是固定的，也就是说，如果使用 rem，我们的计算值不会受当前元素 `font-size` 大小的影响。css3新增。
 
 - [flex布局](#flex布局)
 - [伪类和伪元素](#伪类和伪元素)
 - [img是什么元素](#img-是什么元素)
-- [line-height1.5和line-height:150%的区别](#line-height1-5和line-height-150-的区别)
+- [line-height:1.5和line-height:150%的区别](#line-height-1-5和line-height-150-的区别)
 
 ### 盒模型
 
@@ -129,7 +143,7 @@ align-content: 定义了多根轴线的对齐方式，如果项目只有一根�
 - 对于表单元素，浏览器也有默认的样式，包括宽度和高度
 - `<img>、<input>`属于行内替换元素。height/width/padding/margin均可用。效果等于块元素。
 
-### line-height1.5和line-height:150%的区别
+### line-height:1.5和line-height:150%的区别
 
 区别体现在子元素继承时，如下：
 

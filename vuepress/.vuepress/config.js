@@ -90,7 +90,7 @@ module.exports = {
 					// sidebarDepth: 2,    // 可选的, 默认值是 1
 					children: [
 						['css/', 'Summary'],
-						'css/BFC',
+						['css/BFC', 'BFC和清除浮动'],
 					]
 				},
 				{
