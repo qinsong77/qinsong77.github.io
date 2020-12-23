@@ -336,6 +336,8 @@ HTML结构如下，在.topDiv的div上再添加一个`clearfix`类：
 </style>
 ```
 前面三种方法本质上一样的。利于`clear`属性
+- 1.使用clear属性：为了使`::after`的左边或者两边不允许出现浮动元素。
+- 2.`display`为块级元素：内联元素会跟在浮动元素后面，`clear`属性也只有在块级元素才会起作用，所以`block`,`list-item` 或`table`都可以。
 
 #### 4. 利于BFC添加`overflow`属性
 

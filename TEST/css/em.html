@@ -8,32 +8,55 @@
       font-size: 16px;
       line-height: 32px;
     }
-    
+
     .s1 {
       font-size: 2em;
     }
-    
+
     .s2 {
       font-size: 2em;
       line-height: 2em;
     }
-    
+
     .p2 {
       font-size: 16px;
       line-height: 2;
     }
-    
+
     .s5 {
       font-size: 2em;
     }
-    
+
     .s6 {
       font-size: 2em;
       line-height: 2em;
     }
   </style>
+  <style type="text/css">
+    .box {
+      width: 100px;
+      height: 200px;
+      text-align: center;
+      border: 10px solid black;
+      padding: 15px;
+      box-sizing: content-box;
+      overflow: scroll;
+    }
+    .box2 {
+      width: 200px;
+      height: 200px;
+      text-align: center;
+      border: 10px solid black;
+      padding: 15px;
+      box-sizing: border-box;
+    }
+  </style>
 </head>
 <body>
+<div class="box">
+  <p>12121212222222222222222222222222222222222222222222222</p>
+</div>
+<div class="box2"></div>
 <div class="p1">
   <div class="s1">1</div>
   <div class="s2">1</div>
@@ -43,32 +66,8 @@
   <div class="s6">1</div>
 </div>
 <script>
-	class Point {
-		static re = 'parent'
-		constructor(x, y){
-			this.x = x
-			this.y = y
-		}
-
-		toString(){
-			return '(' + this.x + ', ' + this.y + ')'
-		}
-	}
-
-	class ColorPoint extends Point {
-		constructor(x, y, color){
-			super(x, y) // 调用父类的constructor(x, y)
-			this.color = color
-		}
-
-		// toString(){
-		// 	return this.color + ' ' + super.toString()
-		// }
-	}
-	console.log(ColorPoint.re)
-  let c = new ColorPoint(1,2,'red')
-  console.log(c.toString())
-  
+  let box = document.querySelector('.box')
+  console.log(box.clientHeight)
 </script>
 </body>
 </html>
