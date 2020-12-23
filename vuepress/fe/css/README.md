@@ -27,7 +27,7 @@ px像素（Pixel）。相对长度单位。像素px是相对于显示器屏幕�
 
 所有未经调整的浏览器都符合: 1em=16px。那么12px=0.75em,10px=0.625em。为了简化font-size的换算，需要在css中的body选择器中声明Font-size=62.5%，这就使em值变为 16px*62.5%=10px, 这样12px=1.2em, 10px=1em, 也就是说只需要将你的原来的px数值除以10，然后换上em作为单位就行了。
 
-### rem
+#### rem
 
 `rem`即 root em，顾名思义，就是根元素 `em` 大小。 `em` 相对于当前元素， `rem` 相对于根元素，本质差别在于当前元素是多变的，根元素是固定的，也就是说，如果使用 rem，我们的计算值不会受当前元素 `font-size` 大小的影响。css3新增。
 
@@ -112,30 +112,43 @@ align-content: 定义了多根轴线的对齐方式，如果项目只有一根�
 
 ### 定位position
 
-- static
+- `static`
 HTML 元素的默认值，即没有定位，遵循正常的文档流对象。静态定位的元素不会受到 top, bottom, left, right影响。
-- relative
+
+- `relative`
 相对定位元素的定位是相对其正常位置。移动相对定位元素，但它原本所占的空间不会改变。相对定位元素经常被用来作为绝对定位元素的容器块。
-- absolute
-绝对定位的元素的位置相对于最近的已定位父元素（除了static的父元素），如果元素没有已定位的父元素，那么它的位置相对于<html>--**错误，经过测试是相对于浏览器窗口**:
+
+- `absolute`
+绝对定位的元素的位置相对于最近的已定位父元素（除了static的父元素），如果元素没有已定位的父元素，那么它的位置相对于`<html>`--**错误，经过测试是相对于浏览器窗口**:
 top, bottom, left, right百分比写法是**相对于父元素box的大小**;
 absolute 定位使元素的位置与文档流无关，因此不占据空间。absolute 定位的元素和其他元素重叠。
-- fixed
+
+- `fixed`
 元素的位置相对于浏览器窗口是固定位置。即使窗口是滚动的它也不会移动：fixed定位使元素的位置与文档流无关，因此不占据空间。
- fixed定位的元素和其他元素重叠。
-- sticky
-粘性定位：position: sticky; 基于用户的滚动位置来定位。
+ `fixed`定位的元素和其他元素重叠。
+ 
+- `sticky`
+粘性定位：position: sticky; 在目标区域以内，它的行为就像 `position:relative;`在滑动过程中，某个元素距离其父元素的距离达到`sticky`粘性定位的要求时(比如`top：100px`)；`position:sticky`这时的效果相当于`fixe`d定位，固定到适当位置；
 
-粘性定位的元素是依赖于用户的滚动，在 position:relative 与 position:fixed 定位之间切换。
+元素定位表现为在跨越特定阈值（相对偏移）前为相对定位，之后为固定定位。
 
-它的行为就像 position:relative; 而当页面滚动超出目标区域时，它的表现就像 position:fixed;，它会固定在目标位置。
+元素固定的相对偏移是相对于离它最近的具有滚动框的祖先元素，如果祖先元素都不可以滚动，那么是相对于viewport来计算元素的偏移量。 
 
-元素定位表现为在跨越特定阈值前为相对定位，之后为固定定位。
+这个特定阈值（相对偏移）指的是 top, right, bottom 或 left 之一，换言之，指定 top, right, bottom 或 left 四个阈值其中之一，才可使粘性定位生效。否则其行为与相对定位相同。
 
-这个特定阈值指的是 top, right, bottom 或 left 之一，换言之，指定 top, right, bottom 或 left 四个阈值其中之一，才可使粘性定位生效。否则其行为与相对定位相同。
+使用条件：
+
+1、父元素不能`overflow:hidden`或者`overflow:auto`属性；
+
+2、必须指定`top、bottom、left、right`4个值之一，否则只会处于相对定位；
+
+3.父元素的高度不能低于`sticky`元素的高度；
+
+4、sticky元素仅在其父元素内生效。
 
 - inherit
 规定应该从父元素继承 position 属性的值。
+
 #### [伪类](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Pseudo-classes)和伪元素
 
 伪类和伪元素的根本区别在于：它们是否创造了新的元素
@@ -183,3 +196,11 @@ absolute 定位使元素的位置与文档流无关，因此不占据空间。ab
 父元素设置属性：font-size:14px;line-height:150%,child设置font-size:26px;
 
 那么父元素：line-height = 14px * 150% = 21px，子元素：line-height = 父元素的line-height = 21px。
+
+### 1px问题
+
+#### devicePixelRatio属性
+该 `Window` 属性 `devicePixelRatio` 能够返回当前显示设备的物理像素分辨率与 `CSS` 像素分辨率的比率。此值也可以解释为像素大小的比率：一个 CSS 像素的大小与一个物理像素的大小的比值。简单地说，这告诉浏览器应该使用多少个屏幕的实际像素来绘制单个 CSS 像素。
+devicePixelRatio 属性值为一个 double
+
+#### 伪类+transform实现

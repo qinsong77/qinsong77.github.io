@@ -5,6 +5,7 @@ title: 微前端
 ### [qiankun微前端方案实践及总结](https://juejin.im/post/6844904185910018062)
 ### [qiankun微前端实践总结（二）](https://juejin.im/post/6856569463950639117)
 
+### [一篇英语介绍文章](https://micro-frontends.org/)
 
 ### 部署遇到的问题
 

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>sticky</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    .container {
+      background: #3a5169;
+      border: 2px red dashed;
+      height: 1000px;
+    }
+    .sticky {
+      position: -webkit-sticky; /* Safari */
+      position: sticky;
+      top: -2px;
+      background-color: green;
+      border: 2px solid #4CAF50;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="sticky">this is sticky</div>
+    <p>this is container</p>
+  </div>
+</body>
+</html>
