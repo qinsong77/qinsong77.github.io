@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>Selector</title>
+   <style>
+      /*
+        (+标识)符介于两个选择器之间，当第二个选择器匹配的元素紧跟着第一个元素后面并且它们都是同一个父亲
+        .box1 div:first-of-type(A元素)
+        div(B元素)
+        匹配紧跟着A的B
+      */
+      .box1 div:first-of-type + p {
+         color: red;
+      }
+      .box1:first-of-type {
+         background: #3eaf7c;
+      }
+
+      .box1 div:first-of-type + p {
+         color: red;
+      }
+      /*筛选不到的*/
+         /*
+           (~标识)符介于两个选择器之间，匹配第一个选择器元素后面所有匹配第二个选择器的同层级元素
+           .box2 div(A元素)
+           p(B元素)
+           匹配所有A后面的B
+         */
+      .box2 div ~ p {
+         color: seagreen;
+      }
+   </style>
+
+</head>
+<body>
+<div class="box1">
+   <div>One</div>
+   <div>Two!</div>
+   <div>Three</div>
+   <p>pppp</p>
+</div>
+<div class="box2">
+   <div>One2</div>
+   <p>pppp1</p>
+   <div>Two2!</div>
+   <p>pppp2</p>
+</div>
+
+</body>
+</html>

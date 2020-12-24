@@ -1172,6 +1172,7 @@ Vue.prototype._init = function (options) {
 
 
 ### [computed](https://juejin.cn/post/6844904116439744520)
+### [computed2](https://juejin.cn/post/6844904199596015624)
 
 
  ::: details 点击查看代码
