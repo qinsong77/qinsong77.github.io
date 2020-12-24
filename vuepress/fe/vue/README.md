@@ -26,7 +26,8 @@ title: Vue
  - 1、在beforeCreate和created之间调用initState(vm)方法， 获取data并遍历,调用observe方法，ob = new Observer(value)进行依赖收集和派发更新
  - 2、在Observer中调用defineReactive使用defineProperty进行get和set操作，defineReactive中var dep = new Dep();
  Object.defineProperty 在getter时if (Dep.target) 则执行 dep.depend()即Dep.target.addDep(this);setter的时候dep.notify()派发更新。
- - 3、在beforeMount和mounted之间new Watcher(),watcher实例化的时候，会执行this.get()方法，把Dep.target赋值为当前渲染watcher并压入栈(为了恢复用)。
+ - 3、在beforeMount和mounted之间new Watcher(),watcher实例化的时候，会执行this.get()方法，把Dep.target赋值为当前渲染watcher并压入栈(为了恢复用),具体是`new`的时候执行
+ `this.get()`,然后这个get先执行 `pushTarget(this);`然后执行`this.getter.call(vm, vm)`, 这个`getter`是`new`的时候赋值的`updateComponent`函数，里面执行了render组件的方法。
  接着执行vm._render()方法，生成渲染VNode,并且在这个过程中对vm上的数据访问，这个时候就触发了数据对象的getter(执行了Dep.target.addDep(this)方法，
  将watcher订阅到这个数据持有的dep的subs中，为后续数据变化时通知到拉下subs做准备).然后递归遍历添加所有子项的getter。
  

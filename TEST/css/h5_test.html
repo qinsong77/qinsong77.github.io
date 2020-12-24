@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" style="font-size: 13.33333vw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; minimum-scale=1; user-scalable=no;">
+  <title>h5_test</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+    }
+    header {
+      text-align: center;
+      height: 0.88rem;
+      /*height: 88px;*/
+      /*font-size: 30px;*/
+      font-size: 0.3rem;
+      color: #000000;
+      /*line-height: 88px;*/
+      line-height: 0.88rem;
+    }
+    p {
+      margin: 0;
+      padding: 0.10rem;
+      /*font-size: 14px;*/
+      font-size: 0.14rem;
+    }
+    @media screen and (max-width: 320px) {
+      html {
+        font-size: 32px;
+      }
+    }
+    @media screen and (min-width: 540px) {
+      html {
+        font-size: 54px;
+      }
+    }
+    .border_1px {
+      position: relative;
+    }
+    .border_1px::after{
+       content: '';
+       position: absolute;
+       display: block;
+       bottom: 0;
+       height: 1px;
+       width: 100%;
+       background-color: #000;
+     }
+    @media only screen and (-webkit-min-device-pixel-ratio:2){
+      .border_1px:after{
+        transform: scaleY(0.5);
+      }
+    }
+    @media only screen and (-webkit-min-device-pixel-ratio:3){
+      .border_1px:after{
+        transform: scaleY(0.33);
+      }
+    }
+  </style>
+</head>
+<body>
+<header class="border_1px">
+  疫情统计
+</header>
+<p>this is test</p>
+</body>
+</html>
