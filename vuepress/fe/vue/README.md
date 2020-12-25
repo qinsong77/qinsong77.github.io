@@ -1170,9 +1170,41 @@ Vue.prototype._init = function (options) {
 ```
 :::
 
+### computed和watch
 
-### [computed](https://juejin.cn/post/6844904116439744520)
-### [computed2](https://juejin.cn/post/6844904199596015624)
+- [Vue的Computed原理](https://juejin.cn/post/6844904116439744520)
+- [手摸手带你理解Vue的Computed原理](https://juejin.cn/post/6844904199596015624)
+在`initState`时`initComputed`和`initWatch`
+- 1.实例上定义` _computedWatchers` 对象，用于存储“计算属性Watcher”;
+- 2.获取计算属性的 `getter`，需要判断是函数声明还是对象声明;
+- 3.创建“计算属性Watcher”，`getter` 作为参数传入，它会在依赖属性更新时进行调用，并对计算属性重新取值。需要注意 Watcher 的 lazy 配置，这是实现缓存的标识;
+- 4.`defineComputed` 对计算属性进行数据劫持;
+
+`computed`核心是`computedGetter`里的执行，获取缓存的`_computedWatchers`，具体如下：
+```javascript
+function computedGetter(){
+	var watcher = this._computedWatchers && this._computedWatchers[key]
+	if (watcher) {
+		if (watcher.dirty) {
+			watcher.evaluate()
+		}
+		if (Dep.target) {
+			watcher.depend()
+		}
+		return watcher.value
+	}
+}
+
+Watcher.prototype.evaluate = function evaluate () {
+this.value = this.get();
+this.dirty = false;
+};
+```
+
+
+
+watcher.dirty 是实现计算属性缓存的触发点，watcher.evaluate是对计算属性重新求值，依赖属性收集“渲染Watcher”，计算属性求值后会将值存储在 value 中，get 返回计算属性的值；
+dirty为false返回上传的结果，为true执行`watcher.evaluate()`。实际上是`defineReactive`中的`get`方法的`dep.depend()`将`computed`的`watcher`推入依赖`data`的`dep`的`sub队列`中，这正是依赖data的修改可以触发`dirty=true`的原因
 
 
  ::: details 点击查看代码
