@@ -512,6 +512,26 @@ function deepClone2(data, hashMap = new WeakMap()) {
 ```
 
 ### 手写EventHub（发布-订阅）
+
+#### 定义
+发布-订阅模式其实是一种对象间一对多的依赖关系，当一个对象的状态发送改变时，所有依赖于它的对象都将得到状态改变的通知。
+
+订阅者（Subscriber）把自己想订阅的事件注册（Subscribe）到调度中心（Event Channel），当发布者（Publisher）发布该事件（Publish Event）到调度中心，也就是该事件触发时，由调度中心统一调度（Fire Event）订阅者注册到调度中心的处理代码。
+
+例如 Node.js EventEmitter 中的 on 和 emit 方法；Vue 中的 $on 和 $emit 方法。都使用了发布-订阅模式
+
+优点： 对象之间解耦，异步编程中，可以更松耦合的代码编写；缺点：创建订阅者本身要消耗一定的时间和内存，虽然可以弱化对象之间的联系，多个发布者和订阅者嵌套一起的时候，程序难以跟踪维护
+
+#### 发布-订阅模式与观察者模式的区别
+
+![](./image/achieve/sub_observer_pubulisher.png)
+
+- 观察者模式: 观察者（Observer）直接订阅（Subscribe）主题（Subject），而当主题被激活的时候，会触发（Fire Event）观察者里的事件。
+- 发布订阅模式: 订阅者（Subscriber）把自己想订阅的事件注册（Subscribe）到调度中心（Event Channel），当发布者（Publisher）发布该事件（Publish Event）到调度中心，也就是该事件触发时，由调度中心统一调度（Fire Event）订阅者注册到调度中心的处理代码。
+          
+发布订阅模式与观察者模式最大的区别在于发布订阅模式有一个第三方存在，成为代理或者事件总线。发布者与订阅者分别和这个代理交互，他们彼此不知道对方的存在也不需要，发布者发布消息通知代理，订阅者去代理那订阅。
+观察者模式则可以直接交流，一方发生变化直接通知另一方。
+
 核心思路是：
 
  - 使用一个对象作为缓存
@@ -519,6 +539,7 @@ function deepClone2(data, hashMap = new WeakMap()) {
  - emit 负责遍历触发 EventName 底下的方法数组
  - off 找方法的索引，并删除
 ```javascript
+// 简单实现
 class EventHub {
   cache = {};
   on(eventName, fn) {
@@ -538,7 +559,7 @@ class EventHub {
   }
 }
 
-// 观察者模式
+// 更加完善
 function EventEmitter() {
 	this._maxListeners = 10
 	this._events = Object.create(null)

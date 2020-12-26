@@ -4,6 +4,23 @@ title: 类型转换
 
 `[] == ![]`    ??? the answer is true
 
+=== 不需要进行类型转换，只有类型相同并且值相等时，才返回 true.
+
+== 如果两者类型不同，首先需要进行类型转换。具体流程如下:
+
+- 1. 首先判断两者类型是否相同，如果相等，判断值是否相等.
+- 2. 如果类型不同，进行类型转换
+- 3. 判断比较的是否是 null 或者是 undefined, 如果是, 返回 true .
+- 4. 判断两者类型是否为 string 和 number, 如果是, 将字符串转换成 number
+- 5. 判断其中一方是否为 boolean, 如果是, 将 boolean 转为 number 再进行判断
+- 6. 判断其中一方是否为 object 且另一方为 string、number 或者 symbol , 如果是, 将 object 转为原始类型再进行判断
+
+[] == ![] 是true还是false？
+- 1. ! 优先级是高于 == 
+- 2. `![]`: 引用类型转换成布尔值都是true,因此`![]`的是false
+- 3. 根据上面的比较步骤中的第五条，其中一方是 boolean，将 boolean 转为 number 再进行判断，false转换成 number，对应的值是 0.
+- 4. 根据上面比较步骤中的第六条，有一方是 number，那么将object也转换成Number,空数组转换成数字，对应的值是0.(空数组转换成数字，对应的值是0，如果数组中只有一个数字，那么转成number就是这个数字，其它情况，均为`NaN`)
+- 0 == 0; 为true
 ### js的基本数据类型
 基本数据类型一共6种，分别是number，undefined，symbol，null，string，boolean。
 

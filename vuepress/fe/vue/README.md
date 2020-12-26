@@ -17,11 +17,14 @@ title: Vue
 
  ![An image](./image/vue1.png)
 
-> vue采用数据劫持结合发布者-订阅者模式的方式，通过Object.defineProperty()来劫持各个属性的setter，getter，在数据变动时发布消息给订阅者，触发相应的监听回调。
+> vue采用数据劫持结合发布-订阅模式的方式，通过Object.defineProperty()来劫持各个属性的setter，getter，在数据变动时通知订阅者(watcher)，触发相应的监听回调。
 > 每个组件实例都对应一个 watcher 实例，它会在组件渲染的过程中把“接触”过的数据 property 记录为依赖。之后当依赖项的 setter 触发时，会通知 watcher，从而使它关联的组件重新渲染。
+Dep 对象用于依赖收集，它实现了一个发布订阅模式，完成了数据 Data 和渲染视图 Watcher 的订阅
+
 
 [vue MVVM原理](https://juejin.cn/post/6844903586103558158)
 
+[图解 Vue 响应式原理](https://juejin.cn/post/6857669921166491662)
 ##### 总结
  - 1、在beforeCreate和created之间调用initState(vm)方法， 获取data并遍历,调用observe方法，ob = new Observer(value)进行依赖收集和派发更新
  - 2、在Observer中调用defineReactive使用defineProperty进行get和set操作，defineReactive中var dep = new Dep();
