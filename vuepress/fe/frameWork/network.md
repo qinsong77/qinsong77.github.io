@@ -30,6 +30,7 @@ title: 网络相关
 - [HTTP](#http)
   - [HEAD方法和OPTIONS方法](#HEAD方法和OPTIONS方法)
   - [Post 和 Get 的区别](#post-%E5%92%8C-get-%E7%9A%84%E5%8C%BA%E5%88%AB)
+  - [常见的四种post提交数据编码格式](#常见的四种post提交数据编码格式)
   - [HTTP状态码](#http状态码)
   - [HTTP 首部](#http-%E9%A6%96%E9%83%A8)
 - [HTTPS](#https)
@@ -306,6 +307,32 @@ HTTP 协议是个无状态协议，不会保存状态。
 * Post 可以通过 request body来传输比 Get 更多的数据，Get 没有这个技术
 * URL有长度限制，会影响 Get 请求，但是这个长度限制是浏览器规定的，不是 RFC 规定的
 * Post 支持更多的编码类型且不对数据类型限制
+
+## 常见的四种post提交数据编码格式
+服务端通常是根据请求头（headers）中的 Content-Type 字段来获知请求中的消息主体是用何种方式编码，再对主体进行解析。POST 提交数据方案，包含了 Content-Type 和消息主体编码方式两部分。
+
+- 1.application/x-www-form-urlencoded
+最常见的 POST 提交数据的方式。浏览器的原生 form 表单，如果不设置 enctype属性，那么最终就会默认以 `application/x-www-form-urlencoded `方式提交数据。
+
+在POST提交数据中Content-Type 被指定为 application/x-www-form-urlencoded；提交的数据按照 key1=val1&key2=val2 的方式进行编码，key 和 val 都进行了 URL 转码。大部分服务端语言都对这种方式有很好的支持。很多时候，我们用 Ajax 提交数据时，也是使用这种方式。
+```javascript
+xhr.open("POST","http://www.example.com",true)
+xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
+```
+
+- 2.multipart/form-data
+
+使用表单上传文件时，必须让 form 的 enctype 等于这个值。这种方式一般用来上传文件，各大服务端语言对它也有着良好的支持。上面提到的这两种 POST 数据的方式，都是浏览器原生支持的。
+```javascript
+xhr.open("POST","http://www.example.com",true);
+xhr.setRequestHeader("Content-Type", "multipart/form-data");
+```
+
+- 3.application/json
+
+用来告诉服务端消息主体是序列化后的 JSON 字符串。
+
+- 4.text/xml
 
 ## HTTP状态码
 HTTP 状态码为 3 位数，被归为 5 类：

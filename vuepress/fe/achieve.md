@@ -683,6 +683,13 @@ console.log(a === b)
 ```
 
 ### 数组reduce实现
+
+`arr.reduce(callback(accumulator, currentValue,currentIndex, array)[, initialValue])`
+
+如果没有提供`initialValue`，`reduce `会从索引1的地方开始执行 `callback `方法，跳过第一个索引。如果提供`initialValue`，从索引0开始。
+
+如果数组为空且没有提供`initialValue`，会抛出`TypeError` 。如果数组仅有一个元素（无论位置如何）并且没有提供`initialValue`， 或者有提供`initialValue`但是数组为空，那么此唯一值将被返回并且`callback`不会被执行。
+
 ```javascript
 // 实现reduce
 // prev, next, currentIndex, array

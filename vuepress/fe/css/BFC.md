@@ -57,7 +57,7 @@ Formatting context(格式化上下文) 是 W3C CSS2.1 规范中的一个概念�
 最常见的 Formatting context 有 Block formatting context (简称BFC)和 Inline formatting context(简称IFC)。CSS2.1中只有BFC和IFC, 
 CSS3中还增加了GFC网格布局格式化上下文（display: grid）和FFC自适应格式化上下文（display: flex）。
  
-####定义
+#### 定义
 BFC(Block formatting context)直译为"块级格式化上下文"。它是一个独立的渲染区域，只有block-level box参与， 它规定了内部的Block-level Box如何布局，并且与这个区域外部毫不相干。
  **具有 BFC 特性的元素可以看作是隔离了的独立容器，容器里面的元素不会在布局上影响到外面的元素，并且 BFC 具有普通容器所没有的一些特性。**
  

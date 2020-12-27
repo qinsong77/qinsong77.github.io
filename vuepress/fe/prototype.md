@@ -9,6 +9,7 @@ title: 原型、原型链、继承
 其实这个属性指向了 [[prototype]]，但是 [[prototype]] 是内部属性，我们并不能访问到，所以使用__proto__来访问），
 但是只有函数对象才有prototype属性。
 
+**`__proto__` 读音: dunder proto**
 
 #### 示1（每个对象都有的隐式原型属性，指向了创建该对象的构造函数的原型。__proto__可以通过Object.getPrototypeOf()获取）
 ```javascript
