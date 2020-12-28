@@ -5,7 +5,7 @@ title: Vue
 
 ### 面试题
 - [「面试题」20+Vue面试题整理](https://juejin.cn/post/6844904084374290446)
-- [1](https://juejin.cn/post/6844904138208182285)
+- [大厂高频Vue面试题（上）](https://juejin.cn/post/6844904138208182285)
 - [30 道 Vue 面试题，内含详细讲解](https://juejin.cn/post/6844903918753808398)
 - [记录面试中一些回答不够好的题（Vue 居多） | 掘金技术征文](https://juejin.cn/post/6844903569422811150)
 

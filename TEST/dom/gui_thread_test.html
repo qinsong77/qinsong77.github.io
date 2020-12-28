@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>Gui Thread</title>
+   <style>
+      #container {
+         width: 100px;
+         height: 100px;
+         background: #3eaf7c;
+      }
+   </style>
+</head>
+<body>
+<div id="container">test</div>
+</body>
+<script>
+	document.getElementById('container').style.backgroundColor = 'red'
+  let i = 0
+  while (i < 1000000000) {
+		i++
+  }
+	document.getElementById('container').style.backgroundColor = 'black'
+</script>
+</html>
