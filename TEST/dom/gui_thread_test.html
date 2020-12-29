@@ -1,25 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <meta charset="UTF-8">
-   <title>Gui Thread</title>
-   <style>
-      #container {
-         width: 100px;
-         height: 100px;
-         background: #3eaf7c;
-      }
-   </style>
+  <meta charset="UTF-8">
+  <title>Gui Thread</title>
+  <style>
+    #container {
+      width: 100px;
+      height: 100px;
+      background: #3eaf7c;
+    }
+  </style>
 </head>
 <body>
 <div id="container">test</div>
 </body>
 <script>
-	document.getElementById('container').style.backgroundColor = 'red'
-  let i = 0
-  while (i < 1000000000) {
-		i++
+	const container = document.getElementById('container')
+	container.style.backgroundColor = 'red'
+	console.log(container.style.backgroundColor)
+	let n = 0
+	while (n < 100000) {
+		n++
+	}
+	container.style.backgroundColor = 'black'
+	console.log(container.style.backgroundColor)
+
+	// setTimeout(() => {
+  // 	document.body.style.background = 'red'
+  // 	setTimeout(() => {
+  // 		document.body.style.background = 'blue'
+  // 	})
+  // })
+  
+  let i = 10
+  let req = () => {
+     i--
+     requestAnimationFrame(() => {
+        document.body.style.background = "red"
+        requestAnimationFrame(() => {
+           document.body.style.background = "blue"
+           if (i > 0) {
+              req()
+           }
+        })
+     })
   }
-	document.getElementById('container').style.backgroundColor = 'black'
+  
+  req()
 </script>
 </html>

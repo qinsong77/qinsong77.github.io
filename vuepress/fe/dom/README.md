@@ -29,11 +29,15 @@ title: Dom
 - [defer与async的区别](#defer与async的区别)
 - [Preload&Prefetch](#preload-prefetch)
 - [websocket](https://juejin.cn/post/6854573221241421838)
+- [websocket](https://juejin.cn/post/6854573221241421838)
+- [MutationObserver](#MutationObserver)
   
 ----
 
 ### [输入URL到页面展示发生了什么](https://zhuanlan.zhihu.com/p/190320054)
 >[git地址](https://github.com/venaissance/myBlog/issues/17)
+
+### [浏览器的渲染原理](https://mp.weixin.qq.com/s?__biz=MzIxMjE5MTE1Nw==&mid=2653218120&idx=1&sn=bb06f680de8cbbadcd8df92ff68d14fc&chksm=8c999792bbee1e8454c7a858353f5de69ed0261ee23183eaab1a161a5c5e748b8cb5e4b4a417&mpshare=1&scene=23&srcid=1229XZoiB6bnwfUCq9pyC20r&sharer_sharetime=1609233596674&sharer_shareid=1958dfa2b35b63c7a7463d11712f39df#rd)
 
 ### [事件机制](https://zh.javascript.info/introduction-browser-events)
 #### 事件触发有三个阶段
@@ -578,3 +582,20 @@ prefetch作用是告诉浏览器加载下一页面可能会用到的资源,加�
 2. prefetch 是告诉浏览器页面可能需要的资源，浏览器不一定会加载这些资源
 
 3. 在VUE SSR生成的页面中，首页的资源均使用preload，而路由对应的资源，则使用prefetch
+
+### [MutationObserver](https://segmentfault.com/a/1190000012787829)
+
+兼容最低要求IE11，用于观察Node(节点)变化的。
+
+`MutationObserver`是一个构造器，接受一个`callback`参数，用来处理节点变化的回调函数，返回两个参数，`mutations`：节点变化记录列表（`sequence<MutationRecord>`），`observer`：构造`MutationObserver`对象。
+
+```javascript
+const observer = new MutationObserver(function(mutations, observer) {
+  
+})
+```
+MutationObserver对象有三个方法，分别如下：
+
+- observer：设置观察目标，接受两个参数，target：观察目标，options：通过对象成员来设置观察选项
+- disconnect：阻止观察者观察任何改变
+- taskRecords：清空记录队列并返回里面的内容
