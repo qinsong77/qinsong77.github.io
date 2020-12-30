@@ -6,7 +6,6 @@ title: 执行上下文、执行栈、this
 
 - [解密 JavaScript 执行上下文](https://juejin.cn/post/6844903847513554952)
 - [[译]理解 JavaScript 中的执行上下文和执行栈](https://juejin.cn/post/6844903682283143181)
-- [JavaScript 执行机制 —— 变量提升](https://juejin.im/post/6844903958553559053)
 
 ### 什么是执行上下文？
 

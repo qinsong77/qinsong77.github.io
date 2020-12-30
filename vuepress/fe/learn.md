@@ -13,6 +13,8 @@ JavaScript目前有八种内置类型（包含ES6的symbol）：
 - symbol(es6)
 - BigInt(es10)
 
+#### [详解 undefined 与 null 的区别](https://www.cnblogs.com/onepixel/p/7337248.html)
+
 #### typeof null 为 'object'的bug
 > JavaScript中的数据在底层是以二进制存储，比如null所有存储值都是0，但是底层的判断机制，只要前三位为0，就会判定为object，所以才会有typeof null === 'object'这个bug。
 #### instanceof 运算符用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上
@@ -486,3 +488,46 @@ index:C value:bar-C
 - arguments对象
 - NodeList对象, 就是获取的dom列表集合
 以上这些都可以直接使用 for of 循环。 凡是部署了 iterator 接口的数据结构也都可以使用数组的 扩展运算符(...)、和解构赋值等操作。
+
+
+#### `Object.freeze()`和`Object.seal`
+
+`Object.freeze()`方法可以冻结一个对象。一个被冻结的对象再也不能被修改；冻结了一个对象则不能向这个对象添加新的属性，不能删除已有属性，不能修改该对象已有属性的可枚举性、可配置性、可写性，以及不能修改已有属性的值。此外，冻结一个对象后该对象的原型也不能被修改。freeze() 返回和传入的参数相同的对象。
+
+- 设置Object.preventExtension()，禁止添加新属性(绝对存在)
+- 设置writable为false，禁止修改(绝对存在)
+- 设置configurable为false，禁止配置(绝对存在)
+- 禁止更改访问器属性(getter和setter)
+从上可知，Object.freeze()禁止了所有可设置的内容。
+
+另外，可以使用`Object.isFrozen()`判断一个对象是否是冻结对象。
+
+Object.freeze()只是浅冻结，犹如浅拷贝。
+
+`Object.seal()`方法封闭一个对象，阻止添加新属性并将所有现有属性标记为不可配置。当前属性的值只要可写就可以改变。
+
+- 设置Object.preventExtension()，禁止添加新属性(绝对存在)
+- 设置configurable为false，禁止配置(绝对存在)
+- 禁止更改访问器属性(getter和setter)
+
+使用`Object.isSealed()`判断一个对象是否是封闭对象。
+
+> 使用`Object.freeze()`冻结的对象中的现有属性是不可变的。用`Object.seal()`密封的对象可以改变其现有属性。
+
+freeze对象后，对象移动sealed
+```javascript
+var obj = {k: '1'}
+Object.freeze(obj)
+Object.isSealed(obj) // true
+```
+
+`Object.preventExtensions()`方法让一个对象变的不可扩展，也就是永远不能再添加新的属性。
+
+```javascript
+//空对象是特殊情况，设置Object.preventExtensions()后，以下情况都将被禁止：
+var empty = {};
+Object.preventExtensions(empty);
+Object.isFrozen(empty) === true
+Object.isSealed(empty) === true
+Object.isExtensible(empty) === false
+```
