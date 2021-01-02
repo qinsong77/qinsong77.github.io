@@ -61,7 +61,46 @@ px像素（Pixel）。相对长度单位。像素px是相对于显示器屏幕�
 color 色值”。具体来讲，就是当没有指定` border-color `颜色值的时候，会使用当前元素的
 color 计算值作为边框色。具有类似特性的 CSS 属性还有 outline、box-shadow 和 text-shadow 等。
 
+当`margin`和`padding`的值设置为百分比时，是指相对于最近的块级父元素width（非总宽度）的相应百分比的值，即使是margin-top、margin-bottom、padding-top、padding-bottom，设置为百分比时也是以最近块级父元素的width（非总宽度）为基准，而非height。
+
+
+请写出 inner 的实际高度。
+```html
+<style>
+  .outer {
+    width: 200px;
+    height: 100px;
+  }
+  .inner {
+    width: 60px;
+    height: 60px;
+    padding-top: 20%;
+  }
+</style>
+<div class="outer"><div class="inner"></div></div>
+```
+inner 的实际高度为60px，未设置box-sizing为border-box，padding-top百分比取父元素宽的20%为40px,内容高度为60px。box-sizing为border-box时内容高度是20px。
 ![](./imgs/inherit.png)
+
+### 优先级
+
+定义CSS样式时，经常出现两个或更多选择器应用在同一元素上，此时，
+
+- 选择器相同，则执行层叠性（后者覆盖前者)
+- 选择器不同，就会出现优先级的问题。
+
+#### 权重计算公式
+- `!important;`最大
+- 内联样式权重：1000
+- id 选择器权重：0100
+- 类选择器，属性选择器（如`[type="number"]`），伪类选择器（如:hove）权重：0010
+- 元素选择器，伪元素选择器权重：0001
+- 通配选择器 *，子选择器 >，相邻选择器 +。权重：0000
+
+例子
+
+- `h1 + p::first-line`: 0,0,0,3
+- `li > a[href*="beige.world"] > .inline-warning`: 0,0,2,2
 
 ### 定位position
 
@@ -101,6 +140,32 @@ absolute 定位使元素的位置与文档流无关，因此不占据空间。ab
 
 - inherit
 规定应该从父元素继承 position 属性的值。
+
+### CSS 的层叠上下文
+
+层叠上下文是 HTML 中的一个三维的概念，每个层叠上下文中都有一套元素的层叠排列顺序。页面根元素天生具有层叠上下文，所以整个页面处于一个“层叠结界”中。
+
+层叠上下文的创建：
+
+- 页面根元素：html
+- z-index 值为数值的定位元素
+- 其他 css 属性
+  - opacity 不是 1
+  - transform 不是 none
+  - flex，z-index 不是 auto
+  
+层叠上下文中的排列规则，从下到上：
+
+![](./imgs/z-index.png)
+
+- background/border
+- 负 z-index
+- - block 块状水平盒子
+- float 浮动盒子
+- inline 水平盒子
+- z-index:auto, 或看成 z-index:0
+- 正 z-index
+由此引申出：定位元素的`z-index：0`和`z-index：auto`的区别是，前者会创建层叠上下文，影响布局。
 
 #### [伪类](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Pseudo-classes)和伪元素
 
@@ -196,3 +261,26 @@ top、left和css中的理解很相似，right是指元素右边界距窗口最�
 ### 元素居中
 
 ![](./imgs/ele_center.png)
+
+### 移动端如何处理点击穿透
+
+点击穿透的原因：
+
+在 pc 端的事件触发顺序：mousedown -> click -> mouseup
+
+在移动端的事件触发顺序：touchstart -> touchmove -> touchend
+
+移动端的事件优先级高，并且会模拟 mouse 事件，所以综合来看，移动端的执行顺序：
+
+touchstart -> touchmove -> touchend -> mousedown -> click -> mouseup
+
+由于很多时候，我们点击关闭弹窗时，弹窗立马就关闭了，但在移动端还存在一个点击延迟效果，即执行 tap 事件之后 300ms 之后才会触发 click 事件，这个时候弹窗已经没有了，于是 click 事件就作用在了弹窗下的元素上，就形成了点击穿透现象。
+
+解决方案：
+
+1、使用 fastclick 禁止 300ms 点击延迟。
+
+2、使用 pointer-events 控制是否可点击。
+
+- 不允许点击，即让点击穿透 ：pointer-events: none;
+- 允许点击，即禁止穿透（默认值）：pointer-events: auto;

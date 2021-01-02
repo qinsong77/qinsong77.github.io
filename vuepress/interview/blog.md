@@ -6,4 +6,5 @@ title: 博客地址
 - [冴羽的博客-深入系列JS, ES](https://github.com/mqyqingfeng/Blog)
 - [前端进阶之道](https://yuchengkai.cn/)
 - [ConardLi的blog](http://www.conardli.top/blog/)
+- [前端日志](https://lmjben.github.io/)
 

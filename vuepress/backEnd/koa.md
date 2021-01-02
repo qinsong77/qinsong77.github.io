@@ -4,6 +4,8 @@ title: 四十行代码实现一个 koa
 
 [官方源码地址](https://github.com/koajs/koa/blob/master/lib/application.js)
 
+[如何更好地理解中间件和洋葱模型](https://juejin.cn/post/6890259747866411022)
+
 ## 四十行代码实现一个koa
 
 ![](./image/koa.jpg)

@@ -13,10 +13,64 @@ JavaScript目前有八种内置类型（包含ES6的symbol）：
 - symbol(es6)
 - BigInt(es10)
 
+[细说 JavaScript 七种数据类型](https://www.cnblogs.com/onepixel/p/5140944.html)
+
 #### [详解 undefined 与 null 的区别](https://www.cnblogs.com/onepixel/p/7337248.html)
+
+#### for循环中的let
+
+```javascript
+var funcs = []
+for (let i = 0; i < 3; i++) {
+    funcs[i] = function () {
+        console.log(i)
+    };
+}
+funcs[0]() // 0
+funcs[1]() // 1
+funcs[2]() // 2
+
+// 伪代码
+/**
+(let i = 0) {
+    funcs[0] = function() {
+        console.log(i)
+    };
+}
+
+(let i = 1) {
+    funcs[1] = function() {
+        console.log(i)
+    };
+}
+
+(let i = 2) {
+    funcs[2] = function() {
+        console.log(i)
+    };
+};
+**/
+```
+疑问： 每一轮循环的变量i都是重新声明的，那它怎么知道上一轮循环的值，从而计算出本轮循环的值？
+
+这是因为 JavaScript 引擎内部会记住上一轮循环的值，初始化本轮的变量i时，就在上一轮循环的基础上进行计算。**每次迭代循环时都创建一个新变量，并以之前迭代中同名变量的值将其初始化。**
+
+另外，for循环还有一个特别之处，就是设置循环变量的那部分是一个父作用域，而循环体内部是一个单独的子作用域。
+
+```javascript
+for (let i = 0; i < 3; i++) {
+  let i = 'abc';
+  console.log(i);
+}
+// abc
+// abc
+// abc
+```
 
 #### typeof null 为 'object'的bug
 > JavaScript中的数据在底层是以二进制存储，比如null所有存储值都是0，但是底层的判断机制，只要前三位为0，就会判定为object，所以才会有typeof null === 'object'这个bug。
+`Number(null)`结果为0，`Number(undefined)为NaN`
+
 #### instanceof 运算符用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上
 语法
 > object instanceof constructor
@@ -29,6 +83,33 @@ JavaScript目前有八种内置类型（包含ES6的symbol）：
    - null、undefined
    - false
    - 注意Infinity为真
+   
+### `Object.is()`方法
+>相等运算符（`==`）和严格相等运算符（`===`）。它们都有缺点，前者会自动转换数据类型，后者的`NaN`不等于自身，以及`+0`等于`-0`。`Object.is`用来比较两个值是否严格相等，与严格比较运算符（`===`）的行为基本一致，不同之处只有两个：一是`+0`不等于`-0`，二是`NaN`等于自身。
+```javascript
++0 === -0 //true
+NaN === NaN // false
+
+Object.is(+0, -0) // false
+Object.is(NaN, NaN) // true
+```
+Polyfill
+ ````javascript
+Object.defineProperty(Object, 'is', {
+  value: function(x, y) {
+    if (x === y) {
+      // 针对+0 不等于 -0的情况
+      return x !== 0 || 1 / x === 1 / y;
+    }
+    // 针对NaN的情况
+    return x !== x && y !== y;
+  },
+  configurable: true,
+  enumerable: false,
+  writable: true
+});
+````
+   
 ### 语言中所有的底层存储方式是是什么。
 
 - 数组(Array)
@@ -80,11 +161,62 @@ Object.defineProperty(obj, 'key', {
 })
 ```
 
+#### `Object.freeze()`和`Object.seal`
+
+`Object.freeze()`方法可以冻结一个对象。一个被冻结的对象再也不能被修改；冻结了一个对象则不能向这个对象添加新的属性，不能删除已有属性，不能修改该对象已有属性的可枚举性、可配置性、可写性，以及不能修改已有属性的值。此外，冻结一个对象后该对象的原型也不能被修改。freeze() 返回和传入的参数相同的对象。
+
+- 设置Object.preventExtension()，禁止添加新属性(绝对存在)
+- 设置writable为false，禁止修改(绝对存在)
+- 设置configurable为false，禁止配置(绝对存在)
+- 禁止更改访问器属性(getter和setter)
+从上可知，Object.freeze()禁止了所有可设置的内容。
+
+另外，可以使用`Object.isFrozen()`判断一个对象是否是冻结对象。
+
+Object.freeze()只是浅冻结，犹如浅拷贝。
+
+`Object.seal()`方法封闭一个对象，阻止添加新属性并将所有现有属性标记为不可配置。当前属性的值只要可写就可以改变。
+
+- 设置Object.preventExtension()，禁止添加新属性(绝对存在)
+- 设置configurable为false，禁止配置(绝对存在)
+- 禁止更改访问器属性(getter和setter)
+
+使用`Object.isSealed()`判断一个对象是否是封闭对象。
+
+> 使用`Object.freeze()`冻结的对象中的现有属性是不可变的。用`Object.seal()`密封的对象可以改变其现有属性。
+
+freeze对象后，对象移动sealed
+```javascript
+var obj = {k: '1'}
+Object.freeze(obj)
+Object.isSealed(obj) // true
+```
+
+`Object.preventExtensions()`方法让一个对象变的不可扩展，也就是永远不能再添加新的属性。
+
+```javascript
+//空对象是特殊情况，设置Object.preventExtensions()后，以下情况都将被禁止：
+var empty = {};
+Object.preventExtensions(empty);
+Object.isFrozen(empty) === true
+Object.isSealed(empty) === true
+Object.isExtensible(empty) === false
+```
+
+**总结**
+
+- `Object.preventExtensions(obj)` ：用于锁住对象属性，使其不能够拓展，也就是不能增加新的属性，但是属性的值仍然可以更改，也可以把属性删除。
+- `Object.seal(obj)` ：把对象密封，也就是让对象既不可以拓展也不可以删除属性（把每个属性的 `configurable` 设为 false），单数属性值仍然可以修改。
+- `Object.freeze(obj)` ：完全冻结对象，在 seal 的基础上，属性值也不可以修改（每个属性的 `writable` 也被设为 false）。
+
+
 #### Object.create()方法创建一个新对象，使用现有的对象来提供新创建的对象的[`__proto__`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
 ```javascript
 // 创建一个原型为null的空对象
 const pureObj  = Object.create(null)
 ```
+
+### [九种常用的设计模式](https://juejin.cn/post/6881384600758091784)
 
 ### [设计模式](https://juejin.im/post/6846687601785585677)
 
@@ -170,6 +302,7 @@ EEE 754 规定了包括：单精度（32位）、双精度（64位）、延伸�
 #### 解决方法
 - 只需要展示的话，可以 toFixed 或者 toPrecision 选择自己需要的精度，然后再 parseFloat 转成浮点数。需要注意的是，这两个方法均不是四舍五入法，而是上面提过的 IEEE754舍入标准，舍入至最接近的值，如果有 2 个值一样接近，则取偶数值。
 - 如需对数据进行运算，那么一种常用的方法就是，把小数转成整数再进行运算，只要运算过程涉及到的数字不大于 MAX_SAFE_INTEGER ，得到的结果就是“精确”的。
+- 使用`Number.EPSILON `
 ##### toFixed
 toFixed有四舍五入，部分场景会出bug
 ```javascript
@@ -184,6 +317,23 @@ toFixed因为舍入的规则是银行家舍入法：四舍六入五考虑，五�
 
 主要是小数实际储存的值和显示的值不同，比如1.65的实际值是1.649...所以toFixed(1)的结果是1.6
 
+##### `Number.EPSILON `
+
+`Number.EPSILON` 属性表示 1 与Number可表示的大于 1 的最小的浮点数之间的差值。`EPSILON` 属性的值接近于 `2.2204460492503130808472633361816E-16`，或者 2<sup>-52</sup>。
+
+```javascript
+x = 0.2;
+y = 0.3;
+z = 0.1;
+equal = (Math.abs(x - y + z) < Number.EPSILON);
+```
+
+Polyfill
+```javascript
+if (Number.EPSILON === undefined) {
+    Number.EPSILON = Math.pow(2, -52);
+}
+```
 
 ### 尾递归优化
 
@@ -457,6 +607,7 @@ for(key in bar){
   console.log(`index:${key} value:${bar[key]}`)
 }
 // 输出是
+/**
 index:1 value:test-1
 index:3 value:test-3
 index:5 value:test-5
@@ -467,6 +618,7 @@ index:100 value:test-100
 index:B value:bar-B
 index:A value:bar-A
 index:C value:bar-C
+**/
 ```
 在ECMAScript规范中定义了 「数字属性应该按照索引值⼤⼩升序排列，字符 串属性根据创建时的顺序升序排列。」在这⾥我们把对象中的数字属性称为 「排序属性」，在V8中被称为 elements，字符串属性就被称为 「常规属性」， 在V8中被称为 properties。在V8内部，为了有效地提升存储和访问这两种属性的性能，分别使⽤了两个 线性数据结构来分别保存排序 属性和常规属性，具体结构如下图所⽰：
 
@@ -479,7 +631,7 @@ index:C value:bar-C
   
 - 提供了遍历所有数据结构的统一接口
 
-哪些数据结构部署了 Symbol.iterator属性了呢?只要有 iterator 接口的数据结构,都可以使用 for of循环。
+哪些数据结构部署了 `Symbol.iterator` 属性呢?只要有 `iterator `接口的数据结构,都可以使用 for of循环。
 
 - 数组 Array
 - Map
@@ -487,47 +639,5 @@ index:C value:bar-C
 - String
 - arguments对象
 - NodeList对象, 就是获取的dom列表集合
+
 以上这些都可以直接使用 for of 循环。 凡是部署了 iterator 接口的数据结构也都可以使用数组的 扩展运算符(...)、和解构赋值等操作。
-
-
-#### `Object.freeze()`和`Object.seal`
-
-`Object.freeze()`方法可以冻结一个对象。一个被冻结的对象再也不能被修改；冻结了一个对象则不能向这个对象添加新的属性，不能删除已有属性，不能修改该对象已有属性的可枚举性、可配置性、可写性，以及不能修改已有属性的值。此外，冻结一个对象后该对象的原型也不能被修改。freeze() 返回和传入的参数相同的对象。
-
-- 设置Object.preventExtension()，禁止添加新属性(绝对存在)
-- 设置writable为false，禁止修改(绝对存在)
-- 设置configurable为false，禁止配置(绝对存在)
-- 禁止更改访问器属性(getter和setter)
-从上可知，Object.freeze()禁止了所有可设置的内容。
-
-另外，可以使用`Object.isFrozen()`判断一个对象是否是冻结对象。
-
-Object.freeze()只是浅冻结，犹如浅拷贝。
-
-`Object.seal()`方法封闭一个对象，阻止添加新属性并将所有现有属性标记为不可配置。当前属性的值只要可写就可以改变。
-
-- 设置Object.preventExtension()，禁止添加新属性(绝对存在)
-- 设置configurable为false，禁止配置(绝对存在)
-- 禁止更改访问器属性(getter和setter)
-
-使用`Object.isSealed()`判断一个对象是否是封闭对象。
-
-> 使用`Object.freeze()`冻结的对象中的现有属性是不可变的。用`Object.seal()`密封的对象可以改变其现有属性。
-
-freeze对象后，对象移动sealed
-```javascript
-var obj = {k: '1'}
-Object.freeze(obj)
-Object.isSealed(obj) // true
-```
-
-`Object.preventExtensions()`方法让一个对象变的不可扩展，也就是永远不能再添加新的属性。
-
-```javascript
-//空对象是特殊情况，设置Object.preventExtensions()后，以下情况都将被禁止：
-var empty = {};
-Object.preventExtensions(empty);
-Object.isFrozen(empty) === true
-Object.isSealed(empty) === true
-Object.isExtensible(empty) === false
-```
