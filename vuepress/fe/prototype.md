@@ -173,7 +173,7 @@ instanceof 能够判断出 `[]._proto_` 指向 `Array.prototype`，而 `Array.pr
 ![An image](./image/prototype/Fun_Obj.png)
 
 ### 类的 prototype 属性和__proto__属性
-大多数浏览器的 ES5 实现之中，每一个对象都有`__proto__`属性，指向对应的构造函数的`prototyp`e属性。`Class` 作为构造函数的语法糖，同时有`prototype`属性和`__proto__`属性，因此同时存在两条继承链。
+大多数浏览器的 ES5 实现之中，每一个对象都有`__proto__`属性，指向对应的构造函数的`prototype`属性。`Class` 作为构造函数的语法糖，同时有`prototype`属性和`__proto__`属性，因此同时存在两条继承链。
 
 - （1）子类的`__proto__`属性，表示构造函数的继承，总是指向父类。
 
