@@ -882,7 +882,7 @@ optimize(ast, options)
 :::
 
 ### 数组响应式变化原理
-> 使用Object.create复制Array的原型对象prototype得到arrayMethods, 遍历一个7个数组方法的数组，包括push,pop,shift,unshift,splice,
+> 使用Object.create复制Array的原型对象prototype得到arrayMethods, 遍历一个7个数组方法的数组，包括push,pop,shift,unshift,splice,sort，
 >reverse这些能改变数组的方法,使用函数劫持，在遍历时使用Object.defineProperty重写复制的原型对象arrayMethods对应方法的value,即重写方法，使用Array.prototype
 >的原函数方法apply获取并返回结果，同时通过var ob = this.__ ob__获取Observer,调用ob.dep.notify()，通知更新；
 >在Observe构造函数中，判断如果data的value如果是数组，1、如果该数组有__proto__属性，则直接把arrayMethods赋值给__proto__
@@ -997,7 +997,7 @@ optimize(ast, options)
 >vue更新Dom也会把更新队列添加到nextTick中去执行
 
 ::: tip 总结描述
- 事件循环是在执行执行完宏任务后（script是第一个宏认为），执行完所有的微任务，在执行GUI渲染，然后开启事件队列中的下一个宏认为。
+ 事件循环是在执行执行完宏任务后（script是第一个宏任务），执行完所有的微任务，在执行GUI渲染，然后开启事件队列中的下一个宏认为。
  当执行this.xx = 'xx' 时，背后更新Dom的回调会加到callback数组中，当执行完脚本，会执行微任务队列，这时就会遍历callback运行所有的回调函数。
 :::
  
@@ -1177,6 +1177,7 @@ Vue.prototype._init = function (options) {
 
 - [Vue的Computed原理](https://juejin.cn/post/6844904116439744520)
 - [手摸手带你理解Vue的Computed原理](https://juejin.cn/post/6844904199596015624)
+
 在`initState`时`initComputed`和`initWatch`
 - 1.实例上定义` _computedWatchers` 对象，用于存储“计算属性Watcher”;
 - 2.获取计算属性的 `getter`，需要判断是函数声明还是对象声明;

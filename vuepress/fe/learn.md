@@ -79,7 +79,7 @@ for (let i = 0; i < 3; i++) {
 
 ### JS中“假”值列表，即if不执行(if 等流控制语句会自动执行其他类型值到布尔值的转换即Boolean(null))
    - “”（空字符串）
-   - 0、-0、NaN(无线数字)
+   - 0、-0、NaN(无效数字)
    - null、undefined
    - false
    - 注意Infinity为真
@@ -316,6 +316,24 @@ toFixed有四舍五入，部分场景会出bug
 toFixed因为舍入的规则是银行家舍入法：四舍六入五考虑，五后非零就进一，五后为零看奇偶，五前为偶应舍去，五前为奇要进一
 
 主要是小数实际储存的值和显示的值不同，比如1.65的实际值是1.649...所以toFixed(1)的结果是1.6
+
+```javascript
+function toFixed(num, s){
+    const times = Math.pow(10, s)
+    let des = num * times + 0.5
+    des = parseInt(des, 10) / times
+    return des + ''
+}
+```
+实际上比如2.55存的是2.5499999999999998，给他加上一个很小的数。
+```javascript
+if (!Number.prototype._toFixed) {
+    Number.prototype._toFixed = Number.prototype.toFixed;
+}
+Number.prototype.toFixed = function(n) {
+    return (this + 1e-14)._toFixed(n);
+};
+```
 
 ##### `Number.EPSILON `
 

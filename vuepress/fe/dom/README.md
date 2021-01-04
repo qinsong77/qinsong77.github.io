@@ -29,7 +29,6 @@ title: Dom
 - [defer与async的区别](#defer与async的区别)
 - [Preload&Prefetch](#preload-prefetch)
 - [websocket](https://juejin.cn/post/6854573221241421838)
-- [websocket](https://juejin.cn/post/6854573221241421838)
 - [MutationObserver](#MutationObserver)
   
 ----

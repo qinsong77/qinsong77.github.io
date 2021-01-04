@@ -26,26 +26,33 @@
 	console.log(container.style.backgroundColor)
 
 	// setTimeout(() => {
-  // 	document.body.style.background = 'red'
-  // 	setTimeout(() => {
-  // 		document.body.style.background = 'blue'
-  // 	})
-  // })
+	// 	document.body.style.background = 'red'
+	// 	setTimeout(() => {
+	// 		document.body.style.background = 'blue'
+	// 	})
+	// })
 
-  let i = 10
-  let req = () => {
-     i--
-     requestAnimationFrame(() => {
-        document.body.style.background = "red"
-        requestAnimationFrame(() => {
-           document.body.style.background = "blue"
-           if (i > 0) {
-              req()
-           }
-        })
-     })
-  }
+	let i = 10
+	let req = () => {
+		i--
+		requestAnimationFrame(() => {
+			document.body.style.background = 'red'
+			requestAnimationFrame(() => {
+				document.body.style.background = 'blue'
+				if (i > 0) {
+					req()
+				}
+			})
+		})
+	}
 
-  req()
+	req()
+
+	function tFixed(num, s){
+		const times = Math.pow(10, s)
+		let des = num * times + 0.5
+		des = parseInt(des, 10) / times
+		return des + ''
+	}
 </script>
 </html>
