@@ -53,6 +53,48 @@ Dep 对象用于依赖收集，它实现了一个发布订阅模式，完成了�
       initWatch(vm, opts.watch);
     }
   }
+  
+  function initData (vm) {
+    var data = vm.$options.data;
+    data = vm._data = typeof data === 'function'
+      ? getData(data, vm)
+      : data || {};
+    if (!isPlainObject(data)) {
+      data = {};
+      warn(
+        'data functions should return an object:\n' +
+        'https://vuejs.org/v2/guide/components.html#data-Must-Be-a-Function',
+        vm
+      );
+    }
+    // proxy data on instance
+    var keys = Object.keys(data);
+    var props = vm.$options.props;
+    var methods = vm.$options.methods;
+    var i = keys.length;
+    while (i--) {
+      var key = keys[i];
+      {
+        if (methods && hasOwn(methods, key)) {
+          warn(
+            ("Method \"" + key + "\" has already been defined as a data property."),
+            vm
+          );
+        }
+      }
+      if (props && hasOwn(props, key)) {
+        warn(
+          "The data property \"" + key + "\" is already declared as a prop. " +
+          "Use prop default value instead.",
+          vm
+        );
+      } else if (!isReserved(key)) {
+        proxy(vm, "_data", key);
+      }
+    }
+    // observe data
+    observe(data, true /* asRootData */);
+  }
 
 /* 依赖dep */
 
@@ -882,12 +924,12 @@ optimize(ast, options)
 :::
 
 ### 数组响应式变化原理
-> 使用Object.create复制Array的原型对象prototype得到arrayMethods, 遍历一个7个数组方法的数组，包括push,pop,shift,unshift,splice,sort，
->reverse这些能改变数组的方法,使用函数劫持，在遍历时使用Object.defineProperty重写复制的原型对象arrayMethods对应方法的value,即重写方法，使用Array.prototype
->的原函数方法apply获取并返回结果，同时通过var ob = this.__ ob__获取Observer,调用ob.dep.notify()，通知更新；
->在Observe构造函数中，判断如果data的value如果是数组，1、如果该数组有__proto__属性，则直接把arrayMethods赋值给__proto__
->2、如果没有，则调用copyAugment，遍历arrayMethods把方法直接赋值给改数组
->3、遍历改数组，递归调用observe方法new Observer进行依赖收集
+> 使用`Object.create`复制Array的原型对象prototype得到arrayMethods, 遍历一个7个数组方法的数组，包括`push,pop,shift,unshift,splice,sort，reverse`
+>这些能改变数组的方法,使用函数劫持，在遍历时使用`Object.defineProperty`重写复制的原型对象arrayMethods对应方法的value,即重写方法，使用Array.prototype
+>的原函数方法`apply`获取并返回结果，同时通过`var ob = this.__ ob__`获取Observer,调用`ob.dep.notify()`，通知更新；
+>在Observe构造函数中，判断如果data的value如果是数组，1、如果该数组有`__proto__`属性，则直接把arrayMethods赋值给`__proto__`
+>2、如果没有，则调用copyAugment，遍历arrayMethods把方法直接赋值给该数组
+>3、遍历该数组，递归调用`observe`方法`new Observer`进行依赖收集
  ::: details 点击查看代码
 ```javascript
 
@@ -945,7 +987,6 @@ optimize(ast, options)
     });
   });
 
-  var arrayKeys = Object.getOwnPropertyNames(arrayMethods);
 
   var Observer = function Observer (value) {
     this.value = value;
@@ -956,7 +997,7 @@ optimize(ast, options)
       if (hasProto) {
         protoAugment(value, arrayMethods);
       } else {
-        copyAugment(value, arrayMethods, arrayKeys);
+        copyAugment(value, arrayMethods, arrayKeys); // var arrayKeys = Object.getOwnPropertyNames(arrayMethods);
       }
       this.observeArray(value);
     } else {

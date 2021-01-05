@@ -18,7 +18,7 @@ title: Summary
 ### [体积减少80%！释放webpack tree-shaking的真正潜力](https://juejin.cn/post/6844903769646317576)
     
 
-### [Vite 原理分析](https://juejin.cn/post/6881078539756503047)852
+### [Vite 原理分析](https://juejin.cn/post/6881078539756503047)
 
 
 ### [前端工程化](https://juejin.cn/post/6844904132512317453)
@@ -53,6 +53,19 @@ title: Summary
 从最早先的 grunt、gulp 等，再到目前的 webpack、parcel。这些自动化工具在自动化合并、构建、打包都能为我们节省很多工作。而这些只是前端自动化其中的一部分，前端自动化还包含了持续集成、自动化测试等方方面面。
 
 
+## Babel
+
+**Babel is a JavaScript compiler.**
+
+Babel就是一个JavaScript编译器，babel编译分为三个阶段，**解析（parse），转换（transform），生成（generate）**。
+Babel本身不支持转换，转换是通过一个个 plugin实现。
+
+![](./image/babel.png)
+
+[Babel介绍](https://mp.weixin.qq.com/s/1OyBkl5NnFO1q86L7GjQwg)
+
+[Babel7](https://juejin.cn/post/6844904008679686152)
+
 ## core-js
 
 ### core-js介绍
@@ -75,7 +88,7 @@ title: Summary
 
 - **增加了对一些web标准的支持，比如URL 和 URLSearchParams**
 
-- **现在支持原型方法，同时不污染原型****
+- **现在支持原型方法，同时不污染原型**
 
 - 删除了过时的特性
 
@@ -98,6 +111,20 @@ presets: [
 
 import "core-js/stable";
 import "regenerator-runtime/runtime";
+```
+#### vue/cli3下.browserslistrc文件含义
+
+browserslist是用来配置项目的目标浏览器和nodejs版本范围，也就是通常说的兼容哪些浏览器的版本。
+
+- " >1%" :代表着全球超过1%人使用的浏览器
+- “last 2 versions” : 表示所有浏览器兼容到最后两个版本
+- “not ie <=8” :表示IE浏览器版本大于8（实则用npx browserslist 跑出来不包含IE9 ）
+- “safari >=7”:表示safari浏览器版本大于等于7
+
+```.browserslistrc
+> 1%
+last 2 versions
+not dead
 ```
 
 ## 简述 webpack 工作流程
@@ -186,7 +213,7 @@ Webpack 会为每个生成的 `Chunk` 取一个名称，`Chunk` 的名称和 `En
 
 - babel-loader：把 ES6 转换成 ES5;
 
-- css-loader：负责处理 `@import`、`url` 等语句。例如 i`mport css from 'file.css'`、`url(image.png)`支持模块化、压缩、文件导入等特性;
+- css-loader：负责处理 `@import`、`url` 等语句。例如 `import css from 'file.css'`、`url(image.png)`支持模块化、压缩、文件导入等特性;
 
 - style-loader：把 CSS 代码注入到 JavaScript 中，在 DOM 里插入一个 `<style>` 标签，并且将 CSS 写入这个标签内;
 
@@ -201,7 +228,7 @@ Webpack 会为每个生成的 `Chunk` 取一个名称，`Chunk` 的名称和 `En
 - copy-webpack-plugin：将单个文件或者整个目录复制到构建目录
 - mini-css-extract-plugin：将 CSS 抽离出来单独打包并且通过配置可以设置是否压缩。
 - html-webpack-plugin：这个插件可以配置生成一个 HTML5 文件，其中 script 标签包含所有 Webpack 包。如果你设置多个入口点，你可以据此实现多页面应用打包。
-- webpack-bundle-analyzer,打包分析插件
+- webpack-bundle-analyzer：打包分析插件
 
 ### 热更新
 
