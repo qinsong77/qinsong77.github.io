@@ -1111,9 +1111,37 @@ optimize(ast, options)
 
 ### [生命周期](https://juejin.im/post/6844903780736040973)
  ![An image](./image/vue2.png)
+ 
+- `initLifecycle(vm);initEvents(vm);initRender(vm);`，`initLifecycle`：初始化参数，找到父节点，设置子节点，`$refs`为空数组，初始化组件变量，`_isMounted`，`_isDestroyed`等，
+ `initEvents`：初始化事件，如果 _parentListeners 存在的话，更新组件的事件监听；
 - `beforeCreate`之前合并配置，初始化生命周期，初始化事件中心，初始化渲染
-- `created`之前初始化 data、props、computed、watcher
-- 在执行 `vm._render()` 函数渲染 VNode 之前，执行了 `beforeMount` 钩子函数，在执行完 `vm._update()` 把 VNode patch 到真实 DOM 后，执行 `mounted` 钩子。
+- `created`之前调用`initInjections`，`initState`, `initProvide`，初始化 data、props、computed、watcher；
+- `beforeMount`（渲染dom前）：在渲染 dom ，先检查了是否存在渲染位置，如果不存在的话，也就不会注册了；
+- 执行了 `beforeMount` 钩子函数后，为组件`new Watcher`, 在 `new Watcher` 的时候，调用了` _render` 方法，实现了 `dom` 的渲染，即在执行完 `vm._update()` 把 VNode patch 到真实 DOM 后，执行 `mounted` 钩子。
+- `beforeUpdate`: 实际上是在`watcher.run()`之前调用了`watcher.before();`触发了这个beforeUpdate，其他没做什么
+- 在watcher.run之后调用了`callUpdatedHooks`, 因为有多个组件的时候，会有很多个 watcher ，在这里，就是检查当前的得 watcher 是哪个，是当前的话，就直接执行当前 updated 钩子。
+- beforeDestroy（卸载组件前）: 在卸载前，检查是否已经被卸载，如果已经被卸载，就直接 return 出去；执行 `beforeDestroy` 钩子
+- destroyed前： 从父级组件那里删除自己，`vm._watcher.teardown()` 拆解观察者，把所有有关自己痕迹的地方，都给删除掉。
+```javascript
+    new Watcher(vm, updateComponent, noop, {
+      before: function before () {
+        if (vm._isMounted && !vm._isDestroyed) {
+          callHook(vm, 'beforeUpdate');
+        }
+      }
+    }, true /* isRenderWatcher */);
+
+  function callUpdatedHooks (queue) {
+    var i = queue.length;
+    while (i--) {
+      var watcher = queue[i];
+      var vm = watcher.vm;
+      if (vm._watcher === watcher && vm._isMounted && !vm._isDestroyed) {
+        callHook(vm, 'updated');
+      }
+    }
+  }
+```
  ::: details 点击查看代码
 ```javascript
 Vue.prototype._init = function (options) {

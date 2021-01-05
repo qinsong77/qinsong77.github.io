@@ -213,8 +213,12 @@ Object.isExtensible(empty) === false
 #### Object.create()方法创建一个新对象，使用现有的对象来提供新创建的对象的[`__proto__`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
 ```javascript
 // 创建一个原型为null的空对象
-const pureObj  = Object.create(null)
+var pureObj  = Object.create(null)
+// 或者
+var atom = Object.setPrototypeOf(new Object, null)
 ```
+
+pureObj其实是个原子（原子是JavaScript中的对象的最小单元，它是对象但不继承自Object()；以原子为原型的对象也会被称为原子对象。）在同一个运行环境中，可以并存多个原子，以及由原型指向原子的、原型继承的对象系统。所有这些原子以及衍生的对象系统都是互不相等、没有交集的。
 
 ### [九种常用的设计模式](https://juejin.cn/post/6881384600758091784)
 
