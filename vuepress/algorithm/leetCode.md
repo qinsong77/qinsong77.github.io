@@ -11,6 +11,7 @@ title: LeetCode
   - [最长公共前缀](#最长公共前缀)
   - [翻转字符串里的单词](#翻转字符串里的单词)
   - [字符串相加](#字符串相加)
+- [4.二维数组翻转90度](#_4-二维数组翻转90度)
 
 #### 1.[两数之和](https://leetcode-cn.com/problems/two-sum )
 > 给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数，并返回他们的数组下标。  <br />你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。
@@ -256,11 +257,12 @@ var addStrings = function(num1, num2) {
  ```
   ::: 
   
-  #### [字符串相乘](https://leetcode-cn.com/problems/multiply-strings/)
-   
-   [题解](https://github.com/sisterAn/JavaScript-Algorithms/issues/105)
-    ::: details 点击查看代码
-   ```javascript
+#### [字符串相乘](https://leetcode-cn.com/problems/multiply-strings/)
+
+[题解](https://github.com/sisterAn/JavaScript-Algorithms/issues/105)
+
+::: details 点击查看代码
+```javascript
 let multiply = function(num1, num2) {
     if(num1 === '0' || num2 === '0') return "0"
     
@@ -286,5 +288,43 @@ let multiply = function(num1, num2) {
     }
     return res.reverse().join("");
 }
-   ```
-    ::: 
+```
+::: 
+    
+#### [4.二维数组翻转90度](https://leetcode-cn.com/problems/rotate-image)
+```dotenv
+给定 matrix = 
+[
+  [1,2,3],
+  [4,5,6],
+  [7,8,9]
+],
+
+原地旋转输入矩阵，使其变为:
+[
+  [7,4,1],
+  [8,5,2],
+  [9,6,3]
+]
+```
+由于矩阵中的行列从 00 开始计数，因此对于矩阵中的元素 `matrix[row][col]`，在旋转后，它的新位置为 `[col][n−row−1]`。
+
+```javascript
+var rotate = function(matrix) {
+    const n = matrix.length
+    var map = new Map()
+    // [col][n−row−1]
+    for (var i = 0; i < n; i++) {
+        for(var j =0; j < n; j++) {
+            var key = j + '&' + (n - i -1)
+            map.set(key, matrix[i][j])
+        } 
+    }
+    for (var i = 0; i < n; i++) {
+        for(var j =0; j < n; j++) {
+            var key = i + '&' + j
+            matrix[i][j] = map.get(key)
+        } 
+    }
+};
+```
