@@ -9,6 +9,7 @@ title: Dom
   - [事件触发有三个阶段](#事件触发有三个阶段)
   - [注册事件](#%E6%B3%A8%E5%86%8C%E4%BA%8B%E4%BB%B6)
   - [事件委托](#事件委托)
+  - [e.target和e.currentTarget](#e-target和e-currentTarget)
 - [跨域](#%E8%B7%A8%E5%9F%9F)
   - [JSONP](#jsonp)
   - [CORS](#cors)
@@ -94,6 +95,50 @@ el.addEventListener(
 事件代理的方式相对于直接给目标注册事件来说，有以下优点
 - 节省内存
 - 不需要给子节点注销事件
+
+#### e.target和e.currentTarget
+
+`Event` 接口的只读属性 [`currentTarget`](https://developer.mozilla.org/zh-CN/docs/Web/API/Event/currentTarget)表示的，**标识是当事件沿着 `DOM` 触发时事件的当前目标。它总是指向事件绑定的元素，而 `Event.target` 则是事件触发的元素。**
+
+如下例子，`e.target`指向的是事件触发的元素，点击的第一个li,所以`e.target`指向的是第一个li,而`e.currentTarget`指向事件绑定的元素，事件绑定的是ul，所以指向的Ul
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>Event Delegation</title>
+</head>
+<body>
+<ul>
+   <li id="li1">hello 1</li>
+   <li>hello 2</li>
+   <li>hello 3</li>
+   <li>hello 4</li>
+</ul>
+<script>
+	let ul = document.querySelectorAll('ul')[0]
+	let aLi = document.querySelectorAll('li')
+	ul.addEventListener('click', function (e) {
+		console.log(e)
+		let oLi1 = e.target
+		let oLi2 = e.currentTarget
+		console.log(oLi1)   //  被点击的li
+		console.log(oLi2)   // ul
+		console.log(oLi1 === oLi2)  // false
+        console.log(e.currentTarget === this)
+        console.log(e.target.id)
+	})
+</script>
+</body>
+</html>
+```
+`currentTarget`始终是监听事件者，即 直接调用`addEventListener`那个节点
+
+而`target`是事件的真正发出者， 即 触发事件的节点，在`click`事件中就是被点击的节点。可用于事件冒泡
+
+`this === e.currentTarget` 总是为true
+
+`this === e.target` 有可能不是true
 
 ### [跨域](https://juejin.im/post/6844904126246027278)
 因为浏览器出于安全考虑，有同源策略。也就是说，如果协议、域名或者端口有一个不同就是跨域，Ajax 请求会失败。

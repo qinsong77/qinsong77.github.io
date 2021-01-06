@@ -123,7 +123,9 @@ module.exports = {
 					children: [
 						['frameWork/', 'Summary'],
 						'frameWork/microservices',
-						'frameWork/network'
+						'frameWork/network',
+						'frameWork/http',
+						'frameWork/https'
 					]
 				}
 			],

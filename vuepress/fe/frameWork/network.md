@@ -28,7 +28,7 @@ title: 网络相关
     - [快速重传](#%E5%BF%AB%E9%80%9F%E9%87%8D%E4%BC%A0)
     - [TCP New Ren 改进后的快恢复](#tcp-new-ren-%E6%94%B9%E8%BF%9B%E5%90%8E%E7%9A%84%E5%BF%AB%E6%81%A2%E5%A4%8D)
 - [HTTP](#http)
-  - [HEAD方法和OPTIONS方法](#HEAD方法和OPTIONS方法)
+  - [HEAD方法和OPTIONS方法](#head方法和options方法)
   - [Post 和 Get 的区别](#post-%E5%92%8C-get-%E7%9A%84%E5%8C%BA%E5%88%AB)
   - [常见的四种post提交数据编码格式](#常见的四种post提交数据编码格式)
   - [HTTP状态码](#http状态码)
@@ -291,7 +291,7 @@ HTTP 协议是个无状态协议，不会保存状态。
 
 ## HEAD方法和OPTIONS方法
 > http HEAD方法是获取报文首部，和GET方法一样，只是不返回报文主体部分。用于确认URI的有效性及资源更新的日期时间等。
-> http OPTIONS方法是询问支持方法，用来查询针对请求URI指定的资源支持的方法。
+> http OPTIONS方法是询问支持方法，用来查询针对请求URI指定的资源支持的方法。2、用来检查服务器的性能。例如：AJAX 进行跨域请求时的预检，需要向另外一个域名的资源发送一个 HTTP OPTIONS 请求头，用以判断实际发送的请求是否安全。
 
 ## Post 和 Get 的区别
 

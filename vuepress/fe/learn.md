@@ -663,3 +663,74 @@ index:C value:bar-C
 - NodeList对象, 就是获取的dom列表集合
 
 以上这些都可以直接使用 for of 循环。 凡是部署了 iterator 接口的数据结构也都可以使用数组的 扩展运算符(...)、和解构赋值等操作。
+
+
+### promise
+
+- `Promise.all() `: 所有的状态都变成`fulfilled`才会变成`fulfilled`,只要p1、p2、p3之中有一个被`rejected`，p的状态就变成`rejected`，此时第一个被reject的实例的返回值，会传递给p的回调函数。
+- `Promise.race() `: 只要p1、p2、p3之中有一个实例率先改变状态，p的状态就跟着改变。那个率先改变的 Promise 实例的返回值，就传递给p的回调函数。
+- `Promise.allSettled()`: 方法接受一组 Promise 实例作为参数，包装成一个新的 Promise 实例。只有等到所有这些参数实例都返回结果，不管是fulfilled还是rejected，包装实例才会结束。该方法返回的新的 Promise 实例，一旦结束，状态总是fulfilled，不会变成rejected。状态变成fulfilled后，Promise 的监听函数接收到的参数是一个数组，每个成员对应一个传入Promise.allSettled()的 Promise 实例。
+
+### async的实现
+
+async 函数的实现原理，就是将 `Generator` 函数和自动执行器，包装在一个函数里。
+
+```javascript
+async function fn(args) {
+  // ...
+}
+
+// 等同于
+
+function fn(args) {
+  return spawn(function* () {
+    // ...
+  });
+}
+```
+所有的`async`函数都可以写成上面的第二种形式，其中的`spawn`函数就是自动执行器。
+
+```javascript
+function spawn(genF) {
+  return new Promise(function(resolve, reject) {
+    const gen = genF();
+    function step(nextF) {
+      let next;
+      try {
+        next = nextF();
+      } catch(e) {
+        return reject(e);
+      }
+      if(next.done) {
+        return resolve(next.value);
+      }
+      Promise.resolve(next.value).then(function(v) {
+        step(function() { return gen.next(v); });
+      }, function(e) {
+        step(function() { return gen.throw(e); });
+      });
+    }
+    step(function() { return gen.next(undefined); });
+  });
+}
+
+function timeout(ms) {
+	return new Promise((resolve => {
+		setTimeout(resolve,ms)
+	}))
+}
+async function asyncPrint(value, ms) {
+	await timeout(ms);
+	console.log(value);
+}
+
+function fn(value, ms) {
+	return spawn(function* () {
+		yield timeout(ms)
+		console.log(value);
+	});
+}
+
+// asyncPrint('hello world', 2000);
+fn('hello world', 2000);
+```
