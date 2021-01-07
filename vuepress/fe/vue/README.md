@@ -1475,6 +1475,8 @@ dirty为false返回上传的结果，为true执行`watcher.evaluate()`。实际�
 
 ### [vue Diff](https://mp.weixin.qq.com/s?__biz=MzUxNjQ1NjMwNw==&mid=2247484449&idx=1&sn=7f346b97a177218cc09fc50562ed121c&chksm=f9a66e3dced1e72b8a88fd0d78b5a5b8bd2e0ec95552e675d44923d368bba2ec438c520cd7be&token=946193943&lang=zh_CN#rd)
 
+[文章](https://www.jianshu.com/p/92a7496af50c)
+
 [文章](https://blog.csdn.net/qq_34179086/article/details/88086427)
 
 对比 oldVnode 和 vnode

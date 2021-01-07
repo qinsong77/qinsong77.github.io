@@ -734,3 +734,5 @@ function fn(value, ms) {
 // asyncPrint('hello world', 2000);
 fn('hello world', 2000);
 ```
+
+#### reduce
