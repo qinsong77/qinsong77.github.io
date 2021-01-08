@@ -49,78 +49,14 @@ String.prototype.myIndexOf = function(str){
 }
 ```
 
-## 熙牛医疗
+## 熙牛医疗笔试题
 
 ### 1、树形结构数据打印
 
-```typescript
-interface TreeNode extends Record<string, any> {
-	id: number;
-	parentId: number;
-	name: string;
-	Children?: TreeNode [];
-}
+我的思路：利于对象引用关系
 
-function printTree(list: TreeNode[]): void {
-	// 请实现此方法
-	let result:TreeNode [] = []
-	let addNodeSet = new Set()
-	list.forEach(node => {
-		const { id, parentId } = node
-		if (!addNodeSet.has(id)) {
-			// 找到父节点
-			const parent = list.find(v => v.id === parentId)
-			if (parent) {
-				if (addNodeSet.has(parent.id)) { // 如果已经添加了父节点
-					// 这里需要递归操作，找出父节点
-					const findResultParent:(arr: TreeNode[], id: number) => TreeNode  = function (arr: TreeNode[], id: number) {
-						let reNode: TreeNode
-						for (let i = 0; i < arr.length; i++) {
-							if (arr[i].id === id) {
-								reNode = arr[i]
-								break
-							} else {
-								let re = findResultParent(arr[i].Children, id)
-								if (re) {
-									reNode = re
-									return reNode
-								}
-							}
-						}
-						return reNode
-					}
-					
-					const parentNode = findResultParent(result, parent.id)
-					if (!parentNode.Children) {
-						parentNode.Children = []
-					}
-					parentNode.Children.push(Object.assign({Children: []}, node))
-					addNodeSet.add(id)
-				} else {
-					addNodeSet.add(parent.id)
-					addNodeSet.add(id)
-					result.push(Object.assign({Children: [node]}, node))
-				}
-			} else {
-				addNodeSet.add(id)
-				result.push(Object.assign({Children: []}, node))
-			}
-		}
-	})
-	
-	const print :(arr: TreeNode[], space: number) => void = function(arr: TreeNode[], space: number = 0) {
-		arr.forEach(node => {
-			console.log('  '.repeat(space) + node.name + ' \n ')
-			if (node.Children) {
-				print(node.Children, space + 2)
-			}
-		})
-	}
-	print(result, 0)
-}
-
-//============= 测试代码 ==============
-const list: TreeNode[] = [
+```javascript
+const data = [
 	{ id: 1001, parentId: 0, name: 'AA' },
 	{ id: 1002, parentId: 1001, name: 'BB' },
 	{ id: 1003, parentId: 1001, name: 'CC' },
@@ -130,9 +66,38 @@ const list: TreeNode[] = [
 	{ id: 1007, parentId: 1002, name: 'GG' },
 	{ id: 1008, parentId: 1004, name: 'HH' },
 	{ id: 1009, parentId: 1005, name: 'II' },
+	{ id: 1011, parentId: 101, name: '444' },
+	{ id: 10108, parentId: 10109, name: 'tt' },
+	{ id: 10109, parentId: 10015, name: 'JJ' },
+	{ id: 101, parentId: 10108, name: '333' },
 ];
 
-printTree(list);
+function buildTree (data) {
+	const result = []
+	const dataMap = new Map()
+	data.forEach(item => dataMap.set(item.id, item))
+	data.forEach(item => {
+		const { parentId } = item
+		const parentNode = dataMap.get(parentId)
+		if (parentNode) {
+			parentNode.Children = parentNode.Children || []
+			parentNode.Children.push(item)
+		} else {
+			result.push(item)
+		}
+	})
+	return result
+}
+
+const print = (arr,space = 0) =>  {
+	arr.forEach(node => {
+		console.log('  '.repeat(space) + node.name + ' \n ')
+		if (node.Children) {
+			print(node.Children, space + 2)
+		}
+	})
+}
+print(buildTree(data), 0)
 ```
 ### 2、React Input 表单组件
 类似于element的input组件，props可设置默认值，maxLength, 有`show-word-limit`的效果，组件支持受控和非受控模式

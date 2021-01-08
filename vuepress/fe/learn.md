@@ -652,6 +652,16 @@ index:C value:bar-C
 - for of 不同与 forEach, 它可以与 break、continue和return 配合使用,也就是说 for of 循环可以随时退出循环。
   
 - 提供了遍历所有数据结构的统一接口
+- 遍历数组无法获取index，但可以转成`Map`，示例如下
+
+```javascript
+const arr = [1,2,3]
+
+for (const [key, value] of new Map(arr.map((item, i) => [i, item]))) {
+	console.log(key)
+	console.log(value)
+}
+```
 
 哪些数据结构部署了 `Symbol.iterator` 属性呢?只要有 `iterator `接口的数据结构,都可以使用 for of循环。
 
@@ -736,3 +746,46 @@ fn('hello world', 2000);
 ```
 
 #### reduce
+
+
+#### `JSON.stringify`、`JSON.parse`深拷贝的缺点
+
+- 1. 如果obj里有函数，undefined，则序列化的结果会把函数或 `undefined`丢失；`JSON.parse`传入`undefined`会报错, `JSON.stringify`不会报错。有NaN、Infinity和-Infinity，则序列化的结果会变成null。如果obj里有RegExp(正则表达式的缩写)、Error对象，则序列化的结果将只得到空对象null；
+```javascript
+var funObj = {
+	name: 'a',
+	fun: function(){
+		console.log(this.a)
+	},
+	un: undefined,
+	na: NaN,
+	in: Infinity,
+	una: -Infinity,
+}
+console.log(JSON.parse(JSON.stringify(funObj))) // { name: 'a', na: null, in: null, una: null }
+
+var obj = {
+	name: 'a',
+	reg: new RegExp('\\w+'),
+	error: new Error('error')
+}
+
+console.log(JSON.parse(JSON.stringify(obj))) // { name: 'a', reg: {}, error: {} }
+```
+
+- 2. JSON.stringify()只能序列化对象的可枚举的自有属性，例如 如果obj中的对象是由构造函数生成的， 则使用JSON.parse(JSON.stringify(obj))深拷贝后，会丢弃对象的constructor；
+- 3. 如果对象中存在循环引用的情况也无法正确实现深拷贝；
+- 4. 如果obj里面有时间对象，则JSON.stringify后再JSON.parse的结果，时间将只是字符串的形式，而不是对象的形式
+```javascript
+var test = {
+	name: 'a',
+	date: [new Date(1536627600000), new Date(1540047600000)],
+};
+
+let b = JSON.parse(JSON.stringify(test))
+console.log(b);
+// {
+// 	name: 'a',
+// 		date: [ '2018-09-11T01:00:00.000Z', '2018-10-20T15:00:00.000Z' ]
+// }
+```

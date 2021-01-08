@@ -26,3 +26,10 @@ var obj2 = {
 	test: fun
 }
 obj2.test()
+
+const arr = [1,2,3]
+
+for (const [key, value] of new Map(arr.map((item, i) => [i, item]))) {
+	console.log(key)
+	console.log(value)
+}

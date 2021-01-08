@@ -264,6 +264,49 @@ top、left和css中的理解很相似，right是指元素右边界距窗口最�
 
 ![](./imgs/ele_center.png)
 
+### CSS 实现文本的单行和多行溢出省略效
+
+#### 单行文本
+
+```css
+.text {
+    overflow: hidden; 
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+```
+- overflow: hidden（文字长度超出限定宽度，则隐藏超出的内容）
+- white-space: nowrap（设置文字在一行显示，不能换行）
+- text-overflow: ellipsis（规定当文本溢出时，显示省略符号来代表被修剪的文本）
+
+#### 多行文本
+```scss
+.text {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.mulLineTruncate {
+  position: relative;
+  max-height: 40px;
+  overflow: hidden;
+  line-height: 20px;
+  &::after {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    padding: 0 20px 0 10px;
+    content: '...';
+  }
+}
+```
+- -webkit-line-clamp: 2（用来限制在一个块元素显示的文本的行数, 2 表示最多显示 2 行。 为了实现该效果，它需要组合其他的WebKit属性）
+- display: -webkit-box（和 1 结合使用，将对象作为弹性伸缩盒子模型显示 ）
+- overflow: hidden（文本溢出限定的宽度就隐藏内容）
+- -webkit-box-orient: vertical（和 1 结合使用 ，设置或检索伸缩盒对象的子元素的排列方式 ）
+
+text-overflow: ellipsis（多行文本的情况下，用省略号“…”隐藏溢出范围的文本)
 ### 移动端如何处理点击穿透
 
 点击穿透的原因：
@@ -286,3 +329,4 @@ touchstart -> touchmove -> touchend -> mousedown -> click -> mouseup
 
 - 不允许点击，即让点击穿透 ：pointer-events: none;
 - 允许点击，即禁止穿透（默认值）：pointer-events: auto;
+

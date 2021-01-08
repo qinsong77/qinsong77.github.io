@@ -17,6 +17,7 @@ title: Dom
   - [postMessage](#postmessage)
 - [浏览器缓存](#浏览器缓存)
 - [cookie到WebStorage、IndexedDB](#cookie到webstorage、indexeddb)
+- [Storage Event](#storage-event)
 - [浏览器页面渲染机制](#浏览器页面渲染机制)
   - [Load 和 DOMContentLoaded 区别](#load-%E5%92%8C-domcontentloaded-%E5%8C%BA%E5%88%AB)
   - [图层](#%E5%9B%BE%E5%B1%82)
@@ -233,6 +234,72 @@ cookie，localStorage，sessionStorage，indexDB
 | http-only |            不能通过 JS 访问 Cookie，减少 XSS 攻击            |
 |  secure   |               只能在协议为 HTTPS 的请求中携带                |
 | same-site |    规定浏览器不能在跨域请求中携带 Cookie，减少 CSRF 攻击     |
+
+#### [sessionStorage](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/sessionStorage)
+
+它与 localStorage 相似，不同之处在于 localStorage 里面存储的数据没有过期时间设置，而存储在 sessionStorage 里面的数据在页面会话结束时会被清除（关闭当前页面的时候会清除）。
+
+
+- 页面会话在浏览器打开期间一直保持，并且重新加载或恢复页面仍会保持原来的页面会话。
+- 在新标签或窗口打开一个页面时会复制顶级浏览会话的上下文作为新会话的上下文，这点和 session cookies 的运行方式不同。(意思是点击当前页面的 `<a target="_blank" href=“/subapp/device”></a>` 标签时，在新页面中的 sessionStorage 的值是复制的当前页面的，注意并不是共用的。)
+- 打开多个相同的URL的Tabs页面，会创建各自的sessionStorage。
+- 关闭对应浏览器窗口（Window）/ tab，会清除对应的sessionStorage。 
+
+sessionStorage 应用
+
+- 存储用户输入的内容，当页面刷新的时候可以立刻显示出刷新前的内容；
+
+- 对使用 browser history 部署的单页应用，可以在前端使用 `sessionStorage` 实现路由匹配（不会报 404），不需要使用 nginx 做一次转发；
+实现自动匹配路由的过程是这样的：当访问 `a.com/page1` 页面的时候，由于服务器并没有这个页面，服务器会返回 `404.html`（浏览器当前的路由仍然是 `a.com/page1`），浏览器执行 404.html 时会先设置 `sessionStorage.redirect` 为当前的 url，然后 `<meta>` 会立刻让页面跳转到` /`，服务器此时会返回 `index.html`，浏览器执行 `<script>` 中的代码获取到 `sessionStorage.redirect`，然后执行 `history.replaceState` 替换当前的 url，这样就达到了想要的跳转效果（`history.replaceState` 只会更改浏览器地址栏，不会让浏览器主动去服务器获取对应的页面）。
+
+```html
+<head>
+    <script>
+      sessionStorage.redirect = location.href;
+    </script>
+    <meta http-equiv="refresh" content="0;URL='/'"></meta>
+</head>
+```
+
+在单页应用的模板 index.html 中，填下面的代码：
+```html
+<body>
+  <div id="root"></div>
+  <script>
+    // 这段代码要放在其他js的前面
+    ;(function() {
+      var redirect = sessionStorage.redirect
+      delete sessionStorage.redirect
+      if (redirect && redirect != location.href) {
+        history.replaceState(null, null, redirect)
+      }
+    })()
+  </script>
+</body>
+```
+### [Storage Event](https://developer.mozilla.org/zh-CN/docs/Web/API/StorageEvent)
+其实就是当浏览器打开多个同域的tab页面时，设置了storage的监听事件，并且值和之前的不一样，其他tab会触发回调，`localStorage`可以，但`sessionStorage`不可以。
+```javascript
+localStorage.setItem('name', 'tom')
+window.addEventListener('storage', e => {
+  console.log('e', e)
+})
+```
+Storage 事件可以用来在同域下的页面之间实现广播机制，该事件是在 window 上触发的。该事件不在导致数据变化的当前页面(tab)触发（如果浏览器同时打开一个域名下面的多个页面，当其中的一个页面改变 localStorage 的数据时，其他所有页面的 storage 事件会被触发，而原始页面并不触发 storage 事件）；
+
+event 包含的关键信息：
+
+- event.key 发生变更的 key；
+
+- event.oldValue 变更之前的值；
+
+- event.newValue 变更之后的值；
+
+触发的条件有两个：
+
+- 不在当前的 tab 触发，相同的 url 在两个不同的 tab 也是会触发的；
+
+- localstorage.setItem(key, value) 只有当后一次设置的 value 不同的时候才会触发该事件，相同的话也没有必要触发了；
 
 ### 浏览器页面渲染机制
 > [介绍](https://juejin.im/post/6844903815758479374)

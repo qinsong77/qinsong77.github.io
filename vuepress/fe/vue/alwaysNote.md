@@ -333,3 +333,33 @@ export default {
 }
 </style>
 ```
+[vue技巧](https://juejin.cn/post/6911662617178144776)
+```vue
+<template>
+  <div class="box" :style="styleVar">
+  </div>
+</template>
+<script>
+export default {
+  props: {
+    height: {
+      type: Number,
+      default: 54,
+    },
+  },
+  computed: {
+    styleVar() {
+      return {
+        '--box-height': this.height + 'px'
+      }
+    }
+  },
+}
+</script>
+<style scoped>
+.box {
+  height: var(--box-height);
+}
+</style>
+
+```

@@ -1534,11 +1534,12 @@ dirty为false返回上传的结果，为true执行`watcher.evaluate()`。实际�
 ### [面试官: 你对虚拟DOM原理的理解?](https://juejin.cn/post/6844903902429577229)
 ### [详解vue的diff算法](https://juejin.cn/post/6844903607913938951)
 
+### [https://zhuanlan.zhihu.com/p/342643253](https://zhuanlan.zhihu.com/p/342643253)
 
 ### [实现双向绑定Proxy比defineProperty优劣如何](https://juejin.cn/post/6844903601416978439)
 ### [为什么Vue3.0不再使用defineProperty实现数据监听？](https://mp.weixin.qq.com/s/O8iL4o8oPpqTm4URRveOIA)
 
-
+### [vuex工作原理详解](https://www.jianshu.com/p/d95a7b8afa06)
 ### [Vuex、Flux、Redux、Redux-saga、Dva、MobX](https://zhuanlan.zhihu.com/p/53599723)
 ### [8k字 | Redux/react-redux/redux中间件设计实现剖析](https://juejin.cn/post/6844904036013965325)
 
@@ -1650,6 +1651,11 @@ history 提供类似 `hashchange` 事件的 `popstate` 事件，但 `popstate` �
 </html>
 
 ```
+
+### Vuex
+
+[vuex工作原理详解](https://www.jianshu.com/p/d95a7b8afa06)
+
 ### 打包懒加载
 
 路由使用`import`导入，并声明`webpackChunkName`
