@@ -43,7 +43,7 @@ title: 网络相关
   - [QUIC](#quic)
 - [DNS](#dns)
 - [CDN](#cdn)
-- [浏览器缓存机制](https://mp.weixin.qq.com/s?__biz=MzAxODE2MjM1MA==&mid=2651556794&idx=1&sn=0186d0c4b36b6e7e0adf7ffaf7b3f9b8&chksm=80255c7bb752d56dd863bdc90295b6bf193612ef5b26e96d13f9165c8beb32125f5facc7fe31&scene=21#wechat_redirect)
+- [浏览器缓存机制](#浏览器缓存机制)
 - [从输入 URL 到页面加载完成的过程](#%E4%BB%8E%E8%BE%93%E5%85%A5-url-%E5%88%B0%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E5%AE%8C%E6%88%90%E7%9A%84%E8%BF%87%E7%A8%8B)
 
 
@@ -538,6 +538,15 @@ DNS 的作用就是通过域名查询到具体的 IP。
 PS：DNS 是基于 UDP 做的查询。
 
 ## [CDN](https://juejin.cn/post/6844903605888090125)
+
+## [浏览器缓存机制](https://mp.weixin.qq.com/s?__biz=MzAxODE2MjM1MA==&mid=2651556794&idx=1&sn=0186d0c4b36b6e7e0adf7ffaf7b3f9b8&chksm=80255c7bb752d56dd863bdc90295b6bf193612ef5b26e96d13f9165c8beb32125f5facc7fe31&scene=21#wechat_redirect)
+
+浏览的缓存策略分为强缓存和协商缓存，他们之间的根本区别是是否需要发请求。简单来说，强缓存就是你的本地文件（保存在硬盘或者内存中），你可以立马访问到；协商缓存是需要发请求给服务器，问问资源是否有更新，如果没有更新就访问本地缓存；如果更新，服务器会返回更新后的资源文件。
+
+强缓存 --- HTTP/1.0: 响应头中 Expires 字段(),有问题，相对于本地实际， HTTP/1.1：  `Cache-Control`字段
+协商缓存 --- HTTP/1.0 中的 `Last-Modified`(Last-Modified 验证规则：浏览器第一次发送请求，服务器在响应头中带上 Last-Modified，并返回资源，浏览器下次发送相同请求时，会把之前收到的 Last-Modified 内容放到请求头中的 If-Modified-Since 字段，服务器收到后会跟请求资源的最后修改时间做对比，如果相同，返回 HTTP 304，如果不相同，返回HTTP 200，并返回最新的资源。)
+HTTP/1.1: E-Tag 验证规则：验证过程跟 Last-Modified 类似，只不过是浏览器第一次收到的是 etag，第二次发送的是 If-None-Match。跟 Last-Modified 的区别是 E-Tag 的内容是资源的唯一标识符，Last-Modified 的内容是最后修改时间，且 E-Tag 优先级高于 Last-Modified。
+![](./image/web_cache.png)
 
 ## 从输入 URL 到页面加载完成的过程
 

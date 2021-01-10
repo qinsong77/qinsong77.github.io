@@ -4,6 +4,7 @@ title: Dom
 
 [「查缺补漏」高频考点浏览器面试题](https://juejin.cn/post/6854573215830933512)
 
+- [操作dom的Api](#操作dom的api)
 - [输入url到页面展示发生了什么](#输入url到页面展示发生了什么)
 - [事件机制](#%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6)
   - [事件触发有三个阶段](#事件触发有三个阶段)
@@ -34,6 +35,153 @@ title: Dom
 - [MutationObserver](#MutationObserver)
   
 ----
+
+### 操作dom的Api
+
+#### 节点查找API
+
+- document.getElementById ：根据ID查找元素，大小写敏感，如果有多个结果，只返回第一个；
+
+- document.getElementsByClassName ：根据类名查找元素，多个类名用空格分隔，返回一个 HTMLCollection 。注意兼容性为IE9+（含）。另外，不仅仅是document，其它元素也支持 getElementsByClassName 方法；
+
+- document.getElementsByTagName ：根据标签查找元素， * 表示查询所有标签，返回一个 HTMLCollection 。
+
+- document.getElementsByName ：根据元素的name属性查找，返回一个 NodeList 。
+
+- document.querySelector ：返回单个Node，IE8+(含），如果匹配到多个结果，只返回第一个。
+
+- document.querySelectorAll ：返回一个 NodeList ，IE8+(含）。
+
+- document.forms ：获取当前页面所有form，返回一个 HTMLCollection ；
+
+#### 节点创建API
+- createElement创建元素：
+```javascript
+var elem = document.createElement("div");  
+elem.id = 'test';  
+elem.style = 'color: red';  
+elem.innerHTML = '我是新创建的测试节点';  
+document.body.appendChild(elem);  
+```
+通过 createElement 创建的元素并不属于 document 对象，它只是创建出来，并未添加到html文档中，要调用 appendChild 或 insertBefore 等方法将其添加到HTML文档中。
+- createTextNode创建文本节点：
+```javascript
+var node = document.createTextNode("我是文本节点");  
+document.body.appendChild(node);  
+```
+- cloneNode 克隆一个节点：
+node.cloneNode(true/false) ，它接收一个bool参数，用来表示是否复制子元素。
+```javascript
+var from = document.getElementById("test");  
+var clone = from.cloneNode(true);  
+clone.id = "test2";  
+document.body.appendChild(clone);  
+```
+克隆节点并不会克隆事件，除非事件是用属性上绑定的事件(比如`onclick="alert(1)"`)这种方式绑定的，用 `addEventListener` 和 `node.onclick=xxx;` 方式绑定的都不会复制。
+
+- `document.createDocumentFragment` : 用来创建一个 DocumentFragment ，也就是文档碎片，它表示一种轻量级的文档，主要是用来存储临时节点，大量操作DOM时用它可以大大提升性能。
+```javascript
+const list = document.querySelector('#list');
+const fruits = ['Apple', 'Orange', 'Banana', 'Melon'];
+
+const fragment = document.createDocumentFragment();
+
+fruits.forEach(fruit => {
+  const li = document.createElement('li');
+  li.innerHTML = fruit;
+  fragment.appendChild(li);
+});
+
+list.appendChild(fragment);
+```
+#### 节点修改API
+- `appendChild`: `parent.appendChild(child);`
+- `insertBefore`: `parentNode.insertBefore(newNode, refNode);`
+- `removeChild`: removeChild用于删除指定的子节点并返回子节点,`var deletedChild = parent.removeChild(node);  `
+- `replaceChild`: 用于将一个节点替换另一个节点, `parent.replaceChild(newChild, oldChild);`
+- [`insertAdjacentHTML`](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/insertAdjacentHTML)
+
+#### 节点关系API
+- 父关系API
+  - parentNode ：每个节点都有一个parentNode属性，它表示元素的父节点。Element的父节点可能是Element，Document或DocumentFragment；
+  - parentElement ：返回元素的父元素节点，与parentNode的区别在于，其父节点必须是一个Element元素，如果不是，则返回null；
+- 子关系API
+  - children ：返回一个实时的 HTMLCollection ，子节点都是Element，IE9以下浏览器不支持；
+  - childNodes ：返回一个实时的 NodeList ，表示元素的子节点列表，注意子节点可能包含文本节点、注释节点等；
+  - firstChild ：返回第一个子节点，不存在返回null，与之相对应的还有一个 firstElementChild ；
+  - lastChild ：返回最后一个子节点，不存在返回null，与之相对应的还有一个 lastElementChild ；
+- 兄弟关系型API  
+  - previousSibling ：节点的前一个节点，如果不存在则返回null。注意有可能拿到的节点是文本节点或注释节点，与预期的不符，要进行处理一下。
+  
+  - nextSibling ：节点的后一个节点，如果不存在则返回null。注意有可能拿到的节点是文本节点，与预期的不符，要进行处理一下。
+  
+  - previousElementSibling ：返回前一个元素节点，前一个节点必须是Element，注意IE9以下浏览器不支持。
+  
+  - nextElementSibling ：返回后一个元素节点，后一个节点必须是Element，注意IE9以下浏览器不支持。
+
+#### 元素属性型API  
+- setAttribute 给元素设置属性：`element.setAttribute(name, value);`其中name是特性名，value是特性值。如果元素不包含该特性，则会创建该特性并赋值。
+- getAttribute: getAttribute返回指定的特性名相应的特性值，如果不存在，则返回null：`var value = element.getAttribute("id");`
+- hasAttribute: `var result = element.hasAttribute(name);`
+- dataset
+```javascript
+// <div id="user" data-id="1234567890" data-user="johndoe" data-date-of-birth>John Doe</div>
+
+let el = document.querySelector('#user');
+
+// el.id == 'user'
+// el.dataset.id === '1234567890'
+// el.dataset.user === 'johndoe'
+// el.dataset.dateOfBirth === ''
+
+el.dataset.dateOfBirth = '1960-10-03'; // set the DOB.
+
+// 'someDataAttr' in el.dataset === false
+el.dataset.someDataAttr = 'mydata';
+// 'someDataAttr' in el.dataset === true
+```
+#### 样式相关API
+- 1. 直接修改元素的样式
+```javascript
+elem.style.color = 'red';  
+elem.style.setProperty('font-size', '16px');  
+elem.style.removeProperty('color');  
+```
+- 2. 动态添加样式规则
+```javascript
+var style = document.createElement('style');  
+style.innerHTML = 'body{color:red} #top:hover{background-color: red;color: white;}';  
+document.head.appendChild(style);  
+```
+- 3. classList获取样式class
+```javascript
+// div is an object reference to a <div> element with class="foo bar"
+div.classList.remove("foo");
+div.classList.add("anotherclass");
+
+// if visible is set remove it, otherwise add it
+div.classList.toggle("visible");
+
+// add/remove visible, depending on test conditional, i less than 10
+div.classList.toggle("visible", i < 10 );
+
+alert(div.classList.contains("foo"));
+
+// add or remove multiple classes
+div.classList.add("foo", "bar", "baz");
+div.classList.remove("foo", "bar", "baz");
+
+// add or remove multiple classes using spread syntax
+let cls = ["foo", "bar"];
+div.classList.add(...cls); 
+div.classList.remove(...cls);
+
+// replace class "foo" with class "bar"
+div.classList.replace("foo", "bar");
+```
+- 4. window.getComputedStyle：通过 element.sytle.xxx 只能获取到内联样式，借助 window.getComputedStyle 可以获取应用到元素上的所有样式。`var style = window.getComputedStyle(element[, pseudoElt]);`
+
+
 
 ### [输入URL到页面展示发生了什么](https://zhuanlan.zhihu.com/p/190320054)
 >[git地址](https://github.com/venaissance/myBlog/issues/17)

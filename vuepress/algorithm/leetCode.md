@@ -119,7 +119,7 @@ var twoSum = function(nums, target) {
 回文串就是正着读和反着读都一样的字符串。
 
 ```javascript
-// https://labuladong.gitbook.io/algo/gao-pin-mian-shi-xi-lie/4.2-qi-ta-jing-dian-wen-ti/zui-chang-hui-wen-zi-chuan
+// https://labuladong.gitbook.io/algo/gao-pin-mian-shi-xi-lie/zui-chang-hui-wen-zi-chuan
 /**
  * @param {string} s
  * @return {string}

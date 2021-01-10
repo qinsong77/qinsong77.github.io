@@ -401,6 +401,8 @@ function fibImpl(a, b, n){
 
 >《你不知道的JavaScript》这样描述：当函数可以记住并访问所在的词法作用域时，就产生了闭包，即使函数是在当前词法作用域之外执行。
 
+[变量作用域，闭包](https://zh.javascript.info/closure)
+
 从词法作用域讲解闭包：
  - [深入理解闭包之前置知识→作用域与词法作用域](https://juejin.cn/post/6844903606311714824)
  - [闭包详解](https://juejin.cn/post/6844903612879994887)
@@ -676,7 +678,8 @@ for (const [key, value] of new Map(arr.map((item, i) => [i, item]))) {
 
 
 ### promise
-
+- `Promise.prototype.then()`: then方法的第一个参数是resolved状态的回调函数，第二个参数是rejected状态的回调函数，它们都是可选的。
+- `Promise.prototype.catch()`方法是`.then(null, rejection)`或`.then(undefined, rejection)`的别名，用于指定发生错误时的回调函数。
 - `Promise.all() `: 所有的状态都变成`fulfilled`才会变成`fulfilled`,只要p1、p2、p3之中有一个被`rejected`，p的状态就变成`rejected`，此时第一个被reject的实例的返回值，会传递给p的回调函数。
 - `Promise.race() `: 只要p1、p2、p3之中有一个实例率先改变状态，p的状态就跟着改变。那个率先改变的 Promise 实例的返回值，就传递给p的回调函数。
 - `Promise.allSettled()`: 方法接受一组 Promise 实例作为参数，包装成一个新的 Promise 实例。只有等到所有这些参数实例都返回结果，不管是fulfilled还是rejected，包装实例才会结束。该方法返回的新的 Promise 实例，一旦结束，状态总是fulfilled，不会变成rejected。状态变成fulfilled后，Promise 的监听函数接收到的参数是一个数组，每个成员对应一个传入Promise.allSettled()的 Promise 实例。
@@ -789,3 +792,5 @@ console.log(b);
 // 		date: [ '2018-09-11T01:00:00.000Z', '2018-10-20T15:00:00.000Z' ]
 // }
 ```
+
+## [垃圾回收](https://zh.javascript.info/garbage-collection)

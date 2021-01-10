@@ -8,6 +8,7 @@ title: Vue
 - [大厂高频Vue面试题（上）](https://juejin.cn/post/6844904138208182285)
 - [30 道 Vue 面试题，内含详细讲解](https://juejin.cn/post/6844903918753808398)
 - [记录面试中一些回答不够好的题（Vue 居多） | 掘金技术征文](https://juejin.cn/post/6844903569422811150)
+- [Vue 项目性能优化 — 实践指南（网上最全 / 详细）](https://juejin.cn/post/6844903913410314247)
 
 ### [Vue.js 技术揭秘](https://ustbhuangyi.github.io/vue-analysis/)
 
@@ -682,7 +683,7 @@ optimize(ast, options)
 ```
 可以看到，optimize实际上就做了2件事情，一个是调用markStatic()来标记静态节点，另一个是调用markStaticRoots()来标记静态根节点。
 
-- 3.code generate：将优化后的AST树转换成可执行的代码(主要功能就是根据 AST 结构拼接生成 render 函数的字符串。)。
+- 3.code generate：将优化后的AST树转换成可执行的代码(主要功能就是根据 AST 结构拼接生成 render 函数的字符串。通过`new Function`生成可运行的`render function`)。
 
 ```javascript
  var code = generate(ast, options);
@@ -1174,12 +1175,16 @@ get: function reactiveGetter () {
 ### [生命周期](https://juejin.im/post/6844903780736040973)
  ![An image](./image/vue2.png)
  
+  ![An image](./image/vue_life_circle.png)
+ 
 - `initLifecycle(vm);initEvents(vm);initRender(vm);`，`initLifecycle`：初始化参数，找到父节点，设置子节点，`$refs`为空数组，初始化组件变量，`_isMounted`，`_isDestroyed`等，
  `initEvents`：初始化事件，如果 _parentListeners 存在的话，更新组件的事件监听；
 - `beforeCreate`之前合并配置，初始化生命周期，初始化事件中心，初始化渲染
 - `created`之前调用`initInjections`，`initState`, `initProvide`，初始化 data、props、computed、watcher；
-- `beforeMount`（渲染dom前）：在渲染 dom ，先检查了是否存在渲染位置，如果不存在的话，也就不会注册了；
-- 执行了 `beforeMount` 钩子函数后，为组件`new Watcher`, 在 `new Watcher` 的时候，调用了` _render` 方法，实现了 `dom` 的渲染，即在执行完 `vm._update()` 把 VNode patch 到真实 DOM 后，执行 `mounted` 钩子。
+- `beforeMount`（渲染dom前）：判断`$options`中是否有挂载el，即检查是否有渲染位置。有的话执行`vm.$mount(vm.$options.el)`，注意这个`$mount()`执行的是11879行的方法，先`var mount = Vue.prototype.$mount;`保存之前的，在最后`mount.call(this, el, hydrating)`,
+在$mount()中，会判断`options`是否有render，没有就开始编译模板，模板parse,optimize,generate,后得到render的字符串表达式，通过`new Function`生成`render function`
+- 接着到`mountComponent`,`callHook(vm, 'beforeMount');`
+- 执行了 `beforeMount` 钩子函数后，为组件`new Watcher`, 在 `new Watcher` 的时候，其实就是执行了`updateComponent`,调用了` _render` 方法得到Vdom, `_update`中patch，实现了 `dom` 的渲染，即在执行完 `vm._update()` 把 VNode patch 到真实 DOM 后，执行 `mounted` 钩子。
 - `beforeUpdate`: 实际上是在`watcher.run()`之前调用了`watcher.before();`触发了这个beforeUpdate，其他没做什么
 - 在watcher.run之后调用了`callUpdatedHooks`, 因为有多个组件的时候，会有很多个 watcher ，在这里，就是检查当前的得 watcher 是哪个，是当前的话，就直接执行当前 updated 钩子。
 - beforeDestroy（卸载组件前）: 在卸载前，检查是否已经被卸载，如果已经被卸载，就直接 return 出去；执行 `beforeDestroy` 钩子
@@ -1475,11 +1480,11 @@ dirty为false返回上传的结果，为true执行`watcher.evaluate()`。实际�
 
 ### [vue Diff](https://mp.weixin.qq.com/s?__biz=MzUxNjQ1NjMwNw==&mid=2247484449&idx=1&sn=7f346b97a177218cc09fc50562ed121c&chksm=f9a66e3dced1e72b8a88fd0d78b5a5b8bd2e0ec95552e675d44923d368bba2ec438c520cd7be&token=946193943&lang=zh_CN#rd)
 
-[文章](https://www.jianshu.com/p/92a7496af50c)
+[vue2.0的diff算法详解](https://www.jianshu.com/p/92a7496af50c)
 
-[文章](https://blog.csdn.net/qq_34179086/article/details/88086427)
+[深入剖析：Vue核心之虚拟DOM](https://juejin.cn/post/6844903895467032589)
 
-对比 oldVnode 和 vnode
+对比 oldVnode 和 vnode(`patch`)
 - 1、没有旧节点
 > 没有旧节点，说明是页面刚开始初始化的时候，此时，根本不需要比较了，直接全部都是新建，所以只调用 `createElm`
 - 2、旧节点 和 新节点 自身一样（不包括其子节点）
@@ -1490,6 +1495,33 @@ dirty为false返回上传的结果，为true执行`watcher.evaluate()`。实际�
    所以，`patchVnode`其中的一个作用，就是比较子节点。
 - 3、旧节点 和 新节点自身不一样
 > 当两个节点不一样的时候，不难理解，直接创建新节点，删除旧节点
+
+```javascript
+  function sameVnode (a, b) {
+    return (
+      a.key === b.key && (
+        (
+          a.tag === b.tag &&
+          a.isComment === b.isComment &&
+          isDef(a.data) === isDef(b.data) &&
+          sameInputType(a, b)
+        ) || (
+          isTrue(a.isAsyncPlaceholder) &&
+          a.asyncFactory === b.asyncFactory &&
+          isUndef(b.asyncFactory.error)
+        )
+      )
+    )
+  }
+
+  function sameInputType (a, b) {
+    if (a.tag !== 'input') { return true }
+    var i;
+    var typeA = isDef(i = a.data) && isDef(i = i.attrs) && i.type;
+    var typeB = isDef(i = b.data) && isDef(i = i.attrs) && i.type;
+    return typeA === typeB || isTextInputType(typeA) && isTextInputType(typeB)
+  }
+```
 
 在 Vue3 中将采用另外一种核心 Diff 算法，它借鉴于 ivi 和 inferno。
 
@@ -1509,20 +1541,156 @@ dirty为false返回上传的结果，为true执行`watcher.evaluate()`。实际�
 - 移动 Dom 操作。
 
 ##### patchVnode(比较两个Vnode 的子节点)
+
 总的来说，这个函数的作用是
 - 1、Vnode 是文本节点，则更新文本（文本节点不存在子节点）
 
 - 2、Vnode 有子节点，则处理比较更新子节点, 此时有3种情况。
-  -  1、新旧节点 都有子节点，而且不一样,调用updateChildren（细节很多）
+  -  1、新旧节点 都有子节点，而且不一样,调用`updateChildren`（细节很多）
   
   -  2、只有新节点(不用比较，直接创建出所有新DOM，并且添加进父节点的)
   
   -  3、只有旧节点(把所有的旧节点删除,也就是直接把DOM 删除)
+
+两个节点值得比较时，会调用patchVnode函数
+```javascript
+patchVnode (oldVnode, vnode) {
+    const el = vnode.el = oldVnode.el
+    let i, oldCh = oldVnode.children, ch = vnode.children
+    if (oldVnode === vnode) return
+    if (oldVnode.text !== null && vnode.text !== null && oldVnode.text !== vnode.text) {
+        api.setTextContent(el, vnode.text)
+    }else {
+        updateEle(el, vnode, oldVnode)
+        if (oldCh && ch && oldCh !== ch) {
+            updateChildren(el, oldCh, ch)
+        }else if (ch){
+            createEle(vnode) //create el's children dom
+        }else if (oldCh){
+            api.removeChildren(el)
+        }
+    }
+}
+```
+
+`const el = vnode.el = oldVnode.el` 这是很重要的一步，让vnode.el引用到现在的真实dom，当el修改时，vnode.el会同步变化。
+
+节点的比较有5种情况:
+
+- 1. `if (oldVnode === vnode)`，他们的引用一致，可以认为没有变化。
+
+- 2. `if(oldVnode.text !== null && vnode.text !== null && oldVnode.text !== vnode.text)`，文本节点的比较，需要修改，则会调用`Node.textContent = vnode.text`。
+
+- 3. `if( oldCh && ch && oldCh !== ch )`, 两个节点都有子节点，而且它们不一样，这样我们会调用updateChildren函数比较子节点，这是diff的核心，见下[updateChildren](#updatechildren)。
+
+- 4. `else if (ch)`，只有新的节点有子节点，调用`createEle(vnode)`，vnode.el已经引用了老的dom节点，createEle函数会在老dom节点上添加子节点。
+
+- 5. `else if (oldCh)`，新节点没有子节点，老节点有子节点，直接删除老节点。
+
   
 #### Vue中key属性的作用
 >当 Vue.js 用`v-for`正在更新已渲染过的元素列表时，它默认用“就地复用”策略。如果数据项的顺序被改变，Vue 将不会移动 DOM 元素来匹配数据项的顺序， 而是简单复用此处每个元素，并且确保它在特定索引下显示已被渲染过的每个元素。————官方文档
 
 用 index 做为 key ，否则新增的0节点的key=0，而 oldNode 中的1的key也为0，实际上还是走了 sameNode 并且更新，和不写 key 一样效果
+
+### updateChildren
+ ::: details 点击查看代码
+```javascript
+  function updateChildren (parentElm, oldCh, newCh, insertedVnodeQueue, removeOnly) {
+    let oldStartIdx = 0
+    let newStartIdx = 0
+    let oldEndIdx = oldCh.length - 1
+    let oldStartVnode = oldCh[0]
+    let oldEndVnode = oldCh[oldEndIdx]
+    let newEndIdx = newCh.length - 1
+    let newStartVnode = newCh[0]
+    let newEndVnode = newCh[newEndIdx]
+    let oldKeyToIdx, idxInOld, elmToMove, refElm
+
+    // removeOnly is a special flag used only by <transition-group>
+    // to ensure removed elements stay in correct relative positions
+    // during leaving transitions
+    const canMove = !removeOnly
+
+    while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
+      if (isUndef(oldStartVnode)) {
+        oldStartVnode = oldCh[++oldStartIdx] // Vnode has been moved left
+      } else if (isUndef(oldEndVnode)) {
+        oldEndVnode = oldCh[--oldEndIdx]
+      } else if (sameVnode(oldStartVnode, newStartVnode)) {
+        /*前四种情况其实是指定key的时候，判定为同一个VNode，则直接patchVnode即可，分别比较oldCh以及newCh的两头节点2*2=4种情况*/
+        patchVnode(oldStartVnode, newStartVnode, insertedVnodeQueue)
+        oldStartVnode = oldCh[++oldStartIdx]
+        newStartVnode = newCh[++newStartIdx]
+      } else if (sameVnode(oldEndVnode, newEndVnode)) {
+        patchVnode(oldEndVnode, newEndVnode, insertedVnodeQueue)
+        oldEndVnode = oldCh[--oldEndIdx]
+        newEndVnode = newCh[--newEndIdx]
+      } else if (sameVnode(oldStartVnode, newEndVnode)) { // Vnode moved right
+        patchVnode(oldStartVnode, newEndVnode, insertedVnodeQueue)
+        canMove && nodeOps.insertBefore(parentElm, oldStartVnode.elm, nodeOps.nextSibling(oldEndVnode.elm))
+        oldStartVnode = oldCh[++oldStartIdx]
+        newEndVnode = newCh[--newEndIdx]
+      } else if (sameVnode(oldEndVnode, newStartVnode)) { // Vnode moved left
+        patchVnode(oldEndVnode, newStartVnode, insertedVnodeQueue)
+        canMove && nodeOps.insertBefore(parentElm, oldEndVnode.elm, oldStartVnode.elm)
+        oldEndVnode = oldCh[--oldEndIdx]
+        newStartVnode = newCh[++newStartIdx]
+      } else {
+        /*
+          生成一个key与旧VNode的key对应的哈希表（只有第一次进来undefined的时候会生成，也为后面检测重复的key值做铺垫）
+          比如childre是这样的 [{xx: xx, key: 'key0'}, {xx: xx, key: 'key1'}, {xx: xx, key: 'key2'}]  beginIdx = 0   endIdx = 2  
+          结果生成{key0: 0, key1: 1, key2: 2}
+        */
+        if (isUndef(oldKeyToIdx)) oldKeyToIdx = createKeyToOldIdx(oldCh, oldStartIdx, oldEndIdx)
+        /*如果newStartVnode新的VNode节点存在key并且这个key在oldVnode中能找到则返回这个节点的idxInOld（即第几个节点，下标）*/
+        idxInOld = isDef(newStartVnode.key) ? oldKeyToIdx[newStartVnode.key] : null
+        if (isUndef(idxInOld)) { // New element
+          /*newStartVnode没有key或者是该key没有在老节点中找到则创建一个新的节点*/
+          createElm(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.elm)
+          newStartVnode = newCh[++newStartIdx]
+        } else {
+          /*获取同key的老节点*/
+          elmToMove = oldCh[idxInOld]
+          /* istanbul ignore if */
+          if (process.env.NODE_ENV !== 'production' && !elmToMove) {
+            /*如果elmToMove不存在说明之前已经有新节点放入过这个key的DOM中，提示可能存在重复的key，确保v-for的时候item有唯一的key值*/
+            warn(
+              'It seems there are duplicate keys that is causing an update error. ' +
+              'Make sure each v-for item has a unique key.'
+            )
+          }
+          if (sameVnode(elmToMove, newStartVnode)) {
+            /*Github:https://github.com/answershuto*/
+            /*如果新VNode与得到的有相同key的节点是同一个VNode则进行patchVnode*/
+            patchVnode(elmToMove, newStartVnode, insertedVnodeQueue)
+            /*因为已经patchVnode进去了，所以将这个老节点赋值undefined，之后如果还有新节点与该节点key相同可以检测出来提示已有重复的key*/
+            oldCh[idxInOld] = undefined
+            /*当有标识位canMove实可以直接插入oldStartVnode对应的真实DOM节点前面*/
+            canMove && nodeOps.insertBefore(parentElm, newStartVnode.elm, oldStartVnode.elm)
+            newStartVnode = newCh[++newStartIdx]
+          } else {
+            // same key but different element. treat as new element
+            /*当新的VNode与找到的同样key的VNode不是sameVNode的时候（比如说tag不一样或者是有不一样type的input标签），创建一个新的节点*/
+            createElm(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.elm)
+            newStartVnode = newCh[++newStartIdx]
+          }
+        }
+      }
+    }
+    if (oldStartIdx > oldEndIdx) {
+      /*全部比较完成以后，发现oldStartIdx > oldEndIdx的话，说明老节点已经遍历完了，新节点比老节点多，所以这时候多出来的新节点需要一个一个创建出来加入到真实DOM中*/
+      refElm = isUndef(newCh[newEndIdx + 1]) ? null : newCh[newEndIdx + 1].elm
+      addVnodes(parentElm, refElm, newCh, newStartIdx, newEndIdx, insertedVnodeQueue)
+    } else if (newStartIdx > newEndIdx) {
+      /*如果全部比较完成以后发现newStartIdx > newEndIdx，则说明新节点已经遍历完了，老节点多余新节点，这个时候需要将多余的老节点从真实DOM中移除*/
+      removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx)
+    }
+  }
+```
+ ::: 
+
+![](./image/updateChildren.png)
 
 ### [Vue.js的computed和watch是如何工作的](https://juejin.cn/post/6844903667884097543)
 
@@ -1534,14 +1702,10 @@ dirty为false返回上传的结果，为true执行`watcher.evaluate()`。实际�
 ### [面试官: 你对虚拟DOM原理的理解?](https://juejin.cn/post/6844903902429577229)
 ### [详解vue的diff算法](https://juejin.cn/post/6844903607913938951)
 
-### [https://zhuanlan.zhihu.com/p/342643253](https://zhuanlan.zhihu.com/p/342643253)
+### [Vue.extend](https://zhuanlan.zhihu.com/p/342643253)
 
 ### [实现双向绑定Proxy比defineProperty优劣如何](https://juejin.cn/post/6844903601416978439)
 ### [为什么Vue3.0不再使用defineProperty实现数据监听？](https://mp.weixin.qq.com/s/O8iL4o8oPpqTm4URRveOIA)
-
-### [vuex工作原理详解](https://www.jianshu.com/p/d95a7b8afa06)
-### [Vuex、Flux、Redux、Redux-saga、Dva、MobX](https://zhuanlan.zhihu.com/p/53599723)
-### [8k字 | Redux/react-redux/redux中间件设计实现剖析](https://juejin.cn/post/6844904036013965325)
 
 ### 数据改变到页面渲染的过程是怎么样的？
 - 看下面的图片👇，这是执行click函数改变一个数据之后发生的函数调用栈，从图上的说明可以比较清楚个了解这个响应式过程的大概流程。下面简单讲解一下：
@@ -1655,6 +1819,100 @@ history 提供类似 `hashchange` 事件的 `popstate` 事件，但 `popstate` �
 ### Vuex
 
 [vuex工作原理详解](https://www.jianshu.com/p/d95a7b8afa06)
+
+在`resetStoreVM`中试下了响应式更新。getter的缓存机制也是借助`computed`实现。
+ ::: details 点击查看代码
+```javascript
+  function applyMixin (Vue) {
+    var version = Number(Vue.version.split('.')[0]);
+
+    if (version >= 2) {
+      Vue.mixin({ beforeCreate: vuexInit });
+    } else {
+      // override init and inject vuex init procedure
+      // for 1.x backwards compatibility.
+      var _init = Vue.prototype._init;
+      Vue.prototype._init = function (options) {
+        if ( options === void 0 ) options = {};
+
+        options.init = options.init
+          ? [vuexInit].concat(options.init)
+          : vuexInit;
+        _init.call(this, options);
+      };
+    }
+
+    /**
+     * Vuex init hook, injected into each instances init hooks list.
+     */
+
+    function vuexInit () {
+      var options = this.$options;
+      // store injection
+      if (options.store) {
+        this.$store = typeof options.store === 'function'
+          ? options.store()
+          : options.store;
+      } else if (options.parent && options.parent.$store) {
+        this.$store = options.parent.$store;
+      }
+    }
+  }
+  function resetStoreVM (store, state, hot) {
+    var oldVm = store._vm;
+
+    // bind store public getters
+    store.getters = {};
+    // reset local getters cache
+    store._makeLocalGettersCache = Object.create(null);
+    var wrappedGetters = store._wrappedGetters;
+    var computed = {};
+    forEachValue(wrappedGetters, function (fn, key) {
+      // use computed to leverage its lazy-caching mechanism
+      // direct inline function use will lead to closure preserving oldVm.
+      // using partial to return function with only arguments preserved in closure environment.
+      computed[key] = partial(fn, store);
+      Object.defineProperty(store.getters, key, {
+        get: function () { return store._vm[key]; },
+        enumerable: true // for local getters
+      });
+    });
+
+    // use a Vue instance to store the state tree
+    // suppress warnings just in case the user has added
+    // some funky global mixins
+    var silent = Vue.config.silent;
+    Vue.config.silent = true;
+    store._vm = new Vue({
+      data: {
+        $$state: state
+      },
+      computed: computed
+    });
+    Vue.config.silent = silent;
+
+    // enable strict mode for new vm
+    if (store.strict) {
+      enableStrictMode(store);
+    }
+
+    if (oldVm) {
+      if (hot) {
+        // dispatch changes in all subscribed watchers
+        // to force getter re-evaluation for hot reloading.
+        store._withCommit(function () {
+          oldVm._data.$$state = null;
+        });
+      }
+      Vue.nextTick(function () { return oldVm.$destroy(); });
+    }
+  }
+```
+ ::: 
+ 为什么`mutation`要是同步写法，其实这是常见的软件工程模式，及约定大于配置，实际测试，mutation里面也是可以异步执行的，但是这样就代表不可控，且develop tool也不好跟踪。
+ 加action是因为要区分可追踪，不可追踪。mutation绝对可以追踪，action不追踪。action中最后必须调用mutation的commit方法；action的作用1.告诉你这个不可追踪2.这个是异步 至于异步竞争/顺序，这些自己控制。
+### [Vuex、Flux、Redux、Redux-saga、Dva、MobX](https://zhuanlan.zhihu.com/p/53599723)
+### [8k字 | Redux/react-redux/redux中间件设计实现剖析](https://juejin.cn/post/6844904036013965325)
 
 ### 打包懒加载
 

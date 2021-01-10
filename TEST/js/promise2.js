@@ -1,3 +1,17 @@
+
+new Promise(resolve => {
+	resolve(1)
+}).then(res => {
+	console.log(res)
+	return res
+}).then(res => {
+	console.log(res)
+})
+	.then(res => {
+		console.log(res)
+	})
+
+
 console.time()
 const p = new Promise((resolve, reject) => {
 	setTimeout(()=> {
