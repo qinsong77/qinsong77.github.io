@@ -363,3 +363,7 @@ export default {
 </style>
 
 ```
+
+### [Vue - Table表格渲染上千数据优化](https://zhuanlan.zhihu.com/p/53455289)
+
+### [记一次vue长列表的内存性能分析和优化](https://www.cnblogs.com/imwtr/p/10428819.html#top)
