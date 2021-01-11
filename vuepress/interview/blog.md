@@ -6,6 +6,6 @@ title: 博客地址
 - [冴羽的博客-深入系列JS, ES](https://github.com/mqyqingfeng/Blog)
 - [前端进阶之道](https://yuchengkai.cn/)
 - [ConardLi的blog](http://www.conardli.top/blog/)
-- [前端日志](https://lmjben.github.io/)
+- [前端日志](https://mengsixing.github.io/)
 - [原生JS、 React、ReactNative和Webpack等入门与底层原理分析](https://github.com/YvetteLau/Blog)
 

@@ -818,6 +818,32 @@ function flatten(array) {
             target.concat(current)
         , [])
     }
+// reduce + concat + isArray + recursivity
+// to enable deep level flatten use recursion with reduce and concat
+function flatDeep(arr, d = 1) {
+   return d > 0 ? arr.reduce((acc, val) => acc.concat(Array.isArray(val) ? flatDeep(val, d - 1) : val), [])
+                : arr.slice();
+};
+
+flatDeep(arr, Infinity);
+
+// Use Generator function
+function* flatten2(array, depth) {
+    if(depth === undefined) {
+      depth = 1;
+    }
+    for(const item of array) {
+        if(Array.isArray(item) && depth > 0) {
+          yield* flatten(item, depth - 1);
+        } else {
+          yield item;
+        }
+    }
+}
+
+const arr2 = [1, 2, [3, 4, [5, 6]]];
+const flattened = [...flatten2(arr2, Infinity)];
+
 ```
 
 ### 数组操作
