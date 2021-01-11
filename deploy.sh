@@ -9,6 +9,9 @@ npm run build
 # 拷贝文件
 cp -R vuepress/.vuepress/dist/* $(pwd)
 
+# 删除dist文件夹
+rm -r vuepress/.vuepress/dist/*
+
 # 如果是发布到自定义域名
 echo 'sysuke.com' > CNAME
 
