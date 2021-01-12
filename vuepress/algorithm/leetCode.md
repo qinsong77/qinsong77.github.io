@@ -303,7 +303,7 @@ let multiply = function(num1, num2) {
 ```
 ::: 
     
-#### [4.二维数组翻转90度](https://leetcode-cn.com/problems/rotate-image)
+#### [4.N x N二维数组翻转90度](https://leetcode-cn.com/problems/rotate-image)
 ```dotenv
 给定 matrix = 
 [
@@ -319,8 +319,7 @@ let multiply = function(num1, num2) {
   [9,6,3]
 ]
 ```
-由于矩阵中的行列从 00 开始计数，因此对于矩阵中的元素 `matrix[row][col]`，在旋转后，它的新位置为 `[col][n−row−1]`。
-
+对于矩阵中第 ii 行的第 jj 个元素，在旋转后，它出现在倒数第 ii 列的第 jj 个位置。由于矩阵中的行列从 00 开始计数，因此对于矩阵中的元素 `matrix[row][col]`，在旋转后，它的新位置为 `[col][n−row−1]`。
 ```javascript
 var rotate = function(matrix) {
     const n = matrix.length
@@ -338,5 +337,61 @@ var rotate = function(matrix) {
             matrix[i][j] = map.get(key)
         } 
     }
+};
+
+var rotate2 = function(matrix){
+	const n = matrix.length
+	const map = new Map()
+	// [col][n−row−1]
+	for (let i = 0; i < n; i++) {
+		for (let j = 0; j < n; j++) {
+			const row = j
+			const col = n - i - 1
+			const key = row + '-' + col
+			if (map.has(i + '-' + j)) {
+				if (!map.has(key)) map.set(key, matrix[row][col])
+				matrix[row][col] = map.get(i + '-' + j)
+			} else {
+				if (!map.has(key)) map.set(key, matrix[row][col])
+				matrix[row][col] = matrix[i][j]
+			}
+		}
+	}
+}
+```
+先以对角线（左上<—>右下）为轴进行翻转，再对每行左右翻转即可。
+```javascript
+var rotate = function(matrix) {
+    const n = matrix.length
+    for (let i = 0; i < n; i++) {
+        for(let j = i + 1; j < n; j++) {
+            [matrix[i][j], matrix[j][i]] =  [matrix[j][i], matrix[i][j]]
+        } 
+    }
+    const mid = Math.floor(n/2)
+    for (let i = 0; i < n; i++) {
+        for(let j = 0; j < mid; j++) {
+            [matrix[i][j], matrix[i][n - 1 - j]] =  [matrix[i][n - 1 - j], matrix[i][j]]
+        } 
+    }
+};
+```
+
+执行用时为 60 ms 的范例
+```javascript
+var rotate3 = function (matrix) {
+	//let newMatrix = []
+	let len = matrix.length
+	for (let l = 0; l < len; l++) {
+		let newL = []
+		for (let n = 0; n < len; n++) {
+			newL.unshift(matrix[n][l])
+		}
+		matrix.push(newL)
+		//newMatrix.push(newL)
+		//console.log(newMatrix)
+	}
+	matrix.splice(0, matrix.length / 2)
+	//matrix = newMatrix
 };
 ```

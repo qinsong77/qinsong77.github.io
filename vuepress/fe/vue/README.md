@@ -1692,6 +1692,8 @@ patchVnode (oldVnode, vnode) {
 
 ![](./image/updateChildren.png)
 
+![](./image/vdom_diff.jpg)
+
 ### [Vue.js的computed和watch是如何工作的](https://juejin.cn/post/6844903667884097543)
 
 ### [keep-alive原理](https://juejin.im/post/6862206197877964807)
