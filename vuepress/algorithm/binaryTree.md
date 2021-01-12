@@ -89,6 +89,26 @@ class BinarySearchTree {
 		}
 	}
 	
+	// 层次遍历
+    levelTraverse (cb) {
+        if (this.root) {
+            this.levelTraverseNode(this.root, cb)
+        }
+    }
+    
+    levelTraverseNode (root, cb) {
+        const queue = []
+        queue.push(root)
+        while(queue.length) {
+            let node = queue.shift()
+            // result.push(node.key)
+            cb(node)
+            if(node.left) queue.push(node.left)
+            if(node.right) queue.push(node.right)
+        }
+        // return result
+    } 
+
 	// 最小值节点
 	min() {
 		return this.minNode(this.root)

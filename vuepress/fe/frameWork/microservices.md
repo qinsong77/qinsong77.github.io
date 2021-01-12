@@ -4,6 +4,7 @@ title: 微前端
 
 ### [qiankun微前端方案实践及总结](https://juejin.im/post/6844904185910018062)
 ### [qiankun微前端实践总结（二）](https://juejin.im/post/6856569463950639117)
+### [详细解析微前端、微前端框架qiankun以及源码](https://blog.csdn.net/snshl9db69ccu1aikl9r/article/details/105501367)
 
 ### [一篇英语介绍文章](https://micro-frontends.org/)
 

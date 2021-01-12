@@ -42,7 +42,7 @@ while(i<n)
 
 一个程序执行时除了需要存储空间和存储本身所使用的指令、常数、变量和输入数据外，还需要一些对数据进行操作的工作单元和存储一些为现实计算所需信息的辅助空间。
 
-> 学习javascript数据结构和算法[github代码地址](https://github.com/loiane/javascript-datastructures-algorithms)
+## 学习javascript数据结构和算法[github代码地址](https://github.com/loiane/javascript-datastructures-algorithms)
 ### 栈
 - 栈是一种遵从后进先出（LIFO）原则的有序集合。新添加或待删除的元素都保存在栈的同
    一端，称作栈顶，另一端就叫栈底。在栈里，新元素都靠近栈顶，旧元素都接近栈底。犹如在桌子上堆叠书。

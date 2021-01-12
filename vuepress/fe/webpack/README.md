@@ -215,9 +215,9 @@ Webpack 会为每个生成的 `Chunk` 取一个名称，`Chunk` 的名称和 `En
 
 - babel-loader：把 ES6 转换成 ES5;
 
-- css-loader：负责处理 `@import`、`url` 等语句。例如 `import css from 'file.css'`、`url(image.png)`支持模块化、压缩、文件导入等特性;
+- css-loader：The css-loader interprets @import and url() like import/require() and will resolve them.负责处理 `@import`、`url` 等语句。例如 `import css from 'file.css'`、`url(image.png)`支持模块化、压缩、文件导入等特性;把 CSS 代码注入到 JavaScript 中
 
-- style-loader：把 CSS 代码注入到 JavaScript 中，在 DOM 里插入一个 `<style>` 标签，并且将 CSS 写入这个标签内;
+- style-loader：Inject CSS into the DOM，在 DOM 里插入一个 `<style>` 标签，并且将 CSS 写入这个标签内;
 
 - postcss-loader：负责进一步处理 CSS 文件，比如添加浏览器前缀，压缩 CSS 等。
 - less-loader：将 .less 文件内容转换成 CSS。
