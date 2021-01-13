@@ -60,7 +60,7 @@ px像素（Pixel）。相对长度单位。像素px是相对于显示器屏幕�
 ![](./imgs/box-sizing.png)
 
 `border-color` 默认颜色就是
-color 色值”。具体来讲，就是当没有指定` border-color `颜色值的时候，会使用当前元素的
+color 色值。具体来讲，就是当没有指定` border-color `颜色值的时候，会使用当前元素的
 color 计算值作为边框色。具有类似特性的 CSS 属性还有 outline、box-shadow 和 text-shadow 等。
 
 当`margin`和`padding`的值设置为百分比时，是指相对于最近的块级父元素width（非总宽度）的相应百分比的值，即使是margin-top、margin-bottom、padding-top、padding-bottom，设置为百分比时也是以最近块级父元素的width（非总宽度）为基准，而非height。
