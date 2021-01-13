@@ -1931,3 +1931,5 @@ const routes = [{
 原理
  - 将需要进行懒加载的子模块打包成独立的文件（`children chunk`）；借助的是es6的`import`
  - 借助函数来实现延迟执行子模块的加载代码；
+
+#### [Vue CLI 是如何实现的](http://axuebin.com/articles/fe-solution/cli/vuecli.html)
