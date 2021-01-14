@@ -1594,6 +1594,9 @@ patchVnode (oldVnode, vnode) {
 用 index 做为 key ，否则新增的0节点的key=0，而 oldNode 中的1的key也为0，实际上还是走了 sameNode 并且更新，和不写 key 一样效果
 
 ### updateChildren
+
+过程可以概括为：`oldCh`和`newCh`各有两个头尾的变量`StartIdx`和`EndIdx`，它们的2个变量相互比较，一共有4种比较方式。如果4种比较都没匹配，如果设置了`key`，就会用`key`进行比较，在比较的过程中，变量会往中间靠，一旦`StartIdx>EndIdx`表明`oldCh`和`newCh`至少有一个已经遍历完了，就会结束比较。
+
  ::: details 点击查看代码
 ```javascript
   function updateChildren (parentElm, oldCh, newCh, insertedVnodeQueue, removeOnly) {

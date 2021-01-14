@@ -8,7 +8,7 @@ title: Summary of CSS
 
 ### [Web开发者应该掌握的CSS tricks](https://lhammer.cn/You-need-to-know-css/#/zh-cn/)
 
-### [各种页面常见布局知名网站实例分析相关阅读推荐](https://www.sweet-kk.top/css-layout)
+### [各种页面常见布局知名网站实例分析相关阅读推荐](https://sweet-kk.github.io/css-layout/)
 
 ### 网页布局
 > [总结](https://www.zhihu.com/question/21775016/answer/1358336033)
