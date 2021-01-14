@@ -679,6 +679,41 @@ for (const [key, value] of new Map(arr.map((item, i) => [i, item]))) {
 
 ### promise
 - `Promise.prototype.then()`: then方法的第一个参数是resolved状态的回调函数，第二个参数是rejected状态的回调函数，它们都是可选的。
+    
+    promise 的优势在于可以链式调用，使用 Promise 的时候，当 then 函数中 return 了一个值，不管是什么值，我们都能在下一个 then 中获取到，这就是所谓的**then 的链式调用**。
+    
+```javascript
+new Promise((resolve, reject) => {
+	setTimeout(() => {
+		resolve(123)
+	}, 2000)
+})
+	.then((res) => {
+		console.log(res) // 123
+		return 1
+	})
+	.then()
+	.then()
+	.then(res => {
+		console.log(res) // 1
+	})
+```
+
+而且，当不在 then 中放入参数，例：`promise.then().then()`，那么其后面的 then 依旧可以得到之前 then 返回的值，这就是所谓的**值的穿透**。
+```javascript
+new Promise((resolve, reject) => {
+	setTimeout(() => {
+		resolve(123)
+	}, 2000)
+})
+	.then()
+	.then()
+	.then()
+	.then(res => {
+		console.log(res) // 123
+	})
+```
+    
 - `Promise.prototype.catch()`方法是`.then(null, rejection)`或`.then(undefined, rejection)`的别名，用于指定发生错误时的回调函数。
 - `Promise.all() `: 所有的状态都变成`fulfilled`才会变成`fulfilled`,只要p1、p2、p3之中有一个被`rejected`，p的状态就变成`rejected`，此时第一个被reject的实例的返回值，会传递给p的回调函数。
 - `Promise.race() `: 只要p1、p2、p3之中有一个实例率先改变状态，p的状态就跟着改变。那个率先改变的 Promise 实例的返回值，就传递给p的回调函数。

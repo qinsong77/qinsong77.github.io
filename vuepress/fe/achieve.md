@@ -1162,6 +1162,102 @@ class MyPromise {
    }
  }
 ```
+
+#### [面试版](https://zhuanlan.zhihu.com/p/288384170)
+
+1. 没有实现then的透传
+```javascript
+const PENDING = 'PENDING'
+const FULFILLED = 'FULFILLED'
+const REJECTED = 'REJECTED'
+
+class Promise {
+	constructor(executor){
+		this.status = PENDING
+		this.value = undefined
+		this.reason = undefined
+		// 存放成功的回调
+		this.onResolvedCallbacks = []
+		// 存放失败的回调
+		this.onRejectedCallbacks = []
+
+		let resolve = (value) => {
+			if (this.status === PENDING) {
+				this.status = FULFILLED
+				this.value = value
+				// 依次将对应的函数执行
+				this.onResolvedCallbacks.forEach(fn => fn())
+			}
+		}
+
+		let reject = (reason) => {
+			if (this.status === PENDING) {
+				this.status = REJECTED
+				this.reason = reason
+				// 依次将对应的函数执行
+				this.onRejectedCallbacks.forEach(fn => fn())
+			}
+		}
+
+		try {
+			executor(resolve, reject)
+		} catch (error) {
+			reject(error)
+		}
+	}
+
+	then(onFulfilled, onRejected){
+		if (this.status === FULFILLED) {
+			onFulfilled(this.value)
+		}
+
+		if (this.status === REJECTED) {
+			onRejected(this.reason)
+		}
+
+		if (this.status === PENDING) {
+			// 如果promise的状态是 pending，需要将 onFulfilled 和 onRejected 函数存放起来，等待状态确定后，再依次将对应的函数执行
+			this.onResolvedCallbacks.push(() => {
+				onFulfilled(this.value)
+			})
+
+			// 如果promise的状态是 pending，需要将 onFulfilled 和 onRejected 函数存放起来，等待状态确定后，再依次将对应的函数执行
+			this.onRejectedCallbacks.push(() => {
+				onRejected(this.reason)
+			})
+		}
+	}
+}
+```
+3. promise.all
+```javascript
+Promise.all = function(values){
+	if (!Array.isArray(values)) {
+		const type = typeof values
+		return new TypeError(`TypeError: ${type} ${values} is not iterable`)
+	}
+	return new Promise((resolve, reject) => {
+		let resultArr = []
+		let orderIndex = 0
+		const processResultByKey = (value, index) => {
+			resultArr[index] = value
+			if (++orderIndex === values.length) {
+				resolve(resultArr)
+			}
+		}
+		for (let i = 0; i < values.length; i++) {
+			let value = values[i]
+			if (value && typeof value.then === 'function') {
+				value.then((value) => {
+					processResultByKey(value, i)
+				}, reject)
+			} else {
+				processResultByKey(value, i)
+			}
+		}
+	})
+}
+```
 这个思路比较清晰，但没有通过官方872个测试用例
 > [文章](https://juejin.im/post/6844903665686282253)
 ```javascript

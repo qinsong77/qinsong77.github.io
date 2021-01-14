@@ -94,6 +94,52 @@ fruits.forEach(fruit => {
 
 list.appendChild(fragment);
 ```
+
+- `document.createElementNS`: `document.createElementNS`与`document.createElement`类似，也用于创建标签节点，只是它需要一个额外的命名空间URI作为参数。此命名空间用于标识该节点属于哪种XML类型。命名空间为什么是必须的：一个xml文档可能包含多个软件模块的元素和属性，在不同软件模块中使用相同名称的元素或属性，可能会导致识别和冲突问题，而xml命名空间可以解决该问题。有效的命名空间URI:
+
+  - HTML： http://www.w3.org/1999/xhtml
+  - SVG：http://www.w3.org/2000/svg
+  - XBL：http://www.mozilla.org/xbl
+  - XUL：http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul
+  
+使用document.createElement创建svg就有问题，而createElementNS不会
+
+```html
+<body>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  version="1.1"
+  width="100%"
+  height="100%"
+  id="svg"
+>
+  <defs>
+    <marker
+      id="markerArrow"
+      markerWidth="10"
+      markerHeight="10"
+      refX="2"
+      refY="6"
+      orient="auto"
+    >
+      <path d="M2,2 L2,10 L10,6 L2,2" fill="rgba(207, 219, 230, 1)" />
+    </marker>
+  </defs>
+</svg>
+<script>
+    const path = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "path"
+    );
+    path.setAttribute("d", "M105,72 C105,100 105,100 173,100");
+    path.setAttribute("fill", "none");
+    path.setAttribute("stroke-width", "2px");
+    path.setAttribute("stroke", "rgba(207, 219, 230, 1)");
+    path.setAttribute("marker-end", "url(#markerArrow)");
+    document.getElementById("svg").appendChild(path);
+</script>
+</body>
+```
 #### 节点修改API
 - `appendChild`: `parent.appendChild(child);`
 - `insertBefore`: `parentNode.insertBefore(newNode, refNode);`
