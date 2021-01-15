@@ -9,6 +9,43 @@ title: 四十行代码实现一个 koa
 ### Koa 和 Express 有什么区别
 - 异步：callback 和 promise
 - 中间件：线性模型和洋葱模型
+
+- Handler的处理
+>Express普通回调函数，在同一线程上完成当前进程的所有Http请求；
+ Koa利用Generator Function作为响应器，co作为底层运行框架，利用Generator特性，实现“协程响应”；
+- 路由
+> Express的路由是自身集成的； 
+  Koa的需要引入中间件Koa-router；
+- 启动方式
+> koa采用new Koa()
+  express采用传统的函数形式function； 
+- 回调： Koa没有回调express有回调；
+- 生命周期
+Express的生命周期不确定：express内部执行异步函数，不能确定什么时候执行完； 
+Koa确定：koa是基于await/async，在执行下一步操作的时候，必须等待前端await执行完； 
+- 异步流程
+> Express采用callback来处理异步(ES5)；
+   Koa1采用generator(ES6)；
+   Koa2采用async/await(ES7)；
+- 错误处理
+Express使用callback捕获异常，深层次的异常捕获不了；
+ Koa使用try catch，很好的解决异常捕获；
+- 中间件
+ koa2的中间件：
+ 
+1、通过async await实现的，中间件执行的顺序是“洋葱圈”模型。
+ 		
+2、中间件之间通过next函数联系，当一个中间件调用next()后，会将控制权交给下一个中间件，直到下一个中间件不再执行next()后，会沿路返回，将控制权交给前一个中间件。
+ 		
+ Express中间件：
+ 
+1、一个接一个顺序执行，response响应写在最后一个中间件中。
+
+2、特点：
+-  a.app.use用来注册中间件；
+-  b.遇到http请求，根据path和method判断触发哪些中间件；
+-  c.实现next机制，即上一个中间件会通过next触发下一个中间件；
+
 ## 四十行代码实现一个koa
 
 ![](./image/koa.jpg)

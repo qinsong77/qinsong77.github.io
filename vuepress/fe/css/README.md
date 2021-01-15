@@ -122,7 +122,7 @@ absolute 定位使元素的位置与文档流无关，因此不占据空间。ab
  `fixed`定位的元素和其他元素重叠。
  
 - `sticky`
-粘性定位：position: sticky; 在目标区域以内，它的行为就像 `position:relative;`在滑动过程中，某个元素距离其父元素的距离达到`sticky`粘性定位的要求时(比如`top：100px`)；`position:sticky`这时的效果相当于`fixe`d定位，固定到适当位置；
+粘性定位：position: sticky; 在目标区域以内，它的行为就像 `position:relative;`在滑动过程中，某个元素距离其父元素的距离达到`sticky`粘性定位的要求时(比如`top：100px`)；`position:sticky`这时的效果相当于`fixed`定位，固定到适当位置；
 
 元素定位表现为在跨越特定阈值（相对偏移）前为相对定位，之后为固定定位。
 

@@ -276,6 +276,68 @@ if(module && module.hot) {
 2. `chunkhash `是根据不同的入口进行依赖文件解析，构建对应的 chunk（模块），生成对应的 hash 值。只有被修改的 chunk（模块）在重新构建之后才会生成新的 hash 值，不会影响其它的 chunk。（粒度:entry 的每个入口文件）
 3. `contenthash` 是跟每个生成的文件有关，每个文件都有一个唯一的 hash 值。当要构建的文件内容发生改变时，就会生成新的 hash 值，且该文件的改变并不会影响和它同一个模块下的其它文件。（粒度: 每个文件的内容）
 
+### Code Splitting
+
+webpack 4 废弃了之前的不怎么好用的 `CommonsChunk`，取而代之的是 `SplitChunks`。
+
+首先 webpack 总共提供了三种办法来实现 Code Splitting，如下：
+
+- 入口配置：entry 入口使用多个入口文件；
+- 抽取公有代码：使用 SplitChunks 抽取公有代码；
+- 动态加载 ：动态加载一些代码。
+
+#### SplitChunks
+
+默认配置
+
+```javascript
+module.exports = {
+  //...
+  optimization: {
+    splitChunks: {
+      chunks: 'async', 
+      minSize: 30000,
+      maxSize: 0,
+      minChunks: 1,
+      maxAsyncRequests: 5,
+      maxInitialRequests: 3,
+      automaticNameDelimiter: '~',
+      name: true,
+      cacheGroups: {
+        vendors: {
+          test: /[\\/]node_modules[\\/]/,
+          priority: -10
+        },
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true
+        }
+      }
+    }
+  }
+};
+```
+参数说明如下：
+
+- chunks：表示从哪些chunks里面抽取代码，除了三个可选字符串值 initial、async、all 之外，还可以通过函数来过滤所需的 chunks；
+- minSize：表示抽取出来的文件在压缩前的最小大小，默认为 30000；
+- maxSize：表示抽取出来的文件在压缩前的最大大小，默认为 0，表示不限制最大大小；
+- minChunks：表示被引用次数，默认为1；
+- maxAsyncRequests：最大的按需(异步)加载次数，默认为 5；
+- maxInitialRequests：最大的初始化加载次数，默认为 3；
+- automaticNameDelimiter：抽取出来的文件的自动生成名字的分割符，默认为 ~；
+- name：抽取出来文件的名字，默认为 true，表示自动生成文件名；
+- cacheGroups: 缓存组。（这才是配置的关键）
+#### cacheGroups
+
+它可以继承/覆盖上面 splitChunks 中所有的参数值，除此之外还额外提供了三个配置，分别为：test, priority 和 reuseExistingChunk。
+
+- test: 表示要过滤 modules，默认为所有的 modules，可匹配模块路径或 chunk 名字，当匹配的是 chunk 名字的时候，其里面的所有 modules 都会选中；
+- priority：表示抽取权重，数字越大表示优先级越高。因为一个 module 可能会满足多个 cacheGroups 的条件，那么抽取到哪个就由权重最高的说了算；
+- reuseExistingChunk：表示是否使用已有的 chunk，如果为 true 则表示如果当前的 chunk 包含的模块已经被抽取出去了，那么将不会重新生成新的。
+### [理解webpack4.splitChunks](https://www.cnblogs.com/kwzm/p/10314438.html)
+
 ### optimization.splitChunks 中，chunks 的3个值：all、async、initial 的含义
 
 - async表示只从异步加载得模块（动态加载import()）里面进行拆分

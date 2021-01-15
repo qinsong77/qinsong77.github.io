@@ -1591,7 +1591,7 @@ function patchVnode (oldVnode, vnode){
 #### Vue中key属性的作用
 >当 Vue.js 用`v-for`正在更新已渲染过的元素列表时，它默认用“就地复用”策略。如果数据项的顺序被改变，Vue 将不会移动 DOM 元素来匹配数据项的顺序， 而是简单复用此处每个元素，并且确保它在特定索引下显示已被渲染过的每个元素。————官方文档
 
-用 index 做为 key ，否则新增的0节点的key=0，而 oldNode 中的1的key也为0，实际上还是走了 sameNode 并且更新，和不写 key 一样效果
+[用 index 做为 key](https://zhuanlan.zhihu.com/p/124019708)
 
 ### updateChildren
 
@@ -1603,7 +1603,7 @@ function patchVnode (oldVnode, vnode){
   - oldEndVnode === newEndVnode =》 patchVnode
   - oldStartVnode === newEndVnode =》 pathVode 并且，newEndVode移动到右边，即把旧的开始节点插入到旧的结束节点后面
   - oldEndVnode === newStartVnode =》 pathVode 并且，newEndVode移动到左边，即把旧的结束节点插入到旧的开始节点前面
-  - 生成一个key与旧VNode的key对应的哈希表， 如果找不到key,则创建插入，找到的话如果是相同的节点，则patchNode并且插入，不是这创建插入
+  - 生成一个key与旧VNode的key对应的哈希表， 如果找不到key,则创建插入，找到的话如果是相同的节点，则patchNode并且插入，不是则创建插入
 - while结束时，如果是oldStartIdx > oldEndIdx，说明老节点已经遍历完了，新节点比老节点多，所以这时候多出来的新节点需要一个一个创建出来加入到真实DOM中。
 newStartIdx > newEndIdx，则说明新节点已经遍历完了，老节点多余新节点，这个时候需要将多余的老节点从真实DOM中移除
 
