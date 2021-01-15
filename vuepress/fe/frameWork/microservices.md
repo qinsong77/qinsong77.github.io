@@ -5,8 +5,112 @@ title: 微前端
 ### [qiankun微前端方案实践及总结](https://juejin.im/post/6844904185910018062)
 ### [qiankun微前端实践总结（二）](https://juejin.im/post/6856569463950639117)
 ### [详细解析微前端、微前端框架qiankun以及源码](https://segmentfault.com/a/1190000022275991)
+### [万字长文+图文并茂+全面解析 qiankun 源码 - qiankun 篇](https://www.jianshu.com/p/db08174fa4fc/)
 
 ### [一篇英语介绍文章](https://micro-frontends.org/)
+
+#### `__INJECTED_PUBLIC_PATH_BY_QIANKUN__`ng
+`__INJECTED_PUBLIC_PATH_BY_QIANKUN__`这个变量是子应用配置的entry的域名路径，如`entry`的路径是`www.test.com/subapp/device`，他的值是`www.test.com/subapp/`,而
+是`www.test.com/subapp/device/`的话,值就是`entry`，即`www.test.com/subapp/device/`。末尾带不带`/`的影响。
+
+- `http://wwww.baidu.com`: 这种 URI 并没有直接指定要访问哪个文件，像这种没有路径的情况，就代表访问根目录下预先设置的默认文件，一般就是 `/index.html`，`/default.html` 一类的文件，在 Java 中，我们也可以在 web.xml 中来配置这个默认文件。
+- `http://www.baidu.com/folder/`: 这个 URI 以一个 `/` 结尾，表示 folder 是一个目录，我们要访问的是这个目录下的文件，但是又没有说明是这个目录下的哪个文件，此时依然是采用该目录下 index.html 或者 default.html 一类的文件。 
+- `http://www.baidu.com/folder`: 即 `folder` 后面没有 `/`，此时会先将 `folder` 当作一个资源去访问(比如一个名为 folder 的 Servlet )，如果没有名为 folder 的资源，那么浏览器会自动在 `folder` 后面加上一个 / ，此时地址变为 `http://www.baidu.com/folder/` ，folder 是一个目录，然后就会去尝试访问 folder 目录下的 `index.html` 或者 default.html。  
+注意这种自动调整只在浏览器中存在，如果你的项目是一个手机 App 或者你是一个 Ajax 请求，则不会有这种调整，即没写 `/` 就当做具体资源来对待，如果该资源不存在，就会报 404 ，写了`/ `就当目录来对待。
+- `http://www.baidu.com/`: 第一种情况很类似，只是后面多了一个 / ，这个 / 表示我们要访问的是根目录，但是没有指定根目录下的文件，默认就是根目录下的 index.html 或者 default.html 。
+
+
+这个属性可以在运行时修改webpack的publicPath，打包时这个配置是已经注入到js或者css的url中了。
+但用import异步引用的时候，比如Vue的路由懒加载，是靠`__webpack_require__`实现，创建`script`标签，`document.head.appendChild(script)`到head中
+
+```javascript
+//public-path.js
+if (window.__POWERED_BY_QIANKUN__) {
+  // eslint-disable-next-line no-undef
+  __webpack_public_path__ = window.__INJECTED_PUBLIC_PATH_BY_QIANKUN__
+}
+```
+
+`__webpack_require__`
+
+`__webpack_require__.p = the bundle public path`
+
+```javascript
+
+ // The require function
+ function __webpack_require__(moduleId) {
+ 
+ 	// 检测是否存在缓存
+ 	if(installedModules[moduleId]) {
+ 		return installedModules[moduleId].exports;
+ 	}
+ 	// 不存在则生成新的模块
+ 	var module = installedModules[moduleId] = {
+ 		i: moduleId,
+ 		l: false,    // 是否加载
+ 		exports: {}
+ 	};
+ 
+ 	// call的方式加载模块 this转交，参数转交，对应其打包构建好的每个模块的参数结构。
+ 	modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+ 
+ 	// 表示已加载
+ 	module.l = true;
+ 
+ 	// 返回模块的exports 
+ 	return module.exports;
+
+```
+
+以下是__webpack_require__各属性以及对应能力，会经常出现在加载模块的语法中
+
+```dotenv
+
+// 入口模块的ID
+__webpack_require__.s = the module id of the entry point
+ 
+//模块缓存对象 {} id:{ exports /id/loaded}
+__webpack_require__.c = the module cache
+ 
+// 所有构建生成的模块 []
+__webpack_require__.m = the module functions
+ 
+// 公共路径，为所有资源指定一个基础路径
+__webpack_require__.p = the bundle public path
+// 
+__webpack_require__.i = the identity function used for harmony imports
+ 
+// 异步模块加载函数，如果没有再缓存模块中 则用jsonscriptsrc 加载  
+__webpack_require__.e = the chunk ensure function
+ 
+// 设定getter 辅助函数而已
+__webpack_require__.d = the exported property define getter function
+ 
+// 辅助函数而已 Object.prototype.hasOwnProperty.call
+__webpack_require__.o = Object.prototype.hasOwnProperty.call
+ 
+// 给exports设定attr __esModule
+__webpack_require__.r = define compatibility on export
+ 
+// 用于取值，伪造namespace
+__webpack_require__.t = create a fake namespace object
+ 
+// 用于兼容性取值（esmodule 取default， 非esmodule 直接返回module)
+__webpack_require__.n = compatibility get default export
+ 
+// hash
+__webpack_require__.h = the webpack hash
+ 
+// 
+__webpack_require__.w = an object containing all installed WebAssembly.Instance export objects keyed by module id
+ 
+// 异步加载失败处理函数 辅助函数而已
+__webpack_require__.oe = the uncaught error handler for the webpack runtime
+ 
+// 表明脚本需要安全加载 CSP策略
+__webpack_require__.nc = the script nonce
+
+```
 
 ### 部署遇到的问题
 
@@ -17,7 +121,7 @@ title: 微前端
 
 [k8s ingress原理及ingress-nginx部署测试](https://segmentfault.com/a/1190000019908991)
 
-[Nginx 配置中nginx和alias的区别分析]https://blog.csdn.net/tuoni123/article/details/79712246
+[Nginx 配置中nginx和alias的区别分析](https://blog.csdn.net/tuoni123/article/details/79712246)
 ```nginx
 server {
     listen       80;
@@ -47,6 +151,28 @@ server {
 }
 
 ```
+
+#### nginx配置proxy_pass时url末尾带“/”与不带“/”的区别
+当`location`为正则表达式匹配模式时，`proxy_pass`中的url末尾是不允许有"/"的，因此正则表达式匹配模式不在讨论范围内。
+**proxy_pass配置中url末尾带/时，nginx转发时，会将原uri去除location匹配表达式后的内容拼接在proxy_pass中url之后。**
+测试地址：http://192.168.171.129/test/index.html
+- 场景一：
+```dotenv
+location ^~ /test/ {
+ proxy_pass http://192.168.171.129:8080/server/;
+}
+```
+代理后实际访问地址：http://192.168.171.129:8080/server/index.html
+```dotenv
+location ^~ /test {
+ proxy_pass http://192.168.171.129:8080/server/;
+}
+```
+场景二：
+代理后实际访问地址：http://192.168.171.129:8080/server//index.html
+
+proxy_pass配置中url末尾不带/时，如url中不包含path，则直接将原uri拼接在proxy_pass中url之后；如url中包含path，则将原uri去除location匹配表达式后的内容拼接在proxy_pass中的url之后。
+
 
 ### 打包成UMD, UMD
 > 一个整合了commonJS和AMD规范的方法。希望能解决跨平台模块的解决方案。
