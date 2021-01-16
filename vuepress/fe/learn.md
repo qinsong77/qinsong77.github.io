@@ -552,6 +552,8 @@ test()
 
 代码执行的结果是：1 秒后，一次性输出1，4，9。
 
+问题原因： 因为`forEach`方法的参数是一个普通函数，并没有`async`函数，类似的还有`Generator`，`forEach`中不能写`yield`
+
 解决问题
 
 方式一
@@ -678,6 +680,23 @@ for (const [key, value] of new Map(arr.map((item, i) => [i, item]))) {
 
 
 ### promise
+
+```javascript
+const p1 = new Promise(function (resolve, reject) {
+  setTimeout(() => reject(new Error('fail')), 3000)
+})
+
+const p2 = new Promise(function (resolve, reject) {
+  setTimeout(() => resolve(p1), 1000)
+})
+
+p2
+  .then(result => console.log(result))
+  .catch(error => console.log(error))
+// Error: fail  3秒后输出！！！ 即 p1是3秒后改变状态，p2是1秒后， p2 1秒后，状态失效，依照p1的状态，此时p1已经计时1秒，所以2秒后打印fail
+```
+p1是一个 Promise，3 秒之后变为rejected。p2的状态在 1 秒之后改变，resolve方法返回的是p1。由于p2返回的是另一个 Promise，导致p2自己的状态无效了，由p1的状态决定p2的状态。
+所以，后面的then语句都变成针对后者（p1）。又过了 2 秒，p1变为rejected，导致触发catch方法指定的回调函数。
 - `Promise.prototype.then()`: then方法的第一个参数是resolved状态的回调函数，第二个参数是rejected状态的回调函数，它们都是可选的。
     
     promise 的优势在于可以链式调用，使用 Promise 的时候，当 then 函数中 return 了一个值，不管是什么值，我们都能在下一个 then 中获取到，这就是所谓的**then 的链式调用**。
@@ -718,6 +737,10 @@ new Promise((resolve, reject) => {
 - `Promise.all() `: 所有的状态都变成`fulfilled`才会变成`fulfilled`,只要p1、p2、p3之中有一个被`rejected`，p的状态就变成`rejected`，此时第一个被reject的实例的返回值，会传递给p的回调函数。
 - `Promise.race() `: 只要p1、p2、p3之中有一个实例率先改变状态，p的状态就跟着改变。那个率先改变的 Promise 实例的返回值，就传递给p的回调函数。
 - `Promise.allSettled()`: 方法接受一组 Promise 实例作为参数，包装成一个新的 Promise 实例。只有等到所有这些参数实例都返回结果，不管是fulfilled还是rejected，包装实例才会结束。该方法返回的新的 Promise 实例，一旦结束，状态总是fulfilled，不会变成rejected。状态变成fulfilled后，Promise 的监听函数接收到的参数是一个数组，每个成员对应一个传入Promise.allSettled()的 Promise 实例。
+
+### generator
+
+
 
 ### async的实现
 

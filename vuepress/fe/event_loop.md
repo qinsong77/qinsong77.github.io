@@ -285,6 +285,56 @@ console.log('11')
   console.log(4)
 ```
 从1依次输出到9， 在微任务队列中新建了微任务，也会添加进微任务队列，按顺序清空完微任务队列。
+
+```javascript
+setTimeout(() => {
+	console.log('setTimeout 1')
+})
+
+new Promise((resolve, reject) => {
+	console.log('promise 1')
+	resolve(1)
+}).then(res => {
+	console.log('promise 1 resolved')
+	setTimeout(() => {
+		console.log('setTimeout 2')
+	}, 0)
+	setTimeout(() => {
+		console.log('setTimeout 3')
+	}, 0)
+	new Promise((resolve, reject) => {
+		resolve(1)
+		console.log('Promise 2')
+	}).then(() => {
+		console.log('Promise 2 resolved')
+		new Promise((resolve => {
+			console.log('new Promise 3')
+			resolve(121212)
+		}))
+			.then(res => {
+				console.log('new Promise 3 resolve')
+			})
+	}).catch()
+		.catch()
+		.catch()
+		.catch(e => {
+			console.log(e)
+		})
+})
+// promise 1
+// promise 1 resolved
+// Promise 2
+// Promise 2 resolved
+// new Promise 3
+// new Promise 3 resolve
+// setTimeout 1
+// setTimeout 2
+// setTimeout 3
+```
+其实整个script 是个宏任务，运行这个时，肯定会一口气执行完，而上面的`promise 1`中的`then`微任务回调，也是一口气执行完，响应的加入微任务、宏任务队列。微任务总是先清空，
+所以都是先打印`Promise`
+
+
 ```html
 <!DOCTYPE html>
 <html lang="en">

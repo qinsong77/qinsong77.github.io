@@ -259,3 +259,37 @@ console.log(convert({ 'a_bc_def': { 'foo_bar': 2 } }));
 console.log(convert({ 'a_bc_def': [{ 'foo_bar': 2 }, { 'goo_xyz': 3 }] }));
 
 ```
+#### 因数分解(神策数据)
+例子：24分解质因数为`2*2*2*3`，简写成(2^3) * (3^1)。
+```javascript
+// 判断是否为质数的方法(质数是一个大于1的自然数，除了1和它自身外，不能被其他自然数整除的数叫做质数。)
+function isPrime(n) {
+	for (let i = 2; i <= Math.sqrt(n); i++) {
+		if (n % i === 0) {
+			return false
+		}
+	}
+	return true
+}
+
+function PrimeFactorizer(n) {
+	//用来存储结果
+	const result = []
+	while (n > 1) {
+		//从最小的质数开始除
+		for (let i = 2; i <= n; i++) {
+			if (isPrime(i) && n % i === 0) {
+				result.push(i)
+				//除掉这个最小的质数因子
+				n /= i
+			}
+			
+		}
+	}
+	//给实例上加个factor属性
+	return result
+	
+}
+
+console.log(PrimeFactorizer(24))
+```
