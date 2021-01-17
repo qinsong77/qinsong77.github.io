@@ -740,7 +740,105 @@ new Promise((resolve, reject) => {
 
 ### generator
 
+#### generator函数的执行上下文环境
 
+```javascript
+function* myGenerator() {
+    yield 'first';
+    yield 'second';
+}
+ 
+const gen = myGenerator();
+const result1 = gen.next();
+const result2 = gen.next();
+const result3 = gen.next();
+```
+下面这种图简单说明了执行过程：
+![](./image/generator/generator1.png)
+
+```javascript
+function* myGenerator(msg) {
+    yield "first " + msg;
+    return "second " + msg;
+}
+ 
+const gen = myGenerator("hello");
+const result1 = gen.next();
+const result2 = gen.next();
+```
+在调用生成器函数myGenerator之前，执行上下文如下：
+
+![](./image/generator/generator2.png)
+
+当执行`const gen = myGenerator("hello")`时，生成器进入挂起开始状态，执行上下文如下：
+![](./image/generator/generator3.png)
+
+和普通的函数不同，当函数执行完成后，它当执行上下文从执行栈中弹出后，不会立即被销毁。因为此时gen还保留着对它的引用，可以看成类似闭包的现象。闭包中为了保证闭包创建时的变量都可以使用，需要对创建它对环境保存一个引用。而生成器除了保持环境引用外，还需要保证可以恢复执行，所以需要保存当时函数的执行上下文。
+
+当执行完`const gen = myGenerator("hello")`后，执行上下文如下：
+
+![](./image/generator/generator4.png)
+
+当执行`const result1 = gen.next()`时，这时会激活myGenerator的执行上下文，并推入执行栈中，执行上下文如下：
+
+![](./image/generator/generator5.png)
+
+当`const result1 = gen.next()`执行完成后，从栈中推出执行上下文，如下：
+
+![](./image/generator/generator6.png)
+
+最后，当执行`const result2 = gen.next()` 时，又会进入上下文的入栈出栈流程。此时遇到`return`后，生成器进入完成状态。
+
+#### 结合promise，实现async函数
+
+```javascript
+function getJSON(data) {
+	return new Promise((resolve, reject) => {
+		setTimeout(() => {
+			resolve(data)
+		}, 3000)
+	})
+}
+
+asyncRT(function* () {
+	try {
+		console.log('start')
+		console.time()
+		const result1 = yield getJSON('data/first.json')
+		const result2 = yield getJSON(result1)
+		const result3 = yield getJSON(result2)
+		console.log(result3)
+		console.timeEnd()
+	} catch (e) {
+		console.log(e)
+	}
+})
+
+function asyncRT(generator) {
+	// 创建一个迭代器
+	const gen = generator()
+	
+	// generator执行顺序控制器
+	function next(arg) {
+		const result = gen.next(arg)
+		// 如果已经结束，则直接return
+		if (result.done) return
+		const value = result.value
+		// 如果是Promise则在then里执行next
+		if (value instanceof Promise) {
+			value.then(res => next(res))
+				.catch(err => gen.throw(err))
+		}
+	}
+	
+	try {
+		next()
+	} catch (e) {
+		gen.throw(e)
+	}
+}
+
+```
 
 ### async的实现
 
