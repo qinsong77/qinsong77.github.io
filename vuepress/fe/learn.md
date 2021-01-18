@@ -950,7 +950,7 @@ myCo(test()).then(data => {
 ```
 
 #### reduce
-
+`reduce` `reduceRight`
 
 #### `JSON.stringify`、`JSON.parse`深拷贝的缺点
 
