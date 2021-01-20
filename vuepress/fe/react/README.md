@@ -2,6 +2,8 @@
 title: React
 ---
 
+[react+typescript](https://github.com/typescript-cheatsheets/react)
+
 [示意图](https://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/)
 
 ## React16.3.0之前生命周期:
