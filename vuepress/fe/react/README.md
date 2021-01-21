@@ -2,11 +2,12 @@
 title: React
 ---
 
+[React技术揭秘](https://react.iamkasong.com/)
 [react+typescript](https://github.com/typescript-cheatsheets/react)
 
-[示意图](https://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/)
-
 ## React16.3.0之前生命周期:
+
+![](./image/react-lifeCircle-old.png)
 
 ### 创建期:
 
@@ -51,7 +52,7 @@ title: React
 - componentWillMount() / UNSAFE_componentWillMount()
 - render()
 - componentDidMount()
-注意: `getDerivedStateFromProps`/`getSnapshotBeforeUpdate` 和 `componentWillMount`/`componentWillReceiveProps`/componentWillUpdate` 如果同时存在，React会在控制台给出警告信息，且仅执行 getDerivedStateFromProps/getSnapshotBeforeUpdate 【React@16.7.0】
+注意: `getDerivedStateFromProps`/`getSnapshotBeforeUpdate` 和 `componentWillMount`/`componentWillReceiveProps`/`componentWillUpdate` 如果同时存在，React会在控制台给出警告信息，且仅执行 getDerivedStateFromProps/getSnapshotBeforeUpdate 【React@16.7.0】
 
 ### 运行时:
 
@@ -70,6 +71,7 @@ title: React
 - componentWillUpdate(nextProps, nextState, nextContext)
 - render
 - componentDidUpdate(prevProps, prevState, snapshot)
+
 #### state发生变化时
 
 - static getDerivedStateFromProps(props, status)
@@ -87,4 +89,10 @@ title: React
 
 - componentWillUnmount()
 
+[示意图](https://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/)
+
 新的生命周期图示:
+
+![](./image/react-lifecircle1.png)
+
+![](./image/react-lifecircle2.png)
