@@ -101,3 +101,66 @@ Function.prototype.myBind = function (...args) {
 
 
 
+function asyncSelf(generator) {
+	const gen = generator()
+	function next(arg) {
+		const { done, value} = gen.next(arg)
+		if (done) return
+		if (value instanceof Promise) {
+			value.then(res => next(res))
+				.catch(e => gen.throw(e))
+		} else next(value)
+	}
+	try {
+		next()
+	} catch (e) {
+		gen.throw(e)
+	}
+}
+
+let objIterator = {
+	[Symbol.iterator]: function () {
+		return {
+			next: function () {
+				return {
+					done: false,
+					value: this.value
+				}
+			}
+		}
+	}
+}
+
+class RangeIterator {
+	constructor(start, stop) {
+		this.value = start
+		this.stop = stop
+	}
+	
+	[Symbol.iterator] () {
+		return this
+	}
+	
+	next() {
+		const { value, stop } = this
+		if (value < stop) {
+			this.value ++
+			return {
+				done: false,
+				value
+			}
+		}
+		return {
+			done: true,
+			value: undefined
+		}
+	}
+}
+
+function range(start, stop) {
+	return new RangeIterator(start, stop);
+}
+
+for (let value of range(0, 3)) {
+	console.log(value); // 0, 1, 2
+}

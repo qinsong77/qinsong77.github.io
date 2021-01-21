@@ -708,9 +708,28 @@ index:C value:bar-C
 ##### for of 特点
 - for of 不同与 `forEach`, 它可以与 `break`、`continue`和`return `配合使用,也就是说 for of 循环可以随时退出循环。
 - 提供了遍历所有数据结构的统一接口
-- 遍历数组无法获取index，但可以转成`Map`，示例如下
+- 遍历数组无法获取index，但可以使用数组实例的 `entries()`，`keys()` 和 `values()`，示例如下
 
 ```javascript
+
+for (let index of ['a', 'b'].keys()) {
+  console.log(index);
+}
+// 0
+// 1
+
+for (let elem of ['a', 'b'].values()) {
+  console.log(elem);
+}
+// 'a'
+// 'b'
+
+for (let [index, elem] of ['a', 'b'].entries()) {
+  console.log(index, elem);
+}
+// 0 "a"
+// 1 "b"
+
 const arr = [1,2,3]
 
 for (const [key, value] of new Map(arr.map((item, i) => [i, item]))) {
@@ -731,6 +750,89 @@ for (const [key, value] of new Map(arr.map((item, i) => [i, item]))) {
 以上这些都可以直接使用 for of 循环。 凡是部署了 iterator 接口的数据结构也都可以使用数组的 扩展运算符(...)、和解构赋值等操作。
 
 
+为对象添加`Iterator`遍历器
+```javascript
+let obj = {
+  data: [ 'hello', 'world' ],
+  [Symbol.iterator]() {
+    const self = this;
+    let index = 0;
+    return {
+      next() {
+        if (index < self.data.length) {
+          return {
+            value: self.data[index++],
+            done: false
+          };
+        } else {
+          return { value: undefined, done: true };
+        }
+      }
+    };
+  }
+};
+
+class RangeIterator {
+	constructor(start, stop) {
+		this.value = start
+		this.stop = stop
+	}
+	
+	[Symbol.iterator] () {
+		return this
+	}
+	
+	next() {
+		const { value, stop } = this
+		if (value < stop) {
+			this.value ++
+			return {
+				done: false,
+				value
+			}
+		}
+		return {
+			done: true,
+			value: undefined
+		}
+	}
+}
+
+function range(start, stop) {
+	return new RangeIterator(start, stop);
+}
+
+for (let value of range(0, 3)) {
+	console.log(value); // 0, 1, 2
+}
+```
+#### `Iterator` 接口与 `Generator` 函数
+任意一个对象的`Symbol.iterator`方法，等于该对象的遍历器生成函数，调用该函数会返回该对象的一个遍历器对象。
+
+由于 `Generator` 函数就是遍历器生成函数，因此可以把 `Generator` 赋值给对象的`Symbol.iterator`属性，从而使得该对象具有 `Iterator` 接口。
+```javascript
+let myIterable = {
+  [Symbol.iterator]: function* () {
+    yield 1;
+    yield 2;
+    yield 3;
+  }
+};
+[...myIterable] // [1, 2, 3]
+
+// 或者采用下面的简洁写法
+
+let obj = {
+  * [Symbol.iterator]() {
+    yield 'hello';
+    yield 'world';
+  }
+};
+
+for (let x of obj) {
+  console.log(x);
+}
+```
 ### promise
 
 ```javascript
@@ -841,6 +943,38 @@ const result2 = gen.next();
 
 最后，当执行`const result2 = gen.next()` 时，又会进入上下文的入栈出栈流程。此时遇到`return`后，生成器进入完成状态。
 
+
+**Generator 函数就是遍历器生成函数**
+`Generator` 函数执行后，返回一个遍历器对象。该对象本身也具有`Symbol.iterator`属性，执行后返回自身。
+```javascript
+function* gen(){
+  // some code
+}
+
+var g = gen();
+
+g[Symbol.iterator]() === g
+// true
+```
+##### next 方法的参数
+yield表达式本身没有返回值，或者说总是返回undefined。next方法可以带一个参数，该参数就会被当作上一个yield表达式的返回值。
+
+```javascript
+function* f() {
+  for(var i = 0; true; i++) {
+    var reset = yield i;
+    if(reset) { i = -1; }
+  }
+}
+
+var g = f();
+
+g.next() // { value: 0, done: false }
+g.next() // { value: 1, done: false }
+g.next(true) // { value: 0, done: false }
+```
+Generator 函数也不能跟new命令一起用，会报错。
+
 #### 结合promise，实现async函数
 
 ```javascript
@@ -880,7 +1014,7 @@ function asyncRT(generator) {
 		if (value instanceof Promise) {
 			value.then(res => next(res))
 				.catch(err => gen.throw(err))
-		}
+		} else next(value)
 	}
 	
 	try {
@@ -1003,7 +1137,11 @@ myCo(test()).then(data => {
 
 #### reduce
 `reduce` `reduceRight`
-
+```javascript
+[0, 1, 2, 3, 4].reduce(function(accumulator, currentValue, currentIndex, array){
+  return accumulator + currentValue;
+}, 0);
+```
 #### `JSON.stringify`、`JSON.parse`深拷贝的缺点
 
 - 1. 如果obj里有函数，undefined，则序列化的结果会把函数或 `undefined`丢失；`JSON.parse`传入`undefined`会报错, `JSON.stringify`不会报错。有NaN、Infinity和-Infinity，则序列化的结果会变成null。如果obj里有RegExp(正则表达式的缩写)、Error对象，则序列化的结果将只得到空对象null；

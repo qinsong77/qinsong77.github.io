@@ -12,6 +12,8 @@ title: LeetCode
   - [翻转字符串里的单词](#翻转字符串里的单词)
   - [字符串相加](#字符串相加)
 - [4.二维数组翻转90度](#_4-n-x-n二维数组翻转90度)
+- [5.二叉树](#_4-二叉树)
+   - [二叉树展开为链表](#二叉树展开为链表)
 
 获取26个字母
 ```javascript
@@ -394,4 +396,53 @@ var rotate3 = function (matrix) {
 	matrix.splice(0, matrix.length / 2)
 	//matrix = newMatrix
 };
+```
+
+### 二叉树
+
+##### [二叉树展开为链表](https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/)
+
+![](./image/leetcode_tree/tree1.png)
+
+```javascript
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {void} Do not return anything, modify root in-place instead.
+ */
+var flatten = function(root) {
+    if (root === null) return null
+    flatten(root.left)
+    flatten(root.right)
+    let left = root.left, right = root.right
+    root.right = left
+    root.left = null
+    let node = root
+    while(node.right !== null) {
+        node = node.right
+    }
+    node.right = right
+};
+
+var flatten2 = function(root) {
+    while(root){
+      let p=root.left;
+      if(p){
+        while(p.right) p=p.right;
+        p.right=root.right;
+        root.right=root.left;
+        root.left=null
+      }
+      root=root.right;
+    }
+    
+};
+// 链接：https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/solution/114er-cha-shu-zhan-kai-wei-lian-biao-chao-jian-dan/
 ```

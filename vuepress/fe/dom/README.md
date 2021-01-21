@@ -862,7 +862,7 @@ self.addEventListener("fetch", e => {
 
 动画帧率（FPS-Frame Per Second）：FPS 表示的是每秒钟画面更新次数，理论上说，FPS 越高，动画会越流畅，目前大多数设备的屏幕刷新率为 60 次/秒，所以通常来讲 FPS 为 60 frame/s 时动画效果最好，也就是每帧的消耗时间为 16.67ms。
 
-
+[为什么要用 setTimeout 模拟 setInterval ？](https://segmentfault.com/a/1190000038829248)
 
 ### defer与async的区别
 defer与async的区别是：defer要等到整个页面在内存中正常渲染结束（DOM 结构完全生成，以及其他脚本执行完成），才会执行；async一旦下载完，渲染引擎就会中断渲染，执行这个脚本以后，再继续渲染。一句话，defer是“渲染完再执行”，async是“下载完就执行”。另外，如果有多个defer脚本，会按照它们在页面出现的顺序加载，而多个async脚本是不能保证加载顺序的。
@@ -904,3 +904,11 @@ MutationObserver对象有三个方法，分别如下：
 - observer：设置观察目标，接受两个参数，target：观察目标，options：通过对象成员来设置观察选项
 - disconnect：阻止观察者观察任何改变
 - taskRecords：清空记录队列并返回里面的内容
+
+### base64编码解码
+```javascript
+window.btoa('china is so nb') // 编码
+"Y2hpbmEgaXMgc28gbmI="
+window.atob("Y2hpbmEgaXMgc28gbmI=") // 解码
+"china is so nb"
+```
