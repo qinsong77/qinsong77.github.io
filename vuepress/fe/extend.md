@@ -217,6 +217,11 @@ function SubType(name, age){
 
 // 将父类原型指向子类
 inheritPrototype(SubType, SuperType);
+// 其实就是这样
+SubType.prototype = Object.create(SuperType.prototype)
+SubType.prototype.constructor = SubType
+
+
 
 // 新增子类原型属性
 SubType.prototype.sayAge = function(){
@@ -315,6 +320,8 @@ class Square extends Rectangle {
 const square = new Square(10);
 console.log(square.area);
 // 输出 100
+Square.__proto__ === Rectangle // true  继承属性
+Square.prototype.__proto__ === Rectangle.prototype // true 继承方法
 ```
 > extends继承的核心代码如下，其实现和上述的寄生组合式继承方式一样
 
@@ -357,7 +364,7 @@ class Rectangle {}
 ```
 
 2、 ES5继承和ES6继承的区别 
-- ES5的继承实质上是先创建子类的实例对象，然后再将父类的方法添加到this上（Parent.call(this)）.
+- ES5的继承实质上是先创建子类的实例对象，然后再将父类的构造方法添加到this上（`Parent.call(this)`）.
 - ES6的继承有所不同，实质上是先创建父类的实例对象this，然后再用子类的构造函数修改this。因为子类没有自己的this对象，所以必须先调用父类的super()方法，否则新建实例报错。
 - ES6类必须使用new调用，否则会报错。这是它跟普通构造函数的一个主要区别，后者不用new也可以执行。
 - ES6类的所有实例共享一个原型对象。

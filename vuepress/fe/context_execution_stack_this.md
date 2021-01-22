@@ -52,7 +52,7 @@ stack = [
 globalContext.VO === globe
 globalContext.VO = {
     a: undefined,
-	foo: <Function>,
+	foo: [Function],
 }
 ```
 
@@ -63,7 +63,7 @@ fooContext.VO === foo.AO
 fooContext.AO {
     i: undefined,
 	b: undefined,
-    arguments: <>
+    arguments: []
 }
 // arguments 是函数独有的对象(箭头函数没有)
 // 该对象是一个伪数组，有 `length` 属性且可以通过下标访问元素
@@ -157,7 +157,7 @@ ES5 规范又对 ES3 中执行上下文的部分概念做了调整，最主要�
 
 ```javascript
 ExecutionContext = {
-  ThisBinding = <this value>,
+  ThisBinding = [this value],
   LexicalEnvironment = { ... },
   VariableEnvironment = { ... },
 }
@@ -217,7 +217,7 @@ GlobalExectionContext = {
       Type: "Object",
       // 在这里绑定标识符
     }
-    outer: <null>
+    outer: [null]
   }
 }
 
@@ -227,12 +227,12 @@ FunctionExectionContext = {
       Type: "Declarative",
       // 在这里绑定标识符
     }
-    outer: <Global or outer function environment reference>
+    outer: [Global or outer `function` environment reference]
   }
 }
 ```
-
 ##### 变量环境：
+
 它同样是一个词法环境，其环境记录器持有变量声明语句在执行上下文中创建的绑定关系。
 
 如上所述，变量环境也是一个词法环境，所以它有着上面定义的词法环境的所有属性。
@@ -257,17 +257,17 @@ c = multiply(20, 30);
 ```javascript
 GlobalExectionContext = {
 
-  ThisBinding: <Global Object>,
+  ThisBinding: `<Global Object>`,
 
   LexicalEnvironment: {
     EnvironmentRecord: {
       Type: "Object",
       // 在这里绑定标识符
-      a: < uninitialized >,
-      b: < uninitialized >,
-      multiply: < func >
+      a: `< uninitialized >`,
+      b: `< uninitialized >`,
+      multiply: `< func >`
     }
-    outer: <null>
+    outer: `<null>`
   },
 
   VariableEnvironment: {
@@ -276,12 +276,12 @@ GlobalExectionContext = {
       // 在这里绑定标识符
       c: undefined,
     }
-    outer: <null>
+    outer: `<null>`
   }
 }
 
 FunctionExectionContext = {
-  ThisBinding: <Global Object>,
+  ThisBinding: `<Global Object>`,
 
   LexicalEnvironment: {
     EnvironmentRecord: {
@@ -289,16 +289,16 @@ FunctionExectionContext = {
       // 在这里绑定标识符
       Arguments: {0: 20, 1: 30, length: 2},
     },
-    outer: <GlobalLexicalEnvironment>
+    outer: `<GlobalLexicalEnvironment>`
   },
 
-VariableEnvironment: {
+  VariableEnvironment: {
     EnvironmentRecord: {
       Type: "Declarative",
       // 在这里绑定标识符
       g: undefined
     },
-    outer: <GlobalLexicalEnvironment>
+    outer: `<GlobalLexicalEnvironment>`
   }
 }
 ```
@@ -411,10 +411,18 @@ var obj = {
   }
 }
 function fn (){ console.log(this) }
-var arr = [fn, fn2]
+var arr = [fn, () => console.log(this)]
 
 var bar = obj.foo
 obj.foo() // 1
 bar() // 10
 arr[0]() // arr
+arr[1]() // window
 ```
+#### 箭头函数
+
+- 箭头函数没有prototype；
+- 箭头函数是匿名函数,是不能作为构造函数的,不能使用new；
+- 箭头函数不绑定arguments,取而代之用rest参数(…rest)解决；
+- 箭头函数不能当做Generator函数,不能使用yield关键字；
+- 箭头函数会捕获其所在上下文的 this 值，作为自己的 this 值，任何方法都改变不了其指向，如call(), bind(), apply()，而普通函数的this指向调用它的那个对象。

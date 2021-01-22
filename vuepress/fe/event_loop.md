@@ -254,7 +254,7 @@ new Promise(function(resolve){
 	})
 })
 console.log('11')
-// 结果 4  1  3  9 12 11  2  13  10  14 15 5 6 7 8
+// 结果 4  1  3  9  12  11  2  13  10  14  15  5  6  7  8
 // await 语句相当于在new Promise中，后面的语句在then中，所以1后输出3， 输出2在微任务中
 // 检查微任务队列，执行并清空微任务队列，如果在微任务的执行中又加入了新的微任务，也会在这一步一起执行。 所以10后输出 14 15
 ```
@@ -269,19 +269,20 @@ console.log('11')
   })).then(res => {
   	console.log(5)
   })
-	new Promise((resolve => {
-		resolve(1)
-    console.log(3)
-	})).then(res => {
-		console.log(6)
-		new Promise((resolve => {
-			resolve(1)
-			console.log(7)
-		})).then(res => {
-			console.log(8)
 
-		})
-	})
+    new Promise((resolve => {
+        resolve(1)
+        console.log(3)
+    })).then(res => {
+        console.log(6)
+        new Promise((resolve => {
+            resolve(1)
+            console.log(7)
+        })).then(res => {
+            console.log(8)
+    
+        })
+    })
   console.log(4)
 ```
 从1依次输出到9， 在微任务队列中新建了微任务，也会添加进微任务队列，按顺序清空完微任务队列。

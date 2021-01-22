@@ -10,10 +10,13 @@ title: 类型转换
 
 - 1. 首先判断两者类型是否相同，如果相等，判断值是否相等.
 - 2. 如果类型不同，进行类型转换
-- 3. 判断比较两者是否是 null 或者是 undefined, 如果是, 返回 true .
+- 3. 判断比较两者是否是 null 或者是 undefined, 如果是, 返回 true .（`undefined == null`为true，其他`undefined/null == any`都是false）
 - 4. 判断两者类型是否为 string 和 number, 如果是, 将字符串转换成 number
 - 5. 判断其中一方是否为 boolean, 如果是, 将 boolean 转为 number 再进行判断
-- 6. 判断其中一方是否为 object 且另一方为 string、number 或者 symbol , 如果是, 将 object 转为原始类型再进行判断
+- 6. 判断其中一方是否为 object 且另一方为 string、number 或者 symbol , 如果是, 将 object 转为原始类型再进行判断（即当原始类型和引用类型做比较时，对象类型会依照`ToPrimitive`规则转换为原始类型。
+   - 引用类型转换为Number类型，先调用valueOf，再调用toString
+   - 引用类型转换为String类型，先调用toString，再调用valueOf
+- 7. `NaN`不等于任何值，包括自身
 
 [] == ![] 是true还是false？
 - 1. ! 优先级是高于 == 

@@ -54,6 +54,12 @@ if (typeof Object.create !== "function") {
         return new F();
     };
 }
+// 第二个参数示例
+const obj = Object.create(null, {foo: {
+    writable:true,
+    configurable:true,
+    value: "hello"
+  }})
 ```
 
 ### [instanceOf](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/instanceof)

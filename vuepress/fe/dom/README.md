@@ -912,3 +912,8 @@ window.btoa('china is so nb') // 编码
 window.atob("Y2hpbmEgaXMgc28gbmI=") // 解码
 "china is so nb"
 ```
+
+#### [property 和 attribute](https://www.cnblogs.com/lmjZone/p/8760232.html)
+- property是DOM中的属性，是JavaScript里的对象；
+- attribute是HTML标签上的特性，它的值只能够是字符串；
+attributes是属于property的一个子集，它保存了HTML标签上定义属性。

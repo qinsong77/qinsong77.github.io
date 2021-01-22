@@ -25,3 +25,4 @@ home: true
 - [Svelte.js](https://www.sveltejs.cn/)
 - [next.js](https://www.nextjs.cn/)
 - [nest.js](https://docs.nestjs.cn/7/introduction)
+- [GraphQL](https://graphql.cn/)

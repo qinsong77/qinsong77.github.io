@@ -140,6 +140,18 @@ absolute 定位使元素的位置与文档流无关，因此不占据空间。ab
 
 4、sticky元素仅在其父元素内生效。
 
+特性（坑）：
+1.sticky不会触发BFC，
+
+2.z-index无效，
+
+3.当父元素的height：100%时，页面滑动到一定高度之后sticky属性会失效。
+
+4.父元素不能有overflow:hidden或者overflow:auto属性。
+
+5.父元素高度不能低于sticky高度，必须指定top、bottom、left、right4个值之一。
+
+
 - inherit
 规定应该从父元素继承 position 属性的值。
 
@@ -331,3 +343,5 @@ touchstart -> touchmove -> touchend -> mousedown -> click -> mouseup
 - 不允许点击，即让点击穿透 ：pointer-events: none;
 - 允许点击，即禁止穿透（默认值）：pointer-events: auto;
 
+
+### [如何写出高性能的CSS3动画](https://www.cnblogs.com/ypppt/p/12937506.html)

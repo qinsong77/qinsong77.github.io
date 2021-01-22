@@ -362,7 +362,7 @@ toFixed有四舍五入，部分场景会出bug
 
 toFixed因为舍入的规则是银行家舍入法：四舍六入五考虑，五后非零就进一，五后为零看奇偶，五前为偶应舍去，五前为奇要进一
 
-主要是小数实际储存的值和显示的值不同，比如1.65的实际值是1.649...所以toFixed(1)的结果是1.6
+主要是小数实际储存的值和显示的值不同，比如1.65的实际值是1.64999999999999991118e+0, 所以toFixed(1)的结果是1.6
 
 ```javascript
 function toFixed(num, s){
@@ -373,6 +373,8 @@ function toFixed(num, s){
 }
 ```
 实际上比如2.55存的是2.5499999999999998，给他加上一个很小的数。
+
+由于限制，有效数字第53位及以后的数字是不能存储的，它遵循，如果是1就向前一位进1，如果是0就舍弃的原则。
 ```javascript
 if (!Number.prototype._toFixed) {
     Number.prototype._toFixed = Number.prototype.toFixed;

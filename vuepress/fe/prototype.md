@@ -6,8 +6,8 @@ title: 原型、原型链、继承
 
 ## 对象
 1. JavaScript 分为函数对象和普通对象，每个对象都有__proto__属性（每个对象都有的隐式原型属性，指向了创建该对象的构造函数的原型。如示1
-其实这个属性指向了 [[prototype]]，但是 [[prototype]] 是内部属性，我们并不能访问到，所以使用__proto__来访问），
-但是只有函数对象才有prototype属性。
+其实这个属性指向了 `[[prototype]]`，但是 [`[prototype]]` 是内部属性，我们并不能访问到，所以使用`__proto__`来访问），
+但是只有函数对象才有`prototype`属性。
 
 **`__proto__` 读音: dunder proto**
 
@@ -26,6 +26,7 @@ arr.__proto__ === Array.prototype
 
 // Array是函数对象，是Function的实例对象，Array是通过new Function创建出来的。因为Array是Function的实例，所以Array.__proto__ === Function.prototype
 Array.__proto__ === Function.prototype
+Function.prototype.__proto__ === Object.prototype
 ```
 
 > 普通对象
@@ -159,7 +160,7 @@ new Person() instanceof Person; // true
  
 [] instanceof Object; // true
 new Date() instanceof Object;// true
-new Person instanceof Object;// true
+new Person() instanceof Object;// true
 ```
 instanceof 能够判断出 `[]._proto_` 指向 `Array.prototype`，而 `Array.prototype._proto_` 又指向了`Object.prototype`，最终 `Object.prototype._proto_` 指向了`null`，标志着原型链的结束。因此，[]、Array、Object 就在内部形成了一条原型链：
 ![An image](./image/prototype/instanceof.png)
@@ -189,7 +190,7 @@ B.__proto__ === A // true
 B.prototype.__proto__ === A.prototype // true
 ```
 
-上面代码中，子类B的`__proto__`属性指向父类A，子类B的`prototype`属性的_`_proto__`属性指向父类A的`prototype`属性。
+上面代码中，子类B的`__proto__`属性指向父类A，子类B的`prototype`属性的`__proto__`属性指向父类A的`prototype`属性。
 这两条继承链，可以这样理解：作为一个对象，子类（B）的原型（`__proto__`属性）是父类（A）；作为一个构造函数，子类（B）的原型对象（`prototype`属性）是父类的原型对象（`prototype`属性）的实例。
 这样的结果是因为，类的继承是按照下面的模式实现的。
 ```javascript
