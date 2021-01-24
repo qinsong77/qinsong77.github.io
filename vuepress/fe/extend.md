@@ -281,6 +281,7 @@ MyClass.prototype.myMethod = function() {
 ```javascript
 
 class Rectangle {
+    static value = 'static'
     // constructor
     constructor(height, width) {
         this.height = height;
@@ -322,6 +323,11 @@ console.log(square.area);
 // 输出 100
 Square.__proto__ === Rectangle // true  继承属性
 Square.prototype.__proto__ === Rectangle.prototype // true 继承方法
+
+console.log(Object.getPrototypeOf(square) === Square.prototype) // true
+console.log(Object.getPrototypeOf(Square.prototype) === Rectangle.prototype) //true
+console.log(Square.value) // 'static'
+console.log(square.value) // undefined
 ```
 > extends继承的核心代码如下，其实现和上述的寄生组合式继承方式一样
 
@@ -368,7 +374,7 @@ class Rectangle {}
 - ES6的继承有所不同，实质上是先创建父类的实例对象this，然后再用子类的构造函数修改this。因为子类没有自己的this对象，所以必须先调用父类的super()方法，否则新建实例报错。
 - ES6类必须使用new调用，否则会报错。这是它跟普通构造函数的一个主要区别，后者不用new也可以执行。
 - ES6类的所有实例共享一个原型对象。
-- ES6类的内部，默认就是严格模式，所以不需要使用use strict指定运行模式。
+- ES6类的内部，默认就是[严格模式](http://www.ruanyifeng.com/blog/2013/01/javascript_strict_mode.html)，所以不需要使用`use strict`指定运行模式。
 
 ### es6继承步骤解析
 

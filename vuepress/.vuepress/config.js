@@ -89,7 +89,8 @@ module.exports = {
 					collapsable: false, // 可选的, 默认值是 true,
 					// sidebarDepth: 2,    // 可选的, 默认值是 1
 					children: [
-						['react/', '总结']
+						['react/', '总结'],
+						'react/react_hooks'
 					]
 				},
 				{
