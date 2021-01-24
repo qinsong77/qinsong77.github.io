@@ -10,9 +10,9 @@ title: Summary of interview
 ### [promise面试汇总](https://zhuanlan.zhihu.com/p/288384170)
 ### [面试题](https://github.com/mqyqingfeng/frontend-interview-question-and-answer/issues)
 ### css
- - [1](https://juejin.im/post/6888102016007176200)
+ - ### [css晦涩难懂的点](https://juejin.cn/post/6888102016007176200)
  
- ### [优化总结](https://juejin.im/post/6892994632968306702)
+### [优化总结](https://juejin.im/post/6892994632968306702)
 
 #### 项目中，你使用 webpack 做了哪些优化
 

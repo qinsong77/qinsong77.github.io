@@ -6,6 +6,7 @@ title: 四十行代码实现一个 koa
 
 [如何更好地理解中间件和洋葱模型](https://juejin.cn/post/6890259747866411022)
 
+[再也不怕面试官问你express和koa的区别了](https://zhuanlan.zhihu.com/p/87079561)
 ### Koa 和 Express 有什么区别
 - 异步：callback 和 promise
 - 中间件：线性模型和洋葱模型

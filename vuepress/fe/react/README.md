@@ -1,12 +1,25 @@
 ---
 title: React
 ---
+[react](https://zh-hans.reactjs.org/)
 
 [React技术揭秘](https://react.iamkasong.com/)
+
+[图解React](http://www.7km.top/)
+
 [react+typescript](https://github.com/typescript-cheatsheets/react)
+
 [2021年React学习路线图](https://mp.weixin.qq.com/s?__biz=MzUxMzcxMzE5Ng==&mid=2247505750&idx=2&sn=a31164ddf69f49e3761d2a6d660cf316&chksm=f9526215ce25eb031cbb1f8e0137b3fb3e30f6305fb183f028ab12419699695173b51c44b49d&scene=132#wechat_redirect)
+
 [React Hooks 原理](https://github.com/brickspert/blog/issues/26)
+
+## 概述
+
+React用于构建用户界面的 JavaScript 库
+
 ## React16.3.0之前生命周期:
+
+[文章](https://juejin.cn/post/6844904021233238024)
 
 ![](./image/react-lifeCircle-old.png)
 

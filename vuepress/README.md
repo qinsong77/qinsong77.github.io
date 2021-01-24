@@ -18,7 +18,7 @@ home: true
 - ...
 
 ---Next---
-
+- [Typescript](https://ts.xcatliu.com/)
 - React in deep
 - Rx.js
 - 函数式编程

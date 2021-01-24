@@ -12,8 +12,13 @@ title: LeetCode
   - [翻转字符串里的单词](#翻转字符串里的单词)
   - [字符串相加](#字符串相加)
 - [4.二维数组翻转90度](#_4-n-x-n二维数组翻转90度)
-- [5.二叉树](#_4-二叉树)
+- [5.二叉树](#_5-二叉树)
+   - [翻转二叉树](#翻转二叉树)
+   - [填充每个节点的下一个右侧节点指针](#填充每个节点的下一个右侧节点指针)
    - [二叉树展开为链表](#二叉树展开为链表)
+   - [最大二叉树](#最大二叉树)
+   - [从前序与中序遍历序列构造二叉树](#最大二叉树)
+   - [从中序与后序遍历序列构造二叉树](#最大二叉树)
 
 获取26个字母
 ```javascript
@@ -398,9 +403,53 @@ var rotate3 = function (matrix) {
 };
 ```
 
-### 二叉树
+### 5.二叉树
+做二叉树的问题，关键是把题目的要求细化，搞清楚根节点应该做什么，然后剩下的事情抛给前/中/后序的遍历框架就行了。
+```javascript
+/* 二叉树遍历框架 */
+function traverse(root) {
+    // 前序遍历
+    traverse(root.left)
+    // 中序遍历
+    traverse(root.right)
+    // 后序遍历
+}
+```
+### [翻转二叉树](https://leetcode-cn.com/problems/invert-binary-tree/)
+![](./image/leetcode_tree/reverse_tree.png)
+```javascript
+var invertTree = function(root) {
+    if (root === null) return null
+    let temp = root.left
+    root.left = root.right
+    root.right = temp
+    invertTree(root.right)
+    invertTree(root.left)
+    return root
+};
+```
 
-##### [二叉树展开为链表](https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/)
+### [填充每个节点的下一个右侧节点指针](https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node/)
+
+```javascript
+var connect = function(root) {
+    if(root === null) return null
+    connectTowNode(root.left, root.right)
+    return root
+};
+
+function connectTowNode(left, right) {
+    if (left === null || right === null) {
+        return
+    }
+    left.next = right
+    connectTowNode(left.left,left.right)
+    connectTowNode(right.left,right.right)
+    connectTowNode(left.right, right.left)
+}
+```
+
+#### [二叉树展开为链表](https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/)
 
 ![](./image/leetcode_tree/tree1.png)
 
@@ -446,3 +495,104 @@ var flatten2 = function(root) {
 };
 // 链接：https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/solution/114er-cha-shu-zhan-kai-wei-lian-biao-chao-jian-dan/
 ```
+
+
+#### [最大二叉树](https://leetcode-cn.com/problems/maximum-binary-tree/)
+
+```javascript
+var constructMaximumBinaryTree = function(nums) {
+    if(nums.length === 0) return null
+    const [max, leftArray, rightArray] = getBuildResult(nums)
+    const root = new TreeNode(max)
+    root.left = constructMaximumBinaryTree(leftArray)
+    root.right = constructMaximumBinaryTree(rightArray)
+    return root
+};
+
+function getBuildResult(arr) {
+    const max = Math.max(...arr)
+    const maxIndex = arr.findIndex(v => v === max)
+    return [
+        max,
+        arr.slice(0, maxIndex),
+        arr.slice(maxIndex+1)
+    ]
+}
+```
+
+#### [从前序与中序遍历序列构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/)
+先构造根节点，接着思考如何构造左右节点，而构造左右节点也是构造根节点。剩下的就是分割数组
+```javascript
+var buildTree = function(preorder, inorder) {
+    if (preorder.length === 0) return null
+    const root = new TreeNode(preorder[0])
+    const inorderRootIndex = inorder.findIndex(v => v === preorder[0])
+    root.left = buildTree(preorder.slice(1,inorderRootIndex + 1), inorder.slice(0, inorderRootIndex)) 
+    root.right = buildTree(preorder.slice(inorderRootIndex+1), inorder.slice(inorderRootIndex+1))
+    return root
+};
+```
+
+#### [通过后序和中序遍历结果构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/)
+
+### [最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
+就是给定一个无序的数组，在这个数组中找出，递增并且最长的子数组
+
+1.动态规划，状态转移方程`dp[i] = Max(dp[i],dp[j]+1)`
+```javascript
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var lengthOfLIS = function(nums) {
+    const { length } = nums
+    if (!length) return 0
+    let dp = new Array(length).fill(1)
+    for (let i = 1; i < length; i++) {
+        for(let j = 0;j < i;j++){
+            if(nums[j] < nums[i]){
+                dp[i] = Math.max(dp[i],dp[j]+1);
+            }
+        }
+    }
+    return Math.max(...dp)
+};
+```
+
+#### [寻找重复的子树](https://leetcode-cn.com/problems/find-duplicate-subtrees/)
+1.拼接字符串使二叉树序列化
+
+2.用Map存放每个子树以及出现的次数
+
+3.递归得到所有的子树
+```javascript
+var findDuplicateSubtrees = function(root) {
+    const treeMap = new Map()
+    const result = []
+    function traversal(root) {
+        if(!root) {
+            return '#'
+        }
+        const left = traversal(root.left)
+        const right = traversal(root.right)
+        const subtree = `${left},${right},${root.val}`
+        if(treeMap.get(subtree)) {
+            treeMap.set(subtree, treeMap.get(subtree)+1)
+        } else {
+            treeMap.set(subtree, 1)
+        }
+        if(treeMap.get(subtree) === 2) {
+            result.push(root)
+        }
+        return subtree
+    }
+    traversal(root)
+    return result
+};
+```
+2. 二分查找
+```javascript
+
+```
+
+#### [扑克牌中的顺子](https://leetcode-cn.com/problems/bu-ke-pai-zhong-de-shun-zi-lcof/)

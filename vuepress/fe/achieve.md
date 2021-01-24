@@ -1,6 +1,15 @@
 ---
 title: 手写实现
 ---
+
+优先级
+ - instanceof
+ - new
+ - call && apply & bind
+ - 手写promise
+ - 手写ajax
+ 
+
 ## 目录
 - [Object.create的实现](#object-create的实现)
 - [instanceOf](#instanceof)
@@ -950,6 +959,36 @@ function disorder(array) {
 ### 基于Promise封装Ajax
 
 ```javascript
+const getJSON = function(url) {
+  const promise = new Promise(function(resolve, reject){
+    const handler = function() {
+      if (this.readyState !== 4) {
+        return;
+      }
+      if (this.status === 200) {
+        resolve(this.response);
+      } else {
+        reject(new Error(this.statusText));
+      }
+    };
+    const client = new XMLHttpRequest();
+    client.open("GET", url);
+    client.onreadystatechange = handler;
+    client.responseType = "json";
+    client.setRequestHeader("Accept", "application/json");
+    client.send();
+
+  });
+
+  return promise;
+};
+
+getJSON("/posts.json").then(function(json) {
+  console.log('Contents: ' + json);
+}, function(error) {
+  console.error('出错了', error);
+});
+
 function ajax(method = 'get', url, params) {
 	return new Promise(((resolve, reject) => {
 		const xhr = new XMLHttpRequest()

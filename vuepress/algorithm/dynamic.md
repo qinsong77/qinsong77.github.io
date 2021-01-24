@@ -2,7 +2,7 @@
 title: 动态规划
 ---
 #### 斐波那契数列
-
+`F(0)=0，F(1)=1, F(n)=F(n - 1)+F(n - 2)（n ≥ 2，n ∈ N*）`
 ```javascript
 /**
  * @param {number} N
