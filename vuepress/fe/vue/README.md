@@ -1295,8 +1295,8 @@ function computedGetter(){
 }
 
 Watcher.prototype.evaluate = function evaluate () {
-this.value = this.get();
-this.dirty = false;
+    this.value = this.get();
+    this.dirty = false;
 };
 ```
 

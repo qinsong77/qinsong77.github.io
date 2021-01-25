@@ -408,6 +408,9 @@ var obj = {
   id: 1,
   foo: function(){
     console.log(this.id)
+  },
+  foo2: () => {
+    console.log(this.id)
   }
 }
 function fn (){ console.log(this) }
@@ -415,6 +418,7 @@ var arr = [fn, () => console.log(this)]
 
 var bar = obj.foo
 obj.foo() // 1
+obj.foo2() // 10
 bar() // 10
 arr[0]() // arr
 arr[1]() // window

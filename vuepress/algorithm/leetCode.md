@@ -19,6 +19,10 @@ title: LeetCode
    - [最大二叉树](#最大二叉树)
    - [从前序与中序遍历序列构造二叉树](#最大二叉树)
    - [从中序与后序遍历序列构造二叉树](#最大二叉树)
+   - [寻找重复的子树](#寻找重复的子树)
+- [6.链表](#_6-链表)
+   - [反转链表](#反转链表)
+- [7.最长递增子序列](#_7-最长递增子序列)
 
 获取26个字母
 ```javascript
@@ -535,30 +539,6 @@ var buildTree = function(preorder, inorder) {
 
 #### [通过后序和中序遍历结果构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/)
 
-### [最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
-就是给定一个无序的数组，在这个数组中找出，递增并且最长的子数组
-
-1.动态规划，状态转移方程`dp[i] = Max(dp[i],dp[j]+1)`
-```javascript
-/**
- * @param {number[]} nums
- * @return {number}
- */
-var lengthOfLIS = function(nums) {
-    const { length } = nums
-    if (!length) return 0
-    let dp = new Array(length).fill(1)
-    for (let i = 1; i < length; i++) {
-        for(let j = 0;j < i;j++){
-            if(nums[j] < nums[i]){
-                dp[i] = Math.max(dp[i],dp[j]+1);
-            }
-        }
-    }
-    return Math.max(...dp)
-};
-```
-
 #### [寻找重复的子树](https://leetcode-cn.com/problems/find-duplicate-subtrees/)
 1.拼接字符串使二叉树序列化
 
@@ -593,6 +573,47 @@ var findDuplicateSubtrees = function(root) {
 2. 二分查找
 ```javascript
 
+```
+### 6.链表
+
+#### [反转链表](https://leetcode-cn.com/problems/fan-zhuan-lian-biao-lcof/)
+
+```javascript
+var reverseList = function(head) {
+    let prev = null;
+    let curr = head;
+    while (curr) {
+        const next = curr.next;
+        curr.next = prev;
+        prev = curr;
+        curr = next;
+    }
+    return prev;
+};
+```
+
+### 7.[最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
+就是给定一个无序的数组，在这个数组中找出，递增并且最长的子数组
+
+1.动态规划，状态转移方程`dp[i] = Max(dp[i],dp[j]+1)`
+```javascript
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var lengthOfLIS = function(nums) {
+    const { length } = nums
+    if (!length) return 0
+    let dp = new Array(length).fill(1)
+    for (let i = 1; i < length; i++) {
+        for(let j = 0;j < i;j++){
+            if(nums[j] < nums[i]){
+                dp[i] = Math.max(dp[i],dp[j]+1);
+            }
+        }
+    }
+    return Math.max(...dp)
+};
 ```
 
 #### [扑克牌中的顺子](https://leetcode-cn.com/problems/bu-ke-pai-zhong-de-shun-zi-lcof/)

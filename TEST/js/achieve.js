@@ -90,13 +90,13 @@ Function.prototype.myBind = function (...args) {
 	if (typeof fn !== 'function') {
 		throw new TypeError('error')
 	}
-	
+
 	const obj = args.shift() || window
-	
+
 	return function (...args2) {
 		return fn.apply(obj, args.concat(args2))
 	}
-	
+
 }
 
 
@@ -136,11 +136,11 @@ class RangeIterator {
 		this.value = start
 		this.stop = stop
 	}
-	
+
 	[Symbol.iterator] () {
 		return this
 	}
-	
+
 	next() {
 		const { value, stop } = this
 		if (value < stop) {
@@ -163,4 +163,14 @@ function range(start, stop) {
 
 for (let value of range(0, 3)) {
 	console.log(value); // 0, 1, 2
+}
+
+function debounce(fn, wait){
+	let timer = null
+	return function(...args){
+		if (timer) window.clearTimeout(timer)
+		else timer = setTimeout(() => {
+			f(...args)
+		}, wait)
+	}
 }
