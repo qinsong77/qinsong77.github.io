@@ -20,4 +20,6 @@ rebase的最大好处并不是消除merge，而是避免merge的交织。
 
 简要来说，就是在merge进被合分支（如master）之前，最好将自己的分支给rebase到最新的被合分支（如master）上，然后用pull request创建merge请求。
 
+#### [Git Reset 三种模式](https://www.jianshu.com/p/c2ec5f06cf1a)
+
 ### [彻底理解服务端渲染 - SSR原理](https://github.com/yacan8/blog/issues/30)
