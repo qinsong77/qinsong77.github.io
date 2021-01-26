@@ -11,11 +11,12 @@ title: React
 
 [2021年React学习路线图](https://mp.weixin.qq.com/s?__biz=MzUxMzcxMzE5Ng==&mid=2247505750&idx=2&sn=a31164ddf69f49e3761d2a6d660cf316&chksm=f9526215ce25eb031cbb1f8e0137b3fb3e30f6305fb183f028ab12419699695173b51c44b49d&scene=132#wechat_redirect)
 
-[React Hooks 原理](https://github.com/brickspert/blog/issues/26)
-
 ## 概述
 
 React用于构建用户界面的 JavaScript 库
+
+单项数据流：
+把组件相当于一个函数，props 相当于函数的传参。如果组件内部可以改变 props 就相当于，在函数内部改变参数。那么这个函数就产生了副作用，那么这个函数就不是一个 `pure function`。这会使函数变的不可测试，不可测试也就不能预测执行结果，从而降低代码可维护性。
 
 ## React16.3.0之前生命周期:
 
