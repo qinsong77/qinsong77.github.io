@@ -3,7 +3,7 @@ title: React Hooks
 ---
 
 [React Hooks 原理](https://github.com/brickspert/blog/issues/26)
-
+[React Hooks 导读](https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzI4NjE3MzQzNg==&action=getalbum&album_id=1490474787792617475&scene=173)
 ## 一、什么是 Hooks
 - React认为，UI视图是数据的一种视觉映射，即`UI = F(DATA)`，这里的F需要负责对输入数据进行加工、并对数据的变更做出响应
 - 公式里的F在React里抽象成组件，React是以组件（Component-Based）为粒度编排应用的，组件是代码复用的最小单元
