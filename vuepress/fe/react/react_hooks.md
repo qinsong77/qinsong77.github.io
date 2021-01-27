@@ -6,6 +6,7 @@ title: React Hooks
 
 [React Hooks 导读](https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzI4NjE3MzQzNg==&action=getalbum&album_id=1490474787792617475&scene=173)
 ## 一、什么是 Hooks
+**有状态的函数式组件。**
 - React认为，UI视图是数据的一种视觉映射，即`UI = F(DATA)`，这里的F需要负责对输入数据进行加工、并对数据的变更做出响应
 - 公式里的F在React里抽象成组件，React是以组件（Component-Based）为粒度编排应用的，组件是代码复用的最小单元
 - 在设计上，React采用props属性来接收外部的数据，使用state属性来管理组件自身产生的数据（状态），而为了实现（运行时）对数据变更做出响应需要，React采用基于类（Class）的组件设计！
@@ -51,6 +52,72 @@ Render Props：
 - 只能在 React 的函数组件中调用 Hook，不要在其他 JavaScript 函数中调用
 
 
+#### React Hooks能够让函数组件拥有内部状态的基本原理
+利用闭包，记住了上一次的值，如下
+```javascript
+const useState = function(){
+	let state = null
+	return function(value){
+    // 第一次调用时没有初始值，因此使用传入的初始值赋值
+		state = state || value
+		function dispatch(newValue){
+			state = newValue
+			console.log('render happen')
+		}
+		return [state, dispatch]
+	}
+}()
+
+function Demo(){
+	const [ counter, setCounter] = useState('0')
+	console.log(counter)
+	return function(value){
+		setCounter(value)
+	}
+}
+
+const render = Demo() // log 0
+render(12)
+Demo() // log 12
+Demo() // log 12
+```
+更为相似的例子
+```typescript
+// state.js
+let state = null;
+
+export const useState = (value: number) => {
+  // 第一次调用时没有初始值，因此使用传入的初始值赋值
+  state = state || value;
+
+  function dispatch(newValue) {
+    state = newValue;
+    // 假设此方法能触发页面渲染
+    render();
+  }
+
+  return [state, dispatch];
+}
+```
+在其他模块中引入并使用。
+````typescript jsx
+import React from 'react';
+import {useState} from './state';
+
+function Demo() {
+  // 使用数组解构的方式，定义变量
+  const [counter, setCounter] = useState(0);
+
+  return (
+    <div onClick={() => setCounter(counter + 1)}>hello world, {counter}</div>
+  )
+}
+
+export default Demo();
+````
+执行上下文state（模块state）以及在state中创建的函数useState
+
+当useState在Demo中执行时，访问了state中的变量对象，那么闭包就会产生。
 ### useState
 每次渲染都是独立的闭包， `setTimeout`中打印的是上一次的值
 ````jsx harmony
@@ -75,6 +142,25 @@ function Test() {
 	)
 }
 ````
+
+```jsx harmony
+function Demo() {
+	console.log('render 1')
+	const [state, setState] = useState(111)
+	
+	const [obj, setObj] = useState({
+		a: 1,
+		b: 2
+	})
+	function test() {
+		obj.a = 2
+		// setObj({ ...obj, a: 12})
+		setObj(obj) // 不会导致render,所以不会渲染，但是当state变化，Demo组件会重新render, 而由于闭包的特性， obj的a已经变化，所以显示的a也会变成2
+		console.log(obj)
+	}
+    return ()
+}
+```
 使用memo的区别
 ```jsx harmony
 import React, { memo, useState } from 'react'
@@ -169,5 +255,50 @@ export default function Counter2() {
 			<SubCounter2 data={data} onClick={addClick}/>
 		</>
 	)
+}
+```
+
+### useEffect
+
+在function组件中，每当DOM完成一次渲染，都会有对应的副作用执行，useEffect用于提供自定义的执行内容，它的第一个参数（作为函数传入）就是自定义的执行内容。为了避免反复执行，传入第二个参数（由监听值组成的数组）作为比较(浅比较)变化的依赖，比较之后值都保持不变时，副作用逻辑就不再执行。
+
+- 1. 只在第一次渲染时执行，第二个参数传空数组。即没有传入比较变化的变量，则比较结果永远都保持不变，那么副作用逻辑就只能执行一次。
+```jsx harmony
+const [list, setList] = useState(0);
+
+// DOM渲染完成之后副作用执行
+useEffect(() => {
+  recordListApi().then(res => {
+    setList(res.data);
+  })
+// 记得第二个参数的使用
+}, []);
+```
+
+- 2. 创造一个变量，来作为变化值，实现目的的同时防止循环执行
+```jsx harmony
+import React, { useState, useEffect } from 'react';
+import './style.scss';
+
+export default function AnimateDemo() {
+  const [list, setList] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  // DOM渲染完成之后副作用执行
+  useEffect(() => {
+    if (loading) {
+      recordListApi().then(res => {
+        setList(res.data);
+      })
+    }
+  }, [loading]);
+
+  return (
+    <div className="container">
+      <button onClick={() => setLoading(true)}>点击刷新</button>
+
+      <FlatList data={list} />
+    </div>
+  )
 }
 ```

@@ -19,7 +19,7 @@ function Demo(){
 	}
 }
 
-const render = Demo()
+const render = Demo() // log 0
 render(12)
-Demo()
-Demo()
+Demo() // log 12
+Demo() // log 12

@@ -20,6 +20,50 @@ React用于构建用户界面的 JavaScript 库
 单项数据流：
 把组件相当于一个函数，props 相当于函数的传参。如果组件内部可以改变 props 就相当于，在函数内部改变参数。那么这个函数就产生了副作用，那么这个函数就不是一个 `pure function`。这会使函数变的不可测试，不可测试也就不能预测执行结果，从而降低代码可维护性。
 
+React采用自上而下单向数据流的方式，管理自身的数据与状态。在单向数据流中，数据只能由父组件触发，向下传递到子组件。
+
+可以在父组件中定义state，并通过props的方式传递到子组件。如果子组件想要修改父组件传递而来的状态，则**只能给父组件发送消息，由父组件改变，再重新传递给子组件**。
+
+在React中，**state与props的改变，都会引发组件重新渲染。如果是父组件的变化，则父组件下所有子组件都会重新渲染**。
+
+在class组件中，组件重新渲染，是执行render方法。
+
+**而在函数式组件中，是整个函数重新执行。**
+### 函数式组件
+
+函数式组件与普通的函数几乎完全一样。只不过函数执行完毕时，返回的是一个JSX结构。
+
+```jsx harmony
+function Hello() {
+  return <div>hello world.</div>
+}
+```
+
+- **1. 函数式组件接收props作为自己的参数**
+
+```typescript jsx
+
+import React from 'react';
+
+interface Props {
+  name: string,
+  age: number
+}
+
+function Demo({ name, age }: Props) {
+  return [
+    <div>name: {name}</div>,
+    <div>age: {age}</div>
+  ]
+}
+
+export default Demo;
+```
+
+- 2. **props的每次变动，组件都会重新渲染一次，函数重新执行。**
+
+- 3. **没有this。那么也就意味着，之前在class中由于this带来的困扰就自然消失了。**
+
 ## [生命周期](https://zh-hans.reactjs.org/docs/react-component.html)
 
 ## React16.3.0之前生命周期:
