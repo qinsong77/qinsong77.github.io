@@ -102,36 +102,62 @@ print(buildTree(data), 0)
 ### 2、React Input 表单组件
 类似于element的input组件，props可设置默认值，maxLength, 有`show-word-limit`的效果，组件支持受控和非受控模式
 
-```typescript
-import React, { useState, useEffect } from 'react';
+```tsx
+import React, {useState, useEffect} from 'react'
 
-// 组件属性定义（可以自行扩展）:
-interface InputProps {
-	// 当前的 value 值
-	value: string;
-	// 初始化的 value 值
-	defaultValue?: string;
-	// 发生改变的时候触发的回调
-	onChange?: (value: string) => any;
-	// 最大长度
-	maxLength?: number;
+interface Props {
+	value?: string,
+	maxLength?: number
 }
 
-// 请实现 (class 方式 和 hook 方式二选一)
-// 组件样式可以略过，但是要有合理的 DOM 结构
-
-function customInput(props: InputProps) {
-	const [value, setValue] = useState(props.value ? props.value : '')
+export default function App({value, maxLength}: Props) {
+	const [state, setState] = useState('')
 	useEffect(() => {
-		props.onChange ? props.onChange(value) : ''
+		value && setState(value)
 	}, [value])
+	function updateValue(inputValue: string) {
+		if (maxLength !== undefined && inputValue.length > maxLength) return
+		else setState(inputValue)
+	}
 	return (
-		<div class='custom-input'>
-			<input value={ value } type="text" onchange={ (e) => setValue(e.target.value)}/>
-            <span class='custom-input-shuffix'>{ value.length + '/' + props.maxLength }</span>
+		<div className='input-item'>
+			<input value={state} onInput={(e => updateValue(e.currentTarget.value))} style={{ paddingRight: maxLength !== undefined ? '36px' : '10px'}}/>
+			{ maxLength !== undefined &&
+				<span>{ state.length + '/' + maxLength}</span>
+			}
 		</div>
 	)
 }
+```
+
+```css
+.input-item {
+  position: relative;
+  display: inline-block;
+}
+.input-item input {
+  color: rgba(0,0,0,.85);
+  font-size: 14px;
+  padding: 4px 10px;
+  border: 1px solid #d9d9d9;
+  border-radius: 3px;
+}
+.input-item input:hover {
+  border-color: #40a9ff;
+}
+.input-item input:focus {
+  border-color: #40a9ff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(24,144,255,0.2);
+}
+.input-item span {
+  font-size: 12px;
+  color: rgba(0,0,0,.45);
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+ }
 ```
 
 ````jsx harmony

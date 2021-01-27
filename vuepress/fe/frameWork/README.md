@@ -20,6 +20,16 @@ rebase的最大好处并不是消除merge，而是避免merge的交织。
 
 简要来说，就是在merge进被合分支（如master）之前，最好将自己的分支给rebase到最新的被合分支（如master）上，然后用pull request创建merge请求。
 
+### [ESLint 和 Prettier](https://zhuanlan.zhihu.com/p/80574300)
+ESLint 主要解决了两类问题, 
+
+1. 代码质量问题：使用方式有可能有问题(problematic patterns)
+2. 代码风格问题：风格不符合一定规则 (doesn’t adhere to certain style guidelines)
+
+但其实 ESLint 主要解决的是代码质量问题。另外一类代码风格问题其实 `Airbnb JavaScript Style Guide` 并没有完完全全做完。
+`Prettier` 接管了两个问题其中的代码格式的问题，而使用 `Prettier + ESLint` 就完完全全解决了两个问题。
+
+
 #### [Git Reset 三种模式](https://www.jianshu.com/p/c2ec5f06cf1a)
 
 ### [彻底理解服务端渲染 - SSR原理](https://github.com/yacan8/blog/issues/30)

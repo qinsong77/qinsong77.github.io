@@ -90,7 +90,8 @@ module.exports = {
 					// sidebarDepth: 2,    // 可选的, 默认值是 1
 					children: [
 						['react/', '总结'],
-						'react/react_hooks'
+						'react/react_hooks',
+						'react/typescript'
 					]
 				},
 				{
