@@ -20,9 +20,11 @@ title: LeetCode
    - [从前序与中序遍历序列构造二叉树](#最大二叉树)
    - [从中序与后序遍历序列构造二叉树](#最大二叉树)
    - [寻找重复的子树](#寻找重复的子树)
-- [6.链表](#_6-链表)
+- [6.二叉搜索树](#_6-二叉搜索树)
+   - [翻转二叉树](#翻转二叉树)
+- [7.链表](#_6-链表)
    - [反转链表](#反转链表)
-- [7.最长递增子序列](#_7-最长递增子序列)
+- [8.最长递增子序列](#_7-最长递增子序列)
 
 获取26个字母
 ```javascript
@@ -35,6 +37,12 @@ for (let i = 0; i < 26; i++) {
         bigLetters.push(String.fromCharCode((65 + i)));
     }
 ```
+
+Math 对象方法
+
+- `Math.floor(x)`: 向下取证。
+- `Math.ceil(x)`: 向上取证。
+- `Math.round(x)`: 把数四舍五入为最接近的整数。
 
 #### 1.[两数之和](https://leetcode-cn.com/problems/two-sum )
 > 给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数，并返回他们的数组下标。  <br />你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。
@@ -112,26 +120,27 @@ var isPalindrome = function(x) {
 ```
 
 [官方题解](https://leetcode-cn.com/problems/palindrome-number/solution/hui-wen-shu-by-leetcode-solution/)
-```javascript
-/**
- * @param {number[]} nums
- * @param {number} target
- * @return {number[]}
- */
-/**
- * @param {number[]} nums
- * @param {number} target
- * @return {number[]}
- */
-var twoSum = function(nums, target) {
-    let i = nums.length;
-    while(i > 1) {
-        let last = nums.pop();
-        if (nums.indexOf(target - last) > -1) {
-            return [nums.indexOf(target - last), nums.length]
-        }
-        i--
+```typescript
+var isPalindrome = function(x: number): boolean {
+    // 特殊情况：
+    // 如上所述，当 x < 0 时，x 不是回文数。
+    // 同样地，如果数字的最后一位是 0，为了使该数字为回文，
+    // 则其第一位数字也应该是 0
+    // 只有 0 满足这一属性
+    if (x < 0 || (x % 10 === 0 && x !== 0)) {
+        return false;
     }
+
+    let revertedNumber: number = 0;
+    while (x > revertedNumber) {
+        revertedNumber = revertedNumber * 10 + x % 10;
+        x = Math.floor(x / 10);
+    }
+
+    // 当数字长度为奇数时，我们可以通过 revertedNumber/10 去除处于中位的数字。
+    // 例如，当输入为 12321 时，在 while 循环的末尾我们可以得到 x = 12，revertedNumber = 123，
+    // 由于处于中位的数字不影响回文（它总是与自己相等），所以我们可以简单地将其去除。
+    return x === revertedNumber || x === Math.floor(revertedNumber / 10);
 };
 ```
 
@@ -574,7 +583,37 @@ var findDuplicateSubtrees = function(root) {
 ```javascript
 
 ```
-### 6.链表
+
+### 6.二叉搜索树
+
+BST(Binary Search Tree) 的特性
+
+1. 对于 BST 的每一个节点node，左子树节点的值都比node的值要小，右子树节点的值都比node的值大。
+2. 对于 BST 的每一个节点node，它的左侧子树和右侧子树都是 BST。
+
+从做算法题的角度来看 BST，除了它的定义，还有一个重要的性质：**BST 的中序遍历结果是有序的（升序）**。
+
+```typescript jsx
+interface TreeNode {
+  left: null | TreeNode,
+  right: null | TreeNode,
+  val: number
+}
+function traverse(root:TreeNode) {
+    if (root == null) return;
+    traverse(root.left);
+    // 中序遍历代码位置
+    console.log(root.val);
+    traverse(root.right);
+}
+```
+
+#### [二叉搜索树中第K小的元素](https://leetcode-cn.com/problems/kth-smallest-element-in-a-bst/)
+#### [把二叉搜索树转换为累加树](https://leetcode-cn.com/problems/convert-bst-to-greater-tree/)
+
+
+
+### 7.链表
 
 #### [反转链表](https://leetcode-cn.com/problems/fan-zhuan-lian-biao-lcof/)
 
@@ -592,7 +631,7 @@ var reverseList = function(head) {
 };
 ```
 
-### 7.[最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
+### 8.[最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
 就是给定一个无序的数组，在这个数组中找出，递增并且最长的子数组
 
 1.动态规划，状态转移方程`dp[i] = Max(dp[i],dp[j]+1)`

@@ -543,3 +543,124 @@ export default function ReactHooksWay() {
 ```
 
 ### useContext
+
+ContextProvider
+```typescript jsx
+import React, { createContext, useState, Dispatch, ReactNode } from 'react'
+
+interface Injected  {
+    counter: number,
+    setCounter: Dispatch<any>,
+    increment: () => any,
+    decrement: () => any
+}
+// eslint-disable-next-line
+export const context = createContext<Injected>({} as Injected)
+
+
+interface Props {
+    children?: ReactNode
+}
+
+
+export function CounterProvider({ children }: Props) {
+    const [counter, setCounter] = useState(0);
+
+    const value = {
+        counter,
+        setCounter,
+        increment: () => setCounter(counter + 1),
+        decrement: () => setCounter(counter - 1)
+    }
+
+    return (
+        <context.Provider value={value}>{children}</context.Provider>
+    )
+}
+```
+
+```typescript jsx
+import React, { useContext } from 'react';
+import { Button } from 'antd';
+import { context, CounterProvider } from './ContextProvider';
+
+function Counter() {
+    const { counter = 0, increment, decrement } = useContext(context);
+
+    return (
+        <div style={{ width: '400px'}}>
+            <h3>第一层组件</h3>
+            <div style={{ width: '40px', margin: '100px auto', fontSize: '40px' }}>{counter}</div>
+            <Button onClick={increment}>递增</Button>
+            <Button onClick={decrement}>递减</Button>
+            <TwoChild/>
+            <MemoTwoChild/>
+        </div>
+    );
+}
+
+function TwoChild() {
+    console.log('render')
+    return (
+        <div>
+            <h2>第二层组件</h2>
+            <p>hello</p>
+            <ThirdChild/>
+        </div>
+    )
+}
+
+const MemoTwoChild = React.memo(TwoChild) // context变化时，不会打印render
+
+function ThirdChild() {
+    const { counter = 0, increment, decrement } = useContext(context);
+    
+    return (
+        <div style={{ width: '200px', margin: 'auto' }}>
+            <h3>第三层组件</h3>
+            <div style={{ width: '40px', margin: '100px auto', fontSize: '40px' }}>{counter}</div>
+            <Button onClick={increment}>递增</Button>
+            <Button onClick={decrement}>递减</Button>
+        </div>
+    );
+}
+
+export default () => <CounterProvider><Counter /></CounterProvider>;
+```
+
+### useRef
+
+在函数式组件中，`useRef` 是一个返回可变引用对象的函数。该对象`.current`属性的初始值为useRef传入的参数`initialVale`。
+
+返回的对象将在组件整个生命周期中持续存在。
+
+`const ref = useRef(initialValue);`
+
+通常情况下，useRef有两种用途，
+
+1. 访问DOM节点，或者React元素
+2. 保持可变变量
+```typescript jsx
+import React, { useRef, useEffect } from 'react';
+
+export default function Timer() {
+  const timerRef = useRef<NodeJS.Timeout>();
+
+  useEffect(() => {
+    timerRef.current = setInterval(() => {
+      console.log('do something');
+    }, 1000);
+
+    // 组件卸载时，清除定时器
+    return () => {
+      timerRef.current && clearInterval(timerRef.current);
+    }
+  }, []);
+
+  return (
+    <div>
+      // ...
+    </div>
+  )
+}
+```
