@@ -128,6 +128,31 @@ margin元素要分别放在放在不同的2个BFC中才能避免margin重叠;以
 ```
 ![An image](./imgs/b.png) 
 
+
+**解决子元素设置margin-top，效果到父元素上的问题**
+
+```html
+<div style="height: 200px;width: 200px;background: #3a5169">
+   <div style="width: 10px;height: 20px;background: #42b983;margin-top: 30px;"></div>
+</div>
+```
+![](./imgs/margin-top-bug.png)
+
+`magin-top:30;` 作用到父元素上了。
+
+BUG原因：
+
+In this specification, the expression collapsing margins means that adjoining margins (no non-empty content, padding or border areas or clearance separate them) of two or more boxes (which may be next to one another or nested) combine to form a single margin. 所有毗邻的两个或更多盒元素的margin将会合并为一个margin共享之。毗邻的定义为：同级或者嵌套的盒元素，并且它们之间没有非空内容、Padding或Border分隔。
+
+这就是原因了。“嵌套”的盒元素也算“毗邻”，也会 Collapsing Margins。
+
+解决方法：
+- 1、修改父元素的高度，增加padding-top样式模拟（padding-top：1px；常用）
+- 2、为父元素添加overflow：hidden；样式即可（完美）-BFC
+- 3、为父元素或者子元素声明浮动（float：left；可用）
+- 4、为父元素添加border（border:1px solid transparent可用）
+- 5、为父元素或者子元素声明绝对定位
+
 #### 2. 清除浮动，防止内容坍塌
 在包含浮动元素的父元素触发BFC
 ```html

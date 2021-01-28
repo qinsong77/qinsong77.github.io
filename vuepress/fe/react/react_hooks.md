@@ -8,10 +8,10 @@ title: React Hooks
 ## 一、什么是 Hooks
 **有状态的函数式组件。**
 - React认为，UI视图是数据的一种视觉映射，即`UI = F(DATA)`，这里的F需要负责对输入数据进行加工、并对数据的变更做出响应
-- 公式里的F在React里抽象成组件，React是以组件（Component-Based）为粒度编排应用的，组件是代码复用的最小单元
+- 公式里的`F`在React里抽象成组件，React是以组件（Component-Based）为粒度编排应用的，组件是代码复用的最小单元
 - 在设计上，React采用props属性来接收外部的数据，使用state属性来管理组件自身产生的数据（状态），而为了实现（运行时）对数据变更做出响应需要，React采用基于类（Class）的组件设计！
 - React 一直都提倡使用**函数组件**，但是有时候需要使用 `state` 或者其他一些功能时，只能使用**类组件**，因为函数组件没有实例，没有生命周期函数，只有类组件才有;
-- Hooks 是 React 16.8 新增的特性，它可以让你在不编写 class 的情况下使用 state 以及其他的 React 特性
+- Hooks 是 React 16.8 新增的特性，它可以在不编写 class 的情况下使用 state 以及其他的 React 特性
 - 如果你在编写函数组件并意识到需要向其添加一些 state，以前的做法是必须将其它转化为 class。现在你可以直接在现有的函数组件中使用 `Hooks`
 凡是 `use` 开头的 React API  都是 `Hooks`
 
@@ -260,7 +260,7 @@ export default function Counter2() {
 
 ### useEffect
 
-在function组件中，每当DOM完成一次渲染，都会有对应的副作用执行，useEffect用于提供自定义的执行内容，它的第一个参数（作为函数传入）就是自定义的执行内容。为了避免反复执行，传入第二个参数（由监听值组成的数组）作为比较(浅比较)变化的依赖，比较之后值都保持不变时，副作用逻辑就不再执行。
+在function组件中，**每当DOM完成一次渲染，都会有对应的副作用执行**，useEffect用于提供自定义的执行内容，它的第一个参数（作为函数传入）就是自定义的执行内容。为了避免反复执行，传入第二个参数（由监听值组成的数组）作为比较(浅比较)变化的依赖，比较之后值都保持不变时，副作用逻辑就不再执行。
 
 - 1. 只在第一次渲染时执行，第二个参数传空数组。即没有传入比较变化的变量，则比较结果永远都保持不变，那么副作用逻辑就只能执行一次。
 ```jsx harmony
@@ -286,9 +286,10 @@ export default function AnimateDemo() {
 
   // DOM渲染完成之后副作用执行
   useEffect(() => {
-    if (loading) {
+    if (loading) { // 自身判断是否执行
       recordListApi().then(res => {
         setList(res.data);
+        setLoading(false);
       })
     }
   }, [loading]);
@@ -302,3 +303,243 @@ export default function AnimateDemo() {
   )
 }
 ```
+
+3. return一个clear函数清楚副作用
+
+- 每次副作用执行，都会返回一个新的clear函数
+- **clear函数会在下一次副作用逻辑之前执行**（DOM渲染完成之后）
+- 组件销毁也会执行一次
+
+和`componentWillUnmount`不一样，`componentWillUnmount`整个过程中只执行一次。
+
+例子
+```js
+useEffect(() => {
+  ChatAPI.subscribeToFriendStatus(props.id, handleStatusChange);
+  function clear() {
+    ChatAPI.unsubscribeFromFriendStatus(props.id, handleStatusChange);
+  }
+  return clear;
+});
+```
+
+假设在组件的使用过程中，外部传入的props参数id，改变了两次，第一次传入`id: 1`， 第二次传入`id: 2`
+
+整个过程是：
+
+1. 传入`props.id = 1`
+2. 组件渲染
+3. DOM渲染完成，副作用逻辑执行，返回清除副作用函数`clear`，命名为`clear1`
+4. 传入`props.id = 2`
+5. 组件渲染
+6. 组件渲染完成，`clear1`执行
+7. 副作用逻辑执行，返回另一个`clear`函数，命名为`clear2`
+8. 组件销毁，`clear2`执行
+
+```jsx harmony
+export default function AnimateDemo() {
+    const [counter, setCounter] = useState(0);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setCounter(counter + 1);
+        }, 300);
+        console.log('effect:', timer);
+
+        return () => {
+            console.log('clear:', timer);
+            clearTimeout(timer);
+        }
+    });
+
+    console.log('before render');
+
+    return (
+        <div className="container">
+            <div className="el">{counter}</div>
+        </div>
+    )
+}
+```
+下面的打印顺序是：
+```jsx harmony
+import React, { useState, useEffect } from 'react';
+
+export default function AnimateDemo() {
+  const [counter, setCounter] = useState(0);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log('setCounter')
+      setCounter(counter + 1);
+    }, 3000);
+    console.log('effect:', timer);
+
+    return () => {
+      console.log('clear:', timer);
+      clearTimeout(timer);
+    }
+  });
+
+  console.log('before render');
+
+  return (
+    <div className="container">
+      <div className="el">{counter}</div>
+    </div>
+  )
+}
+
+```
+```git
+before render
+effect: 60
+setCounter --- 3s后
+before render
+clear: 60 -- 第二次渲染完成，执行上一次返回的clear函数
+effect: 61
+before render
+clear: 61
+effect: 62
+before render
+clear: 62
+...
+clear: xx -- 组件销毁时
+```
+第一次渲染是打印render,并且执行副作用函数, 打印effect，并且返回清楚副作用的函数clear, **3秒后**打印setCounter，执行`setCounter`，
+组件重新渲染，打印render，渲染完成后执行上一次的clear，接着执行副作用函数，一直循环，直到销毁时执行clear函数。
+
+
+### 自定义Hooks
+自定义hooks都会以`use`开头，以表示该方法**只能在函数式组件中使用**。感觉就是对原有函数组件中依赖于state的逻辑的抽离
+
+自定义Hooks实现了**逻辑片段复用**
+
+而和普通函数更强一点的是，自定义hooks还能够封装异步逻辑片段。
+
+example
+```typescript jsx
+// .useEqualArr.tsx
+import { useState } from 'react';
+
+function equalArr(a: number[], b: number[]) {
+  if (a.length !== b.length) {
+    return false;
+  }
+  if (a.length === 0 && b.length === 0) {
+    return true;
+  }
+  return a.every((item, i) => item === b[i]);
+}
+
+export default function useEqualArr() {
+  const [arrA, setArrA] = useState<number[]>([]);
+  const [arrB, setArrB] = useState<number[]>([]);
+  const isEqual = equalArr(arrA, arrB);
+
+  return {
+    arrA,
+    setArrA,
+    arrB,
+    setArrB,
+    isEqual
+  }
+}
+```
+使用
+```typescript jsx
+import React from 'react';
+import useEqualArr from './useEqualArr';
+
+export default function EqualArr() {
+  const {arrA, arrB, setArrA, setArrB, isEqual} = useEqualArr();
+}
+```
+
+example：封装一个公用页面初次加载Hooks
+```typescript jsx
+import {useState, useEffect} from 'react';
+
+export default function useInitial<T, P, V>(
+  api: (params: P) => Promise<T>,
+  params: P,
+  defaultData: V
+) {
+  const [loading, setLoading] = useState(true);
+  const [response, setResponse] = useState(defaultData);
+  const [errMsg, setErrmsg] = useState('');
+
+  useEffect(() => {
+    if (!loading) { return };
+    getData();
+  }, [loading]);
+
+  function getData() {
+    api(params).then(res => {
+      setResponse(res);
+    }).catch(e => {
+      setErrmsg(errMsg);
+    }).finally(() => {
+      setLoading(false);
+    })
+  }
+
+  return {
+    loading,
+    setLoading,
+    response,
+    errMsg
+  }
+}
+```
+在页面中使用
+
+```typescript jsx
+export default function FunctionDemo() {
+    // 只需要传入api， 对应的参数与返回结果的初始默认值即可
+    const {loading, setLoading, response, errMsg} = useInitial(api, {id: 10}, {});
+}
+```
+刷新页面: `setLoading(true);`
+
+### useReducer
+
+```typescript jsx
+import React, { useReducer } from 'react'
+import { Button  } from 'antd'
+
+enum Actions {
+    Increment = 'Increment',
+    Decrement = 'Decrement',
+    Rest = 'Rest'
+}
+
+const Reducer = (state:number, action: Actions) => {
+    switch (action) {
+        case Actions.Increment:
+            return state + 1
+        case Actions.Decrement:
+            return state - 1
+        case Actions.Rest:
+            return  0
+        default:
+            return state
+    }
+}
+
+
+export default function ReactHooksWay() {
+    const initialState: number = 0
+    const [counter, dispatch] = useReducer(Reducer, initialState)
+    return (
+        <div>
+           <h3>counter: { counter}</h3>
+            <Button onClick={() => dispatch(Actions.Increment)}>{ Actions.Increment }</Button>
+            <Button onClick={() => dispatch(Actions.Decrement)}>{ Actions.Decrement }</Button>
+            <Button onClick={() => dispatch(Actions.Rest)}>{ Actions.Rest }</Button>
+        </div>
+    )
+}
+```
+
+### useContext

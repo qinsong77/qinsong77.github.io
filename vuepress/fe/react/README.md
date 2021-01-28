@@ -160,6 +160,80 @@ export default Demo;
 
 ![](./image/react-lifecircle2.png)
 
+### 受控与非受控组件
+
+受控组件：在 HTML 中，表单元素（如`<input>、 <textarea>、<select>`)通常自己维护 state，并根据用户输入进行更新。
+即如Input的value绑定了state,而onChange时使用setState更新。
+
+也可以说是组件外部能控制组件内部的状态，则表示该组件为受控组件。
+
+外部想要控制内部的组件，就必须要往组件内部传入props。而通常情况下，受控组件内部又自己有维护自己的状态。例如input组件。
+
+如下实现
+
+
+```typescript jsx
+import React, {useState, useEffect} from 'react'
+
+interface Props {
+	value?: string,
+	maxLength?: number
+}
+
+export default function App({value, maxLength}: Props) {
+	const [state, setState] = useState('')
+	useEffect(() => {
+		value && setState(value) // 这里能通过props控制state
+	}, [value])
+	function updateValue(inputValue: string) {
+		if (maxLength !== undefined && inputValue.length > maxLength) return
+		else setState(inputValue)
+	}
+	return (
+		<div className='input-item'>
+			<input value={state} onInput={(e => updateValue(e.currentTarget.value))} style={{ paddingRight: maxLength !== undefined ? '36px' : '10px'}}/>
+			{ maxLength !== undefined &&
+				<span>{ state.length + '/' + maxLength}</span>
+			}
+		</div>
+	)
+}
+```
+
+在大多数情况下，推荐使用 `受控组件` 来处理表单数据。
+
+在一个受控组件中，表单数据是由 `React` 组件来管理的。另一种替代方案是使用非受控组件，这时表单数据将交**由 `DOM` 节点来处理**。
+
+写一个非受控组件，而不是为每个状态更新都编写数据处理函数，使用 `ref` 来从 `DOM`节点中获取表单数据。
+
+```jsx harmony
+class NameForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.input = React.createRef();
+  }
+
+  handleSubmit(event) {
+    alert('A name was submitted: ' + this.input.current.value);
+    event.preventDefault();
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <label>
+          Name:
+          <input type="text" ref={this.input} />
+        </label>
+        <input type="submit" value="Submit" />
+      </form>
+    );
+  }
+}
+```
+
+
 ### [setState](https://zhuanlan.zhihu.com/p/39512941)
 
 - setState 只在合成事件和钩子函数中是“异步”的，在原生事件和setTimeout 中都是同步的。
@@ -201,3 +275,99 @@ class Child extends React.PureComponent {
 	}
 }
 ```
+
+### 高阶组件
+高阶组件是参数为组件，返回值为新组件的函数。组件是将 props 转换为 UI，而高阶组件是将组件转换为另一个组件。
+
+HOC 是纯函数，没有副作用。
+
+```js
+const EnhancedComponent = higherOrderComponent(WrappedComponent);
+```
+example：
+
+```jsx harmony
+
+const withMouse = (Component) => {
+  return class extends React.Component {
+    state = { x: 0, y: 0 }
+
+    handleMouseMove = (event) => {
+      this.setState({
+        x: event.clientX,
+        y: event.clientY
+      })
+    }
+
+    render() {
+      return (
+        <div onMouseMove={this.handleMouseMove}>
+          <Component {...this.props} {...this.state} />
+        </div>
+      )
+    }
+  }
+}
+```
+使用
+```jsx harmony
+const App2= withMouse(({ x, y }) => {
+  return (
+    <div style={{ height: '100%' }}>
+      <div>x: {position.x}, y: {position.y}</div>
+    </div>
+  )
+})
+```
+
+问题: 
+
+当嵌套使用多个高阶组件时，在代码中无法识别props中的参数，是哪里来的。并且当参数命名重复时一样无法解决。因此高阶组件在使用时会非常小心，以至于在很多场景下，我们放弃共同逻辑片段的封装，因为这会很容易造成滥用。
+
+#### render props
+
+```typescript jsx
+import React from 'react'
+
+interface Props {
+    render: (props: { x: number, y: number }) => React.ReactNode
+}
+
+class Mouse extends React.Component<Props>{
+    state = {
+        x: 0,
+        y: 0
+    }
+
+    handleMouseMove = (event: React.MouseEvent<HTMLDivElement, any>) => {
+        this.setState({
+            x: event.clientX,
+            y: event.clientY
+        })
+    }
+
+    render() {
+        return (
+            <div onMouseMove={this.handleMouseMove} className='mouse-move-container'>
+                {this.props.render(this.state)}
+            </div>
+        )
+    }
+}
+// 使用
+export default function () {
+    return (
+        <Mouse render={
+            ({x, y}) => (
+                <div>x: {x}, y: {y}</div>
+            )
+        }/>
+    )
+}
+```
+`render props`解决了来源问题，同时也避免了命名冲突。
+
+问题
+
+1. 可读性不高，直观上比较别扭。我们可以在Mouse组件中处理很多额外逻辑，甚至定义更多的交互样式。因此使用时会造成一些困扰。
+2. 存在局限性。我们期望的是能够切割逻辑片段，render props最终仍然是组件化思维的扩展运用

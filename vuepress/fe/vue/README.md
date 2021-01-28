@@ -585,6 +585,15 @@ function proxy (target, sourceKey, key) {
     Object.defineProperty(target, key, sharedPropertyDefinition);
   }
 ```
+
+### [v-model](https://segmentfault.com/a/1190000015848976)
+
+就是`<input type="text" v-model="message">`变成了
+
+```vue
+<input type="text" :value="message" @input="if($event.target.composing)return;message =$event.target.value">
+```
+`event.target.composing`用于判断此次input事件是否是`IME`构成触发的，如果是`IME`构成，直接`return`。`IME` 是输入法编辑器(Input Method Editor) 的英文缩写，IME构成指我们在输入文字时，处于未确认状态的文字。
 ### template是如何编译成render function的？
 
 Vue提供了两个版本，一个是Runtime+Compiler版本的，一个是Runtime only版本的。Runtime+Compiler是包含编译代码的，可以把编译过程放在运行时来做。而Runtime only是不包含编译代码的，所以需要借助webpack的vue-loader来把模版编译成render函数。

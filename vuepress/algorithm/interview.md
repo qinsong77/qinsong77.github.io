@@ -102,7 +102,7 @@ print(buildTree(data), 0)
 ### 2、React Input 表单组件
 类似于element的input组件，props可设置默认值，maxLength, 有`show-word-limit`的效果，组件支持受控和非受控模式
 
-```tsx
+```typescript jsx
 import React, {useState, useEffect} from 'react'
 
 interface Props {
