@@ -118,6 +118,17 @@ export default Demo();
 执行上下文state（模块state）以及在state中创建的函数useState
 
 当useState在Demo中执行时，访问了state中的变量对象，那么闭包就会产生。
+
+react hooks提供的api，大多都有记忆功能。例如
+
+- useState
+- useEffect
+- useLayoutEffect
+- useReducer
+- useRef
+- useMemo 记忆计算结果
+- useCallback 记忆函数体
+
 ### useState
 每次渲染都是独立的闭包， `setTimeout`中打印的是上一次的值
 ````jsx harmony
@@ -632,14 +643,62 @@ export default () => <CounterProvider><Counter /></CounterProvider>;
 
 在函数式组件中，`useRef` 是一个返回可变引用对象的函数。该对象`.current`属性的初始值为useRef传入的参数`initialVale`。
 
-返回的对象将在组件整个生命周期中持续存在。
+返回的对象将在组件整个生命周期中持续存在。当 `useRef` 的内容发生变化时，它不会通知。更改`.current`属性不会导致重新render呈现。因为它一直是一个引用。
 
 `const ref = useRef(initialValue);`
 
 通常情况下，useRef有两种用途，
 
 1. 访问DOM节点，或者React元素
-2. 保持可变变量
+自定义组件ref，使用` React.createRef()`或者`useRef`，外加`React.forwardRef`
+```jsx harmony
+const FancyButton = React.forwardRef((props, ref) => (
+  <button ref={ref} className="FancyButton">
+    {props.children}
+  </button>
+));
+
+// 你可以直接获取 DOM button 的 ref：
+const ref = React.createRef();
+<FancyButton ref={ref}>Click me!</FancyButton>;
+```
+hooks way
+
+```typescript jsx
+import React, {forwardRef, useState, ChangeEvent} from 'react';
+
+export interface InputProps {
+  value?: string,
+  onChange?: (value: string) => any
+}
+
+function Input({value, onChange}: InputProps, ref: any) {
+  const [_value, setValue] = useState(value || '');
+
+  const _onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setValue(value);
+    onChange && onChange(value);
+  }
+
+  return (
+    <div>
+      自定义Input组件
+      <input value={_value} onChange={_onChange} ref={ref} />
+    </div>
+  );
+}
+
+export default forwardRef(Input);
+```
+2. 保持变量引用
+
+和`createRef`的区别
+
+>`useRef` returns a mutable ref object whose `.current` property is initialized to the passed argument (`initialValue`). The returned object will persist for the full lifetime of the component.
+
+`useRef` 在 react hook 中的作用, 正如官网说的, 它像一个变量, 类似于 this , 它就像一个盒子, 你可以存放任何东西. **`createRef` 每次渲染都会返回一个新的引用，而 `useRef` 每次都会返回相同的引用**。
+
 ```typescript jsx
 import React, { useRef, useEffect } from 'react';
 
@@ -664,3 +723,184 @@ export default function Timer() {
   )
 }
 ```
+example: 界面上显示出上一个 count 的值
+```typescript jsx
+import React, { useState, useRef, useEffect } from 'react'
+
+const usePrevious = (state: any) => {
+    const ref = useRef()
+    useEffect(() => {
+        ref.current = state
+    })
+
+    return ref.current
+}
+
+
+export default function () {
+    const [ counter, setCounter ] = useState(0)
+    const prevCounter = usePrevious(counter)
+
+    return (
+        <div>
+            <button onClick={() => setCounter(counter+1)}>+ 1</button>
+            <button onClick={() => setCounter(counter-1)}>- 1</button>
+            <p>Now: { counter}, before: { prevCounter }</p>
+        </div>
+    )
+}
+```
+>explain: **`useRef` 每次都会返回相同的引用**，第一次渲染时，counter为0，而执行到自定义的hook,`usePrevious`时，传入的state是0，
+>但`useEffect`副作用函数是在dom渲染完执行，所以`return`的值是`undefined`,页面的`prevCounter`则没有显示值。
+>当`setCounter`时，函数重新运行，取到的是之前传入的`counter`,所以页面显示`counter`是1，`prevCounter`是0。
+
+#### useImperativeHandle
+`useImperativeHandle`可以让我们在使用`ref`时自定义暴露给父组件的实例值。
+
+```typescript jsx
+
+import React, {useRef, useImperativeHandle, forwardRef, Ref, useState, ChangeEvent} from 'react';
+
+export interface InputProps {
+  value?: string,
+  onChange?: (value: string) => any
+}
+
+export interface XInput {
+  focus: () => void;
+  blur: () => void;
+  setInputValue: (value: string) => void;
+}
+
+function Input({value, onChange}: InputProps, ref: Ref<XInput>) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [_value, setValue] = useState(value || '');
+
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      inputRef.current && inputRef.current.focus()
+    },
+    blur: () => {
+      inputRef.current && inputRef.current.blur()
+    },
+    setInputValue: (value: string) => {
+      setValue(value)
+    }
+  }));
+
+  const _onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    console.log(value);
+    setValue(value);
+    onChange && onChange(value);
+  }
+
+  return (
+    <div>
+      自定义Input组件
+      <input value={_value} onChange={_onChange} ref={inputRef} />
+    </div>
+  );
+}
+
+export default forwardRef(Input);
+```
+使用
+```typescript jsx
+import React, { useRef, useState } from "react";
+import Input from './components/Input';
+
+const Demo = () => {
+  const textInput = useRef<any>(null);
+  const [text, setText] = useState('')
+
+  const focusTextInput = () => {
+    if (textInput.current) {
+      textInput.current.focus();
+      textInput.current.setInputValue('hello world');
+    }
+  }
+
+  return (
+    <>
+      <Input ref={textInput} onChange={setText} value={text} />
+      <button onClick={focusTextInput}>点击我，input组件获得焦点并设置input value</button>
+      <div>{text}</div>
+    </>
+  );
+}
+
+export default Demo;
+```
+compare: component父组件调用子组件方法
+```jsx harmony
+import React, {Component} from 'react';
+
+export default class Parent extends Component {
+
+    onRef = (ref) => {
+        this.child = ref
+    }
+
+    click = () => {
+        this.child.myName()
+    }
+
+    render() {
+        return (
+            <div>
+                <Child onRef={this.onRef}/>
+                <button onClick={this.click}>click</button>
+            </div>
+        )
+    }
+}
+
+class Child extends Component {
+    componentDidMount() {
+        this.props.onRef(this)
+    }
+
+    myName = () => console.log('child log')
+
+    render() {
+        return (
+            <p>child</p>
+        )
+    }
+}
+```
+### useMemo
+记忆函数`useMemo`和`useCallback`也是靠闭包实现，记忆函数并非完全没有代价，我们需要创建闭包，占用更多的内存，用以解决计算上的冗余。
+
+`useMemo`缓存计算结果。它接收两个参数，第一个参数为计算过程(回调函数，必须返回一个结果)，第二个参数是依赖项(数组)，当依赖项中某一个发生变化，结果将会重新计算。
+如果没有提供依赖项数组，useMemo 在每次渲染时都会计算新的值；
+```typescript
+function useMemo<T>(factory: () => T, deps: DependencyList | undefined): T;
+```
+
+### useCallback
+
+useCallback的使用几乎与useMemo一样，不过useCallback缓存的是一个函数体，当依赖项中的一项发现变化，函数体会重新创建。
+
+1. 函数比较复杂，用`useCallback`避免重复创建同样方法的负担
+2. 当函数当做props传递给子组件时，可以使用`useCallback`，避免当父组件重新`render`时，重新创建发送导致子组件更新。
+
+```typescript
+function useCallback<T extends (...args: any[]) => any>(callback: T, deps: DependencyList): T;
+```
+
+![](./image/usecallback.png)
+
+### 优化总结
+
+React 的性能优化方向主要是两个：**一个是减少重新 render 的次数(或者说减少不必要的渲染)**，**另一个是减少计算的量。**
+
+一个组件重新重新渲染，一般三种情况：
+1. 要么是组件自己的状态改变
+2. 要么是父组件重新渲染，导致子组件重新渲染，但是父组件的 props 没有改版
+3. 要么是父组件重新渲染，导致子组件重新渲染，但是父组件传递的 props 改变
+
+减少不必要的渲染，可以使用`use.memo`和`useCallback`，或者之前的`shouldComponentUpdate`和`pureComponent`
+
+**`useMemo` 做计算结果缓存**

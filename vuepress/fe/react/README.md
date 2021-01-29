@@ -242,12 +242,19 @@ class NameForm extends React.Component {
 
 ### React.PureComponent与React.memo()
 
+一个组件重新重新渲染，一般三种情况：
+
+1. 要么是组件自己的状态改变
+2. 要么是父组件重新渲染，导致子组件重新渲染，但是父组件的 props 没有改版
+3. 要么是父组件重新渲染，导致子组件重新渲染，但是父组件传递的 props 改变
+
+
 React.PureComponent 中以浅层对比 prop 和 state 的方式来实现`shouldComponentUpdate(nextProps, nextState)`。仅作对象的浅层比较。如果对象中包含复杂的数据结构，则有可能因为无法检查深层的差别，产生错误的比对结果。
 
 其实就是默认实现了`shouldComponentUpdate`，可以判断是否重新渲染。而memo是对函数式组件的高阶运用。
 
 `React.memo` 仅检查 `props` 变更。如果函数组件被` React.memo `包裹，且其实现中拥有 `useState `或 `useContext` 的 Hook，当 context 发生变化时，它仍会重新渲染。
-默认情况下其只会对复杂对象做浅层对比，如果你想要控制对比过程，那么请将自定义的比较函数通过第二个参数传入来实现。
+默认情况下其只会对复杂对象做浅层对比，如果想要控制对比过程，那么可以将自定义的比较函数通过第二个参数传入来实现。
 ```jsx harmony
 function MyComponent(props) {
   /* 使用 props 渲染 */

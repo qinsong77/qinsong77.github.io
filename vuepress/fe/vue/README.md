@@ -1955,3 +1955,15 @@ const routes = [{
  - 借助函数来实现延迟执行子模块的加载代码；
 
 #### [Vue CLI 是如何实现的](http://axuebin.com/articles/fe-solution/cli/vuecli.html)
+
+### Vue组件name属性总结
+
+```vue
+export default {
+  name: 'xxx',
+  components: {}
+}
+```
+1. 当项目使用`keep-alive`时，可搭配组件`name`进行缓存过滤
+2. 递归组件时
+3. vue-devtools调试工具里显示的组件名称是由vue中组件name决定的
