@@ -365,6 +365,13 @@ console.log('Inside Global Execution Context');
 
 ### [this的指向](https://juejin.cn/post/6844904077818609678)
 > 在 ES5 中，其实 this 的指向，始终坚持一个原理：this 永远指向最后调用它的那个对象。[文章](https://juejin.im/post/6844903496253177863)
+
+
+函数中的 this: 在一个函数的执行上下文中， `this` 由该函数的调用者提供，由调用函数的方式来决定其指向 。
+如果调用者被某一个对象所拥有，那么在调用该函数时 ， 内部的 `this` 指向该对象。 如果调用
+者**函数独立调用**，那么该函数内部的 `this` 则指向 `undefined`。 但是在非严格模式中， 当 this 指向
+`undefined` 时，它会自动指向全局对象 。
+
 #### 改变 this 的指向的方法
 - 使用 ES6 的箭头函数
 - 在函数内部使用 _this = this
@@ -402,6 +409,25 @@ console.log(a()()()) // windows
 // 箭头函数其实是没有 this 的，这个函数中的 this 只取决于他外面的第一个不是箭头函数的函数的 this。在这个例子中，因为调用 a 符合前面代码中的第一个情况，所以 this 是 window。并且 this 一旦绑定了上下文，就不会被任何代码改变。
 ```
 
+```javascript
+'use strict';
+var a = 20;
+function foo () {
+    var a = 1;
+    var obj = {
+        a: 10,
+        c: this.a + 20
+    }
+    return obj.c;
+}
+console.log(window.foo()); // 20
+console.log(foo()); //报错 TypeError
+```
+对象字面量的写法并不会产生自己的作用域，因此 obj.c上的`this`属性并不会指向obj ，而是与foo函数内部的this一样。
+
+因此当使用 window.foo()调用时， foo 内部的 this 指向 window 对象，这个时候 this.a 则
+能访问到全局的 a 变量。 但是当 foo()独立调用时， foo 内部的 this 指向 undefined，严格模式中，因此并不会转向 window 对象， 此时执行代码会报错，`Uncaught TypeError:
+Cannot read property ’ a ’ of undefined` 。
 ```javascript
 var id = 10
 var obj = {

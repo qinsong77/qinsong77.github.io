@@ -13,6 +13,8 @@ title: LeetCode
   - [字符串相加](#字符串相加)
 - [4.二维数组翻转90度](#_4-n-x-n二维数组翻转90度)
 - [5.二叉树](#_5-二叉树)
+   - [二叉树的层序遍历](#二叉树的层序遍历)
+   - [二叉树的序列化与反序列化](#二叉树的序列化与反序列化)
    - [翻转二叉树](#翻转二叉树)
    - [填充每个节点的下一个右侧节点指针](#填充每个节点的下一个右侧节点指针)
    - [二叉树展开为链表](#二叉树展开为链表)
@@ -21,7 +23,9 @@ title: LeetCode
    - [从中序与后序遍历序列构造二叉树](#最大二叉树)
    - [寻找重复的子树](#寻找重复的子树)
 - [6.二叉搜索树](#_6-二叉搜索树)
-   - [翻转二叉树](#翻转二叉树)
+   - [二叉搜索树中第K小的元素](#二叉搜索树中第k小的元素)
+   - [把二叉搜索树转换为累加树](#把二叉搜索树转换为累加树)
+   - [判断BST的合法性](#判断bst的合法性)
 - [7.链表](#_6-链表)
    - [反转链表](#反转链表)
 - [8.最长递增子序列](#_7-最长递增子序列)
@@ -421,6 +425,7 @@ var rotate3 = function (matrix) {
 ```javascript
 /* 二叉树遍历框架 */
 function traverse(root) {
+    if (root == null) return;
     // 前序遍历
     traverse(root.left)
     // 中序遍历
@@ -428,6 +433,131 @@ function traverse(root) {
     // 后序遍历
 }
 ```
+中序遍历的非递归实现
+```javascript
+// https://leetcode-cn.com/problems/convert-bst-to-greater-tree/solution/shou-hua-tu-jie-zhong-xu-bian-li-fan-xiang-de-by-x/
+const inorderTraversal = (root) => {
+  const res = [];
+  const stack = [];
+
+  while (root) {        // 能压入栈的左子节点都压进来
+    stack.push(root);
+    root = root.left;
+  }
+  while (stack.length) {
+    let node = stack.pop(); // 栈顶的节点出栈
+    res.push(node.val);     // 在压入右子树之前，处理它的数值部分（因为中序遍历）
+    node = node.right;      // 获取它的右子树
+    while (node) {          // 右子树存在，执行while循环    
+      stack.push(node);     // 压入当前root
+      node = node.left;     // 不断压入左子节点
+    }
+  }
+  return res;
+};
+```
+
+### [二叉树的层序遍历](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/)
+```javascript
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val) {
+ *     this.val = val;
+ *     this.left = this.right = null;
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number[][]}
+ */
+var levelOrder = function(root) {
+    if(root == null) return []
+    let queue = [root]
+    const res = []
+    while(queue.length) {
+        const nodesLevels = []
+        const newQueue = []
+        queue.forEach(node => {
+            nodesLevels.push(node.val)
+            if (node.left) newQueue.push(node.left)
+            if (node.right) newQueue.push(node.right)
+        })
+        res.push(nodesLevels)
+        queue = newQueue
+    }
+    return res
+};
+```
+
+### [二叉树的序列化与反序列化](https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/)
+
+前序遍历法，后续遍历法差不多一样，而中序遍历的方式行不通，因为无法实现反序列化方法`deserialize`。
+```javascript
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val) {
+ *     this.val = val;
+ *     this.left = this.right = null;
+ * }
+ */
+
+/**
+ * Encodes a tree to a single string.
+ *
+ * @param {TreeNode} root
+ * @return {string}
+ */
+
+const splitStr = ','
+const nullStr = '#'
+
+var serialize = function(root) {
+    let res = ''
+    
+
+    function help(node) {
+        if(node === null) {
+            res = res  + nullStr + splitStr
+            return
+        }
+        res = res  + node.val + splitStr
+        help(node.left)
+        help(node.right)
+    }
+
+    help(root)
+
+    return res.slice(0, res.length - 1)  // 末尾多一个,
+};
+
+/**
+ * Decodes your encoded data to tree.
+ *
+ * @param {string} data
+ * @return {TreeNode}
+ */
+var deserialize = function(data) {
+    const nodes = data.split(splitStr)
+
+    function help(nodes) {
+        if (nodes.length === 0) return null
+        const node = nodes.shift()
+        if (node === nullStr) return null
+        const root = new TreeNode(parseInt(node))
+        root.left = help(nodes)
+        root.right = help(nodes)
+        return root
+    }
+
+    return help(nodes)
+};
+
+/**
+ * Your functions will be called as such:
+ * deserialize(serialize(root));
+ */
+```
+
 ### [翻转二叉树](https://leetcode-cn.com/problems/invert-binary-tree/)
 ![](./image/leetcode_tree/reverse_tree.png)
 ```javascript
@@ -628,9 +758,122 @@ var kthSmallest = function(root, k) {
     return res
 };
 ```
+迭代
+```javascript
+let kthSmallest = function(root, k) {
+    let stack = []
+    let node = root
+    
+    while(node || stack.length) {
+        // 遍历左子树
+        while(node) {
+            stack.push(node)
+            node = node.left
+        }
+      
+        node = stack.pop()
+        if(--k === 0) {
+            return node.val
+        }
+        node = node.right
+    }
+    return null
+}
+```
+
 #### [把二叉搜索树转换为累加树](https://leetcode-cn.com/problems/convert-bst-to-greater-tree/)
 
+```javascript
+var convertBST = function(root) {
+    let prevSum = 0
+    function help(node) {
+        if (node === null) return
+        help(node.right)
+        node.val = node.val + prevSum
+        prevSum = node.val
+        help(node.left)
+    }
+    help(root)
+    return root
+};
+```
 
+迭代版本
+```javascript
+var convertBST1 = function(root) {
+    if (root === null) return null
+    let prevSum = 0
+    let stack = []
+    let curr = root
+    while(curr) {
+        stack.push(curr)
+        curr = curr.right
+    }
+    while(stack.length) {
+        let node = stack.pop()
+        node.val = node.val + prevSum
+        prevSum = node.val
+        node = node.left
+        while(node) {
+            stack.push(node)
+            node = node.right
+        }
+    }
+    return root
+};
+
+const convertBST = (root) => {
+  let sum = 0;
+  let stack = [];
+  let cur = root;
+
+  while (cur) {  // 右子节点先不断压栈
+    stack.push(cur);
+    cur = cur.right;
+  }
+
+  while (stack.length) {  // 一直到清空递归栈
+    cur = stack.pop();    // 位于栈顶的节点出栈
+    sum += cur.val;       // 做事情
+    cur.val = sum;        // 做事情
+    cur = cur.left;       // 找左子节点
+    while (cur) {         // 存在，让左子节点压栈
+      stack.push(cur);    // 
+      cur = cur.right;    // 让当前左子节点的右子节点不断压栈
+    }
+  }
+
+  return root;
+};
+```
+
+#### [判断BST的合法性](https://mp.weixin.qq.com/s?__biz=MzAxODQxMDM0Mw==&mid=2247488128&idx=2&sn=b8fb3fd2917f9ac86127054741cd5877&chksm=9bd7ec88aca0659ee0185b657663169169493e9df2063fa4d28b38a0b4d0dd698d0301937898&scene=21#wechat_redirect)
+```javascript
+function isValidBST(root) {
+  /* 限定以 root 为根的子树节点必须满足 max.val > root.val > min.val */
+  function isValidBST(root, min, max) {
+    // base case
+    if (root === null) return true
+    // 若 root.val 不符合 max 和 min 的限制，说明不是合法 BST
+    if (min !== null && root.val <= min.val) return false
+    if (max !== null && root.val >= max.val) return false
+    return isValidBST(root.left, min, root) && isValidBST(root.right, root, max)
+  }
+
+  return isValidBST(root, null, null)
+}
+```
+
+#### 在BST中搜索一个数
+
+```javascript
+function isInBST(root, target) {
+  if (root === null) return true
+  if (root.val === target) return true
+  if (root.val > target) return isInBST(root.left, target)
+  if (root.val < target) return isInBST(root.right, target)
+}
+```
 
 ### 7.链表
 

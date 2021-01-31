@@ -29,7 +29,32 @@ ESLint 主要解决了两类问题,
 但其实 ESLint 主要解决的是代码质量问题。另外一类代码风格问题其实 `Airbnb JavaScript Style Guide` 并没有完完全全做完。
 `Prettier` 接管了两个问题其中的代码格式的问题，而使用 `Prettier + ESLint` 就完完全全解决了两个问题。
 
+3. husky: 一个让配置 `git hooks`(为了防止一些不规范的代码`commit` 并`push`到远端，可以在git命令执行前用一些钩子来检测并阻止。)变得更简单的工具；
+原理：husky会根据 package.json里的配置，在.git/hooks目录生成所有的 hook 脚本（如果你已经自定义了一个hook脚本，husky不会覆盖它）
 
+`.huskyrc`
+
+````config
+{
+  "hooks": {
+    "pre-commit": "lint-staged"
+  }
+}
+````
+
+4. lint-staged: lint-staged 针对暂存的 git 文件运行 linters，不要让不符合规则的代码溜进代码库。lint-staged总是将 所有暂存文件的列表传递给任务，忽略任何文件都应该在任务本身中配置，
+比如：`.prettierignore` / `.eslintignore` 。lint-stage 总是配合 husky一起使用。
+
+`.lintstagedrc`
+```cofgig
+{
+  "src/**/*.js": [
+    "eslint --fix",
+    "prettier --write",
+    "git add"
+  ]
+}
+```
 #### [Git Reset 三种模式](https://www.jianshu.com/p/c2ec5f06cf1a)
 
 ### [彻底理解服务端渲染 - SSR原理](https://github.com/yacan8/blog/issues/30)

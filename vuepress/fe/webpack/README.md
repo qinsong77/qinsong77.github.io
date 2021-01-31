@@ -231,6 +231,8 @@ Webpack 会为每个生成的 `Chunk` 取一个名称，`Chunk` 的名称和 `En
 - mini-css-extract-plugin：将 CSS 抽离出来单独打包并且通过配置可以设置是否压缩。
 - html-webpack-plugin：这个插件可以配置生成一个 HTML5 文件，其中 script 标签包含所有 Webpack 包。如果你设置多个入口点，你可以据此实现多页面应用打包。
 - webpack-bundle-analyzer：打包分析插件
+- speed-measure-webpack-plugin: 打包速度分析，**HardSourceWebpackPlugin 和 speed-measure-webpack-plugin 不能一起使用**
+- [hard-source-webpack-plugin](https://github.com/mzgoddard/hard-source-webpack-plugin)（Webpack 4 的打包性能足够好的，dll继续维护的必要了, HardSourceWebpackPlugin is a plugin for webpack to provide an intermediate caching step for modules. In order to see results, you'll need to run webpack twice with this plugin: the first build will take the normal amount of time. The second build will be significantly faster.)
 
 ### 热更新
 
@@ -347,3 +349,23 @@ module.exports = {
 chunks有三个选项：initial、async和all。它指示应该优先分离同步（initial）、异步（async）还是所有的代码模块。这里的异步指的是通过动态加载方式（import()）加载的模块。
 
 这里的重点是优先二字。以async为例，假如你有两个模块 a 和 b，两者都引用了 jQuery，但是 a 模块还通过动态加载的方式引入了 lodash。那么在 async 模式下，插件在打包时会分离出lodash~for~a.js的 chunk 模块，而 a 和 b 的公共模块 jQuery 并不会被（优化）分离出来，所以它可能还同时存在于打包后的a.bundle.js和b.bundle.js文件中。因为async告诉插件优先考虑的是动态加载的模块
+
+#### [webpack dll](https://www.cnblogs.com/skychx/p/webpack-dllplugin.html)
+
+### 项目中，你使用 webpack 做了哪些优化
+
+- 1. 使用 `happypack`（多进程模型）(它将任务分解给多个子进程去并发执行，子进程处理完后再将结果发给主进程。) 加速构建
+- 2. 使用异步import，减小包的体积，路由懒加载，使用webpackChunkName实现更好的分包
+- 3. 使用`html-webpack-externals-plugin`，公共库和UI库html cdn引入
+- 4. 使用`optimization.splitChunks`，实现更好的打包，如用`cacheGroups-async`, 实现css文件合并成一个等
+- 5. dll Plugin（把每次打包不需要变动的文件（一般类库，如:react,lodash）提前打包好，这样每次打包项目的时候，就不需要单独打包这些文件，从而节约了时间）
+- 6. babel-loader 的 cacheDirectory， `loader: 'babel-loader?cacheDirectory=true',`
+开发环境编译慢: 需要考虑怎么在开发环境做资源缓存，每一次改动代码，让 rebuild 检查的模块越少越快。
+
+- DllPlugin 把一些第三方库，不会改改动的通过 dll 处理，让每一次 rebuild 的时候跳过这些模块的编译。
+- `Happypack` 多进程打包，加快编译速度。
+`thread loader`（把这个 loader 放置在其他 loader 之前， 放置在这个 loader 之后的 loader 就会在一个单独的 worker【worker pool】 池里运行，一个worker 就是一个nodeJS 进程【node.js proces】，每个单独进程处理时间上限为600ms，各个进程的数据交换也会限制在这个时间内。）
+- Webpack 5 , 多级“缓存”提高运行效率
+
+- [关于webpack性能调优](https://zhuanlan.zhihu.com/p/150731200)
+- [vue模块化按需编译，突破编译瓶颈](https://zhuanlan.zhihu.com/p/137120584)

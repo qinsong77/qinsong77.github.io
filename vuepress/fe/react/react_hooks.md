@@ -878,6 +878,40 @@ class Child extends Component {
 ```typescript
 function useMemo<T>(factory: () => T, deps: DependencyList | undefined): T;
 ```
+example: base只会在第一次渲染时计算及运行`expensiveFn`, `state`变化重新render时，不会在运行，除非`useMemo`第二个参数没有或者，是`[num]`
+```typescript jsx
+import React, { useState, useMemo } from 'react'
+import { Divider, Button } from 'antd'
+
+export default function () {
+    const [num, setNum] = useState(0)
+
+    // 一个非常耗时的一个计算函数
+    // result 最后返回的值是 49995000
+    function expensiveFn() {
+        let result = 0
+
+        for (let i = 0; i < 10000; i++) {
+            result += i
+        }
+
+        console.log(result) // 49995000
+        return result
+    }
+
+    // const base = expensiveFn()
+
+    const base = useMemo(expensiveFn, [])
+
+    return (
+        <div>
+            <h3>example one</h3>
+            <h3>count：{num}</h3>
+            <Button onClick={() => setNum(num + base)}>+1</Button>
+        </div>
+    )
+}
+```
 
 ### useCallback
 

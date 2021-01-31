@@ -14,10 +14,3 @@ title: Summary of interview
  
 ### [优化总结](https://juejin.im/post/6892994632968306702)
 
-#### 项目中，你使用 webpack 做了哪些优化
-
-- 1. 使用 `happypack` 加速构建
-- 2. 使用异步import，减小包的体积，路由懒加载，使用webpackChunkName实现更好的分包
-- 3. 使用`html-webpack-externals-plugin`，公共库和UI库html cdn引入
-- 4. 使用`optimization.splitChunks`，实现更好的打包，如用`cacheGroups-async`, 实现css文件合并成一个等
-- 5. dll Plugin（把每次打包不需要变动的文件（一般类库，如:react,lodash）提前打包好，这样每次打包项目的时候，就不需要单独打包这些文件，从而节约了时间）

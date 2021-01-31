@@ -144,6 +144,52 @@ if(1){
     - 1、一旦声明必须赋值,不能使用null占位。
     - 2、声明后不能再修改
     - 3、如果声明的是复合类型数据，可以修改其属性
+    
+变量提升和函数声明覆盖
+
+函数声明的执行优先级会比变量声明的优先级更高一点， 而且同名的函数会覆盖函数与变量，但是同名的变量并不会覆盖函数。但是在上下文的执行阶段，同名的函数会被变量重新赋值。
+```javascript
+var a = 20
+function fn() {
+  console.log('fn')
+}
+function fn() {
+  console.log('cover fn')
+}
+function a() {
+  console.log('cover a')
+}
+console.log(a)
+fn()
+
+var fn = 'I want cover function name fn.'
+console.log(fn)
+// 20
+// cover fn
+// I want cover function name fn.
+```
+上面例子的执行顺序其实为 ：
+```javascript
+// 创建阶段
+function fn() {console.log('fn')}
+function fn() {console.log('cover fn')}
+function a() {console.log('cover a')}
+var a = undefined;
+var fn = undefined;
+// 执行阶段
+a = 20;
+console.log(a);
+fn();
+fn = 'I want cover function name fn.'
+console . log(fn);
+```
+函数声明后面的会覆盖之前的同名声明。而当声明变量也是`fn`时，不会覆盖函数
+```javascript
+fn(); // 报错
+var fn = function() {
+    console.log('function');
+}
+```
 
 #### instanceof 运算符用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上
 语法

@@ -308,6 +308,66 @@ alert( curriedSum(1)(2,3) ); // 6，对第一个参数的柯里化
 alert( curriedSum(1)(2)(3) ); // 6，全柯里化
 ```
 
+#### 运用example
+调用多次的操作是将数组的每一项都转化为百分比 1 --> 100%。
+
+普通思维下封装
+```javascript
+function getNewArray(array) {
+    return array.map(function(item) {
+        return item * 100 + '%'
+    })
+}
+
+getNewArray([1, 2, 3, 0.12]);   // ['100%', '200%', '300%', '12%'];
+```
+函数柯里化
+```javascript
+function _map(arr, fn) {
+  return arr.map(fn)
+}
+
+const _getNewArray = curry(_map)
+
+const getNewArray = _getNewArray(function(item) {
+    return item * 100 + '%'
+})
+
+```
+对数组进行一个过滤，找出数组中的所有Number类型的数据
+
+```javascript
+function _filter(func, array) {
+    return array.filter(func);
+}
+
+const _find = curry(_filter);
+
+const findNumber = _find(function(item) {
+    if (typeof item == 'number') {
+        return item;
+    }
+})
+
+findNumber([1, 2, 3, '2', '3', 4]); // [1, 2, 3, 4]
+
+// 当继续封装另外的过滤操作时就会变得非常简单
+// 找出数字为20的子项
+const find20 = _find(function(item, i) {
+    if (item === 20) {
+        return i;
+    }
+})
+find20([1, 2, 3, 30, 20, 100]);  // 4
+
+// 找出数组中大于100的所有数据
+const findGreater100 = _find(function(item) {
+    if (item > 100) {
+        return item;
+    }
+})
+findGreater100([1, 2, 101, 300, 2, 122]); // [101, 300, 122]
+```
 ### 组合函数的实现
 
 ```javascript
@@ -1218,6 +1278,9 @@ const REJECTED = 'REJECTED'
 
 class Promise {
 	constructor(executor){
+        if (typeof executor !== 'function') {
+              throw new Error('Promise must accept a function as a parameter')
+            }
 		this.status = PENDING
 		this.value = undefined
 		this.reason = undefined
