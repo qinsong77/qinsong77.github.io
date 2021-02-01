@@ -11,6 +11,7 @@ title: React
 
 [2021年React学习路线图](https://mp.weixin.qq.com/s?__biz=MzUxMzcxMzE5Ng==&mid=2247505750&idx=2&sn=a31164ddf69f49e3761d2a6d660cf316&chksm=f9526215ce25eb031cbb1f8e0137b3fb3e30f6305fb183f028ab12419699695173b51c44b49d&scene=132#wechat_redirect)
 
+[Build your own React](https://pomb.us/build-your-own-react/)
 
 `npx create-react-app my-app --typescript` => `--typescript`被弃用，使用`--template typescript`
 ## 概述
@@ -29,6 +30,9 @@ React采用自上而下单向数据流的方式，管理自身的数据与状态
 在class组件中，组件重新渲染，是执行render方法。
 
 **而在函数式组件中，是整个函数重新执行。**
+
+### [React16的组件类型](https://zhuanlan.zhihu.com/p/55000793)
+
 ### 函数式组件
 
 函数式组件与普通的函数几乎完全一样。只不过函数执行完毕时，返回的是一个JSX结构。

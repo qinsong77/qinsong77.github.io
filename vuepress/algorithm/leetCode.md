@@ -22,6 +22,7 @@ title: LeetCode
    - [从前序与中序遍历序列构造二叉树](#最大二叉树)
    - [从中序与后序遍历序列构造二叉树](#最大二叉树)
    - [寻找重复的子树](#寻找重复的子树)
+   - [求二叉树中最大路径和](#求二叉树中最大路径和)
 - [6.二叉搜索树](#_6-二叉搜索树)
    - [二叉搜索树中第K小的元素](#二叉搜索树中第k小的元素)
    - [把二叉搜索树转换为累加树](#把二叉搜索树转换为累加树)
@@ -29,6 +30,8 @@ title: LeetCode
 - [7.链表](#_6-链表)
    - [反转链表](#反转链表)
 - [8.最长递增子序列](#_7-最长递增子序列)
+- [9.数组](#_9-数组)
+ - [连续子数组的最大和](#连续子数组的最大和)
 
 获取26个字母
 ```javascript
@@ -714,6 +717,23 @@ var findDuplicateSubtrees = function(root) {
 
 ```
 
+#### [求二叉树中最大路径和](https://leetcode-cn.com/problems/binary-tree-maximum-path-sum/)
+
+```javascript
+var maxPathSum = function(root) {
+    let res = -Infinity
+    function help(node) {
+        if (node === null) return 0
+        let left = Math.max(0, help(node.left))
+        let right = Math.max(0, help(node.right))
+        res = Math.max(res, left + right + node.val)
+        return Math.max(left, right) + node.val
+    }
+    help(root)
+    return res
+};
+```
+
 ### 6.二叉搜索树
 
 BST(Binary Search Tree) 的特性
@@ -918,3 +938,38 @@ var lengthOfLIS = function(nums) {
 ```
 
 #### [扑克牌中的顺子](https://leetcode-cn.com/problems/bu-ke-pai-zhong-de-shun-zi-lcof/)
+
+## 9.数组
+
+### [连续子数组的最大和](https://leetcode-cn.com/problems/lian-xu-zi-shu-zu-de-zui-da-he-lcof/)
+暴力求解：时间复杂度O(n^2),空间复杂度O(1)
+```javascript
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var maxSubArray = function(nums) {
+    var max = -Infinity
+    for(let i = 0; i < nums.length; i++) {
+        max = Math.max(max, nums[i])
+        let prev = nums[i]
+        for (let j = i + 1; j < nums.length; j++) {
+            prev = prev + nums[j]
+            max = Math.max(max, prev)
+        }
+    }
+    return max
+};
+```
+动态规划: 连续数组，每次循环包括自身，比较自身和i-1的最大连续数组和，得到i的最大连续数组和
+```javascript
+// https://leetcode-cn.com/problems/lian-xu-zi-shu-zu-de-zui-da-he-lcof/solution/mian-shi-ti-42-lian-xu-zi-shu-zu-de-zui-da-he-do-2/
+var maxSubArray = function(nums) {
+    let max = nums[0]
+    for(let i = 1; i < nums.length; i++) {
+        nums[i] = Math.max(nums[i], nums[i] + nums[i-1])
+        max = Math.max(nums[i], max)
+    }
+    return max
+};
+```
