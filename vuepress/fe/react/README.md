@@ -64,6 +64,113 @@ export default Demo;
 
 - 3. **没有this。那么也就意味着，之前在class中由于this带来的困扰就自然消失了。**
 
+[React是怎么分辨class或者function 组件的](https://juejin.cn/post/6844903735412391944): 
+
+```jsx harmony
+// 类组件
+class Greeting extends React.Component {
+  render() {
+    return <p>Hello</p>;
+  }
+}
+// 函数式组件
+function Greeting() {
+  return <p>Hello</p>;
+}
+// 调用
+// Class or function — whatever.
+<Greeting />
+// 但在react内部
+// Inside React
+const result = Greeting(props); // <p>Hello</p>
+// Inside React
+const instance = new Greeting(props); // Greeting {}
+const result = instance.render(); // <p>Hello</p>
+```
+**函数组件之间运行，而类组件需要`new`实例化**， 所以函数组件没有`this`，应用是独立调用的，而`new`会强制绑定`this`
+
+实际上React对基础的组件也就是**`React.Component`添加了一个标记**，并通过这个标记来区分一个组件是否是一个类组件。
+
+```js
+// Inside React
+class Component {}
+Component.prototype.isReactComponent = {};
+
+// We can check it like this
+class Greeting extends Component {}
+console.log(Greeting.prototype.isReactComponent); // ✅ Yes
+```
+
+#### JSX简介
+
+JSX在编译时会被`Babel`编译为`React.createElement`方法。
+
+`React.createElement`最终会调用`ReactElement`方法返回一个包含组件数据的对象，该对象有个参数`$$typeof: REACT_ELEMENT_TYPE`标记了该对象是个`React Element`。
+
+```js
+export function createElement(type, config, children) {
+  let propName;
+
+  const props = {};
+
+  let key = null;
+  let ref = null;
+  let self = null;
+  let source = null;
+
+  if (config != null) {
+    // 将 config 处理后赋值给 props
+    // ...省略
+  }
+
+  const childrenLength = arguments.length - 2;
+  // 处理 children，会被赋值给props.children
+  // ...省略
+
+  // 处理 defaultProps
+  // ...省略
+
+  return ReactElement(
+    type,
+    key,
+    ref,
+    self,
+    source,
+    ReactCurrentOwner.current,
+    props,
+  );
+}
+
+const ReactElement = function(type, key, ref, self, source, owner, props) {
+  const element = {
+    // 标记这是个 React Element
+    $$typeof: REACT_ELEMENT_TYPE,
+
+    type: type,
+    key: key,
+    ref: ref,
+    props: props,
+    _owner: owner,
+  };
+
+  return element;
+};
+```
+
+React提供了验证合法React Element的全局API`React.isValidElement`
+
+```js
+export function isValidElement(object) {
+  return (
+    typeof object === 'object' &&
+    object !== null &&
+    object.$$typeof === REACT_ELEMENT_TYPE
+  );
+}
+```
+可以看到，`$$typeof === REACT_ELEMENT_TYPE`的非null对象就是一个合法的`React Element`。换言之，在React中，所有JSX在运行时的返回结果（即`React.createElement()`的返回值）都是`React Element`。
+
+
 ## [生命周期](https://zh-hans.reactjs.org/docs/react-component.html)
 
 ## React16.3.0之前生命周期:
