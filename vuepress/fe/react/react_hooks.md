@@ -420,6 +420,13 @@ clear: xx -- 组件销毁时
 第一次渲染是打印render,并且执行副作用函数, 打印effect，并且返回清楚副作用的函数clear, **3秒后**打印setCounter，执行`setCounter`，
 组件重新渲染，打印render，渲染完成后执行上一次的clear，接着执行副作用函数，一直循环，直到销毁时执行clear函数。
 
+### useLayoutEffect
+
+会在所有的 `DOM` 变更之后**同步**调用 effect。可以使用它来读取 DOM 布局并**同步触发重渲染**。**在浏览器执行绘制之前**，useLayoutEffect 内部的更新计划将被同步刷新。这是和`useEffect`唯一的区别。
+
+1. `useLayoutEffec`t和`componentDidMount`和`componentDidUpdate`触发时机一致（都在在DOM修改后且浏览器渲染之前）；
+2. `useLayoutEffec`t要比`useEffect`更早的触发执行；
+3. `useLayoutEffect`会阻塞浏览器渲染，切记执行同步的耗时操作。
 
 ### 自定义Hooks
 自定义hooks都会以`use`开头，以表示该方法**只能在函数式组件中使用**。感觉就是对原有函数组件中依赖于state的逻辑的抽离

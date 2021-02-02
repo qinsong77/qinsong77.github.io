@@ -82,6 +82,7 @@ module.exports = {
 					children: [
 						['vue/', '原理'],
 						'vue/alwaysNote',
+						'vue/vue3',
 					]
 				},
 				{
@@ -124,7 +125,8 @@ module.exports = {
 					collapsable: false, // 可选的, 默认值是 true,
 					// sidebarDepth: 2,    // 可选的, 默认值是 1
 					children: [
-						['webpack/', 'Summary']
+						['webpack/', 'Summary'],
+						'webpack/webpack5',
 					]
 				},
 				{

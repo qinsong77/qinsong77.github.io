@@ -607,6 +607,60 @@ function deepClone2(data, hashMap = new WeakMap()) {
 发布订阅模式与观察者模式最大的区别在于发布订阅模式有一个第三方存在，成为代理或者事件总线。发布者与订阅者分别和这个代理交互，他们彼此不知道对方的存在也不需要，发布者发布消息通知代理，订阅者去代理那订阅。
 观察者模式则可以直接交流，一方发生变化直接通知另一方。
 
+观察者模式
+
+观察者模式，它定义了一种 一对多 的关系，让多个观察者对象同时监听某一个主题对象，这个主题对象的状态发生变化时就会通知所有的观察者对象，使得它们能够自动更新自己。在观察者模式中有两个主要角色：Subject（主题）和 Observer（观察者）。
+
+![](./image/achieve/observe-model.png)
+```typescript
+interface Observer {
+  notify: Function;
+}
+
+class ConcreteObserver implements Observer{
+  constructor(private name: string) {}
+  notify() {
+    console.log(`${this.name} has been notified.`);
+  }
+}
+
+class Subject { 
+  private observers: Observer[] = [];
+
+  public addObserver(observer: Observer): void {
+    this.observers.push(observer);
+  }
+
+  public notifyObservers(): void {
+    console.log("notify all the observers");
+    this.observers.forEach(observer => observer.notify());
+  }
+}
+// 使用
+
+// 1. 创建主题对象
+const subject: Subject = new Subject();
+
+// 2. 添加观察者
+const observerA = new ConcreteObserver("ObserverA");
+const observerC = new ConcreteObserver("ObserverC");
+subject.addObserver(observerA); 
+subject.addObserver(observerC);
+
+// 3. 通知所有观察者
+subject.notifyObservers();
+
+// notify all the observers
+// ObserverA has been notified.
+// ObserverC has been notified.
+
+```
+Vue响应式原理就是基于此，实现了1.创建主题对象、2.添加观察者、3.通知观察者 这三个步骤实现自动化，这就是实现响应式的核心思路。
+
+![]()
+
+发布订阅
+
 核心思路是：
 
  - 使用一个对象作为缓存

@@ -8,6 +8,8 @@ title: 1px及相关概念
 
 [JS Bridge 通信原理](https://mp.weixin.qq.com/s?__biz=MzA5NzkwNDk3MQ==&mid=2650596088&idx=1&sn=f7e83721338f13ae7d997439e073f306&chksm=8891f2dcbfe67bca758277adc959055e7ed29f914031ebca1cf184bcfc100a1c808ef724cfb9&mpshare=1&scene=23&srcid=0121TToDcL3JkEH4ZbCHgTIl&sharer_sharetime=1611235708543&sharer_shareid=1958dfa2b35b63c7a7463d11712f39df#rd)
 
+[40条移动端H5坑位指南](https://juejin.cn/post/6921886428158754829)
+
 ## 1px问题
 
 [文章](https://juejin.cn/post/6896713964848152589)
