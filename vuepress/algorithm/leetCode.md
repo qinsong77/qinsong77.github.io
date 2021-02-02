@@ -11,6 +11,9 @@ title: LeetCode
   - [最长公共前缀](#最长公共前缀)
   - [翻转字符串里的单词](#翻转字符串里的单词)
   - [字符串相加](#字符串相加)
+  - [字符串相加](#字符串相加)
+  - [字符串相乘](#字符串相乘)
+  - [替换后的最长重复字符](#替换后的最长重复字符)
 - [4.二维数组翻转90度](#_4-n-x-n二维数组翻转90度)
 - [5.二叉树](#_5-二叉树)
    - [二叉树的层序遍历](#二叉树的层序遍历)
@@ -329,6 +332,12 @@ let multiply = function(num1, num2) {
 }
 ```
 ::: 
+
+#### [替换后的最长重复字符](https://leetcode-cn.com/problems/longest-repeating-character-replacement/)
+
+````javascript
+
+````
     
 #### [4.N x N二维数组翻转90度](https://leetcode-cn.com/problems/rotate-image)
 ```dotenv

@@ -227,6 +227,7 @@ Session Identifier 机制有一些弊端，例如：
 
 而 Session Ticket（会话记录单）可以解决这些问题，Session Ticket 是用只有服务端知道的安全密钥加密过的会话信息，最终保存在浏览器端。浏览器如果在 ClientHello 时带上了 Session Ticket，只要服务器能成功解密就可以完成快速握手。
 
+[优化 HTTPS 的手段](https://mp.weixin.qq.com/s?__biz=MzUxODAzNDg4NQ==&mid=2247488081&idx=1&sn=a285752b4b1516830ba1f549323d3580&chksm=f98e56fbcef9dfedcfe006a920722a52bd865f0c1211ba8449cc55b32a7de2df1ddd88a25fb7&scene=132#wechat_redirect)
 ## 相关链接
 
 - [一个故事讲完 HTTPS](https://mp.weixin.qq.com/s/StqqafHePlBkWAPQZg3NrA)
