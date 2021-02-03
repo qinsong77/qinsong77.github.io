@@ -5,6 +5,8 @@ title: React Hooks
 [React Hooks 原理](https://github.com/brickspert/blog/issues/26)
 
 [React Hooks 导读](https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzI4NjE3MzQzNg==&action=getalbum&album_id=1490474787792617475&scene=173)
+
+[React Hooks完全上手指南](https://zhuanlan.zhihu.com/p/92211533)
 ## 一、什么是 Hooks
 **有状态的函数式组件。**
 - React认为，UI视图是数据的一种视觉映射，即`UI = F(DATA)`，这里的F需要负责对输入数据进行加工、并对数据的变更做出响应
@@ -38,7 +40,8 @@ Render Props：
 
 
 - this 指向问题：父组件给子组件传递函数时，必须绑定 `this`，react 中的组件四种绑定 `this` 方法的区别
-
+- webpack编译后class的size要比function组件大，性能也没function好（Function Component编译后就是一个普通的function，function对js引擎是友好的）
+- Function Component是纯函数，利于组件复用和测试
 ## Hooks 优势
 
 - 能优化类组件的三大问题

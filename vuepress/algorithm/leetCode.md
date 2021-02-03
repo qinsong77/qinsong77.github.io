@@ -35,6 +35,7 @@ title: LeetCode
 - [8.最长递增子序列](#_7-最长递增子序列)
 - [9.数组](#_9-数组)
  - [连续子数组的最大和](#连续子数组的最大和)
+ - [全排列](#全排列)
 
 获取26个字母
 ```javascript
@@ -980,5 +981,34 @@ var maxSubArray = function(nums) {
         max = Math.max(nums[i], max)
     }
     return max
+};
+```
+### [全排列](https://leetcode-cn.com/problems/permutations/)
+回溯算法
+```javascript
+/**
+ * @param {number[]} nums
+ * @return {number[][]}
+ */
+
+var permute = function(nums) {
+    const res = []
+    backtrack([])
+
+    function backtrack(track) {
+        if (track.length === nums.length) {
+            res.push([...track])
+            return
+        }
+
+        for (let i = 0; i < nums.length; i++) {
+            if (track.includes(nums[i])) continue
+            track.push(nums[i])
+            backtrack(track)
+            track.pop()
+        }
+    }
+
+    return res
 };
 ```

@@ -5,6 +5,8 @@ title: React
 
 [React技术揭秘](https://react.iamkasong.com/)
 
+[React 是如何工作的](https://mp.weixin.qq.com/s/ifLP36rFhYJsU2RCAi7OZQ)
+
 [图解React](http://www.7km.top/)
 
 [react+typescript](https://github.com/typescript-cheatsheets/react)
@@ -396,7 +398,12 @@ class Child extends React.PureComponent {
 }
 ```
 
+
+
 ### 高阶组件
+
+好文章-[React新特性Hooks使用教学，以及与高阶组件、renderProps模式的对比](https://blog.csdn.net/qq_40962320/article/details/87043581)
+
 高阶组件是参数为组件，返回值为新组件的函数。组件是将 props 转换为 UI，而高阶组件是将组件转换为另一个组件。
 
 HOC 是纯函数，没有副作用。
@@ -442,10 +449,96 @@ const App2= withMouse(({ x, y }) => {
 
 问题: 
 
+- 嵌套地狱，每一次HOC调用都会产生一个组件实例
+- 可以使用类装饰器缓解组件嵌套带来的可维护性问题(链式调用的时候嵌套太多)，但装饰器本质上还是HOC
+- 包裹太多层级之后，可能会带来props属性的覆盖问题
+
 当嵌套使用多个高阶组件时，在代码中无法识别props中的参数，是哪里来的。并且当参数命名重复时一样无法解决。因此高阶组件在使用时会非常小心，以至于在很多场景下，我们放弃共同逻辑片段的封装，因为这会很容易造成滥用。
 
-#### render props
 
+example
+````jsx harmony
+import React from 'react'
+import { Button } from 'antd'
+import GetRandomColor from './util'
+
+// 属性被写死了。如果子组件需求的属性名写得不一样，高阶组件就无能为力了 =》可以用es6解构重命名解决的样子
+function Count({ count: newCount, add, minus, theme, changeTheme }) {
+    return (
+        <div
+            style={{
+                backgroundColor: theme,
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 10
+            }}
+        >
+            <p>You clicked {newCount} times</p>
+            <Button onClick={add}>add</Button>
+            <Button onClick={minus}>minus</Button>
+            <Button onClick={changeTheme}>changeTheme</Button>
+        </div>
+    )
+}
+
+const countNumber = (initNumber) => (WrappedComponent) =>
+    class CountNumber extends React.Component {
+        state = { count: initNumber }
+
+        // eslint-disable-next-line no-invalid-this
+        add = () => this.setState({ count: this.state.count + 1 })
+
+        // eslint-disable-next-line no-invalid-this
+        minus = () => this.setState({ count: this.state.count - 1 })
+
+        render() {
+            return (
+                <WrappedComponent
+                    {...this.props}
+                    count={this.state.count}
+                    add={this.add}
+                    minus={this.minus}
+                />
+            )
+        }
+    }
+
+const changeTheme = (initColor) => (WrappedComponent) => {
+    class ChangeTheme extends React.Component {
+        state = {
+            theme: initColor
+        }
+        changeTheme = () => this.setState({ theme: GetRandomColor() })
+
+        render() {
+            return (
+                <WrappedComponent
+                    {...this.props}
+                    theme={this.state.theme}
+                    changeTheme={this.changeTheme.bind(this)}
+                />
+            )
+        }
+    }
+    
+    // 高阶组件会创造一个新的组件，当程序报错的时候，出现在异常信息里的会是这个新创建的组件而不是原本的无状态组件——想想在几十个地方都调用了这个高阶组件的时候，该如何知道错误在哪里？
+       
+   //解决这个问题的方法是给高阶组件设置displayName
+    ChangeTheme.displayName = `changeTheme(${
+        WrappedComponent.displayName || WrappedComponent.name || 'Component'
+    })`
+    return ChangeTheme
+}
+
+export default changeTheme('white')(countNumber(0)(Count)) // 链式调用
+````
+
+
+#### render props
+具有 `render prop` 的组件接受一个函数，该函数返回一个 React 元素并调用它而不是实现自己的渲染逻辑。
+
+其实就是`props`设置一个属性是函数，这个函数是个函数子组件，调用时把定义的组件的`state`，通过props传参给这个函数子组件，所以不一定没要取名为`render props`
 ```typescript jsx
 import React from 'react'
 
@@ -485,13 +578,109 @@ export default function () {
     )
 }
 ```
+
+相对高阶组件的优点：
+- 不用担心props的命名冲突的问题
+- 可以溯源，子组件的props一定来自父组件。
+- 是动态构建的，页面在渲染后，可以动态地决定渲染哪个组件。
+- 所有能用HOC完成的事情，Render Props都可以做，且更加灵活。
+- 除了功能复用，还可以用作两个组件的单向数据传递。
+
 `render props`解决了来源问题，同时也避免了命名冲突。
+
+- 数据流向更直观了，子孙组件可以很明确地看到数据来源
+- 但本质上`Render Props`是基于闭包实现的(传入的props是父组件的state)，大量地用于组件的复用将不可避免地引入了`callback hell`问题
+- ender比高阶组件更为强大，但是也有一个小小的缺点，就是难以优化。因为组件内部是一个匿名函数，这就导致即便传入的属性没有任何变化，内部的子组件还是会整个渲染一遍。解决方法就是将该匿名函数再次包装，不过每次都这样做终究还是比较麻烦的。
+
 
 问题
 
 1. 可读性不高，直观上比较别扭。我们可以在Mouse组件中处理很多额外逻辑，甚至定义更多的交互样式。因此使用时会造成一些困扰。
 2. 存在局限性。我们期望的是能够切割逻辑片段，render props最终仍然是组件化思维的扩展运用
 
+example
+```jsx harmony
+import React from 'react'
+import { Button } from 'antd'
+import GetRandomColor from './util'
+
+// call back hell
+export default function Example() {
+    return (
+        <ChangeTheme
+            initColor='white'
+            render={({ theme, changeTheme }) => (
+                <div
+                    style={{
+                        backgroundColor: theme,
+                        flex: 1,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: 10
+                    }}
+                >
+                    <CountNumber initNumber={0}>
+                        {({ count, add, minus }) => (
+                            <>
+                                <p>You clicked {count} times</p>
+                                <Button onClick={add}>add</Button>
+                                <Button onClick={minus}>minus</Button>
+                                <Button onClick={changeTheme}>change Theme</Button>
+                            </>
+                        )}
+                    </CountNumber>
+                </div>
+            )}
+        >
+            <p>this is props children content</p>
+        </ChangeTheme>
+    )
+}
+
+class CountNumber extends React.Component {
+    constructor(props) {
+        super(props)
+        console.log(props)
+    }
+    // eslint-disable-next-line no-invalid-this
+    state = { count: this.props.initNumber }
+    // eslint-disable-next-line no-invalid-this
+    add = () => this.setState({ count: this.state.count + 1 })
+    // eslint-disable-next-line no-invalid-this
+    minus = () => this.setState({ count: this.state.count - 1 })
+
+    render() {
+        return this.props.children({
+            count: this.state.count,
+            add: this.add,
+            minus: this.minus
+        })
+    }
+}
+
+class ChangeTheme extends React.Component {
+    state = {
+        theme: this.props.initColor
+    }
+    changeTheme = () => {
+        this.setState({
+            theme: GetRandomColor()
+        })
+    }
+    render() {
+        return (
+            <div>
+                {this.props.children}
+                <p>this is props render content</p>
+                {this.props.render({
+                    theme: this.state.theme,
+                    changeTheme: this.changeTheme
+                })}
+            </div>
+        )
+    }
+}
+```
 
 ## Diff算法
 
