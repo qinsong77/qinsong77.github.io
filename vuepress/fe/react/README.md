@@ -14,6 +14,8 @@ title: React
 [Build your own React](https://pomb.us/build-your-own-react/)
 
 `npx create-react-app my-app --typescript` => `--typescript`被弃用，使用`--template typescript`
+
+
 ## 概述
 
 React用于构建用户界面的 JavaScript 库
@@ -489,3 +491,43 @@ export default function () {
 
 1. 可读性不高，直观上比较别扭。我们可以在Mouse组件中处理很多额外逻辑，甚至定义更多的交互样式。因此使用时会造成一些困扰。
 2. 存在局限性。我们期望的是能够切割逻辑片段，render props最终仍然是组件化思维的扩展运用
+
+
+## Diff算法
+
+如何将传统O(n^3)Diff算法的时间复杂度降为O(n)
+
+```cvs
+Diff算法 => O(n^3) => 将两个DOM树的所有节点两两对比，时间复杂度 O(n^2)
+      prev                   last   
+
+       A                         A
+     /   \                     /   \
+    D    B         =>         B     D
+  /                                  \
+ C                                    C
+
+  所有节点两两相互对比：
+  pA => lA
+  pA => lB
+  pA => lD
+  pA => lC
+  ...
+  pC => lC
+
+再进行树的编辑(插入、替换、删除)需要遍历一次，因此时间复杂度为 O(n^3)
+```
+React 在以下两个假设的基础之上提出了一套 O(n) 的启发式算法：
+
+1. 两个不同类型的元素会产生出不同的树；
+2. 开发者可以通过 `key prop` 来暗示哪些子元素在不同的渲染下能保持稳定；
+
+O(n^3)=> O(n) => 简单粗暴，所有的节点按层级比较，只会遍历一次
+```cvs
+按叶子节点位置比较
+ [0,0]           :  pA => lA      #相同，不理会
+ [0.0,0.0]       :  pD => lB      #不同，删除pD，添加lB
+ [0.1,0.1]      :  pB => lD      #不同，删除pB，添加lD
+ [0.1.0,0.1.0]  :  pC => Null   #last树没有该节点，直接删除pC
+ [0.1.2,0.1.2]  :  Null => lC    #prev树没有该节点，添加lC到该位置
+```
