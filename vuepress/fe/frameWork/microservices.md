@@ -202,6 +202,12 @@ UMD会先判断是否支持Node.js的模块（export)是不是存在。存在则
     由于是要私有化部署，没有CDN，选择了再主应用中安装UI库包（主应用没有使用UI框架），使用copy-webpack-plugin插件，复制js,css文件到static文件夹,
     如下配置，但css中字体文件路径有问题，需要处理，选择在构建完后添加glup处理，如下
     `"build:one": "vue-cli-service build --mode one && gulp --gulpfile cdn-adaptor.js",`
+
+三种思路解决
+1. 通过gulp
+2. 通过`copy-webpack-plugin`(5.1.2)，配置属性transform转换文件
+3. 通过webpack 插件    
+
 ##### cdn-adaptor.js
 ```javascript
 const gulp = require('gulp');
@@ -234,7 +240,55 @@ gulp.task('css', function(cb) {
 gulp.task('default', gulp.parallel('css'));
 ```
     
+2. copy-webpack-plugin配置
+```js
+new Copy([
+        {
+          from: path.resolve(__dirname, 'node_modules/@cmiot/one-ui/dist'),
+          to: 'static/one-ui',
+          ignore: ['.*'],
+          cache: true,
+          transform(content, path) {
+            if (path.indexOf('styles/one-ui.css') > -1) {
+              let str = content
+                .toString()
+                .replace(/fonts\/ionicons/g, `/ops/static/one-ui/styles/fonts/ionicons`);
+              return Buffer.from(str);
+            }
+            return content
+          }
+        }])
+```
+3. webpack 插件
+```js
+class CdnAdaptorPlugin {
+	// 将 `apply` 定义为其原型方法，此方法以 compiler 作为参数
+	apply(compiler) {
+		// 指定要附加到的事件钩子函数
+		compiler.hooks.emit.tapAsync('FileListPlugin', (compilation, callback) => {
+			const key = 'static/one-ui/styles/one-ui.css'
+			const src = compilation.assets[key]
+			const str = src.source()
+				.toString()
+				.replace(/fonts\/ionicons/g, `/ops/static/one-ui/styles/fonts/ionicons`);
+			const content = Buffer.from(str);
+			console.log(content)
+			compilation.assets[key] = Object.assign(compilation.assets[key],{
+				source: function() {
+					return content;
+				},
+				size: function() {
+					return content.length;
+				}
+			})
+			callback()
+		});
+	}
+}
 
+module.exports = CdnAdaptorPlugin
+
+```
 
 #### 主应用vue.config.jg
 

@@ -321,6 +321,8 @@ export default function App({value, maxLength}: Props) {
 
 写一个非受控组件，而不是为每个状态更新都编写数据处理函数，使用 `ref` 来从 `DOM`节点中获取表单数据。
 
+如input是file类型的，它的value是只取的，所以它是 React 中的一个非受控组件
+
 ```jsx harmony
 class NameForm extends React.Component {
   constructor(props) {

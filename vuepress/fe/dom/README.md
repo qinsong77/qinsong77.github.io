@@ -335,6 +335,14 @@ el.addEventListener(
 
 `this === e.target` 有可能不是true
 
+
+#### oninput和onchange区别
+
+- oninput事件在元素值发送变化是立即触发
+- onchange在元素失去焦点时触发（当失去焦点时，修改属性值，则无法触发此事件）
+
+react 把两者视为一样的了
+
 ### [跨域](https://juejin.im/post/6844904126246027278)
 因为浏览器出于安全考虑，有同源策略。也就是说，如果协议、域名或者端口有一个不同就是跨域，Ajax 请求会失败。
 

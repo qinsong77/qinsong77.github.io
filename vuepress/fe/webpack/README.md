@@ -331,6 +331,21 @@ module.exports = {
 - automaticNameDelimiter：抽取出来的文件的自动生成名字的分割符，默认为 ~；
 - name：抽取出来文件的名字，默认为 true，表示自动生成文件名；
 - cacheGroups: 缓存组。（这才是配置的关键）
+
+#### 配置css文件压缩成一个
+```js
+    config.optimization.splitChunks({
+      cacheGroups: {
+        // 将动态引入的css合并成一个css文件
+        async: {
+          name: 'styles',
+          test: m => m.constructor.name === 'CssModule',
+          chunks: 'all',
+          minChunks: 1,
+          reuseExistingChunk: true,
+          enforce: true
+        }})
+```
 #### cacheGroups
 
 它可以继承/覆盖上面 splitChunks 中所有的参数值，除此之外还额外提供了三个配置，分别为：test, priority 和 reuseExistingChunk。
@@ -369,3 +384,95 @@ chunks有三个选项：initial、async和all。它指示应该优先分离同�
 
 - [关于webpack性能调优](https://zhuanlan.zhihu.com/p/150731200)
 - [vue模块化按需编译，突破编译瓶颈](https://zhuanlan.zhihu.com/p/137120584)
+
+### [编写loader](https://v4.webpack.docschina.org/contribute/writing-a-loader/)
+
+编写 loader 时应该遵循以下准则
+- 简单易用: loaders 应该只做单一任务。这不仅使每个 loader 易维护，也可以在更多场景链式调用。
+- 使用链式传递: 利用 loader 可以链式调用的优势。写五个简单的 loader 实现五项任务，而不是一个 loader 实现五项任务。
+- 模块化的输出。保证输出模块化。loader 生成的模块与普通模块遵循相同的设计原则。
+- 确保无状态。确保 `loader` 在不同模块转换之间不保存状态。每次运行都应该独立于其他编译模块以及相同模块之前的编译结果。
+
+loader 其实就是一个 function，接收一个参数 source，就是当前的文件内容，然后稍加处理，就可以 return 出一个新的文件内容。
+
+example: 处理 .txt 文件，并且将任何实例中的 `[name]` 直接替换为 loader 选项中设置的 name。然后返回包含默认导出文本的 JavaScript 模块。
+```js
+import { getOptions } from 'loader-utils';
+
+export default function loader(source) {
+  const options = getOptions(this);
+
+  source = source.replace(/\[name\]/g, options.name);
+
+  return `export default ${ JSON.stringify(source) }`;
+}
+// 使用
+module: {
+      rules: [{
+        test: /\.txt$/,
+        use: {
+          loader: path.resolve(__dirname, '../config/loader.js'),
+          options: {
+            name: 'Alice'
+          }
+        }
+      }]
+    }
+```
+
+### [编写插件](https://v4.webpack.docschina.org/contribute/writing-a-plugin/)
+一个插件由以下构成
+
+- 一个具名 JavaScript 函数。
+- 在它的原型上定义 apply 方法。
+- 指定一个触及到 webpack 本身的 事件钩子。
+- 操作 webpack 内部的实例特定数据。
+- 在实现功能后调用 webpack 提供的 callback。
+```typescript
+class FileListPlugin {
+  apply(compiler) {
+    // emit 是异步 hook，使用 tapAsync 触及它，还可以使用 tapPromise/tap(同步)
+    compiler.hooks.emit.tapAsync('FileListPlugin', (compilation, callback) => {
+      // 在生成文件中，创建一个头部字符串：
+      var filelist = 'In this build:\n\n';
+
+      // 遍历所有编译过的资源文件，
+      // 对于每个文件名称，都添加一行内容。
+      for (var filename in compilation.assets) {
+        filelist += '- ' + filename + '\n';
+      }
+
+      // 将这个列表作为一个新的文件资源，插入到 webpack 构建中：
+      compilation.assets['filelist.md'] = {
+        source: function() {
+          return filelist;
+        },
+        size: function() {
+          return filelist.length;
+        }
+      };
+
+      callback();
+    });
+  }
+}
+
+module.exports = FileListPlugin;
+```
+### [Tree Shaking](https://webpack.docschina.org/guides/tree-shaking)
+
+必须使用 ES2015 模块语法。是基于esm 静态分析来的，而`require()`语法的 `CommonJS` 模块规范。这些模块是 `dynamic` 动态加载的，这意味着可以根据代码中的条件导入新模块。
+```js
+var myDynamicModule;
+
+if (condition) {
+    myDynamicModule = require("foo");
+} else {
+    myDynamicModule = require("bar");
+} 
+```
+CommonJS 模块的这种 dynamic 性质意味着无法应用 Tree Shaking，因为在实际运行代码之前无法确定需要哪些模块。
+
+Tree Shaking: 顾名思义，把代码比作一棵树，把树上已经烂掉的果子比喻成不需要的代码，通过摇晃树的方式把烂掉的果子抖下来。
+
+Tree Shaking 是 ES2015 模块定义中的一个功能。它的核心点在于，在不运行模块的情况下静态地分析模块，使得 Webpack 发现哪些部分的代码正在使用，而哪些代码没有被使用。

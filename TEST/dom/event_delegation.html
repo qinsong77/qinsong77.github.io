@@ -11,6 +11,12 @@
    <li>hello 3</li>
    <li>hello 4</li>
 </ul>
+<input
+    type="text"
+    id="test"
+    value="Bob"
+    onchange="onChangeEvent(event)"
+    oninput="onInputEvent(event)" />
 <script>
 	let ul = document.querySelectorAll('ul')[0]
 	let aLi = document.querySelectorAll('li')
@@ -25,6 +31,16 @@
     console.log(e.target === this)
 		console.log(e.target.id)
 	})
+  function onChangeEvent(e) {
+     console.log('onchange', e.target.value)
+     // const testObj = document.getElementById('test').value;
+     // document.getElementById(x).value = testObj.toUpperCase();
+  }
+  function onInputEvent(e) {
+     console.log('oninput', e.target.value)
+     // const testObj = document.getElementById('test').value;
+     // document.getElementById(x).value = testObj.toUpperCase();
+  }
 </script>
 </body>
 </html>

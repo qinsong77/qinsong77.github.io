@@ -9,7 +9,7 @@ title: Vue
 - [30 道 Vue 面试题，内含详细讲解](https://juejin.cn/post/6844903918753808398)
 - [记录面试中一些回答不够好的题（Vue 居多） | 掘金技术征文](https://juejin.cn/post/6844903569422811150)
 - [Vue 项目性能优化 — 实践指南（网上最全 / 详细）](https://juejin.cn/post/6844903913410314247)
-
+- [揭秘 Vue.js 九个性能优化技巧](https://juejin.cn/post/6922641008106668045) -- 面试应该能用得上
 ### [Vue.js 技术揭秘](https://ustbhuangyi.github.io/vue-analysis/)
 
 ### [Vue源码全解](https://juejin.im/post/6846687602679119885)
