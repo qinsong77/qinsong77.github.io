@@ -419,6 +419,18 @@ module: {
       }]
     }
 ```
+异步调用
+```js
+module.exports = function (source) {
+    const callback = this.async()
+
+    // 由于有 3 秒延迟，所以打包时需要 3+ 秒的时间
+    setTimeout(() => {
+        callback(null, `${source.replace(/;/g, '')}`)
+    }, 3000)
+}
+```
+异步 `loader` 需要调用 webpack 的 `async()` 生成一个` callback`，它的第一个参数是 error，这里可设为 null，第二个参数就是处理后的源码。当你异步处理完源码后，调用 callback 即可。
 
 ### [编写插件](https://v4.webpack.docschina.org/contribute/writing-a-plugin/)
 一个插件由以下构成
@@ -476,3 +488,5 @@ CommonJS 模块的这种 dynamic 性质意味着无法应用 Tree Shaking，因�
 Tree Shaking: 顾名思义，把代码比作一棵树，把树上已经烂掉的果子比喻成不需要的代码，通过摇晃树的方式把烂掉的果子抖下来。
 
 Tree Shaking 是 ES2015 模块定义中的一个功能。它的核心点在于，在不运行模块的情况下静态地分析模块，使得 Webpack 发现哪些部分的代码正在使用，而哪些代码没有被使用。
+
+### [模块加载](https://www.cnblogs.com/woai3c/p/13669933.html)

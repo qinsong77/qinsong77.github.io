@@ -9,7 +9,7 @@ title: 微前端
 
 ### [一篇英语介绍文章](https://micro-frontends.org/)
 
-#### `__INJECTED_PUBLIC_PATH_BY_QIANKUN__`ng
+#### `__INJECTED_PUBLIC_PATH_BY_QIANKUN__`
 `__INJECTED_PUBLIC_PATH_BY_QIANKUN__`这个变量是子应用配置的entry的域名路径，如`entry`的路径是`www.test.com/subapp/device`，他的值是`www.test.com/subapp/`,而
 是`www.test.com/subapp/device/`的话,值就是`entry`，即`www.test.com/subapp/device/`。末尾带不带`/`的影响。
 

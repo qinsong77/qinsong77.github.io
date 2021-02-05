@@ -111,6 +111,8 @@ console.log(Greeting.prototype.isReactComponent); // ✅ Yes
 
 #### JSX简介
 
+[React 是如何创建 vdom 和 fiber tree](https://mp.weixin.qq.com/s?__biz=MzI3ODU4MzQ1MA==&mid=2247484766&idx=1&sn=a4f15894db4076c43a7859a5bc77542f&chksm=eb5584abdc220dbd222c5eeb239e0db1cff1385a89381da651476a7730f455f43c9c8d465478&mpshare=1&scene=23&srcid=0205epPsZMYOfNhALNtvAldy&sharer_sharetime=1612515049758&sharer_shareid=1958dfa2b35b63c7a7463d11712f39df#rd)
+
 JSX在编译时会被`Babel`编译为`React.createElement`方法。
 
 `React.createElement`最终会调用`ReactElement`方法返回一个包含组件数据的对象，该对象有个参数`$$typeof: REACT_ELEMENT_TYPE`标记了该对象是个`React Element`。
@@ -684,17 +686,28 @@ class ChangeTheme extends React.Component {
 }
 ```
 
+### 真实DOM操作和Virtual Dom
+
+尤雨溪大佬知乎的回答
+
+![](./image/domVsReact.png)
+
 ## Diff算法
 
 如何将传统O(n^3)Diff算法的时间复杂度降为O(n)
 
+原来的 O(n^3) 的 diff 流程是：
+
+老树的每一个节点都去遍历新树的节点，直到找到新树对应的节点。那么这个流程就是 O(n^2)，再紧接着找到不同之后，再计算最短修改距离然后修改节点，这里是 O(n^3)
+
+相关Leetcode题目[编辑距离](https://leetcode-cn.com/problems/edit-distance/)
 ```cvs
 Diff算法 => O(n^3) => 将两个DOM树的所有节点两两对比，时间复杂度 O(n^2)
       prev                   last   
 
        A                         A
      /   \                     /   \
-    D    B         =>         B     D
+    D     B        =>         B     D
   /                                  \
  C                                    C
 
@@ -722,3 +735,71 @@ O(n^3)=> O(n) => 简单粗暴，所有的节点按层级比较，只会遍历一
  [0.1.0,0.1.0]  :  pC => Null   #last树没有该节点，直接删除pC
  [0.1.2,0.1.2]  :  Null => lC    #prev树没有该节点，添加lC到该位置
 ```
+
+
+概念
+
+一个DOM节点在某一时刻最多会有4个节点和他相关。
+
+
+1. `current Fiber`。如果该DOM节点已在页面中，`current Fiber`代表该DOM节点对应的Fiber节点。
+
+2. `workInProgress Fiber`。如果该DOM节点将在本次更新中渲染到页面中，`workInProgress Fiber`代表该DOM节点对应的Fiber节点。
+
+3. DOM节点本身。
+
+4. JSX对象。即`ClassComponent`的`render`方法的返回结果，或`FunctionComponent`的调用结果。JSX对象中包含描述DOM节点的信息。
+
+Diff算法的本质是对比1和4，生成2。
+
+`Diff`的入口函数`reconcileChildFibers`出发，该函数会根据`newChild`（即JSX对象）类型调用不同的处理函数。
+```flow js
+// 根据newChild类型选择不同diff函数处理
+function reconcileChildFibers(
+  returnFiber: Fiber,
+  currentFirstChild: Fiber | null,
+  newChild: any,
+): Fiber | null {
+
+  const isObject = typeof newChild === 'object' && newChild !== null;
+
+  if (isObject) {
+    // object类型，可能是 REACT_ELEMENT_TYPE 或 REACT_PORTAL_TYPE或REACT_LAZY_TYPE
+    switch (newChild.$$typeof) {
+      case REACT_ELEMENT_TYPE:
+        // 调用 reconcileSingleElement 处理
+      // // ...省略其他case
+    }
+  }
+
+  if (typeof newChild === 'string' || typeof newChild === 'number') {
+    // 调用 reconcileSingleTextNode 处理
+    // ...省略
+  }
+
+  if (isArray(newChild)) {
+    // 调用 reconcileChildrenArray 处理
+    // ...省略
+  }
+
+  // 一些其他情况调用处理函数
+  // ...省略
+
+  // 以上都没有命中，删除节点
+  return deleteRemainingChildren(returnFiber, currentFirstChild);
+}
+```
+可以从同级的节点数量将Diff分为两类：
+
+1. 当`newChild`类型为`object`、`number`、`string`，代表同级只有一个节点
+
+2. 当`newChild`类型为`Array`，同级有多个节点
+
+#### 单节点Diff
+
+![](./image/oneNodeDiff.png)
+
+第二步判断DOM节点是否可以复用
+
+1. 先判断`key`是否相同（**props没有key值是`null`**，实验打印出Jsx中返回的React Element key是null）
+2. 如果key相同则判断type是否相同，只有都相同时一个DOM节点才能复用。
