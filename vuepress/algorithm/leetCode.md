@@ -30,9 +30,9 @@ title: LeetCode
    - [二叉搜索树中第K小的元素](#二叉搜索树中第k小的元素)
    - [把二叉搜索树转换为累加树](#把二叉搜索树转换为累加树)
    - [判断BST的合法性](#判断bst的合法性)
-- [7.链表](#_6-链表)
+- [7.链表](#_7-链表)
    - [反转链表](#反转链表)
-- [8.最长递增子序列](#_7-最长递增子序列)
+- [8.最长递增子序列](#_8-最长递增子序列)
 - [9.数组](#_9-数组)
  - [连续子数组的最大和](#连续子数组的最大和)
  - [全排列](#全排列)
@@ -922,6 +922,35 @@ var reverseList = function(head) {
     return prev;
 };
 ```
+
+#### [环形链表](https://leetcode-cn.com/submissions/detail/144460090/)
+
+````js
+var hasCycle = function(head) {
+    // 使用hash表，时间复杂度O(n)，空间复杂度O(n)
+    // let cache = new Set()
+    // while(head) {
+    //     if (cache.has(head)) {
+    //         return true
+    //     } else {
+    //         cache.add(head)
+    //     }
+    //     head = head.next
+    // }
+    // return false
+    // 使用快慢指针表，时间复杂度O(n)，空间复杂度O(1)
+    let slow = head
+    let fast = head
+    while(fast && fast.next) {
+        fast = fast.next.next
+        slow = slow.next
+        if (slow === fast) {
+            return true
+        }
+    }
+    return false
+};
+````
 
 ### 8.[最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
 就是给定一个无序的数组，在这个数组中找出，递增并且最长的子数组

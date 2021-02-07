@@ -2,6 +2,32 @@
 title: 框架汇总
 ---
 
+## MVC和MVVM
+MVC = Model + View + Controller
+
+- Model: 数据，是应用程序中用于处理应用程序数据逻辑的部分。通常模型对象负责在数据库中存取数据。
+- View: 视图，是应用程序中处理数据显示的部分。通常视图是依据模型数据创建的。
+- Controller: 控制器，逻辑处理，是应用程序中处理用户交互的部分。通常控制器负责从视图读取数据，控制用户输入，并向模型发送数据。
+
+![](./image/mvc.png)
+
+MVVM(Model-View-ViewModel): 本质上就是MVC 的改进版。MVVM 就是将其中的`View` 的状态和行为抽象化，让我们将视图 `UI` 和业务逻辑分开。
+
+减轻MVC中Controller的负担：Model层依然是服务端返回的数据模型。而ViewModel充当了一个UI适配器的角色，也就是说View中每个UI元素都应该在ViewModel找到与之对应的属性。除此之外，从Controller抽离出来的与UI有关的逻辑都放在了ViewModel中，这样就减轻了Controller的负担。
+
+![](./image/mvvm.png)
+
+MVVM框架的三大要素
+1. 响应式：vue如何间听到data的每个属性变化？
+2. 模版引擎：vue的模版如何被解析，指令如何处理？
+3. 渲染：vue的模版如何被渲染成html？以及渲染过程
+
+优点
+
+1. 低耦合。视图（View）可以独立于Model变化和修改，一个ViewModel可以绑定到不同的"View"上，当View变化的时候Model可以不变，当Model变化的时候View也可以不变。
+2. 可重用性。你可以把一些视图逻辑放在一个ViewModel里面，让很多view重用这段视图逻辑。
+3. 独立开发。开发人员可以专注于业务逻辑和数据的开发（ViewModel），设计人员可以专注于页面设计。
+4. 可测试。界面素来是比较难于测试的，测试可以针对ViewModel来写。
 
 ### [SPA 路由](https://juejin.im/post/6895882310458343431)
 

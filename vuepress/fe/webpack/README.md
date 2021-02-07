@@ -2,6 +2,8 @@
 title: Summary
 ---
 
+### [Webpack4打包机制原理解析](https://mp.weixin.qq.com/s?__biz=MzI0MzIyMDM5Ng==&mid=2649826040&idx=1&sn=d00485f9421520699740404f8ecf3302&chksm=f175e83bc602612d32a2568bfb74f4a9f762b058e9ba39d976c355ae916c27bca73c9fa3d65a&mpshare=1&scene=24&srcid=02066BpnifF3iTrMe5n3rtCi&sharer_sharetime=1612548111719&sharer_shareid=1958dfa2b35b63c7a7463d11712f39df#rd)
+
 ### [Webpack面试题](https://juejin.cn/post/6844904094281236487)
 ### [从源码窥探Webpack4.x原理](https://juejin.cn/post/6844904046294204429)
 
@@ -203,6 +205,22 @@ Webpack 会为每个生成的 `Chunk` 取一个名称，`Chunk` 的名称和 `En
 
 ![](./image/webpack_progress.png)
 
+### 打包过程
+
+webpack的运行流程是一个串行的过程，从启动到结束会依次执行以下流程：
+
+webpack的运行流程是一个串行的过程，从启动到结束会依次执行以下流程：
+
+1. 初始化参
+2. 开始编译 用上一步得到的参数初始`Compiler`对象，加载所有配置的插件，通过执行对象的`run`方法开始执行编译
+3. 确定入口 根据配置中的 `Entry` 找出所有入口文件
+4. 编译模块 从入口文件出发，调用所有配置的 `Loader` 对模块进行编译，再找出该模块依赖的模块，再递归本步骤直到所有入口依赖的文件都经过了本步骤的处理
+5. 完成模块编译 在经过第4步使用 `Loader` 翻译完所有模块后， 得到了每个模块被编译后的最终内容及它们之间的依赖关系
+6. 输出资源：根据入口和模块之间的依赖关系，组装成一个个包含多个模块的 Chunk,再将每个 Chunk 转换成一个单独的文件加入输出列表中，这是可以修改输出内容的最后机会
+7. 输出完成：在确定好输出内容后，根据配置确定输出的路径和文件名，将文件的内容写入文件系统中。
+
+在以上过程中， Webpack 会在特定的时间点广播特定的事件，插件在监听到感兴趣的事件后会执行特定的逻辑，井且插件可以调用 Webpack 提供的 API 改变 Webpack 的运行结果。其实以上7个步骤，可以简单归纳为初始化、编译、输出，三个过程，而这个过程其实就是前面说的基本模型的扩展。
+
 ### 常用loader
 
 - file-loader：把文件输出到一个文件夹中，在代码中通过相对 URL 去引用输出的文件，当引入的文件是 `.png`、`.txt `等时，可以通过 `file-loader` 解析项目中的 `url `引入。根据配置将文件拷贝到相应的路径，并修改打包后文件的引入路径，让它指向正确的文件。;
@@ -274,9 +292,32 @@ if(module && module.hot) {
 
 文件指纹是打包后输出的文件名的后缀，对应着 3 种 hash。
 
-1. `hash `是跟整个项目的构建相关，只要项目里有文件更改，整个项目构建的 `hash` 值都会更改，并且全部文件都共用相同的 `hash` 值。（粒度: 整个项目）
-2. `chunkhash `是根据不同的入口进行依赖文件解析，构建对应的 chunk（模块），生成对应的 hash 值。只有被修改的 chunk（模块）在重新构建之后才会生成新的 hash 值，不会影响其它的 chunk。（粒度:entry 的每个入口文件）
+1. `hash `是跟整个项目的构建相关，只要项目里有文件更改，整个项目构建的 `hash` 值都会更改，并且全部文件都共用相同的 `hash` 值。（粒度: 整个项目）一旦只修改某一个文件，打包后就会造成所有文件的hash值都会改变，会导致未曾修改的文件的hash值变化，进一步会导致未修改的文件在浏览器的缓存失效了---不常用
+2. `chunkhash `是根据不同的入口进行依赖文件解析，构建对应的 chunk（代码块），生成对应的 hash 值。只有被修改的 chunk 在重新构建之后才会生成新的 hash 值，不会影响其它的 chunk。如果在某一入口文件创建的关系依赖图上存在文件内容发生了变化，那么相应的入口文件的chunkhash才会发生变化，否则chunkhash就不会变化，所以chunkhash受它自身chunk的文件内容的影响，只要该chunk中的内容有变化，chunkhash就会变。（粒度:entry 的每个入口文件）因此一般在项目中会把公共库和其他文件拆开，并把公共库代码拆分到一起进行打包，因为公共库的代码变动较少，这样可以实现公共库的长效缓存。webpack4中支持了异步import功能，固，chunkhash也作用于此
 3. `contenthash` 是跟每个生成的文件有关，每个文件都有一个唯一的 hash 值。当要构建的文件内容发生改变时，就会生成新的 hash 值，且该文件的改变并不会影响和它同一个模块下的其它文件。（粒度: 每个文件的内容）
+使用chunkhash还存在一个问题，当一个JS文件引入了CSS文件（import 'xxx.css'），打包构建后它们的chunkhash值是相同的，因此如果更改了JS文件的内容，即使CSS文件内容没有更改，那么与这个JS关联的CSS文件的chunkhash也会跟着改变，这样就会导致未改变的CSS文件的缓存失效了。针对这种情况，我们可以使用mini-css-extract-plugin插件将CSS从JS文件中抽离出来并使用contenthash，来解决上述问题
+
+`filename` 就是对应于 entry 里面的输入文件，经过webpack 打包后输出文件的文件名。指列在 `entry` 中，打包后输出的文件的名称。
+
+`chunkFilename` 指未列在 entry 中，却又需要被打包出来的文件的名称。
+
+```js
+{
+	    output: {
+            // publicPath: './test',
+            filename: 'js/[name].[hash].bundle.js',
+            chunkFilename: 'js/[name].[chunkhash].js',
+        },
+        plugins: [
+            new MiniCssExtractPlugin({
+                filename: 'css/[name].[contenthash].css',
+                chunkFilename: 'css/[name].[contenthash].css',
+            }),
+            // new BundleAnalyzerPlugin(),
+            new CleanWebpackPlugin()
+        ]
+}
+```
 
 ### Code Splitting
 
@@ -489,4 +530,4 @@ Tree Shaking: 顾名思义，把代码比作一棵树，把树上已经烂掉的
 
 Tree Shaking 是 ES2015 模块定义中的一个功能。它的核心点在于，在不运行模块的情况下静态地分析模块，使得 Webpack 发现哪些部分的代码正在使用，而哪些代码没有被使用。
 
-### [模块加载](https://www.cnblogs.com/woai3c/p/13669933.html)
+### [模块加载](https://zhuanlan.zhihu.com/p/243485307)

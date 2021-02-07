@@ -755,6 +755,7 @@ Diff算法的本质是对比1和4，生成2。
 `Diff`的入口函数`reconcileChildFibers`出发，该函数会根据`newChild`（即JSX对象）类型调用不同的处理函数。
 ```flow js
 // 根据newChild类型选择不同diff函数处理
+// 这个函数不是递归的
 function reconcileChildFibers(
   returnFiber: Fiber,
   currentFirstChild: Fiber | null,
@@ -803,3 +804,22 @@ function reconcileChildFibers(
 
 1. 先判断`key`是否相同（**props没有key值是`null`**，实验打印出Jsx中返回的React Element key是null）
 2. 如果key相同则判断type是否相同，只有都相同时一个DOM节点才能复用。
+
+#### 多节点diff
+
+一共3中情况
+1. 节点更新
+2. 节点新增或减少
+3. 节点位置变化
+
+为什么没有想Vue一样使用双指针从数组头和尾同时遍历以提高效率
+
+虽然本次更新的JSX对象 newChildren为数组形式，但是和newChildren中每个组件进行比较的是current fiber，**同级的Fiber节点是由sibling指针链接形成的单链表**，即不支持双指针遍历。
+
+在日常开发中，相较于新增和删除，更新组件发生的频率更高。所以Diff会优先判断当前节点是否属于更新。
+
+Diff算法的整体逻辑会经历两轮遍历：
+
+第一轮遍历：处理更新的节点。
+
+第二轮遍历：处理剩下的不属于更新的节点。

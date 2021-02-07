@@ -8,7 +8,7 @@ title: Summary of node
 
 ### [Cookie、Session、Token、JWT](https://juejin.im/post/6844904034181070861)
 
-
+### [V8引擎详解](https://juejin.cn/post/6844904137792962567)
 ### [一篇文章构建你的 NodeJS 知识体系](https://juejin.cn/post/6844903767926636558)
 
 #### 基本知识点
