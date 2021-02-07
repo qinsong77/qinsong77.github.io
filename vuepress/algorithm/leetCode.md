@@ -36,6 +36,8 @@ title: LeetCode
 - [9.数组](#_9-数组)
  - [连续子数组的最大和](#连续子数组的最大和)
  - [全排列](#全排列)
+ - [最长湍流子数组](#最长湍流子数组)
+ - [全排列](#全排列)
 
 获取26个字母
 ```javascript
@@ -1040,4 +1042,132 @@ var permute = function(nums) {
 
     return res
 };
+```
+
+### [最长湍流子数组](https://leetcode-cn.com/problems/longest-turbulent-subarray/)
+
+```javascript
+/**
+ * @param {number[]} arr
+ * @return {number}
+ */
+var maxTurbulenceSize = function(arr) {
+    if (arr.length === 1) return 1
+    let max = 1
+    for(let i = 0, p = 1,q = 1; i < arr.length-1; i++) {
+        if (i%2 === 0) { // 偶数
+            if(arr[i] < arr[i+1]) {
+                p++
+                max = Math.max(max, p, q)
+                q = 1
+            } else if (arr[i] > arr[i+1]) {
+                q++
+                max = Math.max(max, p, q)
+                p = 1
+            } else {
+                max = Math.max(max, p, q)
+                q = 1
+                p = 1
+            }
+        } else{ // 基数
+            if(arr[i] < arr[i+1]) {
+                q++
+                max = Math.max(max, p, q)
+                p = 1
+            } else if (arr[i] > arr[i+1]) {
+                p++
+                max = Math.max(max, p, q)
+                q = 1
+            } else {
+                max = Math.max(max, p, q)
+                q = 1
+                p = 1
+            }
+        }
+    }
+    return max
+};
+```
+
+#### [扑克牌中的顺子](https://leetcode-cn.com/problems/bu-ke-pai-zhong-de-shun-zi-lcof/)
+
+```javascript
+/**
+ * @param {number[]} nums
+ * @return {boolean}
+ */
+var isStraight = function(nums) {
+    //从小到大排序
+    const minSort = nums.sort((a,b)=> a-b);
+    //记录每个数字之间大差值，反正不能大于4
+    let sum = 0;
+    //不能超过4
+    for(let i = 0; i<4;i++){
+        //忽略0也就是王
+        if(minSort[i] == 0){
+            continue
+        }
+        //如果扑克牌（非0）重复，说明不是顺子
+        else if(nums[i] == nums[i+1]){
+            return false
+        }else{
+            //差值记录
+            sum = sum + nums[i+1] - nums[i]
+        }
+    }
+    //如果超过4，说明不是顺子。
+    return sum<5
+};
+```
+
+#### [扁平化嵌套列表迭代器](https://leetcode-cn.com/problems/flatten-nested-list-iterator/)
+
+```javascript
+/**
+ * @constructor
+ * @param {NestedInteger[]} nestedList
+ */
+var NestedIterator = function(nestedList) {
+    // 通过生成器函数递归遍历嵌套数组
+    var generator = function * (arr) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i].isInteger()) {
+                yield arr[i].getInteger()
+            } else {
+                yield* generator(arr[i].getList())
+            }
+        }
+    };
+
+    // 初始化迭代器
+    this.iterator = generator(nestedList);
+    // 调用迭代器的 next 方法，返回 {value: val, done: true/false}，value 为返回的值，done 表示是否遍历完
+    this.nextVal = this.iterator.next();
+};
+
+
+/**
+ * @this NestedIterator
+ * @returns {boolean}
+ */
+NestedIterator.prototype.hasNext = function() {
+    return !this.nextVal.done;
+};
+
+
+/**
+ * @this NestedIterator
+ * @returns {integer}
+ */
+NestedIterator.prototype.next = function() {
+    var value = this.nextVal.value;
+    // 调用迭代器的 next 方法，更新 nextVal 的值
+    this.nextVal = this.iterator.next();
+    return value;
+};
+/**
+ * Your NestedIterator will be called like this:
+ * var i = new NestedIterator(nestedList), a = [];
+ * while (i.hasNext()) a.push(i.next());
+*/
 ```
