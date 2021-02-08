@@ -206,8 +206,8 @@ function quick1(arr, left = 0, right = arr.length - 1) {
 		arr[i] = temp;
 		flag = i
 	}
-	quick(arr, left, flag - 1);
-	quick(arr, flag + 1, right);
+	quick1(arr, left, flag - 1);
+	quick1(arr, flag + 1, right);
 }
 // 非递归
 function quick(arr, left = 0, right = arr.length - 1) {
@@ -230,6 +230,10 @@ function quick(arr, left = 0, right = arr.length - 1) {
 		list.push([flag + 1, now[1]]);
 	}
 }
+
+
+
+
 
 function quickSort(array) {
 	return quick(array, 0, array.length - 1)

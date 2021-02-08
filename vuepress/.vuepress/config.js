@@ -105,7 +105,8 @@ module.exports = {
 						['css/', 'Summary'],
 						['css/BFC', 'BFC和清除浮动'],
 						'css/flex_grid',
-						'css/onepx'
+						'css/onepx',
+						'css/demo'
 					]
 				},
 				{
