@@ -274,7 +274,10 @@ export default function Counter2() {
 
 ### useEffect
 
+[useEffect 完整指南](https://overreacted.io/zh-hans/a-complete-guide-to-useeffect/)
+
 在function组件中，**每当DOM完成一次渲染，都会有对应的副作用执行**，useEffect用于提供自定义的执行内容，它的第一个参数（作为函数传入）就是自定义的执行内容。为了避免反复执行，传入第二个参数（由监听值组成的数组）作为比较(浅比较)变化的依赖，比较之后值都保持不变时，副作用逻辑就不再执行。
+useEffect 还是异步执行的，所谓的异步就是被 React 使用 requestIdleCallback 封装的，只在浏览器空闲时候才会执行，这就保证了不会阻塞浏览器的渲染过程。
 
 - 1. 只在第一次渲染时执行，第二个参数传空数组。即没有传入比较变化的变量，则比较结果永远都保持不变，那么副作用逻辑就只能执行一次。
 ```jsx harmony
@@ -350,31 +353,6 @@ useEffect(() => {
 7. 副作用逻辑执行，返回另一个`clear`函数，命名为`clear2`
 8. 组件销毁，`clear2`执行
 
-```jsx harmony
-export default function AnimateDemo() {
-    const [counter, setCounter] = useState(0);
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setCounter(counter + 1);
-        }, 300);
-        console.log('effect:', timer);
-
-        return () => {
-            console.log('clear:', timer);
-            clearTimeout(timer);
-        }
-    });
-
-    console.log('before render');
-
-    return (
-        <div className="container">
-            <div className="el">{counter}</div>
-        </div>
-    )
-}
-```
 下面的打印顺序是：
 ```jsx harmony
 import React, { useState, useEffect } from 'react';
@@ -423,13 +401,153 @@ clear: xx -- 组件销毁时
 第一次渲染是打印render,并且执行副作用函数, 打印effect，并且返回清楚副作用的函数clear, **3秒后**打印setCounter，执行`setCounter`，
 组件重新渲染，打印render，渲染完成后执行上一次的clear，接着执行副作用函数，一直循环，直到销毁时执行clear函数。
 
+
+**和setInterval**
+
+[React Hooks 中的闭包问题](https://juejin.cn/post/6847902217031122951)
+[使用 React Hooks 声明 setInterval](https://overreacted.io/zh-hans/making-setinterval-declarative-with-react-hooks/)
+```jsx harmony
+import React, { useState, useEffect } from 'react'
+
+export default function App() {
+    const [count, setCount] = useState(0)
+    useEffect(() => {
+        const id = setInterval(() => {
+            setCount(count + 1)
+        },1000)
+        return () => clearInterval(id)
+    }, [])
+    return <div style={{ fontSize: '100px' }}>{count}</div>
+}
+```
+错误示例，初始显示0，一秒后永远都会显示1，同样的代码用 class 组件来实现，就不会有这个问题，面 class 组件和函数组件的代码的差异在于，class 组件中的 this.state 是可变的！每一次的更新都是对 state 对象的一个更新，一次又一次的 setInterval 中引用的都会是新 state 中的值。
+然而在函数组件中情况就不一样了。函数组件由于每次更新都会经历重新调用的过程，useEffect(callback) 中的回调函数都是全新的，这样其中引用到的 state 值将只跟当次渲染绑定。
+
+```jsx harmony
+import React, { useState, useEffect } from 'react'
+
+export default function App() {
+    const [count, setCount] = useState(0)
+    useEffect(() => {
+        const id = setInterval(() => {
+            // 这里
+            setCount((prevState) => prevState + 1)
+        }, 1000)
+        return () => clearInterval(id)
+    }, [])
+    return <div style={{ fontSize: '100px' }}>{count}</div>
+}
+```
+使用useRef
+```jsx harmony
+function Counter() {
+  const [count, setCount] = useState(0);
+  const savedCallback = useRef();
+
+  function callback() {
+    setCount(count + 1);
+  }
+
+  useEffect(() => {
+    savedCallback.current = callback;
+  });
+
+  useEffect(() => {
+    function tick() {
+      savedCallback.current();
+    }
+
+    let id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return <h1>{count}</h1>;
+}
+```
+自定义hooks
+```jsx harmony
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  useInterval(() => {
+    setCount(count + 1);
+  }, 1000);
+
+  return <h1>{count}</h1>;
+}
+
+function useInterval(callback, delay) {
+  const savedCallback = useRef();
+
+  useEffect(() => {
+    savedCallback.current = callback;
+  });
+
+  useEffect(() => {
+    function tick() {
+      savedCallback.current();
+    }
+
+    let id = setInterval(tick, delay);
+    return () => clearInterval(id);
+  }, [delay]);
+}
+```
+
 ### useLayoutEffect
+
+```js
+useLayoutEffect(() => {
+  // do side effects
+  return () => /* cleanup */
+}, [dependency, array]);
+```
 
 会在所有的 `DOM` 变更之后**同步**调用 effect。可以使用它来读取 DOM 布局并**同步触发重渲染**。**在浏览器执行绘制之前**，useLayoutEffect 内部的更新计划将被同步刷新。这是和`useEffect`唯一的区别。
 
 1. `useLayoutEffec`t和`componentDidMount`和`componentDidUpdate`触发时机一致（都在在DOM修改后且浏览器渲染之前）；
 2. `useLayoutEffec`t要比`useEffect`更早的触发执行；
 3. `useLayoutEffect`会阻塞浏览器渲染，切记执行同步的耗时操作。
+
+[解析 useEffect 和 useLayoutEffect](https://juejin.cn/post/6862624266723000328)
+
+[深入理解 React useLayoutEffect 和 useEffect 的执行时机](https://blog.csdn.net/yunfeihe233/article/details/106616674/)
+
+useEffect 和 useLayoutEffect 的区别
+
+useEffect 在渲染时是异步执行，并且要等到浏览器将所有变化渲染到屏幕后才会被执行。
+
+useLayoutEffect 在渲染时是同步执行，其执行时机与 componentDidMount，componentDidUpdate 一致
+
+除非要修改DOM并且不让用户看到修改DOM的过程，才考虑使用useLayoutEffect，否则应当使用useEffect。
+
+```jsx harmony
+export default function FuncCom () {
+    const [counter, setCounter] = useState(0);
+    
+    useEffect(() => {
+        if (counter === 12) {
+            // 耗时的操作 500ms
+            const pre = Date.now()
+            while (Date.now() - pre < 500) {}
+            setCounter(2)
+        }
+    });
+    return (
+        <div style={{
+            fontSize: '100px'
+        }}>
+            <div onClick={() => setCounter(12)}>{counter}</div>
+        </div>
+    )
+}
+
+```
+初始屏幕上是 0，当点击触发 setCounter 后，屏幕上先是出现了 12，最后变为了 2:
+
+换成了 useLayoutEffect 后，屏幕上只会出现 0 和 2，这是因为 useLayoutEffect 的同步特性，会在浏览器渲染之前同步更新 DOM 数据，哪怕是多次的操作，也会在渲染前一次性处理完，再交给浏览器绘制。这样不会导致闪屏现象发生。
+
+但如果在`if (counter === 12) {`这里F12 debug，屏幕上会显示12。
 
 ### 自定义Hooks
 自定义hooks都会以`use`开头，以表示该方法**只能在函数式组件中使用**。感觉就是对原有函数组件中依赖于state的逻辑的抽离

@@ -583,6 +583,28 @@ for ( let i=1; i<=5; i++) {
 }
 ```
 
+```js
+function createIncrement(i) {
+    let value = 0
+    function increment() {
+        value += i
+        console.log(value)
+        const message = `Current value is ${value}`
+        return function logValue() { // setState相当于logValue函数
+            console.log(message)
+        }
+    }
+    return increment
+}
+const inc = createIncrement(10)
+const log = inc() // 10，将当前的value值固定
+inc() // 20
+inc() // 30
+
+log() // "Current value is 10" 未能正确打印30
+
+```
+
 ### 数组
 
 ::: tip

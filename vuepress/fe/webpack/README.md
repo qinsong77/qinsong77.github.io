@@ -25,6 +25,8 @@ title: Summary
 
 ### [前端工程化](https://juejin.cn/post/6844904132512317453)
 
+### [手把手带你入门前端工程化——超详细教程](https://zhuanlan.zhihu.com/p/276458191)
+
 前端工程化可以分成四个方面来说，分别为模块化、组件化、规范化和自动化。
 
 #### 模块化
@@ -538,3 +540,132 @@ Tree Shaking: 顾名思义，把代码比作一棵树，把树上已经烂掉的
 Tree Shaking 是 ES2015 模块定义中的一个功能。它的核心点在于，在不运行模块的情况下静态地分析模块，使得 Webpack 发现哪些部分的代码正在使用，而哪些代码没有被使用。
 
 ### [模块加载](https://zhuanlan.zhihu.com/p/243485307)
+### [Webpack 模块打包原理](https://juejin.cn/post/6844903802382860296)
+webpack根据`webpack.config.j`s中的入口文件，在入口文件里识别模块依赖，不管这里的模块依赖是用`CommonJ`S写的，还是`ES6 Module`规范写的，webpack会自动进行分析，并通过转换、编译代码，打包成最终的文件。最终文件中的模块实现是基于webpack自己实现的`webpack_require`（es5代码），所以打包后的文件可以跑在浏览器上。
+
+使用一个立即执行函数，实现了类似Common Js require和exports的特性，核心是`__webpack_require__`的实现，
+创建模块缓存`installedModules `，从入口文件执行require。
+
+懒加载是动态创建jsonp的动态script标签，加载异步模块，加载完成`window["webpackJsonp"]` push模块，异步模块打包后的文件中保存着异步模块源代码，同时为了区分不同的异步模块，还保存着该异步模块对应的标识：chunkId。
+
+webpack实现模块的异步加载有点像jsonp的流程。在主js文件中通过在head中构建script标签方式，异步加载模块信息；再使用回调函数webpackJsonpCallback，把异步的模块源码同步到主文件中，所以后续操作异步模块可以像同步模块一样。
+
+1. 到异步模块时，使用__webpack_require__.e函数去把异步代码加载进来。该函数会在html的head中动态增加script标签，src指向指定的异步模块存放的文件。
+2. 加载的异步模块文件会执行webpackJsonpCallback函数，把异步模块加载到主文件中。
+3. 所以后续可以像同步模块一样,直接使用__webpack_require__("./src/async.js")加载异步模块。
+
+源码中的`primose`使用非常精妙，主模块加载完成异步模块才resolve()
+
+
+```js
+// 0.bundle.js
+
+// 异步模块
+// window["webpackJsonp"]是连接多个chunk文件的桥梁
+// window["webpackJsonp"].push = 主chunk文件.webpackJsonpCallback
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([
+  [0], // 异步模块标识chunkId,可判断异步代码是否加载成功
+  // 跟同步模块一样，存放了{模块路径：模块内容}
+  {
+  "./src/async.js": (function(module, __webpack_exports__, __webpack_require__) {
+      __webpack_require__.r(__webpack_exports__);
+      __webpack_exports__["default"] = (function () {
+        return 'hello, aysnc module';
+      });
+    })
+  }
+]);
+
+```
+```js
+// webpack.config.js
+const path = require('path');
+
+module.exports = {
+    mode: 'development',
+  // JavaScript 执行入口文件
+  entry: './src/main.js',
+  output: {
+    // 把所有依赖的模块合并输出到一个 bundle.js 文件
+    filename: 'bundle.js',
+    // 输出文件都放到 dist 目录下
+    path: path.resolve(__dirname, './dist'),
+  }
+};
+```
+
+```js
+// src/add
+export default function(a, b) {
+    let { name } = { name: 'hello world,'} // 这里特意使用了ES6语法
+    return name + a + b
+}
+
+// src/main.js
+import Add from './add'
+console.log(Add, Add(1, 2))
+```
+
+build.js
+
+````js
+// modules是存放所有模块的数组，数组中每个元素存储{ 模块路径: 模块导出代码函数 }
+(function(modules) {
+// 模块缓存作用，已加载的模块可以不用再重新读取，提升性能
+var installedModules = {};
+
+// 关键函数，加载模块代码
+// 形式有点像Node的CommonJS模块，但这里是可跑在浏览器上的es5代码
+function __webpack_require__(moduleId) {
+  // 缓存检查，有则直接从缓存中取得
+  if(installedModules[moduleId]) {
+    return installedModules[moduleId].exports;
+  }
+  // 先创建一个空模块，塞入缓存中
+  var module = installedModules[moduleId] = {
+    i: moduleId,
+    l: false, // 标记是否已经加载
+    exports: {} // 初始模块为空
+  };
+
+  // 把要加载的模块内容，挂载到module.exports上
+  modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+  module.l = true; // 标记为已加载
+
+  // 返回加载的模块，调用方直接调用即可
+  return module.exports;
+}
+
+// __webpack_require__对象下的r函数
+// 在module.exports上定义__esModule为true，表明是一个模块对象
+__webpack_require__.r = function(exports) {
+  Object.defineProperty(exports, '__esModule', { value: true });
+};
+
+// 启动入口模块main.js
+return __webpack_require__(__webpack_require__.s = "./src/main.js");
+})
+({
+  // add模块
+  "./src/add.js": (function(module, __webpack_exports__, __webpack_require__) {
+    // 在module.exports上定义__esModule为true
+    __webpack_require__.r(__webpack_exports__);
+    // 直接把add模块内容，赋给module.exports.default对象上
+    __webpack_exports__["default"] = (function(a, b) {
+      let { name } = { name: 'hello world,'}
+      return name + a + b
+    });
+  }),
+
+  // 入口模块
+  "./src/main.js": (function(module, __webpack_exports__, __webpack_require__) {
+    __webpack_require__.r(__webpack_exports__)
+    // 拿到add模块的定义
+    // _add__WEBPACK_IMPORTED_MODULE_0__ = module.exports，有点类似require
+    var _add__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/add.js");
+    // add模块内容: _add__WEBPACK_IMPORTED_MODULE_0__["default"]
+    console.log(_add__WEBPACK_IMPORTED_MODULE_0__["default"], Object(_add__WEBPACK_IMPORTED_MODULE_0__["default"])(1, 2))
+  })
+});
+
+````
