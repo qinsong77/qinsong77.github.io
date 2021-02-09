@@ -340,8 +340,74 @@ let multiply = function(num1, num2) {
 
 #### [替换后的最长重复字符](https://leetcode-cn.com/problems/longest-repeating-character-replacement/)
 
-````javascript
 
+
+````javascript
+/**
+如: s = "AABABBA", k = 1
+
+max 记录窗口内相同字符最多的次数
+
+遍历字符串, 窗口往右扩张
+一旦 窗口大小 大于 max + k, 则窗口左边收缩 (因为窗口内最多可替换 k个其他字符 为 出现最多的字符)
+
+窗口扩张: left: 0, right: 0, 窗口: [ A ]ABABBA
+窗口扩张: left: 0, right: 1, 窗口: [ AA ]BABBA
+窗口扩张: left: 0, right: 2, 窗口: [ AAB ]ABBA
+窗口扩张: left: 0, right: 3, 窗口: [ AABA ]BBA
+移动左边: left: 1, right: 4, 窗口: A[ ABAB ]BA
+移动左边: left: 2, right: 5, 窗口: AA[ BABB ]A
+移动左边: left: 3, right: 6, 窗口: AAB[ ABBA ] 
+
+遍历完后, 只要看窗口大小即可
+**/
+var characterReplacement = function(s, k) {
+    if (!s) return 0
+    let max = 0
+    let left = 0
+    let right = 1
+    const map = new Map([[s[0], 1]])
+    while(right < s.length) {
+        const char = s[right]
+        if(map.has(char)) map.set(char, map.get(char) +1)
+        else map.set(char, 1)
+        max = Math.max(max, map.get(char))
+        if(right - left + 1 > max + k) {
+            map.set(s[left], map.get(s[left]) - 1)
+            left++
+        }
+        right++
+    }
+    return s.length - left
+};
+
+/**
+ * @param {string} s
+ * @param {number} k
+ * @return {number}
+ */
+var characterReplacement = function(s, k) {
+    if (!s) return 0
+    let codes = Array(26).fill(0)  // 记录窗口内各字符出现次数
+    let i = 0
+    let max = 0
+    for(let j = 0; j < s.length; j++){
+        let n = s[j].charCodeAt() - 65
+        codes[n] += 1
+        max = Math.max(max, codes[n])
+        if (j - i + 1 > max + k) {  // 移动左边
+            codes[ s[i].charCodeAt() - 65 ] -= 1
+            i++
+        } 
+    }
+    return s.length - i
+};
+/**
+作者：shetia
+链接：https://leetcode-cn.com/problems/longest-repeating-character-replacement/solution/ti-huan-hou-de-zui-chang-zhong-fu-zi-fu-a6fuv/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+**/
 ````
     
 #### [4.N x N二维数组翻转90度](https://leetcode-cn.com/problems/rotate-image)

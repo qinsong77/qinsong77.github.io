@@ -236,9 +236,15 @@ div.classList.replace("foo", "bar");
 
 ### [事件机制](https://zh.javascript.info/introduction-browser-events)
 #### 事件触发有三个阶段
-- `window` 往事件触发处传播，遇到注册的捕获事件会触发
-- 传播到事件触发处时触发注册的事件
-- 从事件触发处往`window`传播，遇到注册的冒泡事件会触发
+1. 捕获阶段：事件从window对象自上而下向目标节点传播的阶段；
+
+2. 目标阶段：真正的目标节点正在处理事件的阶段；
+
+3. 冒泡阶段：事件从目标节点自下而上向window对象传播的阶段。
+
+捕获是从上到下，事件先从window对象，然后再到document（对象），然后是html标签（通过document.documentElement获取html标签），然后是body标签（通过document.body获取body标签），然后按照普通的html结构一层一层往下传，最后到达目标元素。
+
+
 ````javascript
 // 以下会先打印冒泡然后是捕获
 el.addEventListener(
@@ -271,6 +277,9 @@ el.addEventListener(
 
 
 #### [事件委托](https://zh.javascript.info/event-delegation)
+
+由于事件会在冒泡阶段向上传播到父节点，因此可以把子节点的监听函数定义在父节点上，由父节点的监听函数统一处理多个子元素的事件。这种方法叫做事件的代理（delegation）。
+
 如果一个节点中的子节点是动态生成的，那么子节点需要注册事件的话应该注册在父节点上
 ```html
 <ul id="ul">

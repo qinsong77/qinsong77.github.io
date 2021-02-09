@@ -449,6 +449,19 @@ bar() // 10
 arr[0]() // arr
 arr[1]() // window
 ```
+```javascript
+window.data=5
+var foo={
+  data:6,
+  click(){
+  console.log(this.data)
+}
+}
+div.addEventListener('click',foo.click)
+// 点击div写出控制台的打印值
+// 如何输出5，如何输出6
+```
+输出`undefined`，在`addEventListener`中指向的是这个div元素，如果绑定事件是onClick，则是指向window
 #### 箭头函数
 
 - 箭头函数没有prototype；
