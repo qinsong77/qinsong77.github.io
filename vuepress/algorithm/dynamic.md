@@ -1,6 +1,21 @@
 ---
 title: 动态规划
 ---
+动态规划问题的一般形式就是求最值。求解动态规划的核心问题是**穷举**。因为要求最值，肯定要把所有可行的答案穷举出来，然后在其中找最值。
+
+动态规划的穷举有点特别，因为这类问题存在**「重叠子问题」**，如果暴力穷举的话效率会极其低下，所以需要「备忘录」或者「DP table」来优化穷举过程，避免不必要的计算。
+
+而且，动态规划问题一定会具备「最优子结构」，才能通过子问题的最值得到原问题的最值。
+
+穷举所有可行解其实并不是一件容易的事，只有列出正确的「状态转移方程」才能正确地穷举。
+
+以上提到的**重叠子问题**、**最优子结构**、**状态转移方程**就是动态规划三要素。
+
+状态转移方程是最困难的：明确「状态」 -> 定义 dp 数组/函数的含义 -> 明确「选择」-> 明确 base case。
+
+dp解法一般是「自顶向下」，动态规划叫做「自底向上」。
+
+
 #### 斐波那契数列
 `F(0)=0，F(1)=1, F(n)=F(n - 1)+F(n - 2)（n ≥ 2，n ∈ N*）`
 ```javascript
@@ -8,7 +23,7 @@ title: 动态规划
  * @param {number} N
  * @return {number}
  */
-// 1、暴力递归
+// 1、暴力递归，时间复杂度为 O(2^n)。
 
 var fib = function(N){
 	if (N < 1) return 0
@@ -16,7 +31,7 @@ var fib = function(N){
 	return fib(N - 1) + fib(N - 2)
 }
 
-// 2、带备忘录的递归解法
+// 2、带备忘录的递归解法，记住重复子问题。时间复杂度是 O(n)
 
 var fib = function(N){
 	const memo = [0, 1, 1]
@@ -55,5 +70,91 @@ var fib = function(N){
 	}
 
 	return curr
+}
+```
+
+### [凑零钱问题](https://leetcode-cn.com/problems/coin-change/)
+
+给你k种面值的硬币，面值分别为c1, c2 ... ck，每种硬币的数量无限，再给一个总金额amount，问你最少需要几枚硬币凑出这个金额，如果不可能凑出，算法返回 -1 。算法的函数签名如下：
+```javascript
+ // coins 中是可选硬币面值，amount 是目标金额
+function coinChange(coins, amount){}
+```
+
+先确定「状态」，也就是原问题和子问题中变化的变量。由于硬币数量无限，所以唯一的状态就是目标金额amount。
+
+然后确定dp函数的定义：函数 dp(n)表示，当前的目标金额是n，至少需要dp(n)个硬币凑出该金额。
+
+然后确定「选择」并择优，也就是对于每个状态，可以做出什么选择改变当前状态。具体到这个问题，无论当的目标金额是多少，选择就是从面额列表coins中选择一个硬币，然后目标金额就会减少：
+
+```java
+# 伪码框架
+def coinChange(coins: List[int], amount: int):
+    # 定义：要凑出金额 n，至少要 dp(n) 个硬币
+    def dp(n):
+        # 做选择，需要硬币最少的那个结果就是答案
+        for coin in coins:
+            res = min(res, 1 + dp(n - coin))
+        return res
+    # 我们要求目标金额是 amount
+    return dp(amount)
+```
+最后明确 `base case`，显然目标金额为 0 时，所需硬币数量为 0；当目标金额小于 0 时，无解，返回 -1：
+
+```javascript
+/**
+ * @param {number[]} coins
+ * @param {number} amount
+ * @return {number}
+ */
+// 递归- 超出时间限制
+var coinChange = function(coins, amount) {
+    const dp = (n) => {
+        if (n === 0) return 0
+        if (n < 0) return -1
+        let res = Infinity
+        for(let i = 0; i < coins.length; i++) {
+            const coin = coins[i]
+            const subProblem = dp(n - coin)
+            if (subProblem === -1) continue
+            res = Math.min(res, 1 + subProblem) 
+        }
+        return res === Infinity ? -1 : res
+    }
+    return dp(amount)
+};
+// 递归加备忘录
+var coinChange = function(coins, amount) {
+    const memo = new Map()
+    const dp = (n) => {
+        if (memo.has(n)) return memo.get(n)
+        if (n === 0) return 0
+        if (n < 0) return -1
+        let res = Infinity
+        for(let i = 0; i < coins.length; i++) {
+            const coin = coins[i]
+            const subProblem = dp(n - coin)
+            if (subProblem === -1) continue
+            res = Math.min(res, 1 + subProblem) 
+        }
+        res === Infinity ? memo.set(n, -1) : memo.set(n, res)
+        return memo.get(n)
+    }
+    return dp(amount)
+};
+// dp 数组的迭代解法
+
+var coinChange = function(coins, amount) {
+    let dp = new Array(amount + 1).fill(Infinity)
+    dp[0] = 0
+
+    for (let i = 1; i <= amount; i++) {
+        for (let coin of coins) {
+            if (i - coin >= 0) {
+                dp[i] = Math.min(dp[i], dp[i - coin] + 1)
+            }
+        }
+    }
+    return dp[amount] === Infinity ? -1 : dp[amount]
 }
 ```

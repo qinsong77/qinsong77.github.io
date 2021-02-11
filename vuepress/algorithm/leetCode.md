@@ -31,6 +31,7 @@ title: LeetCode
 - [6.二叉搜索树](#_6-二叉搜索树)
    - [二叉搜索树中第K小的元素](#二叉搜索树中第k小的元素)
    - [把二叉搜索树转换为累加树](#把二叉搜索树转换为累加树)
+   - [恢复二叉搜索树](#恢复二叉搜索树)
    - [判断BST的合法性](#判断bst的合法性)
 - [7.链表](#_7-链表)
    - [反转链表](#反转链表)
@@ -944,6 +945,34 @@ const convertBST = (root) => {
   }
 
   return root;
+};
+```
+
+#### [恢复二叉搜索树](https://leetcode-cn.com/problems/recover-binary-search-tree/)
+
+```javascript
+// https://leetcode-cn.com/problems/recover-binary-search-tree/solution/tu-jie-hui-fu-yi-ge-er-cha-sou-suo-shu-by-hyj8/
+var recoverTree = function(root) {
+    let prev = new TreeNode(-Infinity)
+    let err1 = null, err2 = null
+
+    function trverseTree(node) {
+        if(node === null) return
+        trverseTree(node.left)
+        if(err1 === null && prev.val > node.val) {
+            err1 = prev
+        }  
+        if(err1 !== null && prev.val > node.val) {
+            err2 = node
+        }
+        prev = node
+        trverseTree(node.right)
+    }
+
+    trverseTree(root)
+    let temp = err1.val
+    err1.val = err2.val
+    err2.val = temp
 };
 ```
 
