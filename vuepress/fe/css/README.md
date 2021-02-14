@@ -344,4 +344,14 @@ touchstart -> touchmove -> touchend -> mousedown -> click -> mouseup
 - 允许点击，即禁止穿透（默认值）：pointer-events: auto;
 
 
+### [transition](https://www.cnblogs.com/coco1s/p/14355351.html)
+
+transition 和animation支持的属性， [CSS animated properties](https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_animated_properties)
+
+某些支持 transition 的属性在某些特定状态下，也是不支持 transition 的。非常典型的就是 height: auto 和 width: auto。CSS transition 不支持元素的高度或者宽度为 auto 的变化。
+
+利用 `max-height` 的特性来做到动态高度的伸缩。
+
 ### [如何写出高性能的CSS3动画](https://www.cnblogs.com/ypppt/p/12937506.html)
+
+### [shadow-dom](https://www.cnblogs.com/coco1s/p/5711795.html)

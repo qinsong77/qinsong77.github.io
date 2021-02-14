@@ -14,6 +14,7 @@ title: React
 [2021年React学习路线图](https://mp.weixin.qq.com/s?__biz=MzUxMzcxMzE5Ng==&mid=2247505750&idx=2&sn=a31164ddf69f49e3761d2a6d660cf316&chksm=f9526215ce25eb031cbb1f8e0137b3fb3e30f6305fb183f028ab12419699695173b51c44b49d&scene=132#wechat_redirect)
 
 [Build your own React](https://pomb.us/build-your-own-react/)
+[Build your own React-中文](https://github.com/defpis/build-your-own-react)
 
 `npx create-react-app my-app --typescript` => `--typescript`被弃用，使用`--template typescript`
 
@@ -35,6 +36,132 @@ React采用自上而下单向数据流的方式，管理自身的数据与状态
 
 **而在函数式组件中，是整个函数重新执行。**
 
+## React15架构
+
+React15架构可以分为两层：
+
+- Reconciler（协调器）—— 负责找出变化的组件
+- Renderer（渲染器）—— 负责将变化的组件渲染到页面上
+
+#### Reconciler
+
+即便 React DOM 和 React Native 渲染器的区别很大，但也需要共享一些逻辑。特别是协调算法需要尽可能相似，这样可以让声明式渲染，自定义组件，state，生命周期方法和 refs 等特性，保持跨平台工作一致。
+
+在React中可以通过`this.setState`、`this.forceUpdate`、`ReactDOM.render`等API触发更新。
+
+每当有更新发生时，`Reconciler`会做如下工作：
+
+- 调用函数组件、或class组件的render方法，将返回的JSX转化为虚拟DOM
+- 将虚拟DOM和上次更新时的虚拟DOM对比
+- 通过对比找出本次更新中变化的虚拟DOM
+- 通知Renderer将变化的虚拟DOM渲染到页面上
+
+#### Renderer（渲染器）
+由于React支持跨平台，所以不同平台有不同的`Renderer`。最熟悉的是负责在浏览器环境渲染的Renderer —— ReactDOM
+
+除此之外，还有：
+
+- ReactNative渲染器，渲染App原生组件
+- ReactTest渲染器，渲染出纯Js对象用于测试
+- ReactArt渲染器，渲染到Canvas, SVG 或 VML (IE8)
+
+在每次更新发生时，Renderer接到`Reconciler`通知，将变化的组件渲染在当前宿主环境。
+
+在`Reconciler`中，mount的组件会调用`mountComponent`，update的组件会调用`updateComponent`。这两个方法都会递归更新子组件。
+
+由于递归执行，所以更新一旦开始，**中途就无法中断**。当层级很深时，递归更新时间超过了16ms，用户交互就会卡顿。
+
+## React16架构
+
+React16架构可以分为三层：
+
+- Scheduler（调度器）—— 调度任务的优先级，高优任务优先进入Reconciler
+- Reconciler（协调器）—— 负责找出变化的组件
+- Renderer（渲染器）—— 负责将变化的组件渲染到页面上
+
+Scheduler实际上就是`requestIdleCallback` 的polyfill，以浏览器是否有剩余时间作为任务中断的标准，实现了一种机制，当浏览器有剩余时间时通知`Reconciler`。
+
+整个`Scheduler`与`Reconciler`的工作都在内存中进行。**只有当所有组件都完成Reconciler的工作**，才会统一交给`Renderer`。
+
+[完全理解React Fiber](http://www.ayqy.net/blog/dive-into-react-fiber/)
+
+reconcile过程分为2个阶段（phase）：
+1. **reconciliation**（diff阶段）, （可中断）render/reconciliation 通过构造workInProgress tree得出change
+2. **commit**：（不可中断）commit 应用这些DOM change
+
+- reconciliation阶段：包含的主要工作是对`current tree` 和 `new tree`(`workInProgress`) 做diff计算，找出变化部分。进行遍历、对比等是可以中断，歇一会儿接着再来。
+- commit阶段：对上一阶段获取到的变化部分应用到真实的DOM树中，是一系列的DOM操作。不仅要维护更复杂的DOM状态，而且中断后再继续，会对用户体验造成影响。在普遍的应用场景下，此阶段的耗时比diff计算等耗时相对短。
+所以，Fiber选择在reconciliation阶段拆分
+
+如何拆分：
+- 用户调用ReactDOM.render传入组件，React创建Element树;
+- 在第一次渲染时，创建vdom树，用来维护组件状态和dom节点的信息。
+- 当后续操作如render或setState时需要更新，通过diff算出变化的部分。
+- 根据变化的部分更新vdom树、调用组件生命周期函数等，同步应用到真实的DOM节点中。
+
+**reconciliation具体过程如下：**
+
+以`fiber tree`为蓝本，把每个`fiber`作为一个工作单元，自顶向下逐节点构造`workInProgress tree`（构建中的新`fiber tree`）
+
+以组件节点为例
+- 1. 如果当前节点不需要更新，直接把子节点clone过来，跳到5；要更新的话打个tag
+- 2. 更新当前节点状态（props, state, context等）
+- 3. 调用`shouldComponentUpdate()`，false的话，跳到5
+- 4. 调用render()获得新的子节点，并为子节点创建fiber（创建过程会尽量复用现有fiber，子节点增删也发生在这里）
+- 5. 如果没有产生`child fiber`，该工作单元结束，把`effect list`归并到`return`，并把当前节点的`sibling`作为下一个工作单元；否则把child作为下一个工作单元
+- 6. 如果没有剩余可用时间了，等到下一次主线程空闲时才开始下一个工作单元；否则，立即开始做
+- 7. 如果没有下一个工作单元了（回到了workInProgress tree的根节点），第1阶段结束，进入pending Commit状态
+
+实际上是1-6的**工作循环**，7是出口，工作循环每次只做一件事，做完看要不要喘口气。工作循环结束时，`workInProgress tree`的根节点身上的effect list就是收集到的所有side effect（因为每做完一个都向上归并）
+
+所以，构建workInProgress tree的过程就是diff的过程，通过`requestIdleCallback`来调度执行一组任务，每完成一个任务后回来看看有没有插队的（更紧急的），每完成一组任务，把时间控制权交还给主线程，直到下一次requestIdleCallback回调再继续构建workInProgress tree
+
+**commit具体过程如下：**
+
+1. 处理`effect list`（包括3种处理：更新DOM树、调用组件生命周期函数以及更新ref等内部状态）
+2. 处理结束，第2阶段结束，所有更新都commit到DOM树上了
+
+注意，真的是**一口气做完**（同步执行，不能喊停）的，这个阶段的实际工作量是比较大的，所以尽量不要在后3个生命周期函数里干重活儿
+
+**生命周期hook**
+
+生命周期函数也被分为2个阶段了：
+
+```
+// 第1阶段 render/reconciliation
+componentWillMount
+componentWillReceiveProps
+shouldComponentUpdate
+componentWillUpdate
+
+// 第2阶段 commit
+componentDidMount
+componentDidUpdate
+componentWillUnmount
+```
+
+第1阶段的生命周期函数可能会被**多次调用**，默认以low优先级（后面介绍的6种优先级之一）执行，被高优先级任务打断的话，稍后重新执行
+
+**优先级策略**
+
+每个工作单元运行时有6种优先级：
+1. synchronous 与之前的Stack reconciler操作一样，同步执行
+2. task 在next tick之前执行
+3. animation 下一帧之前执行
+4. high 在不久的将来立即执行
+5. low 稍微延迟（100-200ms）执行也没关系
+6. offscreen 下一次render时或scroll时才执行
+
+`synchronous`首屏（首次渲染）用，要求尽量快，不管会不会阻塞UI线程。`animation`通过`requestAnimationFrame`来调度，这样在下一帧就能立即开始动画过程；后3个都是由`requestIdleCallbac`k回调执行的；`offscreen`指的是当前隐藏的、屏幕外的（看不见的）元素
+
+高优先级的比如键盘输入（希望立即得到反馈），低优先级的比如网络请求，让评论显示出来等等。另外，**紧急的事件允许插队**
+
+这样的优先级机制存在2个问题：
+
+1. 生命周期函数怎么执行（可能被频频中断）：触发顺序、次数没有保证了
+
+2. starvation（低优先级饿死）：如果高优先级任务很多，那么低优先级任务根本没机会执行（就饿死了）
+
 ### [React16的组件类型](https://zhuanlan.zhihu.com/p/55000793)
 
 ### 函数式组件
@@ -50,7 +177,6 @@ function Hello() {
 - **1. 函数式组件接收props作为自己的参数**
 
 ```typescript jsx
-
 import React from 'react';
 
 interface Props {
@@ -95,9 +221,9 @@ const result = Greeting(props); // <p>Hello</p>
 const instance = new Greeting(props); // Greeting {}
 const result = instance.render(); // <p>Hello</p>
 ```
-**函数组件之间运行，而类组件需要`new`实例化**， 所以函数组件没有`this`，应用是独立调用的，而`new`会强制绑定`this`
+**函数组件直接运行，而类组件需要`new`实例化**， 所以函数组件没有`this`，应用是独立调用的，而`new`会强制绑定`this`
 
-实际上React对基础的组件也就是**`React.Component`添加了一个标记**，并通过这个标记来区分一个组件是否是一个类组件。
+实际上React对基础的组件也就是`React.Component`**添加了一个标记**，并通过这个标记来区分一个组件是否是一个类组件。
 
 ```js
 // Inside React
@@ -154,12 +280,12 @@ export function createElement(type, config, children) {
 const ReactElement = function(type, key, ref, self, source, owner, props) {
   const element = {
     // 标记这是个 React Element
-    $$typeof: REACT_ELEMENT_TYPE,
+    $$typeof: REACT_ELEMENT_TYPE, // 指向 Symbol(React.element)，也承担了安全方面的功能。
 
-    type: type,
-    key: key,
-    ref: ref,
-    props: props,
+    type: type, // 这个元素是一个纯 html 标签元素，例如 div ，那么 type 将会是字符串 div, 如果是一个函数组件或者ClassComponent，则是指向自身，
+    key: key, // key 在数组的处理和 diff 过程中有重要作用
+    ref: ref, // 引用标识
+    props: props, // 包含id 、 className 、 style 、 children 、点击事件等等
     _owner: owner,
   };
 
@@ -180,6 +306,89 @@ export function isValidElement(object) {
 ```
 可以看到，`$$typeof === REACT_ELEMENT_TYPE`的非null对象就是一个合法的`React Element`。换言之，在React中，所有JSX在运行时的返回结果（即`React.createElement()`的返回值）都是`React Element`。
 
+#### Fiber
+Fiber是链表结构
+- child 指向当前节点的第一个子元素
+- return 指向当前节点的父元素
+- sibling 指向同级的下一个兄弟节点
+
+如果是 React16 之前的树状结构，就需要通过 `DFS` 深度遍历来查找每一个节点。而现在只需要将指针按照 `child → sibling → return` 的优先级移动，就可以处理所有的节点。
+
+![](./image/fiber_node.png)
+
+这样设计还有一个好处就是在 React 工作的时候只需要使用一个全局变量作为指针在链表中不断移动，如果出现用户输入或其他优先级更高的任务就可以 `暂停` 当前工作，其他任务结束后只需要根据指针的位置继续向下移动就可以继续之前的工作。指针移动的规律可以归纳为 **自顶向下，从左到右** 。
+
+fiber可以划分为3层含义分类：
+1. 作为Fiber树结构的，链表结构的3个指针
+2. 作为一种静态的数据结构，保存了组件相关的信息
+```typescript jsx
+function FiberNode(
+  tag: WorkTag,
+  pendingProps: mixed,
+  key: null | string,
+  mode: TypeOfMode,
+) {
+  // 作为静态数据结构的属性
+  this.tag = tag; //Fiber对应组件的类型 Function/Class/Host...
+  this.key = key; // key属性
+  this.elementType = null; // 大部分情况同type，某些情况不同，比如FunctionComponent使用React.memo包裹
+  this.type = null; // 对于 FunctionComponent，指函数本身，对于ClassComponent，指class，对于HostComponent，指DOM节点tagName
+  // stateNode 代表这个 fiber 节点对应的真实状态
+  // 对于原生组件，这个值指向一个 dom 节点（虽然已经被创建了，但不代表就被插入了 document ）
+  // 对于类组件，这个值指向对应的类实例
+  // 对于函数组件，这个值指向 Null
+  // 对于 RootFiber，这个值指向 FiberRoot
+  this.stateNode = null; // Fiber对应的真实DOM节点
+
+  // 用于连接其他Fiber节点形成Fiber树
+  this.return = null; // 指向父级Fiber节点
+  this.child = null; // 指向子Fiber节点
+  this.sibling = null; // 指向右边第一个兄弟Fiber节点
+  this.index = 0;
+
+  this.ref = null;
+
+  // 作为动态的工作单元的属性
+  this.pendingProps = pendingProps; // memorizeState 和 memorizeProps 代表在上次渲染中组件的 props 和 state 。如果成功更新，那么新的 pendingProps 和 newState 将会替代这两个变量的值
+  this.memoizedProps = null;
+  this.updateQueue = null;
+  this.memoizedState = null;
+  this.dependencies = null;
+
+  this.mode = mode;
+
+  this.effectTag = NoEffect; // 代表这个 fiber 在下一次渲染中将会被如何处理。例如只需要插入，那么这个值中会包含 Placement ，如果需要被删除，那么将会包含 Deletion 。
+  this.nextEffect = null;
+
+  this.firstEffect = null; // firstEffect 和 lastEffect 的类型都和 fiber 一样，同样是链表结构，通过 nextEffect 来连接。代表着即将更新的 fiber 状态
+  this.lastEffect = null;
+
+  // 调度优先级相关
+  this.lanes = NoLanes;
+  this.childLanes = NoLanes;
+
+  // 指向该fiber在另一次更新时对应的fiber
+  this.alternate = null;
+}
+```
+#### 双缓存Fiber树
+
+在React中最多会同时存在两棵`Fiber`树。当前屏幕上显示内容对应的Fiber树称为`current Fibe`r树，正在内存中构建的Fiber树称为`workInProgress Fiber`树。
+
+`current Fiber`树中的Fiber节点被称为current fiber，workInProgress Fiber树中的Fiber节点被称为workInProgress fiber，他们通过`alternate属性连接。
+
+```javascript
+currentFiber.alternate === workInProgressFiber;
+workInProgressFiber.alternate === currentFiber;
+```
+
+React应用的根节点通过current指针在不同Fiber树的rootFiber间切换来实现Fiber树的切换。
+
+当workInProgress Fiber树构建完成交给Renderer渲染在页面上后，应用根节点的current指针指向workInProgress Fiber树，此时workInProgress Fiber树就变为current Fiber树。
+
+每次状态更新都会产生新的workInProgress Fiber树，通过current与workInProgress的替换，完成DOM更新。
+
+首次执行ReactDOM.render会创建fiberRootNode（源码中叫fiberRoot）和`rootFiber`。其中`fiberRootNode`是整个应用的根节点，`rootFiber`是`<App/>`所在组件树的根节点。
 
 ## [生命周期](https://zh-hans.reactjs.org/docs/react-component.html)
 
@@ -364,7 +573,7 @@ class NameForm extends React.Component {
 一个组件重新重新渲染，一般三种情况：
 
 1. 要么是组件自己的状态改变
-2. 要么是父组件重新渲染，导致子组件重新渲染，但是父组件的 props 没有改版
+2. 要么是父组件重新渲染，导致子组件重新渲染，但是父组件的 props 没有改变
 3. 要么是父组件重新渲染，导致子组件重新渲染，但是父组件传递的 props 改变
 
 
@@ -402,8 +611,114 @@ class Child extends React.PureComponent {
 }
 ```
 
+### React组件到底什么时候render
 
 
+example：点击Parent组件的div，触发更新，Son组件会打印child render!么？
+```jsx harmony
+function Son() {
+  console.log('child render!');
+  return <div>Son</div>;
+}
+
+
+function Parent(props) {
+  const [count, setCount] = React.useState(0);
+
+  return (
+    <div onClick={() => {setCount(count + 1)}}>
+      count:{count}
+      {props.children}
+    </div>
+  );
+}
+
+
+function App() {
+  return (
+    <Parent>
+      <Son/>
+    </Parent>
+  );
+}
+
+const rootEl = document.querySelector("#root");
+ReactDOM.render(<App/>, rootEl);
+```
+**不会**
+
+#### render需要满足的条件
+
+React创建`Fiber`树时，每个组件对应的`fiber`都是通过如下两个逻辑之一创建的：
+- render。即调用`render`函数，根据返回的JSX创建新的`fiber`。
+- bailout。即满足一定条件时，React判断该组件在更新前后没有发生变化，则复用该组件在上一次更新的fiber作为本次更新的fiber。
+
+可以看到，当命中`bailout`逻辑时，是不会调用`render`函数的。
+
+所以，Son组件不会打印child render!是因为命中了bailout逻辑。
+#### bailout需要满足的条件
+什么情况下会进入bailout逻辑？当同时满足如下4个条件时：
+- 1. oldProps === newProps ？
+即本次更新的props（newProps）不等于上次更新的props（oldProps）。注意这里是**全等比较**。
+
+组件`rende`r会返回`JSX`，`JSX`是`React.createElement`的语法糖。
+
+所以`render`的返回结果实际上是`React.createElement`的执行结果，即一个包含`props`属性的对象。
+
+即使本次更新与上次更新`props`中每一项参数都没有变化，但是本次更新是`React.createElement`的执行结果，是一个全新的`props`引用，所以`oldProps !== newProps`。
+
+如果使用了`PureComponent`或`Memo`，那么在判断是进入`render`还是`bailout`时，不会判断`oldProps`与`newProps`是否全等，而是会对`props`内每个属性进行浅比较。
+
+2. context没有变化
+即`context`的`value`没有变化。
+3. workInProgress.type === current.type ？
+更新前后`fiber.type`是否变化，比如`div`是否变为`p`。
+4. !includesSomeLane(renderLanes, updateLanes) ？
+当前`fiber上`是否存在更新，如果存在那么`更新`的`优先级`是否和本次整棵`fiber树`调度的优先级一致？
+
+如果一致则进入`render`逻辑。
+
+就我们的Demo来说，Parent是整棵树中唯一能触发更新的组件（通过调用`setCount`）。
+
+所以Parent对应的fiber是唯一满足条件4的fiber。
+
+example的详细执行逻辑
+
+所以，Demo中Son进入bailout逻辑，一定是同时满足以上4个条件。
+
+条件2，Demo中没有用到context，满足。
+
+条件3，更新前后type都为Son对应的函数组件，满足。
+
+条件4，Son本身无法触发更新，满足。
+
+所以，重点是条件1。
+
+本次更新开始时，Fiber树存在如下2个fiber：FiberRootNode --- RootFiber    
+
+其中`FiberRootNode`是整个应用的根节点，`RootFiber`是调用`ReactDOM.rende`r创建的fiber。
+
+首先，`RootFiber`会进入`bailout的`逻辑，所以返回的`App fiber`和更新前是一致的。FiberRootNode--RootFiber-- App fiber
+
+由于`App fiber`是`RootFiber`走`bailout`逻辑返回的，所以对于`App fiber`，`oldProps === newProps`。并且`bailout`剩下3个条件也满足。
+
+所以App fiber也会走bailout逻辑，返回Parent fiber。FiberRootNode -- RootFiber -- App fiber --  Parent fiber
+
+由于更新是`Parent fiber`触发的，所以他不满足条件4，会走render的逻辑。
+
+**接下来是关键**
+
+如果render返回的Son是如下形式：`<Son/>`, 会编译为`React.createElement(Son, null)`，执行后返回`JSX`。
+
+由于`props`的引用改变，`oldProps !== newProps`。会走`render`逻辑。
+
+但是在`example`中`Son`是如下形式：`{props.children}`
+
+其中，`props.children`是Son对应的JSX，而这里的`props`是`App fibe`r走`bailout`逻辑后返回的。
+
+所以`Son`对应的`JSX`与上次更新时一致，`JSX`中保存的`props`也就一致，满足条件1。
+
+可以看到，`Son`满足`bailout`的所有条件，所以不会`render`。
 ### 高阶组件
 
 好文章-[React新特性Hooks使用教学，以及与高阶组件、renderProps模式的对比](https://blog.csdn.net/qq_40962320/article/details/87043581)
@@ -721,10 +1036,10 @@ Diff算法 => O(n^3) => 将两个DOM树的所有节点两两对比，时间复�
 
 再进行树的编辑(插入、替换、删除)需要遍历一次，因此时间复杂度为 O(n^3)
 ```
-React 在以下两个假设的基础之上提出了一套 O(n) 的启发式算法：
+React 在以下三个假设的基础之上提出了一套 O(n) 的启发式算法：
 1. 只对同级元素进行Diff。如果一个DOM节点在前后两次更新中跨越了层级，那么React不会尝试复用他。
 2. 两个不同类型的元素会产生出不同的树；
-3. 开发者可以通过 `key prop` 来暗示哪些子元素在不同的渲染下能保持稳定；
+3. 开发者可以通过 `key prop` 来暗示哪些子元素（同级的节点）在不同的渲染下能保持稳定；
 
 O(n^3)=> O(n) => 简单粗暴，所有的节点按层级比较，只会遍历一次
 ```cvs
@@ -823,3 +1138,200 @@ Diff算法的整体逻辑会经历两轮遍历：
 第一轮遍历：处理更新的节点。
 
 第二轮遍历：处理剩下的不属于更新的节点。
+
+**React 15的diff和React16的区别**
+
+- React15的虚拟dom是一颗由上至下深度优先遍历的树结构,每一个节点都是虚拟DOM 节点，React16的中是链表形式的虚拟 DOM，链表的每一个节点是 Fiber。
+- 15 diff阶段不可中断的递归，16中diff阶段更新时是可中断的循环，通过暂停、终止、复用渲染任务（Alternate）从而使得每一个fiber的diff与patch变的可控。
+- diff过程于patch的过程从之前的递归树状结构，变成一个循环遍历链表的形式。
+- 工作循环（requestIdleCallback）、优先级策略。
+### 笔记
+
+利用scheduler（相当于`requestIdleCallback` API）调度任务，即拆分异步的一个一个得构建fiber节点。待构建完成，再同步遍历fiber树，appendChild添加dom
+
+
+### React懒加载
+#### 1.代码分割
+（1）为什么要进行代码分割？
+前端项目基本都采用打包技术，比如 `Webpack`，JS逻辑代码打包后会产生一个 `bundle.js` 文件，而随着引用的第三方库越来越多或业务逻辑代码越来越复杂，相应打包好的 `bundle.js` 文件体积就会越来越大，因为需要先请求加载资源之后，才会渲染页面，这就会严重影响到页面的首屏加载。
+
+而为了解决这样的问题，避免大体积的代码包，则可以通过技术手段对代码包进行分割，能够创建多个包并在运行时动态地加载。现在像 Webpack等打包器都支持代码分割技术
+
+（2）什么时候应该考虑进行代码分割？
+
+这里举一个平时开发中可能会遇到的场景，比如某个体积相对比较大的第三方库或插件（比如JS版的PDF预览库）只在单页应用（SPA）的某一个不是首页的页面使用了，这种情况就可以考虑代码分割，增加首屏的加载速度。
+
+#### 2.React的懒加载
+example：
+```jsx harmony
+import React, { Suspense } from 'react';
+
+const OtherComponent = React.lazy(() => import('./OtherComponent'));
+
+function MyComponent() {
+  return (
+    <div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <OtherComponent />
+      </Suspense>
+    </div>
+  );
+}
+```
+
+如上代码中，通过 `import()`、`React.lazy` 和 `Suspense` 共同一起实现了 `React` 的懒加载，也就是常说了运行时动态加载，即 `OtherComponent` 组件文件被拆分打包为一个新的包（bundle）文件，并且只会在 OtherComponent 组件渲染时，才会被下载到本地。
+
+#### 3. import() 原理
+
+import() 函数是由TS39提出的一种动态加载模块的规范实现，其返回是一个 promise。在浏览器宿主环境中一个`import()`的参考实现如下：
+```js
+function import(url) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    const tempGlobal = "__tempModuleLoadingVariable" + Math.random().toString(32).substring(2);
+    script.type = "module";
+    script.textContent = `import * as m from "${url}"; window.${tempGlobal} = m;`;
+
+    script.onload = () => {
+      resolve(window[tempGlobal]);
+      delete window[tempGlobal];
+      script.remove();
+    };
+
+    script.onerror = () => {
+      reject(new Error("Failed to load module script with URL " + url));
+      delete window[tempGlobal];
+      script.remove();
+    };
+
+    document.documentElement.appendChild(script);
+  });
+}
+```
+当 Webpack 解析到该import()语法时，会自动进行代码分割。
+
+#### 4. React.lazy 原理
+```flow js
+export function lazy<T, R>(ctor: () => Thenable<T, R>): LazyComponent<T> {
+  let lazyType = {
+    $$typeof: REACT_LAZY_TYPE,
+    _ctor: ctor,
+    // React uses these fields to store the result.
+    _status: -1,
+    _result: null,
+  };
+
+  return lazyType;
+}
+```
+可以看到其返回了一个 `LazyComponent` 对象。
+
+而对于 LazyComponent 对象的解析：
+```js
+case LazyComponent: {
+  const elementType = workInProgress.elementType;
+  return mountLazyComponent(
+    current,
+    workInProgress,
+    elementType,
+    updateExpirationTime,
+    renderExpirationTime,
+  );
+}
+function mountLazyComponent(
+  _current,
+  workInProgress,
+  elementType,
+  updateExpirationTime,
+  renderExpirationTime,
+) { 
+  ...
+  let Component = readLazyComponentType(elementType);
+  ...
+}
+
+// Pending = 0, Resolved = 1, Rejected = 2
+export function readLazyComponentType<T>(lazyComponent: LazyComponent<T>): T {
+  const status = lazyComponent._status;
+  const result = lazyComponent._result;
+  switch (status) {
+    case Resolved: {
+      const Component: T = result;
+      return Component;
+    }
+    case Rejected: {
+      const error: mixed = result;
+      throw error;
+    }
+    case Pending: {
+      const thenable: Thenable<T, mixed> = result;
+      throw thenable;
+    }
+    default: { // lazyComponent 首次被渲染
+      lazyComponent._status = Pending;
+      const ctor = lazyComponent._ctor;
+      const thenable = ctor();
+      thenable.then(
+        moduleObject => {
+          if (lazyComponent._status === Pending) {
+            const defaultExport = moduleObject.default;
+            lazyComponent._status = Resolved;
+            lazyComponent._result = defaultExport;
+          }
+        },
+        error => {
+          if (lazyComponent._status === Pending) {
+            lazyComponent._status = Rejected;
+            lazyComponent._result = error;
+          }
+        },
+      );
+      // Handle synchronous thenables.
+      switch (lazyComponent._status) {
+        case Resolved:
+          return lazyComponent._result;
+        case Rejected:
+          throw lazyComponent._result;
+      }
+      lazyComponent._result = thenable;
+      throw thenable;
+    }
+  }
+}
+```
+注：如果 `readLazyComponentType` 函数多次处理同一个 `lazyComponent`，则可能进入`Pending、Rejected`等 case 中。
+
+从上述代码中可以看出，对于最初 React.lazy() 所返回的 LazyComponent 对象，其 _status 默认是 -1，所以首次渲染时，会进入 readLazyComponentType 函数中的 default 的逻辑，这里才会真正异步执行 import(url)操作，由于并未等待，随后会检查模块是否 Resolved，如果已经Resolved了（已经加载完毕）则直接返回moduleObject.default（动态加载的模块的默认导出），否则将通过 throw 将 thenable 抛出到上层。
+
+为什么要 throw 它？这就要涉及到 Suspense 的工作原理。
+
+#### 5. Suspense 原理
+React 捕获到异常之后，会判断异常是不是一个 `thenable`，如果是则会找到 `SuspenseComponent` ，如果 `thenable` 处于 pending 状态，则会将其 children 都渲染成 fallback 的值，一旦 `thenable` 被 resolve 则 `SuspenseComponent` 的子组件会重新渲染一次。
+
+为了便于理解，我们也可以用 `componentDidCatch` 实现一个自己的 `Suspense` 组件，如下：
+```jsx harmony
+class Suspense extends React.Component {
+  state = {
+    promise: null
+  }
+
+  componentDidCatch(err) {
+    // 判断 err 是否是 thenable
+    if (err !== null && typeof err === 'object' && typeof err.then === 'function') {
+      this.setState({ promise: err }, () => {
+        err.then(() => {
+          this.setState({
+            promise: null
+          })
+        })
+      })
+    }
+  }
+
+  render() {
+    const { fallback, children } = this.props
+    const { promise } = this.state
+    return <>{ promise ? fallback : children }</>
+  }
+}
+```

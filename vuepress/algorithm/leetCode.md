@@ -35,12 +35,18 @@ title: LeetCode
    - [判断BST的合法性](#判断bst的合法性)
 - [7.链表](#_7-链表)
    - [反转链表](#反转链表)
-- [8.最长递增子序列](#_8-最长递增子序列)
+   - [环形链表](#环形链表)
+   - [合并有序链表](#合并有序链表)
+- [8.动态规划](#_8-动态规划)
+   - [凑零钱问题](#凑零钱问题)
+   - [最长递增子序列](#最长递增子序列)
 - [9.数组](#_9-数组)
- - [连续子数组的最大和](#连续子数组的最大和)
- - [全排列](#全排列)
- - [最长湍流子数组](#最长湍流子数组)
- - [全排列](#全排列)
+   - [连续子数组的最大和](#连续子数组的最大和)
+   - [全排列](#全排列)
+   - [最长湍流子数组](#最长湍流子数组)
+   - [全排列](#全排列)
+- [扑克牌中的顺子](#扑克牌中的顺子)
+- [扁平化嵌套列表迭代器](#扁平化嵌套列表迭代器)
 
 获取26个字母
 ```javascript
@@ -237,6 +243,24 @@ var lengthOfLongestSubstring = function(s) {
 };
 
 // https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/solution/zi-jie-leetcode3wu-zhong-fu-zi-fu-de-zui-chang-zi-/
+
+var lengthOfLongestSubstring = function(s) {
+    if(!s) return 0
+    let res = 1
+    let prev = 1
+    let lastIndex = 0
+    for(let i = 1; i< s.length; i++) {
+        let findIndex = s.slice(lastIndex, i).indexOf(s[i])
+        if(findIndex > -1) {
+            prev = i - findIndex - lastIndex
+            lastIndex = findIndex + 1 + lastIndex
+        } else {
+            prev = prev + 1
+        }
+        res = Math.max(prev, res)
+    }
+    return res
+};
 ```
  ::: 
  
@@ -1051,7 +1075,129 @@ var hasCycle = function(head) {
 };
 ````
 
-### 8.[最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
+#### [合并有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
+mine
+```javascript
+var mergeTwoLists = function(l1, l2) {
+    let root = null
+    let prev = null
+    while(l1 || l2) {
+        if(l1 && !l2) {
+            if(prev) {
+                prev.next = l1
+                prev = prev.next
+            } else {
+                root = l1
+                prev = root
+            }
+            break;
+        } else if(!l1 && l2) {
+            if(prev) {
+                prev.next = l2
+                prev = prev.next
+            } else {
+                root = l2
+                prev = root
+            }
+            break;
+        } else {
+            if(l1.val > l2.val) {
+                if(prev) {
+                    prev.next = new ListNode(l2.val)
+                    prev = prev.next
+                } else {
+                    root = new ListNode(l2.val)
+                    prev = root
+                }
+                l2 = l2.next
+            } else {
+                if(prev) {
+                    prev.next = new ListNode(l1.val)
+                    prev = prev.next
+                } else {
+                    root = new ListNode(l1.val)
+                    prev = root
+                }
+                l1 = l1.next
+            }
+        }
+    }
+    return root
+};
+```
+递归
+```javascript
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val) {
+ *     this.val = val;
+ *     this.next = null;
+ * }
+ */
+/**
+ * @param {ListNode} l1
+ * @param {ListNode} l2
+ * @return {ListNode}
+ */
+var mergeTwoLists = function(l1, l2) {
+    if(l1 === null){
+        return l2;
+    }
+    if(l2 === null){
+        return l1;
+    }
+    if(l1.val < l2.val){
+        l1.next = mergeTwoLists(l1.next, l2);
+        return l1;
+    }else{
+        l2.next = mergeTwoLists(l1, l2.next);
+        return l2;
+    }
+}
+```
+迭代
+```javascript
+var mergeTwoLists = function(l1, l2) {
+    const prehead = new ListNode(-1);
+
+    let prev = prehead;
+    while (l1 != null && l2 != null) {
+        if (l1.val <= l2.val) {
+            prev.next = l1;
+            l1 = l1.next;
+        } else {
+            prev.next = l2;
+            l2 = l2.next;
+        }
+        prev = prev.next;
+    }
+
+    // 合并后 l1 和 l2 最多只有一个还未被合并完，我们直接将链表末尾指向未合并完的链表即可
+    prev.next = l1 === null ? l2 : l1;
+
+    return prehead.next;
+};
+```
+## 8.动态规划
+
+### [凑零钱问题](https://leetcode-cn.com/problems/coin-change/)
+```javascript
+var coinChange = function(coins, amount) {
+    let dp = new Array(amount + 1).fill(Infinity)
+    dp[0] = 0
+
+    for (let i = 1; i <= amount; i++) {
+        for (let coin of coins) {
+            if (i - coin >= 0) {
+                dp[i] = Math.min(dp[i], dp[i - coin] + 1)
+            }
+        }
+    }
+    return dp[amount] === Infinity ? -1 : dp[amount]
+}
+```
+
+### [最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
 就是给定一个无序的数组，在这个数组中找出，递增并且最长的子数组
 
 1.动态规划，状态转移方程`dp[i] = Max(dp[i],dp[j]+1)`
@@ -1074,8 +1220,6 @@ var lengthOfLIS = function(nums) {
     return Math.max(...dp)
 };
 ```
-
-#### [扑克牌中的顺子](https://leetcode-cn.com/problems/bu-ke-pai-zhong-de-shun-zi-lcof/)
 
 ## 9.数组
 
@@ -1103,12 +1247,13 @@ var maxSubArray = function(nums) {
 ```javascript
 // https://leetcode-cn.com/problems/lian-xu-zi-shu-zu-de-zui-da-he-lcof/solution/mian-shi-ti-42-lian-xu-zi-shu-zu-de-zui-da-he-do-2/
 var maxSubArray = function(nums) {
-    let max = nums[0]
-    for(let i = 1; i < nums.length; i++) {
-        nums[i] = Math.max(nums[i], nums[i] + nums[i-1])
-        max = Math.max(nums[i], max)
+    let sum = nums[0]
+    let prevSum = nums[0]
+    for(let i = 1; i < nums.length;i++) {
+       prevSum = Math.max(nums[i], prevSum + nums[i])
+       sum = Math.max(prevSum, sum)
     }
-    return max
+    return sum
 };
 ```
 ### [全排列](https://leetcode-cn.com/problems/permutations/)

@@ -197,9 +197,9 @@ function quick1(arr, left = 0, right = arr.length - 1) {
 	if (left >= right) return;
 	var i = left, j = right, flag = i;
 	while(i < j) {
-		while(arr[j] >= arr[flag] && j > flag) j --;
+		while(arr[j] >= arr[flag] && j > flag) j--;
 		if (i >= j) break;
-		while(arr[i] <= arr[flag] && i < j) i ++;
+		while(arr[i] <= arr[flag] && i < j) i++;
 		var temp = arr[flag];
 		arr[flag] = arr[j];
 		arr[j] = arr[i];
@@ -217,9 +217,9 @@ function quick(arr, left = 0, right = arr.length - 1) {
 		if (now[0] >= now[1]) continue;
 		var i = now[0], j = now[1], flag = i;
 		while(i < j) {
-			while(arr[j] >= arr[flag] && j > flag) j --;
+			while(arr[j] >= arr[flag] && j > flag) j--;
 			if (i >= j) break;
-			while(arr[i] <= arr[flag] && i < j) i ++;
+			while(arr[i] <= arr[flag] && i < j)  ++;
 			var temp = arr[flag];
 			arr[flag] = arr[j];
 			arr[j] = arr[i];
