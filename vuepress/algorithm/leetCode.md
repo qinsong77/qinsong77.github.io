@@ -37,11 +37,13 @@ title: LeetCode
    - [反转链表](#反转链表)
    - [环形链表](#环形链表)
    - [合并有序链表](#合并有序链表)
+   - [K个一组翻转链表](#k个一组翻转链表)
 - [8.动态规划](#_8-动态规划)
    - [凑零钱问题](#凑零钱问题)
    - [最长递增子序列](#最长递增子序列)
 - [9.数组](#_9-数组)
    - [连续子数组的最大和](#连续子数组的最大和)
+   - [合并两个有序数组](#合并两个有序数组)
    - [全排列](#全排列)
    - [最长湍流子数组](#最长湍流子数组)
    - [全排列](#全排列)
@@ -1178,6 +1180,9 @@ var mergeTwoLists = function(l1, l2) {
     return prehead.next;
 };
 ```
+
+#### [K个一组翻转链表](https://leetcode-cn.com/problems/reverse-nodes-in-k-group/)
+
 ## 8.动态规划
 
 ### [凑零钱问题](https://leetcode-cn.com/problems/coin-change/)
@@ -1254,6 +1259,59 @@ var maxSubArray = function(nums) {
        sum = Math.max(prevSum, sum)
     }
     return sum
+};
+```
+
+### [合并两个有序数组](https://leetcode-cn.com/problems/sorted-merge-lcci/)
+mine: 插入后交换
+```javascript
+/**
+ * @param {number[]} A
+ * @param {number} m
+ * @param {number[]} B
+ * @param {number} n
+ * @return {void} Do not return anything, modify A in-place instead.
+ */
+var merge = function(A, m, B, n) {
+    for(let i = 0; i < n; i++) {
+        let b = B[i]
+        if(A[m - 1 + i] <= b || m === 0) A[m+i] = b
+        else {
+            let swapFlag = false
+            let lastV = 0
+            for(let j = 0; j < m + i + 1; j++) {
+                if(swapFlag) {
+                    let temp = A[j]
+                    A[j] = lastV
+                    lastV = temp
+                } else {
+                    if(A[j] > b && !swapFlag) {
+                        swapFlag = true
+                        lastV = A[j]
+                        A[j] = b
+                    }
+                }
+            }
+        }
+    }
+};
+```
+把 A 和 B 中的所有元素，从大到小依次放入 A 中
+```javascript
+var merge = function(A, m, B, n) {
+    let index = m + n - 1, i = m - 1, j = n -1
+    while(i > -1 || j > -1) {
+        let a = i > -1 ? A[i] : -Infinity
+        let b = j > -1 ? B[j] : -Infinity
+        if(a > b) {
+            A[index] = a
+            i--
+        } else {
+            A[index] = b
+            j--
+        }
+        index--
+    }
 };
 ```
 ### [全排列](https://leetcode-cn.com/problems/permutations/)
