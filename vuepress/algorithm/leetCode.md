@@ -16,8 +16,7 @@ title: LeetCode
   - [字符串相加](#字符串相加)
   - [字符串相乘](#字符串相乘)
   - [替换后的最长重复字符](#替换后的最长重复字符)
-- [4.二维数组翻转90度](#_4-n-x-n二维数组翻转90度)
-- [5.二叉树](#_5-二叉树)
+- [4.二叉树](#_4-二叉树)
    - [二叉树的层序遍历](#二叉树的层序遍历)
    - [二叉树的序列化与反序列化](#二叉树的序列化与反序列化)
    - [翻转二叉树](#翻转二叉树)
@@ -28,25 +27,33 @@ title: LeetCode
    - [从中序与后序遍历序列构造二叉树](#最大二叉树)
    - [寻找重复的子树](#寻找重复的子树)
    - [求二叉树中最大路径和](#求二叉树中最大路径和)
-- [6.二叉搜索树](#_6-二叉搜索树)
+- [5.二叉搜索树](#_5-二叉搜索树)
    - [二叉搜索树中第K小的元素](#二叉搜索树中第k小的元素)
    - [把二叉搜索树转换为累加树](#把二叉搜索树转换为累加树)
    - [恢复二叉搜索树](#恢复二叉搜索树)
    - [判断BST的合法性](#判断bst的合法性)
-- [7.链表](#_7-链表)
+- [6.链表](#_6-链表)
    - [反转链表](#反转链表)
    - [环形链表](#环形链表)
+   - [找出环形链表的进入节点](#找出环形链表的进入节点)
+   - [链表的中间结点](#链表的中间结点)
+   - [寻找链表的倒数第k个元素](#寻找链表的倒数第k个元素)
+   - [k个一组翻转链表](#k个一组翻转链表)
    - [合并有序链表](#合并有序链表)
    - [K个一组翻转链表](#k个一组翻转链表)
-- [8.动态规划](#_8-动态规划)
+- [7.动态规划](#_7-动态规划)
    - [凑零钱问题](#凑零钱问题)
    - [最长递增子序列](#最长递增子序列)
-- [9.数组](#_9-数组)
+- [8.数组](#_8-数组)
    - [连续子数组的最大和](#连续子数组的最大和)
    - [合并两个有序数组](#合并两个有序数组)
    - [全排列](#全排列)
    - [最长湍流子数组](#最长湍流子数组)
    - [全排列](#全排列)
+- [9.二维数组](#_9-二维数组)
+    - [二维数组翻转90度](#n-x-n二维数组翻转90度)
+    - [二维数组中的查找](#二维数组中的查找)
+- [二分查找](#二分查找)
 - [扑克牌中的顺子](#扑克牌中的顺子)
 - [扁平化嵌套列表迭代器](#扁平化嵌套列表迭代器)
 
@@ -367,8 +374,6 @@ let multiply = function(num1, num2) {
 
 #### [替换后的最长重复字符](https://leetcode-cn.com/problems/longest-repeating-character-replacement/)
 
-
-
 ````javascript
 /**
 如: s = "AABABBA", k = 1
@@ -436,101 +441,8 @@ var characterReplacement = function(s, k) {
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 **/
 ````
-    
-#### [4.N x N二维数组翻转90度](https://leetcode-cn.com/problems/rotate-image)
-```dotenv
-给定 matrix = 
-[
-  [1,2,3],
-  [4,5,6],
-  [7,8,9]
-],
-
-原地旋转输入矩阵，使其变为:
-[
-  [7,4,1],
-  [8,5,2],
-  [9,6,3]
-]
-```
-对于矩阵中第 ii 行的第 jj 个元素，在旋转后，它出现在倒数第 ii 列的第 jj 个位置。由于矩阵中的行列从 00 开始计数，因此对于矩阵中的元素 `matrix[row][col]`，在旋转后，它的新位置为 `[col][n−row−1]`。
-```javascript
-var rotate = function(matrix) {
-    const n = matrix.length
-    var map = new Map()
-    // [col][n−row−1]
-    for (var i = 0; i < n; i++) {
-        for(var j =0; j < n; j++) {
-            var key = j + '&' + (n - i -1)
-            map.set(key, matrix[i][j])
-        } 
-    }
-    for (var i = 0; i < n; i++) {
-        for(var j =0; j < n; j++) {
-            var key = i + '&' + j
-            matrix[i][j] = map.get(key)
-        } 
-    }
-};
-
-var rotate2 = function(matrix){
-	const n = matrix.length
-	const map = new Map()
-	// [col][n−row−1]
-	for (let i = 0; i < n; i++) {
-		for (let j = 0; j < n; j++) {
-			const row = j
-			const col = n - i - 1
-			const key = row + '-' + col
-			if (map.has(i + '-' + j)) {
-				if (!map.has(key)) map.set(key, matrix[row][col])
-				matrix[row][col] = map.get(i + '-' + j)
-			} else {
-				if (!map.has(key)) map.set(key, matrix[row][col])
-				matrix[row][col] = matrix[i][j]
-			}
-		}
-	}
-}
-```
-先以对角线（左上<—>右下）为轴进行翻转，再对每行左右翻转即可。
-```javascript
-var rotate = function(matrix) {
-    const n = matrix.length
-    for (let i = 0; i < n; i++) {
-        for(let j = i + 1; j < n; j++) {
-            [matrix[i][j], matrix[j][i]] =  [matrix[j][i], matrix[i][j]]
-        } 
-    }
-    const mid = Math.floor(n/2)
-    for (let i = 0; i < n; i++) {
-        for(let j = 0; j < mid; j++) {
-            [matrix[i][j], matrix[i][n - 1 - j]] =  [matrix[i][n - 1 - j], matrix[i][j]]
-        } 
-    }
-};
-```
-
-执行用时为 60 ms 的范例
-```javascript
-var rotate3 = function (matrix) {
-	//let newMatrix = []
-	let len = matrix.length
-	for (let l = 0; l < len; l++) {
-		let newL = []
-		for (let n = 0; n < len; n++) {
-			newL.unshift(matrix[n][l])
-		}
-		matrix.push(newL)
-		//newMatrix.push(newL)
-		//console.log(newMatrix)
-	}
-	matrix.splice(0, matrix.length / 2)
-	//matrix = newMatrix
-};
-```
-
-### 5.二叉树
+ 
+### 4.二叉树
 做二叉树的问题，关键是把题目的要求细化，搞清楚根节点应该做什么，然后剩下的事情抛给前/中/后序的遍历框架就行了。
 ```javascript
 /* 二叉树遍历框架 */
@@ -841,7 +753,7 @@ var maxPathSum = function(root) {
 };
 ```
 
-### 6.二叉搜索树
+### 5.二叉搜索树
 
 BST(Binary Search Tree) 的特性
 
@@ -1030,7 +942,7 @@ function isInBST(root, target) {
 }
 ```
 
-### 7.链表
+### 6.链表
 
 #### [反转链表](https://leetcode-cn.com/problems/fan-zhuan-lian-biao-lcof/)
 
@@ -1049,8 +961,8 @@ var reverseList = function(head) {
 ```
 
 #### [环形链表](https://leetcode-cn.com/submissions/detail/144460090/)
-
-````js
+快慢指针
+```js
 var hasCycle = function(head) {
     // 使用hash表，时间复杂度O(n)，空间复杂度O(n)
     // let cache = new Set()
@@ -1074,6 +986,123 @@ var hasCycle = function(head) {
         }
     }
     return false
+};
+```
+
+#### [找出环形链表的进入节点](#https://leetcode-cn.com/problems/linked-list-cycle-ii/)
+快慢指针
+```javascript
+// https://leetcode-cn.com/problems/linked-list-cycle-ii/solution/linked-list-cycle-ii-kuai-man-zhi-zhen-shuang-zhi-/
+var detectCycle = function(head) {
+    // const set = new Set()
+    // let res = null
+    // while(head) {
+    //     if(set.has(head)) return head
+    //     set.add(head)
+    //     head = head.next
+    // }
+    // return res
+    if (head === null) {
+        return null;
+    }
+    let slow = head, fast = head;
+    while (fast !== null) {
+        slow = slow.next;
+        if (fast.next !== null) {
+            fast = fast.next.next;
+        } else {
+            return null;
+        }
+        if (fast === slow) {
+            let ptr = head;
+            while (ptr !== slow) {
+                ptr = ptr.next;
+                slow = slow.next;
+            }
+            return ptr;
+        }
+    }
+    return null;
+};
+```
+
+### [链表的中间结点](https://leetcode-cn.com/problems/middle-of-the-linked-list/)
+快慢指针
+```javascript
+var middleNode = function(head) {
+    let slow = head
+    let fast = head
+    while(fast && fast.next) {
+        slow = slow.next
+        fast = fast.next.next
+    }
+    return slow
+};
+```
+### [寻找链表的倒数第k个元素](https://leetcode-cn.com/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/)
+快慢指针
+
+让快指针先走 k 步，然后快慢指针开始同速前进。这样当快指针走到链表末尾 null 时，慢指针所在的位置就是倒数第 k 个链表节点
+```javascript
+var getKthFromEnd = function(head, k) {
+    let slow = head
+    let fast = head
+    while(k > 0) {
+        fast = fast.next
+        k--
+    }
+    while(fast) {
+        fast = fast.next
+        slow = slow.next
+    }
+    return slow
+};
+```
+
+### [k个一组翻转链表](https://leetcode-cn.com/problems/reverse-nodes-in-k-group/submissions/)
+
+````javascript
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode} head
+ * @param {number} k
+ * @return {ListNode}
+ */
+var reverseKGroup = function(head, k) {
+    const stack = []
+    let preHead = new ListNode(0)
+    let pre = preHead
+    while(true) {
+        let count = 0
+        let temp = head
+
+        while(temp && count < k) {
+            stack.push(temp)
+            temp = temp.next
+            count++
+        }
+
+        if(count !== k) {
+            pre.next = head;
+            break;
+        }
+
+        while(stack.length > 0) {
+            pre.next = stack.pop()
+            pre = pre.next
+        }
+
+        pre.next = temp
+
+        head = temp
+    }
+    return preHead.next
 };
 ````
 
@@ -1183,7 +1212,49 @@ var mergeTwoLists = function(l1, l2) {
 
 #### [K个一组翻转链表](https://leetcode-cn.com/problems/reverse-nodes-in-k-group/)
 
-## 8.动态规划
+```javascript
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val) {
+ *     this.val = val;
+ *     this.next = null;
+ * }
+ */
+/**
+ * @param {ListNode} head
+ * @param {number} k
+ * @return {ListNode}
+ */
+var reverseKGroup = function(head, k) {
+    let stack = [];
+    let preHead = new ListNode(0);
+    let pre = preHead;
+    // 循环链接后续反转链表
+    while(true){
+        let count = 0;
+        let tmp = head;
+        while(tmp && count < k){
+            stack.push(tmp);
+            tmp = tmp.next;
+            count++;
+        }
+        // 不够k个，直接链接剩下链表返回
+        if(count != k){
+            pre.next = head;
+            break;
+        }
+        // 出栈即是反转
+        while(stack.length > 0){
+            pre.next = stack.pop();
+            pre = pre.next;
+        }
+        pre.next = tmp;
+        head = tmp;
+    }
+    return preHead.next;
+};
+```
+## 7.动态规划
 
 ### [凑零钱问题](https://leetcode-cn.com/problems/coin-change/)
 ```javascript
@@ -1226,7 +1297,7 @@ var lengthOfLIS = function(nums) {
 };
 ```
 
-## 9.数组
+## 8.数组
 
 ### [连续子数组的最大和](https://leetcode-cn.com/problems/lian-xu-zi-shu-zu-de-zui-da-he-lcof/)
 暴力求解：时间复杂度O(n^2),空间复杂度O(1)
@@ -1387,6 +1458,150 @@ var maxTurbulenceSize = function(arr) {
     }
     return max
 };
+```
+
+### 9.二维数组
+#### [N x N二维数组翻转90度](https://leetcode-cn.com/problems/rotate-image)
+```dotenv
+给定 matrix = 
+[
+  [1,2,3],
+  [4,5,6],
+  [7,8,9]
+],
+
+原地旋转输入矩阵，使其变为:
+[
+  [7,4,1],
+  [8,5,2],
+  [9,6,3]
+]
+```
+对于矩阵中第 ii 行的第 jj 个元素，在旋转后，它出现在倒数第 ii 列的第 jj 个位置。由于矩阵中的行列从 00 开始计数，因此对于矩阵中的元素 `matrix[row][col]`，在旋转后，它的新位置为 `[col][n−row−1]`。
+```javascript
+var rotate = function(matrix) {
+    const n = matrix.length
+    var map = new Map()
+    // [col][n−row−1]
+    for (var i = 0; i < n; i++) {
+        for(var j =0; j < n; j++) {
+            var key = j + '&' + (n - i -1)
+            map.set(key, matrix[i][j])
+        } 
+    }
+    for (var i = 0; i < n; i++) {
+        for(var j =0; j < n; j++) {
+            var key = i + '&' + j
+            matrix[i][j] = map.get(key)
+        } 
+    }
+};
+
+var rotate2 = function(matrix){
+	const n = matrix.length
+	const map = new Map()
+	// [col][n−row−1]
+	for (let i = 0; i < n; i++) {
+		for (let j = 0; j < n; j++) {
+			const row = j
+			const col = n - i - 1
+			const key = row + '-' + col
+			if (map.has(i + '-' + j)) {
+				if (!map.has(key)) map.set(key, matrix[row][col])
+				matrix[row][col] = map.get(i + '-' + j)
+			} else {
+				if (!map.has(key)) map.set(key, matrix[row][col])
+				matrix[row][col] = matrix[i][j]
+			}
+		}
+	}
+}
+```
+先以对角线（左上<—>右下）为轴进行翻转，再对每行左右翻转即可。
+```javascript
+var rotate = function(matrix) {
+    const n = matrix.length
+    for (let i = 0; i < n; i++) {
+        for(let j = i + 1; j < n; j++) {
+            [matrix[i][j], matrix[j][i]] =  [matrix[j][i], matrix[i][j]]
+        } 
+    }
+    const mid = Math.floor(n/2)
+    for (let i = 0; i < n; i++) {
+        for(let j = 0; j < mid; j++) {
+            [matrix[i][j], matrix[i][n - 1 - j]] =  [matrix[i][n - 1 - j], matrix[i][j]]
+        } 
+    }
+};
+```
+
+执行用时为 60 ms 的范例
+```javascript
+var rotate3 = function (matrix) {
+	//let newMatrix = []
+	let len = matrix.length
+	for (let l = 0; l < len; l++) {
+		let newL = []
+		for (let n = 0; n < len; n++) {
+			newL.unshift(matrix[n][l])
+		}
+		matrix.push(newL)
+		//newMatrix.push(newL)
+		//console.log(newMatrix)
+	}
+	matrix.splice(0, matrix.length / 2)
+	//matrix = newMatrix
+};
+```
+
+#### [二维数组中的查找](https://leetcode-cn.com/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/)
+从左下角开始比较，对行列进行位移
+```javascript
+/**
+ * @param {number[][]} matrix
+ * @param {number} target
+ * @return {boolean}
+ */
+var findNumberIn2DArray = function(matrix, target) {
+    if (matrix.length == 0 || matrix[0].length == 0) {
+        return false;
+    }
+    let row = matrix.length - 1
+    let col = 0
+    while(row >=0 && col <= matrix[0].length -1) {
+        let val = matrix[row][col]
+        if(target > val) {
+            col++
+        } else if(target < val) {
+            row--
+        } else {
+            return true
+        }
+    }
+    return false
+};
+```
+### 二分查找
+
+#### [二分查找](https://leetcode-cn.com/problems/binary-search/)
+
+```javascript
+function binarySearch(arr, target){
+	let low = 0
+	let high = arr.length - 1
+	while (low <= high) {
+		const mid = Math.floor((low + high)/2)
+		const midValue = arr[mid]
+		if (midValue > target) {
+			high = mid - 1
+		} else if (midValue < target) {
+			low = mid + 1
+		} else {
+			return mid
+		}
+	}
+	return -1
+}
 ```
 
 #### [扑克牌中的顺子](https://leetcode-cn.com/problems/bu-ke-pai-zhong-de-shun-zi-lcof/)

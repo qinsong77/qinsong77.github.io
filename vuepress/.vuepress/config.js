@@ -141,7 +141,8 @@ module.exports = {
 						'frameWork/microservices',
 						'frameWork/network',
 						'frameWork/http',
-						'frameWork/https'
+						'frameWork/https',
+						'frameWork/performance'
 					]
 				}
 			],
@@ -151,6 +152,7 @@ module.exports = {
 				'sort',
 				'leetCode',
 				'dynamic',
+				'backTrack',
 				'interview'
 			],
 			'/backEnd/': [
