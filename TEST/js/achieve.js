@@ -295,3 +295,282 @@ function compose(...funcs) {
 		return funcs.reduce((prev, func) => func(prev), x)
 	}
 }
+
+
+function deepClone(obj, hash = new WeakMap()) {
+	if(obj === null) return obj
+	if(obj instanceof RegExp) return new RegExp(obj)
+	if(obj instanceof Date) return new Date(obj)
+	if(typeof obj !== 'object') return obj
+	if(hash.has(obj)) return obj.get(obj)
+	const cloneObj = new obj.constructor()
+	hash.set(cloneObj, cloneObj)
+	for(const key in obj) {
+		if(obj.hasOwnProperty(key)) {
+			cloneObj[key] = deepClone(obj[key], hash)
+		}
+	}
+	return cloneObj
+}
+
+function needDeepClone(obj) {
+	return ['[object Object]', '[object Array]', '[object Map]', '[object Set]'].includes(Object.prototype.toString.call(obj))
+}
+
+function copyBaseValue(value) {
+	if(value === null) return null
+	if(typeof value !== 'object') return value
+	return new value.constructor(value)
+}
+
+function depC(data) {
+	if(!needDeepClone(data)) return copyBaseValue(data)
+	const hash = new WeakMap()
+	const cloneData = new data.constructor()
+	const stack = [{
+		origin: data,
+		copyData: cloneData
+	}]
+	
+	while (stack.length > 0) {
+		const [origin, copyData] = stack.pop()
+		if(!hash.has(copyData)) hash.set(copyData, copyData)
+		const type = Object.prototype.toString.call(origin)
+		switch (type) {
+			case '[object Array]':
+				origin.forEach(v => {
+					if(!needDeepClone(v)) copyData.push(v)
+					else if (hash.has(v)) copyData.push(v)
+					else {
+						const newCopyData = new v.constructor()
+						hash.set(newCopyData, newCopyData)
+						copyData.push(newCopyData)
+						stack.push({
+							origin: v,
+							copyData: newCopyData
+						})
+					}
+				})
+		}
+	}
+	return cloneData
+}
+
+function deepClone2(data) {
+	
+	if (!needDeepClone(data)) return copyBaseValue(data)
+	
+	const hashMap = new WeakMap()
+	const cloneData = new data.constructor()
+	const stack = [
+		{
+			source: data,
+			target: cloneData,
+		}
+	]
+	
+	while (stack.length) {
+		// 深度优先遍历
+		const [source, target] = stack.pop()
+		
+		if (!hashMap.has(source)) {
+			hashMap.set(source, target)
+		}
+		
+		const stringType = Object.prototype.toString.call(source)
+		
+		switch (stringType) {
+			case '[object Object]':
+				const keys = Object.keys(source)
+				keys.forEach(key => {
+					if(!needDeepClone(source[key])) {
+						target[key] = copyBaseValue(source[key])
+					} else {
+						if (hashMap.has(source[key])) target[key] = hashMap.get(source[key])
+						else {
+							const newTarget = new source[key].constructor()
+							stack.push({
+								source: source[key],
+								target: newTarget
+							})
+							target[key] = newTarget
+						}
+					}
+				})
+				break
+			
+			case '[object Array]':
+				source.forEach(v => {
+					if (!needDeepClone(v)) {
+						target.push(copyBaseValue(v))
+					} else {
+						if (hashMap.has(v)) target.push(hashMap.get(v))
+						else {
+							const newTarget = new v.constructor()
+							stack.push({
+								source: v,
+								target: newTarget
+							})
+							target.push(newTarget)
+						}
+					}
+				})
+				break
+			
+			case '[object Map]':
+				source.forEach((v, k) => {
+					if (!needDeepClone(v)) target.set(k, copyBaseValue(v))
+					else {
+						if (hashMap.has(v)) target.set(k, hashMap.get(v))
+						else {
+							const newTarget = new v.constructor()
+							stack.push({
+								source: v,
+								target: newTarget
+							})
+							target.set(k, newTarget)
+						}
+					}
+				})
+				break
+			
+			case '[object Set]':
+				source.forEach(v => {
+					if (!needDeepClone(v)) target.add(copyBaseValue(v))
+					else {
+						if (hashMap.has(v)) target.add(hashMap.get(v))
+						else {
+							const newTarget = new v.constructor()
+							stack.push({
+								source: v,
+								target: newTarget
+							})
+							target.add(newTarget)
+						}
+					}
+				})
+				break
+		}
+	}
+	
+	return cloneData
+}
+
+
+class Observer {
+	constructor(name) {
+		this.name = name
+	}
+	notify() {
+		console.log(`${this.name} has been notified.`);
+	}
+}
+
+class Subject {
+	constructor() {
+		this.observers = []
+	}
+	
+	addObserver(observer) {
+		this.observers.push(observer)
+	}
+	
+	notifyObservers () {
+		console.log("notify all the observers");
+		this.observers.forEach(observer => observer.notify())
+	}
+}
+
+// 1. 创建主题对象
+const subject = new Subject()
+
+// 2. 添加观察者
+const observerA = new Observer('ObserverA')
+const observerB = new Observer('ObserverB')
+subject.addObserver(observerA)
+subject.addObserver(observerB)
+
+// 3. 通知所有观察者
+subject.notifyObservers()
+
+
+class EventEmitter {
+	constructor(_maxListeners = 10) {
+		this._maxListeners = _maxListeners
+		this._events = new Map()
+	}
+	// 向事件队列添加事件
+	// prepend为true表示向事件队列头部添加事件
+	addListener(type, listener, prepend = false) {
+		const events = this._events.get(type)
+		if(Array.isArray(events) && events === this._maxListeners) return false
+		if(!this._events.has(type)) this._events.set(type, [listener])
+		else if(prepend) events.unshift(listener)
+		else events.push(listener)
+		return true
+	}
+	
+	// 移除某个事件
+	removeListener(type, listener) {
+		const events = this._events.get(type)
+		if(Array.isArray(events) && listener) {
+			this._events.set(type, events.filter(e => e !== listener && e.origin !== listener))
+			return true
+		} else return false
+	}
+	// 向事件队列添加事件，只执行一次
+	once(type, listener) {
+		const only = (...args) => {
+			listener.apply(this, args)
+			this.removeListener(type, listener)
+		}
+		only.origin = listener
+		this.addListener(type, only)
+	}
+	// 执行某类事件
+	emit(type, ...args) {
+		const events = this._events.get(type)
+		if(Array.isArray(events)) {
+			events.forEach(fn => fn.apply(this, args))
+		}
+	}
+	setMaxListeners(maxEventCount) {
+		this._maxListeners = maxEventCount
+	}
+}
+
+// test
+var emitter = new EventEmitter()
+
+var onceListener = function (args) {
+	console.log('我只能被执行一次', args, this)
+}
+
+var listener = function (args) {
+	console.log('我是一个listener', args, this)
+}
+
+emitter.once('click', onceListener)
+emitter.addListener('click', listener)
+
+emitter.emit('click', '参数')
+emitter.emit('click')
+
+emitter.removeListener('click', listener)
+emitter.emit('click')
+
+function Singleton(name,t) {
+	this.name = name
+	this.t = t
+	this.instance = null
+}
+
+Singleton.prototype.getInstance = function (arg) {
+	if(!this.instance) {
+		this.instance = new Singleton(arg)
+	}
+	return this.instance
+}
+
+console.log(Singleton.getInstance('tom', 12))
+console.log(Singleton.getInstance('tom11', 13))

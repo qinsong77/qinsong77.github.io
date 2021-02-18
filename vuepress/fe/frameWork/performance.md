@@ -108,3 +108,8 @@ title: 前端性能优化
 2. Page Speed
 
 3. Jspref
+
+### 首屏优化
+
+#### [CRP](https://juejin.cn/post/6844903757038223367)
+CRP： 即**关键渲染路径** (Critical Rendering Path)， 关键渲染路径是浏览器将 HTML CSS JavaScript 转换为在屏幕上呈现的像素内容所经历的一系列步骤。

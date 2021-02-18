@@ -452,6 +452,47 @@ if (Number.EPSILON === undefined) {
 }
 ```
 
+### 函数的argument
+`argument`是一个对象，只不过它的属性从`0`开始排，依次为`0，1，2...`最后还有`callee`和`length`属性。这样的对象称为**类数组**。
+
+常见的类数组还有：
+1. 用`getElementByTagName/ClassName/Name（）`获得的`HTMLCollection`
+2. 用`querySelector`获得的`nodeList`
+
+转换成数组的方法
+1. `Array.prototype.slice.call()`
+```javascript
+function sum(a, b) {
+  let args = Array.prototype.slice.call(arguments);
+  console.log(args.reduce((sum, cur) => sum + cur));//args可以调用数组原生的方法
+}
+sum(1, 2);//3
+```
+2. `Array.from()`
+```javascript
+function sum(a, b) {
+  let args = Array.from(arguments);
+  console.log(args.reduce((sum, cur) => sum + cur));
+}
+sum(1, 2);//3
+```
+
+3. ES6展开运算符
+```javascript
+function sum(a, b) {
+  let args = [...arguments];
+  console.log(args.reduce((sum, cur) => sum + cur));
+}
+sum(1, 2);//3
+```
+4. 利用`concat+apply`
+```javascript
+function sum(a, b) {
+  let args = Array.prototype.concat.apply([], arguments);//apply方法会把第二个参数展开
+  console.log(args.reduce((sum, cur) => sum + cur));
+}
+sum(1, 2);//3
+```
 ### 尾递归优化
 
 ECMAScript 6 规范新增了一项内存管理优化机制，让 JavaScript 引擎在满足条件时可以重用栈帧。
@@ -612,7 +653,7 @@ log() // "Current value is 10" 未能正确打印30
 ### 数组
 
 ::: tip
-注意： 除了抛出异常以外，没有办法中止或跳出 forEach() 循环。如果你需要中止或跳出循环，forEach() 方法不是应当使用的工具。
+注意： 除了抛出异常以外，没有办法中止或跳出 forEach() 循环, `return`也不行。如果需要中止或跳出循环，`forEach()` 方法不是应当使用的工具。
 
 若需要提前终止循环，可以使用：
 

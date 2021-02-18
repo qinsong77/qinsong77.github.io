@@ -156,49 +156,51 @@ function _instanceOf(instanceObject, classFunc) {
 - 4.处理参数，传入第一个参数后的其余参数
 - 5.调用函数后即删除该Symbol属性
 ```javascript
-    Function.prototype.mayCall = function(context, ...args) {
-        if (this === Function.prototype) {
-          return undefined // 用于防止 Function.prototype.myCall() 直接调用
-        }
-        // 首先判断调用对象
-        if(typeof this !== 'function') {
-            throw new TypeError('error')
-        }
-        context = context || window
-        const fn = Symbol()
-        context[fn] = this
-        const result = context[fn](...args)
-        delete context[fn]
-        return result
+Function.prototype.mayCall = function(context, ...args) {
+    if (this === Function.prototype) {
+      return undefined // 用于防止 Function.prototype.myCall() 直接调用
     }
+    // 首先判断调用对象
+    if(typeof this !== 'function') {
+        throw new TypeError('error')
+    }
+    context = context || window
+    const fn = Symbol()
+    context[fn] = this
+    const result = context[fn](...args)
+    delete context[fn]
+    return result
+}
 ```
 ### 模拟实现apply
-apply实现类似call，参数为数组
+`func.apply(thisArg, [argsArray])`
+
+apply实现类似call，参数为数组，从`ECMAScript 5` 开始可以使用类数组对象。
 
 ```javascript
-    Function.prototype.myApply = function (context, args) {
-        if (this === Function.prototype) {
-            return undefined // 用于防止 Function.prototype.myCall() 直接调用
-        }
-         // 首先判断调用对象
-        if(typeof this !== 'function') {
-           throw new TypeError('error')
-        }
-        context = context || window
-        const fn = Symbol()
-        context[fn] = this
-        
-        // Array.isArray
-        if (!Array.isArray) {
-          Array.isArray = function(arg) {
-            return Object.prototype.toString.call(arg) === '[object Array]'
-          }
-        }
-
-        const result = Array.isArray(args) ? context[fn](...args) : context[fn]()
-        delete context[fn]
-        return result
+Function.prototype.myApply = function (context, args) {
+    if (this === Function.prototype) {
+        return undefined // 用于防止 Function.prototype.myCall() 直接调用
     }
+     // 首先判断调用对象
+    if(typeof this !== 'function') {
+       throw new TypeError('error')
+    }
+    context = context || window
+    const fn = Symbol()
+    context[fn] = this
+    
+    // Array.isArray
+    if (!Array.isArray) {
+      Array.isArray = function(arg) {
+        return Object.prototype.toString.call(arg) === '[object Array]'
+      }
+    }
+
+    const result = Array.isArray(args) ? context[fn](...args) : context[fn]()
+    delete context[fn]
+    return result
+}
 ```
 
 ### 模拟实现bind
@@ -508,26 +510,24 @@ function copyBaseValue(target) {
 }
 
 // 维护一个栈(数组），while循环 https://yanhaijing.com/javascript/2018/10/10/clone-deep/
-function deepClone2(data, hashMap = new WeakMap()) {
+function deepClone2(data) {
 	
 	if (!needDeepClone(data)) return copyBaseValue(data)
 	
-	let cloneData = new data.constructor()
-	// 循环数组
-	const loopList = [
+	const hashMap = new WeakMap()
+	const cloneData = new data.constructor()
+	const stack = [
 		{
 			source: data,
 			target: cloneData,
 		}
 	]
 	
-	while (loopList.length) {
+	while (stack.length) {
 		// 深度优先遍历
-		const node = loopList.pop()
-		const source = node.source
-		let target = node.target
+		const [source, target] = stack.pop()
 		
-		if (!hashMap.get(source)) {
+		if (!hashMap.has(source)) {
 			hashMap.set(source, target)
 		}
 		
@@ -537,85 +537,75 @@ function deepClone2(data, hashMap = new WeakMap()) {
 			case '[object Object]':
 				const keys = Object.keys(source)
 				keys.forEach(key => {
-					if (needDeepClone(source[key])) {
-						if (hashMap.get(source[key])) {
-							target[key] = hashMap.get(source[key])
-						} else {
-							const newNode = {
-								source: source[key],
-								target: new source[key].constructor()
-							}
-							loopList.push(newNode)
-							target[key] = newNode.target
-						}
-					} else {
+					if(!needDeepClone(source[key])) {
 						target[key] = copyBaseValue(source[key])
+					} else {
+						if (hashMap.has(source[key])) target[key] = hashMap.get(source[key])
+						else {
+							const newTarget = new source[key].constructor()
+							stack.push({
+								source: source[key],
+								target: newTarget
+							})
+							target[key] = newTarget
+						}
 					}
 				})
 				break
 			
 			case '[object Array]':
 				source.forEach(v => {
-					if (needDeepClone(v)) {
-						
-						if (hashMap.get(v)) {
-							target.push(hashMap.get(v))
-						} else {
-							const newNode = {
-								source: v,
-								target: new v.constructor()
-							}
-							loopList.push(newNode)
-							target.push(newNode.target)
-						}
-					} else {
+					if (!needDeepClone(v)) {
 						target.push(copyBaseValue(v))
+					} else {
+						if (hashMap.has(v)) target.push(hashMap.get(v))
+						else {
+							const newTarget = new v.constructor()
+							stack.push({
+								source: v,
+								target: newTarget
+							})
+							target.push(newTarget)
+						}
 					}
 				})
 				break
 			
 			case '[object Map]':
 				source.forEach((v, k) => {
-					if (needDeepClone(v)) {
-						if (hashMap.get(v)) {
-							target.set(k, hashMap.get(v))
-						} else {
-							const newNode = {
+					if (!needDeepClone(v)) target.set(k, copyBaseValue(v))
+					else {
+						if (hashMap.has(v)) target.set(k, hashMap.get(v))
+						else {
+							const newTarget = new v.constructor()
+							stack.push({
 								source: v,
-								target: new v.constructor()
-							}
-							loopList.push(newNode)
-							target.set(k, newNode.target)
+								target: newTarget
+							})
+							target.set(k, newTarget)
 						}
-					} else {
-						target.set(k, copyBaseValue(v))
 					}
 				})
 				break
 			
 			case '[object Set]':
 				source.forEach(v => {
-					if (needDeepClone(v)) {
-						
-						if (hashMap.get(v)) {
-							target.add(hashMap.get(v))
-						} else {
-							const newNode = {
+					if (!needDeepClone(v)) target.add(copyBaseValue(v))
+					else {
+						if (hashMap.has(v)) target.add(hashMap.get(v))
+						else {
+							const newTarget = new v.constructor()
+							stack.push({
 								source: v,
-								target: new v.constructor()
-							}
-							loopList.push(newNode)
-							target.add(newNode.target)
+								target: newTarget
+							})
+							target.add(newTarget)
 						}
-						
-					} else {
-						target.add(copyBaseValue(v))
 					}
 				})
 				break
 		}
 	}
-	
 	
 	return cloneData
 }
@@ -647,43 +637,42 @@ function deepClone2(data, hashMap = new WeakMap()) {
 观察者模式，它定义了一种 一对多 的关系，让多个观察者对象同时监听某一个主题对象，这个主题对象的状态发生变化时就会通知所有的观察者对象，使得它们能够自动更新自己。在观察者模式中有两个主要角色：Subject（主题）和 Observer（观察者）。
 
 ![](./image/achieve/observe-model.png)
-```typescript
-interface Observer {
-  notify: Function;
+```javascript
+class Observer {
+	constructor(name) {
+		this.name = name
+	}
+	notify() {
+		console.log(`${this.name} has been notified.`);
+	}
 }
 
-class ConcreteObserver implements Observer{
-  constructor(private name: string) {}
-  notify() {
-    console.log(`${this.name} has been notified.`);
-  }
+class Subject {
+	constructor() {
+		this.observers = []
+	}
+	
+	addObserver(observer) {
+		this.observers.push(observer)
+	}
+	
+	notifyObservers () {
+		console.log("notify all the observers");
+		this.observers.forEach(observer => observer.notify())
+	}
 }
-
-class Subject { 
-  private observers: Observer[] = [];
-
-  public addObserver(observer: Observer): void {
-    this.observers.push(observer);
-  }
-
-  public notifyObservers(): void {
-    console.log("notify all the observers");
-    this.observers.forEach(observer => observer.notify());
-  }
-}
-// 使用
 
 // 1. 创建主题对象
-const subject: Subject = new Subject();
+const subject = new Subject()
 
 // 2. 添加观察者
-const observerA = new ConcreteObserver("ObserverA");
-const observerC = new ConcreteObserver("ObserverC");
-subject.addObserver(observerA); 
-subject.addObserver(observerC);
+const observerA = new Observer('ObserverA')
+const observerB = new Observer('ObserverB')
+subject.addObserver(observerA)
+subject.addObserver(observerB)
 
 // 3. 通知所有观察者
-subject.notifyObservers();
+subject.notifyObservers()
 
 // notify all the observers
 // ObserverA has been notified.
@@ -724,6 +713,51 @@ class EventHub {
 }
 
 // 更加完善
+class EventEmitter {
+	constructor(_maxListeners = 10) {
+		this._maxListeners = _maxListeners
+		this._events = new Map()
+	}
+	// 向事件队列添加事件
+	// prepend为true表示向事件队列头部添加事件
+	addListener(type, listener, prepend = false) {
+		const events = this._events.get(type)
+		if(Array.isArray(events) && events === this._maxListeners) return false
+		if(!this._events.has(type)) this._events.set(type, [listener])
+		else if(prepend) events.unshift(listener)
+		else events.push(listener)
+		return true
+	}
+	
+	// 移除某个事件
+	removeListener(type, listener) {
+		const events = this._events.get(type)
+		if(Array.isArray(events) && listener) {
+			this._events.set(type, events.filter(e => e !== listener && e.origin !== listener))
+			return true
+		} else return false
+	}
+	// 向事件队列添加事件，只执行一次
+	once(type, listener) {
+		const only = (...args) => {
+			listener.apply(this, args)
+			this.removeListener(type, listener)
+		}
+		only.origin = listener
+		this.addListener(type, only)
+	}
+	// 执行某类事件
+	emit(type, ...args) {
+		const events = this._events.get(type)
+		if(Array.isArray(events)) {
+			events.forEach(fn => fn.apply(this, args))
+		}
+	}
+	setMaxListeners(maxEventCount) {
+		this._maxListeners = maxEventCount
+	}
+}
+// old
 function EventEmitter() {
 	this._maxListeners = 10
 	this._events = Object.create(null)
@@ -1008,6 +1042,13 @@ function* flatten2(array, depth) {
 const arr2 = [1, 2, [3, 4, [5, 6]]];
 const flattened = [...flatten2(arr2, Infinity)];
 
+
+let ary = [1, [2, [3, [4, 5]]], 6];// -> [1, 2, 3, 4, 5, 6]
+let str = JSON.stringify(ary);
+// 调用ES6中的flat方法
+ary = arr.flat(Infinity);
+// replace + split
+ary = str.replace(/(\[|\])/g, '').split(',')
 ```
 
 ### 数组操作

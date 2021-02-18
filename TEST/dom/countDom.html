@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>Count DOm</title>
+</head>
+<body>
+<div>
+   <span>f</span>
+   <span>o</span>
+   <span>o</span>
+</div>
+</body>
+<script>
+	// 当前页面中元素节点的数量总和、元素节点的最大嵌套深度以及最大子元素个数
+	console.time()
+	const res = {
+		totalElementsCount: 0,
+		maxDOMTreeDepth: 0,
+		maxChildrenCount: 0
+	}
+	const dom = Array.from(document.getElementsByTagName('*'))
+	res.totalElementsCount = dom.length
+
+	function countDeepAndMaxChildren(doms) {
+		let maxDOMTreeDepth = 0
+    let maxChildrenCount = 0
+    doms.forEach(dom => {
+	    maxChildrenCount = Math.max(maxChildrenCount, dom.children.length)
+	    let counter = 0
+      while (dom) {
+	    	dom = dom.parentNode
+        counter++
+      }
+      maxDOMTreeDepth = Math.max(maxDOMTreeDepth, counter)
+    })
+    return {
+			maxDOMTreeDepth,
+			maxChildrenCount
+    }
+	}
+	const {maxDOMTreeDepth, maxChildrenCount }= countDeepAndMaxChildren(dom)
+  res.maxChildrenCount = maxChildrenCount
+  res.maxDOMTreeDepth = maxDOMTreeDepth
+	console.log(res)
+	console.timeEnd()
+</script>
+</html>

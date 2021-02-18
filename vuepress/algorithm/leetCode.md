@@ -43,7 +43,7 @@ title: LeetCode
    - [寻找链表的倒数第k个元素](#寻找链表的倒数第k个元素)
    - [k个一组翻转链表](#k个一组翻转链表)
    - [合并有序链表](#合并有序链表)
-   - [K个一组翻转链表](#k个一组翻转链表)
+   - [链表求和](#链表求和)
 - [7.动态规划](#_7-动态规划)
    - [凑零钱问题](#凑零钱问题)
    - [最长递增子序列](#最长递增子序列)
@@ -1126,7 +1126,7 @@ var getKthFromEnd = function(head, k) {
 };
 ```
 
-### [k个一组翻转链表](https://leetcode-cn.com/problems/reverse-nodes-in-k-group/submissions/)
+### [k个一组翻转链表](https://leetcode-cn.com/problems/reverse-nodes-in-k-group)
 
 ````javascript
 /**
@@ -1145,6 +1145,7 @@ var reverseKGroup = function(head, k) {
     const stack = []
     let preHead = new ListNode(0)
     let pre = preHead
+    // 循环链接后续反转链表
     while(true) {
         let count = 0
         let temp = head
@@ -1154,12 +1155,12 @@ var reverseKGroup = function(head, k) {
             temp = temp.next
             count++
         }
-
+        // 不够k个，直接链接剩下链表返回
         if(count !== k) {
             pre.next = head;
             break;
         }
-
+        // 出栈即是反转
         while(stack.length > 0) {
             pre.next = stack.pop()
             pre = pre.next
@@ -1275,50 +1276,96 @@ var mergeTwoLists = function(l1, l2) {
 };
 ```
 
-#### [K个一组翻转链表](https://leetcode-cn.com/problems/reverse-nodes-in-k-group/)
+#### [链表求和](https://leetcode-cn.com/problems/sum-lists-lcci/)
 
 ```javascript
-/**
- * Definition for singly-linked list.
- * function ListNode(val) {
- *     this.val = val;
- *     this.next = null;
- * }
- */
-/**
- * @param {ListNode} head
- * @param {number} k
- * @return {ListNode}
- */
-var reverseKGroup = function(head, k) {
-    let stack = [];
-    let preHead = new ListNode(0);
-    let pre = preHead;
-    // 循环链接后续反转链表
-    while(true){
-        let count = 0;
-        let tmp = head;
-        while(tmp && count < k){
-            stack.push(tmp);
-            tmp = tmp.next;
-            count++;
-        }
-        // 不够k个，直接链接剩下链表返回
-        if(count != k){
-            pre.next = head;
-            break;
-        }
-        // 出栈即是反转
-        while(stack.length > 0){
-            pre.next = stack.pop();
-            pre = pre.next;
-        }
-        pre.next = tmp;
-        head = tmp;
+var addTwoNumbers = function(h1, h2) {
+    const res = new ListNode(Infinity)
+    let curr = res
+    let prevMoreVal = 0
+    while(h1 && h2) {
+        let val = h1.val + h2.val + prevMoreVal
+        if (val > 9) {
+            const str = String(val)
+            prevMoreVal = parseInt(str.slice(0, 1))
+            val = parseInt(str.slice(1,2))
+        } else prevMoreVal = 0
+        curr.next = new ListNode(val)
+        curr = curr.next
+        h1 = h1.next
+        h2 = h2.next
     }
-    return preHead.next;
+    if(h1) curr.next = h1
+    else if (h2) curr.next = h2
+    let prev = curr
+    curr = curr.next
+    while(curr) {
+        let val = curr.val + prevMoreVal
+        if(val > 9) {
+            prevMoreVal = 1
+            val = val - 10
+        } else prevMoreVal = 0
+        prev.next = new ListNode(val)
+        prev = prev.next
+        curr = curr.next
+    }
+    if(prevMoreVal > 0) {
+        prev.next = new ListNode(prevMoreVal)
+    }
+    return res.next
 };
 ```
+数位是正向存放的
+````javascript
+function addInList( head1 ,  head2 ) {
+    // write code here
+    function reverNode(head) {
+        let prev = null
+        while(head) {
+            const temp = head.next
+            head.next = prev
+            prev = head
+            head = temp
+        }
+        return prev
+    }
+    let h1 = reverNode(head1)
+    let h2 = reverNode(head2)
+    const res = new ListNode(Infinity)
+    let curr = res
+    let prevMoreVal = 0
+    while(h1 && h2) {
+        let val = h1.val + h2.val + prevMoreVal
+        if (val > 9) {
+            const str = String(val)
+            prevMoreVal = parseInt(str.slice(0, 1))
+            val = parseInt(str.slice(1,2))
+        } else prevMoreVal = 0
+        curr.next = new ListNode(val)
+        curr = curr.next
+        h1 = h1.next
+        h2 = h2.next
+    }
+    if(h1) curr.next = h1
+    else if (h2) curr.next = h2
+    let prev = curr
+    curr = curr.next
+    while(curr) {
+        let val = curr.val + prevMoreVal
+        if(val > 9) {
+            prevMoreVal = 1
+            val = val - 10
+        } else prevMoreVal = 0
+        prev.next = new ListNode(val)
+        prev = prev.next
+        curr = curr.next
+    }
+    if(prevMoreVal > 0) {
+        prev.next = new ListNode(prevMoreVal)
+    }
+    return reverNode(res.next)
+}
+````
 ## 7.动态规划
 
 ### [凑零钱问题](https://leetcode-cn.com/problems/coin-change/)
