@@ -142,6 +142,7 @@ module.exports = {
 						'frameWork/network',
 						'frameWork/http',
 						'frameWork/https',
+						'frameWork/ssr',
 						'frameWork/performance'
 					]
 				}

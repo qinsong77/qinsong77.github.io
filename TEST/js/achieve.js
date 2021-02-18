@@ -174,3 +174,124 @@ function debounce(fn, wait){
 		}, wait)
 	}
 }
+
+
+function curry(fn) {
+	return function curryed(...args) {
+		if(fn.length <= args.length) {
+			return fn.apply(this, args)
+		} else {
+			return function (...args2) {
+				return curryed.apply(this, args.concat(args2))
+			}
+		}
+	}
+}
+
+function cr(obj) {
+	function f() {
+	}
+	f.prototype = obj
+	return new f()
+}
+
+function ins(obj, con) {
+	let protoType = con.prototype
+	let proto = obj.__proto__
+	while (true) {
+		if(proto === null) return false
+		if(proto === protoType) return true
+		proto = proto.__proto__
+	}
+}
+
+function newF() {
+	let obj = {}
+	const con = [].shift.call(arguments)
+	obj.__proto__ = con.prototype
+	let res = con.call(obj, arguments)
+	if((typeof result === 'object' && result !== null) || typeof result === 'function') {
+		return result
+	}
+	return obj
+}
+
+
+function deepClone(obj, hash = new WeakMap()) {
+	if(obj === null || obj === undefined) return obj
+	if(obj instanceof Date) return new Date(obj)
+	if(obj instanceof RegExp) return new RegExp(obj)
+	if(typeof obj !== 'object') return obj
+	if(hash.get(obj)) return hash.get(obj)
+	let cloneObj = new obj.constructor()
+	hash.set(obj, cloneObj)
+	for(let key in obj) {
+		if(obj.hasOwnProperty(key)) {
+			cloneObj[key] = deepClone(obj[key], hash)
+		}
+	}
+	return cloneObj
+}
+
+Function.prototype.myCall2  = function (content, ...args) {
+	if(typeof this !== 'function') {
+		throw new TypeError('error')
+	}
+	let symbol = new Symbol()
+	content[symbol] = this
+	let res = content[symbol](...args)
+	delete content[symbol]
+	return res
+}
+
+
+
+
+function Point(x, y) {
+	this.x = x;
+	this.y = y;
+}
+
+
+Function.prototype.myBind = function (context) {
+	const slice = Array.prototype.slice
+	const args1 = slice.call(arguments, 1)
+	const func = this
+	if(typeof func !== 'function') {
+		throw new Error("Must accept function")
+	}
+	const NOOP = function () {}
+	NOOP.prototype = func.prototype
+	function resultFunc() {
+		const args2 = slice.call(arguments,0)
+		return func.apply(
+			// (this instanceof NOOP) ? this : context,
+			resultFunc.prototype.isPrototypeOf(this) ? this : context,
+			args1.concat(args2)
+		)
+	}
+	resultFunc.prototype = new NOOP()
+	resultFunc.prototype.constructor = resultFunc
+	return resultFunc
+}
+Point.prototype.toString = function() {
+	return this.x + ',' + this.y;
+};
+var YAxisPoint = Point.myBind(null, 0/*x*/);
+
+/*（译注：polyfill 的 bind 方法中，如果把 bind 的第一个参数加上，
+即对新绑定的 this 执行 Object(this)，包装为对象，
+因为 Object(null) 是 {}，所以也可以支持）*/
+
+var axisPoint = new YAxisPoint(5);
+console.log(axisPoint.toString()) // '0,5'
+
+console.log(axisPoint instanceof Point) // true
+console.log(axisPoint instanceof YAxisPoint) // true
+console.log(new YAxisPoint(17, 42) instanceof Point) // true
+
+function compose(...funcs) {
+	return function (x) {
+		return funcs.reduce((prev, func) => func(prev), x)
+	}
+}

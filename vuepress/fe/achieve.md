@@ -202,47 +202,65 @@ apply实现类似call，参数为数组
 ```
 
 ### 模拟实现bind
-- 1.处理参数，返回一个闭包
-- 2.判断是否为构造函数调用，如果是则使用new调用当前函数
-- 3.如果不是，使用apply，将context和处理好的参数传入
+语法： `function.bind(thisArg[, arg1[, arg2[, ...]]])`
+>`bind()` 方法创建一个新的函数，在 `bind()` 被调用时，这个新函数的 this 被指定为 `bind()`的第一个参数，而其余参数将作为新函数的参数，供调用时使用。
+>绑定函数也可以使用`new`运算符构造，它会表现为目标函数已经被构建完毕了似的。提供的`this`会被忽略，但前置参数仍会提供给默认函数。
+
+所以`resultFunc` 函数被当做构造函数使用的时候，应该忽略传入的 `context `值，而使用`resultFunc`的`this`值。
+
+同时当做构造函数使用时，还需要考虑原型链的处理，这里的处理类似于继承，func 函数的原型链应该指向原函数的原型链，但又不能直接赋值，否则会出现原型被共享的问题出现。
+
+作为构造函数使用的绑定函数
+```javascript
+function Point(x, y) {
+  this.x = x;
+  this.y = y;
+}
+
+Point.prototype.toString = function() {
+  return this.x + ',' + this.y;
+};
+
+var p = new Point(1, 2);
+p.toString(); // '1,2'
+// var emptyObj = {};
+// var YAxisPoint = Point.bind(emptyObj, 0/*x*/);
+
+
+var YAxisPoint = Point.bind(null, 0/*x*/);
+
+var axisPoint = new YAxisPoint(5);
+axisPoint.toString(); // '0,5'
+
+axisPoint instanceof Point; // true
+axisPoint instanceof YAxisPoint; // true
+new YAxisPoint(17, 42) instanceof Point; // true
+```
 
 ##### [官方实现](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
 
+[手写bind](https://mp.weixin.qq.com/s/pip27xjxi4oELlZMe7KR-Q)
 ```javascript
-/*
-Function.prototype.myBind = function (context, ...args) {
-	// 首先判断调用对象是否为函数
-	if(typeof this !== 'function') {
-		throw new TypeError('error')
+Function.prototype.myBind = function (context) {
+	const slice = Array.prototype.slice
+	const args1 = slice.call(arguments, 1)
+	const func = this
+	if(typeof func !== 'function') {
+		throw new Error("Must accept function")
 	}
-	
-	const that = this
-	
-	return function F(...newArgs) {
-		if (this instanceof F) {
-			return new that(...args, ...newArgs)
-		}
-		return that.apply(context, args.concat(newArgs))
+	const NOOP = function () {}
+	NOOP.prototype = func.prototype
+	function resultFunc() {
+		const args2 = slice.call(arguments,0)
+		return func.apply(
+			(this instanceof NOOP) ? this : context, // 判断resultFunc是否是new 调用，如果是则传入this
+			// resultFunc.prototype.isPrototypeOf(this) ? this : context,
+			args1.concat(args2)
+		)
 	}
-}
-*/
-// version 2
-Function.prototype.myBind = function(asThis) {
-  var slice = Array.prototype.slice;
-  var args1 = slice.call(arguments, 1);
-  var fn = this;
-  if (typeof fn !== "function") {
-    throw new Error("Must accept function");
-  }
-  function resultFn() {
-    var args2 = slice.call(arguments, 0);
-    return fn.apply(
-      resultFn.prototype.isPrototypeOf(this) ? this : asThis, // new 的情况下 this 改绑成 new 出来的对象实例
-      args1.concat(args2)
-    );
-  }
-  resultFn.prototype = fn.prototype;
-  return resultFn;
+	resultFunc.prototype = new NOOP() // 避免原型链污染
+	resultFunc.prototype.constructor = resultFunc
+	return resultFunc
 }
 ```
 
@@ -407,7 +425,7 @@ trimLowerCaseAndSplit(" a,B,C "); // ["a", "b", "c"]
 > [使用proxy](https://github.com/KieSun/FE-advance-road/blob/master/wheels/deepClone/index.md)
 ```javascript
 
-// 数组浅拷贝可以用slice,concat, [...array]，对象可以用Object.assign. {...obj}
+// 数组浅拷贝可以用slice,concat, [...array]，对象可以用Object.assign，{...obj}
 const arr = [1, 2, 3]
 const arrCopy = arr.slice()
 arr.push(3)
@@ -418,6 +436,23 @@ var obj2 = {...obj}
 // obj2 ==={k: "1"} true
 obj.ff = '12'
 // obj2 ==={k: "1"} true
+
+// 面试手写版
+function deepClone(obj, hash = new WeakMap()) {
+	if(obj === null || obj === undefined) return obj
+	if(obj instanceof Date) return new Date(obj)
+	if(obj instanceof RegExp) return new RegExp(obj)
+	if(typeof obj !== 'object') return obj
+	if(hash.get(obj)) return hash.get(obj)
+	let cloneObj = new obj.constructor()
+	hash.set(obj, cloneObj)
+	for(let key in obj) {
+		if(obj.hasOwnProperty(key)) {
+			cloneObj[key] = deepClone(obj[key], hash)
+		}
+	}
+	return cloneObj
+}
 
 /*
   递归，解决了嵌套引用，但会嵌套多层递归会爆栈

@@ -8,6 +8,7 @@ title: LeetCode
 - [1.两数之和](#_1-两数之和)
 - [2.回文数](#_2-回文数)
 - [3.字符串](#_3-字符串)
+  - [括号序列](#括号序列)
   - [最长回文子串](#最长回文子串)
   - [最长不含重复字符的子字符串](#最长不含重复字符的子字符串)
   - [最长公共前缀](#最长公共前缀)
@@ -16,6 +17,8 @@ title: LeetCode
   - [字符串相加](#字符串相加)
   - [字符串相乘](#字符串相乘)
   - [替换后的最长重复字符](#替换后的最长重复字符)
+  - [最长公共子序列](#最长公共子序列)
+  - [最小覆盖子串](#最小覆盖子串)
 - [4.二叉树](#_4-二叉树)
    - [二叉树的层序遍历](#二叉树的层序遍历)
    - [二叉树的序列化与反序列化](#二叉树的序列化与反序列化)
@@ -35,7 +38,7 @@ title: LeetCode
 - [6.链表](#_6-链表)
    - [反转链表](#反转链表)
    - [环形链表](#环形链表)
-   - [找出环形链表的进入节点](#找出环形链表的进入节点)
+   - [链表中环的入口节点](#链表中环的入口节点)
    - [链表的中间结点](#链表的中间结点)
    - [寻找链表的倒数第k个元素](#寻找链表的倒数第k个元素)
    - [k个一组翻转链表](#k个一组翻转链表)
@@ -106,16 +109,6 @@ var twoSum = function(nums, target) {
 };
 ```
 ```javascript
-/**
- * @param {number[]} nums
- * @param {number} target
- * @return {number[]}
- */
-/**
- * @param {number[]} nums
- * @param {number} target
- * @return {number[]}
- */
 var twoSum = function(nums, target) {
     let i = nums.length;
     while(i > 1) {
@@ -177,6 +170,25 @@ var isPalindrome = function(x: number): boolean {
 
 ## 3.字符串
 
+#### [括号序列](https://leetcode-cn.com/problems/valid-parentheses/) 
+使用栈
+```javascript
+/**
+ * @param {string} s
+ * @return {boolean}
+ */
+var isValid = function(s) {
+    const stack = []
+    for(let i = 0; i < s.length;i++) {
+        const char = s[i]
+        if(char === '(') stack.push(')')
+        else if(char === '{') stack.push('}')
+        else if(char === '[') stack.push(']')
+        else if(stack.length === 0 || stack.pop() !== char) return false
+    }
+    return stack.length === 0
+};
+```
 #### [最长回文子串](https://leetcode-cn.com/problems/longest-palindromic-substring/)
 
 回文串就是正着读和反着读都一样的字符串。
@@ -441,7 +453,62 @@ var characterReplacement = function(s, k) {
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 **/
 ````
- 
+
+#### [最长公共子序列](https://leetcode-cn.com/problems/longest-common-subsequence/)
+```javascript
+/**
+ * @param {string} text1
+ * @param {string} text2
+ * @return {number}
+ */
+var longestCommonSubsequence = function(text1, text2) {
+    let n = text1.length;
+    let m = text2.length;
+    let dp = Array.from(new Array(n+1),() => new Array(m+1).fill(0));
+    for(let i = 1;i <= n;i++){
+        for(let j = 1;j <= m;j++){
+            if(text1[i-1] == text2[j-1]){
+                dp[i][j] = dp[i-1][j-1] + 1;
+            }else{
+                dp[i][j] = Math.max(dp[i][j-1],dp[i-1][j]);
+            }
+        }
+    }
+    return dp[n][m];
+};
+
+// 链接：https://leetcode-cn.com/problems/longest-common-subsequence/solution/1143-zui-chang-gong-gong-zi-xu-lie-by-alexer-660/
+```
+#### [最小覆盖子串](https://leetcode-cn.com/problems/minimum-window-substring/)
+难度：困难
+```javascript
+// https://leetcode-cn.com/problems/minimum-window-substring/solution/js-hua-dong-chuang-kou-by-jsyt/
+/**
+ * @param {string} s
+ * @param {string} t
+ * @return {string}
+ */
+var minWindow = function(s, t) {
+    let windows = {}, needs = {}, l = 0, r = 0, count = 0, start = -1, minLen = Infinity;
+    [...t].forEach(c => needs[c] ? needs[c]++ : needs[c] = 1)
+    let keyLen = Object.keys(needs).length;
+    while (r < s.length) {
+        let c1 = s[r++];
+        windows[c1] ? windows[c1]++ : windows[c1] = 1;
+        if (windows[c1] === needs[c1]) count++;
+        while(count === keyLen) {
+            if (r - l < minLen) {
+                start = l;
+                minLen = r - l;
+            }
+            let c2 = s[l++];
+            if (windows[c2]-- === needs[c2]) count--;
+        }
+    }
+    return start === -1 ? "" : s.substr(start, minLen)
+};
+```
+
 ### 4.二叉树
 做二叉树的问题，关键是把题目的要求细化，搞清楚根节点应该做什么，然后剩下的事情抛给前/中/后序的遍历框架就行了。
 ```javascript
@@ -989,7 +1056,7 @@ var hasCycle = function(head) {
 };
 ```
 
-#### [找出环形链表的进入节点](#https://leetcode-cn.com/problems/linked-list-cycle-ii/)
+#### [链表中环的入口节点](#https://leetcode-cn.com/problems/linked-list-cycle-ii/)
 快慢指针
 ```javascript
 // https://leetcode-cn.com/problems/linked-list-cycle-ii/solution/linked-list-cycle-ii-kuai-man-zhi-zhen-shuang-zhi-/
@@ -1097,8 +1164,6 @@ var reverseKGroup = function(head, k) {
             pre.next = stack.pop()
             pre = pre.next
         }
-
-        pre.next = temp
 
         head = temp
     }
