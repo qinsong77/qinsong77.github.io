@@ -14,7 +14,6 @@ title: LeetCode
   - [最长公共前缀](#最长公共前缀)
   - [翻转字符串里的单词](#翻转字符串里的单词)
   - [字符串相加](#字符串相加)
-  - [字符串相加](#字符串相加)
   - [字符串相乘](#字符串相乘)
   - [替换后的最长重复字符](#替换后的最长重复字符)
   - [最长公共子序列](#最长公共子序列)
@@ -37,6 +36,7 @@ title: LeetCode
    - [判断BST的合法性](#判断bst的合法性)
 - [6.链表](#_6-链表)
    - [反转链表](#反转链表)
+   - [两个链表的第一个公共结点](#两个链表的第一个公共结点)
    - [环形链表](#环形链表)
    - [链表中环的入口节点](#链表中环的入口节点)
    - [链表的中间结点](#链表的中间结点)
@@ -52,7 +52,7 @@ title: LeetCode
    - [合并两个有序数组](#合并两个有序数组)
    - [全排列](#全排列)
    - [最长湍流子数组](#最长湍流子数组)
-   - [全排列](#全排列)
+   - [最小K个数](#最小k个数)
 - [9.二维数组](#_9-二维数组)
     - [二维数组翻转90度](#n-x-n二维数组翻转90度)
     - [二维数组中的查找](#二维数组中的查找)
@@ -329,6 +329,23 @@ var longestCommonPrefix = function(strs) {
  [题解](https://github.com/sisterAn/JavaScript-Algorithms/issues/32)
   ::: details 点击查看代码
  ```javascript
+function solve( s ,  t ) {
+    // write code here
+    let i = s.length, j = t.length, res = '', temp = 0
+    while(i || j) {
+        i ? temp = temp + parseInt(s[--i]) : ''
+        j ? temp = temp + parseInt(t[--j]) : ''
+        if(temp > 9) {
+            res = String(temp - 10) + res
+            temp = 1
+        } else {
+            res = String(temp) + res
+            temp = 0
+        }
+    }
+    if(temp) res = '1' + res
+    return res
+}
 /**
  * @param {string} num1
  * @param {string} num2
@@ -336,7 +353,6 @@ var longestCommonPrefix = function(strs) {
  */
 var addStrings = function(num1, num2) {
     let i = num1.length, j = num2.length, temp = 0, result = ''
-    let res = ''
     while(i || j) {
         i ? temp += +num1[--i] : ''
         j ? temp += +num2[--j] : ''
@@ -1027,6 +1043,22 @@ var reverseList = function(head) {
 };
 ```
 
+#### [两个链表的第一个公共结点](https://leetcode-cn.com/problems/intersection-of-two-linked-lists/)
+
+A和B两个链表长度可能不同，但是A+B和B+A的长度是相同的，所以遍历A+B和遍历B+A一定是同时结束。 如果A,B相交的话A和B有一段尾巴是相同的，所以两个遍历的指针一定会同时到达交点 如果A,B不相交的话两个指针就会同时到达A+B（B+A）的尾节点
+
+A' + R = A ; B' + R = B ; A' + R + B' = A + B' = A' + B ; 其中 R 是重复部分。A‘ 和 B' 是各链表的开头不重复的部分。
+```javascript
+var getIntersectionNode = function(headA, headB) {
+    if(!headA || !headB) return null
+    let pA= headA, pB = headB
+    while(pA !== pB) {
+        pA = pA === null ? headB : pA.next
+        pB = pB === null ? headA : pB.next
+    }
+    return pA
+};
+```
 #### [环形链表](https://leetcode-cn.com/submissions/detail/144460090/)
 快慢指针
 ```js
@@ -1570,6 +1602,38 @@ var maxTurbulenceSize = function(arr) {
     }
     return max
 };
+```
+
+#### [最小K个数](https://leetcode-cn.com/problems/smallest-k-lcci/)
+
+使用大顶堆
+
+  大顶堆方法，初始化一个长度为 k 的数组为大顶堆，遍历 arr，如果遇到比堆顶数小的数，就拿它替换掉堆顶的数，将这个数重新堆化一下，最终返回这个堆即可
+
+```javascript
+function GetLeastNumbers_Solution(input, k)
+{
+    
+    function findMaxIndex(arr) {
+        let maxIndex = 0
+        for(let i = 1; i < arr.length; i++) {
+            if(arr[i] > arr[maxIndex]) {
+                maxIndex = i
+            }
+        }
+        return maxIndex
+    }
+    // write code here
+    if(k === 0 || k > input.length) return []
+    let res = input.slice(0, k)
+    for(let i = k; i < input.length;i++) {
+        const maxIndex = findMaxIndex(res)
+        if(input[i] < res[maxIndex]) {
+            res[maxIndex] = input[i]
+        }
+    }
+    return res.sort((a, b) => a -b)
+}
 ```
 
 ### 9.二维数组
