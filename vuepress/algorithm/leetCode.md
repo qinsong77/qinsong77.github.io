@@ -43,6 +43,7 @@ title: LeetCode
    - [寻找链表的倒数第k个元素](#寻找链表的倒数第k个元素)
    - [k个一组翻转链表](#k个一组翻转链表)
    - [合并有序链表](#合并有序链表)
+   - [合并k个有序链表](#合并k个有序链表)
    - [链表求和](#链表求和)
 - [7.动态规划](#_7-动态规划)
    - [凑零钱问题](#凑零钱问题)
@@ -53,10 +54,14 @@ title: LeetCode
    - [全排列](#全排列)
    - [最长湍流子数组](#最长湍流子数组)
    - [最小K个数](#最小k个数)
+   - [寻找旋转排序数组中的最小值](#寻找旋转排序数组中的最小值)
 - [9.二维数组](#_9-二维数组)
     - [二维数组翻转90度](#n-x-n二维数组翻转90度)
     - [二维数组中的查找](#二维数组中的查找)
+    - [螺旋矩阵](#螺旋矩阵)
 - [二分查找](#二分查找)
+    - [求平方根](#求平方根)
+    - [寻找旋转排序数组中的最小值](#寻找旋转排序数组中的最小值)
 - [扑克牌中的顺子](#扑克牌中的顺子)
 - [扁平化嵌套列表迭代器](#扁平化嵌套列表迭代器)
 
@@ -1308,6 +1313,54 @@ var mergeTwoLists = function(l1, l2) {
 };
 ```
 
+#### [合并k个有序链表](https://leetcode-cn.com/problems/merge-k-sorted-lists/)
+转为数组
+```javascript
+var mergeKLists = function(lists) {
+    return lists.reduce((prev, list) => {
+        while(list) {
+            prev.push(list)
+            list = list.next
+        }
+        return prev
+    }, []).sort((a, b) => a.val - b.val).reduceRight((prev, node) => {
+        node.next = prev
+        return node
+    }, null)
+};
+```
+类似数组归并排序似的合并
+
+```javascript
+var mergeKLists = function (lists) {
+  /* 分而治之 */
+  if (lists.length <= 1) return lists[0] || null;
+  const newLists = [];
+  for (let i = 0; i < lists.length; i += 2) {
+    newLists.push(merge(lists[i], lists[i + 1] || null));
+  }
+  return mergeKLists(newLists);
+};
+
+const merge = (list_1, list_2) => {
+  const sentinelNode = new ListNode(0);
+  let p = sentinelNode;
+
+  while (list_1 && list_2) {
+    if (list_1.val < list_2.val) {
+      p.next = list_1;
+      list_1 = list_1.next;
+    } else {
+      p.next = list_2;
+      list_2 = list_2.next;
+    }
+    p = p.next;
+  }
+
+  p.next = list_1 ? list_1 : list_2;
+  return sentinelNode.next;
+};
+```
 #### [链表求和](https://leetcode-cn.com/problems/sum-lists-lcci/)
 
 ```javascript
@@ -1757,6 +1810,53 @@ var findNumberIn2DArray = function(matrix, target) {
     return false
 };
 ```
+
+#### [螺旋矩阵](https://leetcode-cn.com/problems/spiral-matrix/)
+
+[思路概括](https://leetcode-cn.com/problems/spiral-matrix/solution/shou-hui-tu-jie-liang-chong-bian-li-de-ce-lue-kan-/)
+- 一层层向里处理，按顺时针依次遍历：上、右、下、左
+- 不再形成“环”了，就会剩下一行或一列，然后单独判断
+4 个边界
+- 上边界 top : 0
+- 下边界 bottom : matrix.length - 1
+- 左边界 left : 0
+- 右边界 right : matrix[0].length - 1
+矩阵不一定是方阵
+- top < bottom && left < right 是循环的条件
+- 无法构成“环”了，就退出循环，退出时可能是这 3 种情况之一：
+   - top == bottom && left < right —— 剩一行
+   - top < bottom && left == right —— 剩一列
+   - top == bottom && left == right —— 剩一项（也是一行/列）
+处理剩下的单行或单列
+- 因为是按顺时针推入结果数组的，所以
+- 剩下的一行，从左至右 依次推入结果数组
+- 剩下的一列，从上至下 依次推入结果数组
+代码
+- 每个元素访问一次，时间复杂度 O(m*n)，m、n 分别是矩阵的行数和列数
+- 空间复杂度 O(m*n)
+```javascript
+var spiralOrder = function (matrix) {
+  if (matrix.length === 0) return []
+  const res = []
+  let top = 0, bottom = matrix.length - 1, left = 0, right = matrix[0].length - 1
+  while (top < bottom && left < right) {
+    for (let i = left; i < right; i++) res.push(matrix[top][i])   // 上层
+    for (let i = top; i < bottom; i++) res.push(matrix[i][right]) // 右层
+    for (let i = right; i > left; i--) res.push(matrix[bottom][i])// 下层
+    for (let i = bottom; i > top; i--) res.push(matrix[i][left])  // 左层
+    right--
+    top++
+    bottom--
+    left++  // 四个边界同时收缩，进入内层
+  }
+  if (top === bottom) // 剩下一行，从左到右依次添加
+    for (let i = left; i <= right; i++) res.push(matrix[top][i])
+  else if (left === right) // 剩下一列，从上到下依次添加
+    for (let i = top; i <= bottom; i++) res.push(matrix[i][left])
+  return res
+};
+```
+
 ### 二分查找
 
 #### [二分查找](https://leetcode-cn.com/problems/binary-search/)
@@ -1778,6 +1878,87 @@ function binarySearch(arr, target){
 	}
 	return -1
 }
+```
+
+#### [求平方根](https://leetcode-cn.com/problems/sqrtx/)
+
+根据平方数的性质——连续n个奇数相加的结果一定是平方数。
+
+设第一个奇数为a，共有n个连续奇数。 用等差数列求和公式 `S=an+[(n-1)n/2]*2 =n^2+(a-1)n` 所以若第一个奇数为1的话就一定是一个数的平方，否则不是。
+
+如：`9=1+3+5`；
+`16=1+3+5+7`；
+所以，不断的进行奇数相加，并判断x大小即可。代码如下：
+```javascript
+var mySqrt = function(x) {
+    let i = 1
+    let res = 0
+    while(x >= 0) {
+        x -= i
+        res++
+        i += 2
+    }
+    return res - 1
+};
+```
+
+二分查找，由于 x平方根的整数部分是满足k*k <= x的最大k值, 可以对 kk 进行二分查找
+```javascript
+// https://leetcode-cn.com/problems/sqrtx/solution/cong-ji-ben-de-er-fen-fa-shuo-qi-jie-jue-xde-ping-/
+const mySqrt = function(x) {
+     if (x < 2) return x
+     let left = 1, mid, right = Math.floor(x / 2);
+     while (left <= right) {
+        mid = Math.floor(left + (right - left) / 2)
+        if (mid * mid === x) return mid
+        if (mid * mid < x) {
+            left = mid + 1
+        }else {
+            right = mid - 1
+        }
+     }
+     return right
+}
+```
+#### [寻找旋转排序数组中的最小值](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/)
+
+时间复杂度是 `O(logN)`
+
+思路：
+
+第一步：基于二分法的思路，先找mid
+
+第二步：若mid > first element ，说明什么？说明mid的左侧是升序，最小值肯定不在mid左边，此时，我们需要在mid的右边找，所以 left = mid + 1
+
+第三步：若mid < first element ，说明什么？说明最小值肯定在mid左边，此时，我们需要在mid的左边找，所以 right = mid - 1
+
+第四步：终止条件是什么？分两种情况讨论：
+
+1、若mid > mid + 1，此时mid + 1就是最小值，返回结果
+2、若mid < mid - 1，此时mid就是最小值，返回结果
+
+```javascript
+var findMin = function(nums) {
+    const { length } = nums
+    if(length === 1) return nums[0]
+    let left = 0, right = length - 1, mid
+    if(nums[right] > nums[left]) return nums[0]
+    while(left <= right) {
+        mid =  Math.floor((left + right)/2)
+       if (nums[mid] > nums[mid + 1]) {
+            return nums[mid + 1]
+        }
+        if (nums[mid] < nums[mid - 1]) {
+            return nums[mid]
+        }
+        if (nums[mid] > nums[0]) {
+            left = mid + 1
+        } else {
+            right = mid - 1
+        }
+    }
+    return null
+};
 ```
 
 #### [扑克牌中的顺子](https://leetcode-cn.com/problems/bu-ke-pai-zhong-de-shun-zi-lcof/)
