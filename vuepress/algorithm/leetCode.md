@@ -22,6 +22,7 @@ title: LeetCode
   - [替换后的最长重复字符](#替换后的最长重复字符)
   - [最长公共子序列](#最长公共子序列)
   - [最小覆盖子串](#最小覆盖子串)
+  - [字符串的排列](#字符串的排列)
 - [4.二叉树](#_4-二叉树)
    - [二叉树的层序遍历](#二叉树的层序遍历)
    - [二叉树的序列化与反序列化](#二叉树的序列化与反序列化)
@@ -59,9 +60,11 @@ title: LeetCode
    - [最长湍流子数组](#最长湍流子数组)
    - [最小K个数](#最小k个数)
    - [寻找旋转排序数组中的最小值](#寻找旋转排序数组中的最小值)
+   - [最长递增子序列](#最长递增子序列)
 - [9.二维数组](#_9-二维数组)
     - [二维数组翻转90度](#n-x-n二维数组翻转90度)
     - [二维数组中的查找](#二维数组中的查找)
+    - [螺旋矩阵](#螺旋矩阵)
     - [螺旋矩阵](#螺旋矩阵)
 - [二分查找](#二分查找)
     - [求平方根](#求平方根)
@@ -703,6 +706,32 @@ var minWindow = function(s, t) {
         }
     }
     return start === -1 ? "" : s.substr(start, minLen)
+};
+```
+
+#### [字符串的排列](https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/)
+回溯算法
+
+```javascript
+/**
+ * @param {string} str
+ * @return {string[]}
+ */
+var permutation = function(str) {
+    const length = str.length
+    const res = new Set()
+    const set = new Set()
+    function backTrack(path) {
+        if(path.length === length) res.add(path)
+        for(let i = 0; i < length; i++) {
+            if(set.has(i)) continue
+            set.add(i)
+            backTrack(path + str[i])
+            set.delete(i)
+        }
+    }
+    backTrack('')
+    return Array.from(res)
 };
 ```
 
@@ -2033,6 +2062,25 @@ var spiralOrder = function (matrix) {
 };
 ```
 
+#### [螺旋矩阵](https://leetcode-cn.com/problems/toeplitz-matrix/)
+
+```javascript
+/**
+ * @param {number[][]} matrix
+ * @return {boolean}
+ */
+var isToeplitzMatrix = function(matrix) {
+    const res = true
+    const maxRow = matrix.length, maxCol = matrix[0].length
+    for(let i = 1; i < maxRow; i++) {
+        for(j = 1; j < maxCol; j++) {
+            if(matrix[i][j] !== matrix[i -1][j-1]) return false
+        }
+    }
+    return true
+};
+```
+
 ### 二分查找
 
 #### [二分查找](https://leetcode-cn.com/problems/binary-search/)
@@ -2114,6 +2162,7 @@ const mySqrt = function(x) {
 2、若mid < mid - 1，此时mid就是最小值，返回结果
 
 ```javascript
+// https://leetcode-cn.com/problems/sqrtx/solution/cong-ji-ben-de-er-fen-fa-shuo-qi-jie-jue-xde-ping-/
 var findMin = function(nums) {
     const { length } = nums
     if(length === 1) return nums[0]
