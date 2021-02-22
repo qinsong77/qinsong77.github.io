@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>test</title>
+  <script src="vue.js"></script>
+</head>
+<body>
+<div id="app">
+  <p>{{ message }}</p>
+  <function-component :text="text"/>
+  <text-com :msg="text"/>
+  <text-com/>
+</div>
+<script>
+	Vue.component('function-component', {
+		functional: true,
+		// Props 是可选的
+		props: {
+			text: {
+				type: String
+      }
+			// ...
+		},
+		// 为了弥补缺少的实例
+		// 提供第二个参数作为上下文
+		render: function(createElement, context) {
+			console.log(context)
+			// ...
+      return createElement('p', context.props.text)
+		}
+	})
+  Vue.component('text-com', {
+  	data: function(){
+		  return {
+			  msg: 'sadlfjalksjdlk'
+		  }
+	  },
+	  render: function(h){
+  		return h('p', this.msg)
+	  }
+  })
+	var app = new Vue({
+		el: '#app',
+		data: {
+			message: 'Hello Vue!',
+			text: 'text111!'
+		}
+	})
+</script>
+</body>
+</html>

@@ -1277,6 +1277,39 @@ Vue.prototype._init = function (options) {
 ```
 :::
 
+### vue函数式组件functional
+什么是函数式组件: 没有管理任何状态，也没有监听任何传递给它的状态，也没有生命周期方法，它只是一个接受一些 `prop` 的函数。简单来说是 **一个无状态和无实例的组件**
+
+函数式组件和普通的对象类型的组件不同，是通过`createFunctionalComponent`创建，它不会被看作成一个真正的组件，在 `patch` 过程中，如果遇到一个节点是组件 `vnode`，会递归执行子组件的初始化过程；而函数式组件的 `render` 生成的是普通的 `vnode`，不会有递归子组件的过程，因此渲染开销会低很多。
+因此，函数式组件也不会有状态，不会有响应式数据，生命周期钩子函数这些东西。可以把它当成把普通组件模板中的一部分 `DOM` 剥离出来，通过函数的方式渲染出来，是一种在 `DOM` 层面的复用。
+
+```javascript
+Vue.component('my-component', {
+  functional: true,
+  // Props 是可选的
+  props: {
+    // ...
+  },
+  // 为了弥补缺少的实例
+  // 提供第二个参数作为上下文
+  render: function(createElement, context) {
+    // ...
+  }
+})
+
+```
+
+和正常自定义组件的区别？
+
+- 不维护响应数据
+- 无钩子函数
+- 没有instance实例, 所以在组件内部没有办法像传统组件一样通过this来访问组件属性
+
+在一些展示组件。例如， `buttons`， `tags`, `cards`，或者页面是静态文本，就很适合使用函数式组件。
+
+该应用于以下场景：
+- 需要通过编程实现在多种组件中选择一种。
+- children、props 或者 data 在传递给子组件之前，处理它们。
 ### computed和watch
 
 - [Vue的Computed原理](https://juejin.cn/post/6844904116439744520)

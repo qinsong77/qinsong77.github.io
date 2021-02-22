@@ -452,6 +452,8 @@ if (Number.EPSILON === undefined) {
 }
 ```
 
+### 位运算
+
 ### 函数的argument
 `argument`是一个对象，只不过它的属性从`0`开始排，依次为`0，1，2...`最后还有`callee`和`length`属性。这样的对象称为**类数组**。
 

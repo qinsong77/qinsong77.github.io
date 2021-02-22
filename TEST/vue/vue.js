@@ -3236,7 +3236,9 @@
 
     // functional component
     if (isTrue(Ctor.options.functional)) {
-      return createFunctionalComponent(Ctor, propsData, data, context, children)
+    	let tt = createFunctionalComponent(Ctor, propsData, data, context, children)
+	    console.log(tt)
+      return tt
     }
 
     // extract listeners, since these needs to be treated as

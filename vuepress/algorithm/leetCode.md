@@ -5,7 +5,11 @@ title: LeetCode
 [内涵字节真题](https://github.com/sisterAn/JavaScript-Algorithms)
 
 ## 目录
-- [1.两数之和](#_1-两数之和)
+- [1.和问题](#_1-和问题)
+  - [两数之和](#两数之和)
+  - [三数之和](#三数之和)
+  - [四数之和](#四数之和)
+  - [N数之和](#n数之和)
 - [2.回文数](#_2-回文数)
 - [3.字符串](#_3-字符串)
   - [括号序列](#括号序列)
@@ -83,7 +87,9 @@ Math 对象方法
 - `Math.ceil(x)`: 向上取证。
 - `Math.round(x)`: 把数四舍五入为最接近的整数。
 
-#### 1.[两数之和](https://leetcode-cn.com/problems/two-sum )
+### [1.和问题](https://mp.weixin.qq.com/s/uKDWyg1inPCk0xMczY20qQ)
+
+#### [两数之和](https://leetcode-cn.com/problems/two-sum )
 > 给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数，并返回他们的数组下标。  <br />你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。
   
   ***
@@ -99,6 +105,7 @@ Math 对象方法
  * @param {number} target
  * @return {number[]}
  */
+// 暴力求解
 var twoSum = function(nums, target) {
     let s = 0, e = 0
     for(let i = 0; i < nums.length; i++) {
@@ -112,6 +119,16 @@ var twoSum = function(nums, target) {
     }
     return [s, e]
 };
+// 利用hash表
+var twoSum = function(nums, target) {
+    const map = new Map()
+    for(let i = 0; i < nums.length; i++) {
+        const val = target - nums[i]
+        if(map.has(val)) return [map.get(val), i]
+        else map.set(nums[i], i)
+    }
+    return []
+};
 ```
 ```javascript
 var twoSum = function(nums, target) {
@@ -124,6 +141,165 @@ var twoSum = function(nums, target) {
         i--
     }
 };
+```
+
+#### [三数之和](https://leetcode-cn.com/problems/3sum/)
+
+给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有和为 0 且不重复的三元组。
+
+```javascript
+var threeSum = function(nums) {
+    const { length } = nums
+    const res = []
+    nums = nums.sort((a,b) => a - b)
+    for(let i = 0; i < length - 2; i++) {
+        const set = new Set()
+        while(nums[i] === nums[i-1]) { i++ } // 去重
+        const first = nums[i]
+        let j = i + 1
+        while(j < length) {
+            const third = nums[j]
+            const second = 0 - first - third
+            if(set.has(second)) {
+                res.push([first, second, third])
+                 set.add(third)
+                 j++
+                while (nums[j] === nums[j-1]) {j++} // 去重
+            } else {
+                 set.add(third)
+                 j++
+            }
+           
+        }
+    }
+    return res
+};
+```
+
+解题思路： 先数组排序，排序完后遍历数组，以 `nums[i]` 作为第一个数 first ，以 `nums[i+1]` 作为第二个数 second ，将 `nums[nums.length - 1]` 作为第三个数 last ，判断三数之和是否为 0 ，
+
+- <0 ，则 second 往后移动一位（nums 是增序排列），继续判断
+- >0 ，则 last 往前移动一位（nums 是增序排列），继续判断
+- ===0 ，则进入结果数组中，并且 second 往后移动一位， last 往前移动一位，继续判断下一个元组
+- 直至 second >= last 结束循环，此时， `nums[i]` 作为第一个数的所有满足条件的元组都已写入结果数组中了，继续遍历数组，直至 i === nums.length - 2 (后面需要有 second 、 last )
+
+时间复杂度：O(n^2), n 为数组长度
+```javascript
+const threeSum = function(nums) {
+    if(!nums || nums.length < 3) return []
+    const result = []
+    // 排序
+    nums.sort((a, b) => a - b) 
+    for (let i = 0; i < nums.length ; i++) {
+        if(nums[i] > 0) break
+        // 去重
+        if(i > 0 && nums[i] === nums[i-1]) continue
+        let second = i + 1
+        let last = nums.length - 1
+        while(second < last){
+            const sum = nums[i] + nums[second] + nums[last]
+            if(!sum){
+                // sum 为 0
+                result.push([nums[i], nums[second], nums[last]])
+                // 去重
+                while (second<last && nums[second] === nums[second+1]) second++ 
+                while (second<last && nums[last] === nums[last-1]) last--
+                second ++
+                last --
+            }
+            else if (sum < 0) second ++
+            else if (sum > 0) last --
+        }
+    }        
+    return result
+};
+```
+
+#### [四数之和](https://leetcode-cn.com/problems/4sum/)
+三数之和**再套一层循环**
+```javascript
+/**
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number[][]}
+ */
+var fourSum = function(nums, target) {
+    const { length } = nums, res = []
+    nums = nums.sort((a, b) => a - b)
+    for(let i = 0; i < length - 3; i++) {
+        if(i > 0 && nums[i] === nums[i-1]) continue
+
+        for(let j = i + 1; j < length -2; j++) {
+            if(j > i + 1 && nums[j] === nums[j-1]) continue
+
+            let L = j + 1, R = length - 1
+            while(L < R) {
+                const sum = nums[i] + nums[j] + nums[L] + nums[R]
+                if(sum === target) {
+                    res.push([nums[i], nums[j], nums[L], nums[R]])
+                    while(L < R && nums[L] === nums[L+1]) L++
+                    while(L < R && nums[R] === nums[R-1]) R--
+                    R--
+                    L++
+                } 
+                else if(sum > target) R--
+                else L++
+            }
+        }
+    }
+    return res
+};
+```
+#### N数之和
+请用算法实现，从给定的无需、不重复的数组A中，取出N个数，使其相加和为M。并给出算法的时间、空间复杂度，如：
+```javascript
+var arr = [1, 4, 7, 11, 9, 8, 10, 6];
+var N = 3;
+var M = 27;
+
+// Result:
+Result = [7, 11, 9], [11, 10, 6], [9, 8, 10]
+```
+使用二进制位运算
+```javascript
+// 参数依次为目标数组、选取元素数目、目标和
+const search = (arr, count, sum) => {
+  // 计算某选择情况下有几个 1，也就是选择元素的个数
+  const getCount = num => {
+    let count = 0
+    while(num) {
+      num &= (num - 1)
+      count++
+    }
+    return count
+  }
+
+  let len = arr.length, bit = 1 << len, res = []
+  
+  // 遍历所有的选择情况
+  for(let i = 1; i < bit; i++){
+    // 满足选择的元素个数 === count
+    if(getCount(i) === count){
+      let s = 0, temp = []
+
+      // 每一种满足个数为 N 的选择情况下，继续判断是否满足 和为 M
+      for(let j = 0; j < len; j++){
+        // 建立映射，找出选择位上的元素
+        if(i & 1 << (len - 1 -j)) {
+          s += arr[j]
+          temp.push(arr[j])
+        }
+      }
+
+      // 如果这种选择情况满足和为 M
+      if(s === sum) {
+        res.push(temp)
+      }
+    }
+  }
+
+  return res
+}
 ```
 
 #### 2.[回文数](https://leetcode-cn.com/problems/palindrome-number/)
@@ -1691,7 +1867,7 @@ function GetLeastNumbers_Solution(input, k)
 
 ### 9.二维数组
 #### [N x N二维数组翻转90度](https://leetcode-cn.com/problems/rotate-image)
-```dotenv
+```
 给定 matrix = 
 [
   [1,2,3],

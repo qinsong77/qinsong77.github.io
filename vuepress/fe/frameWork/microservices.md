@@ -64,7 +64,7 @@ if (window.__POWERED_BY_QIANKUN__) {
 
 以下是__webpack_require__各属性以及对应能力，会经常出现在加载模块的语法中
 
-```dotenv
+```
 
 // 入口模块的ID
 __webpack_require__.s = the module id of the entry point
@@ -157,13 +157,13 @@ server {
 **proxy_pass配置中url末尾带/时，nginx转发时，会将原uri去除location匹配表达式后的内容拼接在proxy_pass中url之后。**
 测试地址：http://192.168.171.129/test/index.html
 - 场景一：
-```dotenv
+```
 location ^~ /test/ {
  proxy_pass http://192.168.171.129:8080/server/;
 }
 ```
 代理后实际访问地址：http://192.168.171.129:8080/server/index.html
-```dotenv
+```
 location ^~ /test {
  proxy_pass http://192.168.171.129:8080/server/;
 }
@@ -429,7 +429,7 @@ module.exports = {
 
 ##### 子应用vue.config.js
 
-```dotenv
+```
 VUE_APP_ROUTER_BASE_URL=/ops/stateManage
 VUE_APP_API_BASE_URL=/ops/api/ram/api/v1
 FONT_BASE_URL=/ops/subapp/stateManage
