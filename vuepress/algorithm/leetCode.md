@@ -65,7 +65,7 @@ title: LeetCode
     - [二维数组翻转90度](#n-x-n二维数组翻转90度)
     - [二维数组中的查找](#二维数组中的查找)
     - [螺旋矩阵](#螺旋矩阵)
-    - [螺旋矩阵](#螺旋矩阵)
+    - [托普利茨矩阵](#托普利茨矩阵)
 - [二分查找](#二分查找)
     - [求平方根](#求平方根)
     - [寻找旋转排序数组中的最小值](#寻找旋转排序数组中的最小值)
@@ -2062,7 +2062,7 @@ var spiralOrder = function (matrix) {
 };
 ```
 
-#### [螺旋矩阵](https://leetcode-cn.com/problems/toeplitz-matrix/)
+#### [托普利茨矩阵](https://leetcode-cn.com/problems/toeplitz-matrix/)
 
 ```javascript
 /**
