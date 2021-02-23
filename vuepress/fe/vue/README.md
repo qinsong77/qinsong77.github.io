@@ -1277,6 +1277,9 @@ Vue.prototype._init = function (options) {
 ```
 :::
 
+### 抽象组件
+常用的`transition`和`keep-alive`就是一个抽象组件。抽象组件是无状态的，同样也是“不存在的”，它自己并不会被渲染为实际的`DOM`，而是直接返回以及操作它的子元素。
+
 ### vue函数式组件functional
 什么是函数式组件: 没有管理任何状态，也没有监听任何传递给它的状态，也没有生命周期方法，它只是一个接受一些 `prop` 的函数。简单来说是 **一个无状态和无实例的组件**
 
@@ -1298,6 +1301,55 @@ Vue.component('my-component', {
 })
 
 ```
+或者单文件定义函数式组件（2.5版本后）
+
+```vue
+<template functional>
+  <button
+    class="btn btn-primary"
+    v-bind="data.attrs"
+    v-on="listeners">
+    <slot/>
+  </button>
+</template>
+```
+```javascript
+function createComponent (
+    Ctor,
+    data,
+    context,
+    children,
+    tag
+  ) {
+    if (isUndef(Ctor)) {
+      return
+    }
+ 
+    var baseCtor = context.$options._base;
+ 
+    // 省略N行
+    // functional component
+    if (isTrue(Ctor.options.functional)) { // 在此判断是否是函数式组件，如果是return 自定义render函数返回的Vnode，跳过底下初始化的流程
+      return createFunctionalComponent(Ctor, propsData, data, context, children)
+    }
+    // 省略N行
+    // install component management hooks onto the placeholder node
+    installComponentHooks(data); // 正常的组件是在此进行初始化方法（包括响应数据和钩子函数的执行）
+ 
+    // return a placeholder vnode
+    var name = Ctor.options.name || tag;
+    var vnode = new VNode(
+      ("vue-component-" + (Ctor.cid) + (name ? ("-" + name) : '')),
+      data, undefined, undefined, undefined, context,
+      { Ctor: Ctor, propsData: propsData, listeners: listeners, tag: tag, children: children },
+      asyncFactory
+    );
+ 
+    return vnode
+  }
+```
+正是因为函数式组件精简了很多例如响应式和钩子函数的处理，因此渲染性能会有一定的提高，所以如果业务组件是一个纯展示且不需要有响应式数据状态的处理的，那函数式组件会是一个非常好的选择。
+
 
 和正常自定义组件的区别？
 
@@ -1310,6 +1362,18 @@ Vue.component('my-component', {
 该应用于以下场景：
 - 需要通过编程实现在多种组件中选择一种。
 - children、props 或者 data 在传递给子组件之前，处理它们。
+
+### [插槽和作用域插槽](https://cn.vuejs.org/v2/guide/components-slots.html)
+
+具名插槽： 实际上就是实现组件children内容按name分发
+
+#### [作用域插槽](https://mp.weixin.qq.com/s/58P3kkHOL-h-gkfcXTgAOA)
+作用：让插槽内容能够访问子组件中的数据。
+
+使用
+- 子组件`v-bind`提供可访问的数据
+- 在父组件中使用子组件时，插槽容器上通过slot-scope来接收 子组件中插槽抛出来的数据。自 2.6.0 起有所更新, 使用`v-slot`
+
 ### computed和watch
 
 - [Vue的Computed原理](https://juejin.cn/post/6844904116439744520)

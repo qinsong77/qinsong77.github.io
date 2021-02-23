@@ -16,6 +16,8 @@ title: React
 [Build your own React](https://pomb.us/build-your-own-react/)
 [Build your own React-中文](https://github.com/defpis/build-your-own-react)
 
+[react-面试题](https://github.com/semlinker/reactjs-interview-questions)
+
 `npx create-react-app my-app --typescript` => `--typescript`被弃用，使用`--template typescript`
 
 # 目录

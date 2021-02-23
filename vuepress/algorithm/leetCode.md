@@ -23,6 +23,7 @@ title: LeetCode
   - [最长公共子序列](#最长公共子序列)
   - [最小覆盖子串](#最小覆盖子串)
   - [字符串的排列](#字符串的排列)
+  - [编辑距离](#编辑距离)
 - [4.二叉树](#_4-二叉树)
    - [二叉树的层序遍历](#二叉树的层序遍历)
    - [二叉树的序列化与反序列化](#二叉树的序列化与反序列化)
@@ -52,7 +53,9 @@ title: LeetCode
    - [链表求和](#链表求和)
 - [7.动态规划](#_7-动态规划)
    - [凑零钱问题](#凑零钱问题)
+   - [最长公共子序列](#最长公共子序列)
    - [最长递增子序列](#最长递增子序列)
+   - [编辑距离](#编辑距离)
 - [8.数组](#_8-数组)
    - [连续子数组的最大和](#连续子数组的最大和)
    - [合并两个有序数组](#合并两个有序数组)
@@ -655,6 +658,10 @@ var characterReplacement = function(s, k) {
 ````
 
 #### [最长公共子序列](https://leetcode-cn.com/problems/longest-common-subsequence/)
+
+对于两个字符串求子序列的问题，都是用两个指针i和j分别在两个字符串上移动，大概率是动态规划思路。
+
+[思路](https://mp.weixin.qq.com/s/ZhPEchewfc03xWv9VP3msg)
 ```javascript
 /**
  * @param {string} text1
@@ -677,7 +684,6 @@ var longestCommonSubsequence = function(text1, text2) {
     return dp[n][m];
 };
 
-// 链接：https://leetcode-cn.com/problems/longest-common-subsequence/solution/1143-zui-chang-gong-gong-zi-xu-lie-by-alexer-660/
 ```
 #### [最小覆盖子串](https://leetcode-cn.com/problems/minimum-window-substring/)
 难度：困难
@@ -1699,9 +1705,55 @@ var lengthOfLIS = function(nums) {
 };
 ```
 
+### [编辑距离](https://leetcode-cn.com/problems/edit-distance/)
+
+[思路](https://mp.weixin.qq.com/s/uWzSvWWI-bWAV3UANBtyOw)
+```javascript
+
+// 链接：https://leetcode-cn.com/problems/edit-distance/solution/dong-tai-gui-hua-xiang-jie-xiang-jin-zhu-a8e5/
+/**
+ * @param {string} word1
+ * @param {string} word2
+ * @return {number}
+ * 定义 dp[i][j]的含义为：当字符串 word1 的长度为 i，字符串 word2 的长度为 j 时，
+ * 将 word1 转化为 word2 所使用的最少操作次数为 dp[i][j]
+ * 
+ */
+var minDistance = function(word1, word2) {
+    let n1 = word1.length;
+    let n2 = word2.length;
+    let dp = new Array(n1 + 1)
+    for (let i = 0; i < n1 + 1; i++) {
+        dp[i] = new Array(n2 + 1).fill(0)
+    }
+    // dp[0...n2]的初始值
+    for (let j = 0; j <= n2; j++) 
+        dp[j] = j;
+    // dp[j] = min(dp[j-1], pre, dp[j]) + 1
+    for (let i = 1; i <= n1; i++) {
+        let temp = dp[0];
+        // 相当于初始化
+        dp[0] = i;
+        for (let j = 1; j <= n2; j++) {
+            // pre 相当于之前的 dp[i-1][j-1]
+            let pre = temp;
+            temp = dp[j];
+            // 如果 word1[i] 与 word2[j] 相等。第 i 个字符对应下标是 i-1
+            if (word1.charAt(i - 1) == word2.charAt(j - 1)){
+                dp[j] = pre;
+            } else {
+               dp[j] = Math.min(Math.min(dp[j - 1], pre), dp[j]) + 1;
+            }    
+        }
+    }
+    return dp[n2]; 
+};
+
+```
+
 ## 8.数组
 
-### [连续子数组的最大和](https://leetcode-cn.com/problems/lian-xu-zi-shu-zu-de-zui-da-he-lcof/)
+### [连续子数组的最大和](https://leetcode-cn.com/problems/maximum-subarray/)
 暴力求解：时间复杂度O(n^2),空间复杂度O(1)
 ```javascript
 /**
@@ -1721,7 +1773,12 @@ var maxSubArray = function(nums) {
     return max
 };
 ```
+
+[思路](https://mp.weixin.qq.com/s/nrULqCsRsrPKi3Y-nUfnqg)
+
 动态规划: 连续数组，每次循环包括自身，比较自身和i-1的最大连续数组和，得到i的最大连续数组和
+
+以`nums[i]`为结尾的「最大子数组和」为`dp[i]`。
 ```javascript
 // https://leetcode-cn.com/problems/lian-xu-zi-shu-zu-de-zui-da-he-lcof/solution/mian-shi-ti-42-lian-xu-zi-shu-zu-de-zui-da-he-do-2/
 var maxSubArray = function(nums) {
