@@ -1683,8 +1683,8 @@ var coinChange = function(coins, amount) {
 
 ### [最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
 就是给定一个无序的数组，在这个数组中找出，递增并且最长的子数组
-
-1.动态规划，状态转移方程`dp[i] = Max(dp[i],dp[j]+1)`
+1. dp表定义： `dp[i]` 表示以 `nums[i]` 结尾的「上升子序列」的长度, 这个定义中 `nums[i]` **必须被选取，且必须是这个子序列的最后一个元素**；
+2. 动态规划，状态转移方程`dp[i] = Max(dp[i],dp[j]+1)`
 ```javascript
 /**
  * @param {number[]} nums
@@ -1703,8 +1703,62 @@ var lengthOfLIS = function(nums) {
     }
     return Math.max(...dp)
 };
+// 返回子序列
+function LIS( arr ) {
+    // write code here
+    const length = arr.length
+    if(length === 0) return []
+    const dp = Array.from(new Array(length), () => [])
+    let res = [arr[0]]
+    dp[0] = [arr[0]]
+    for(let i = 1; i < length; i++) {
+        dp[i].push(arr[i])
+        for(let j = 0; j < i; j++) {
+            if(arr[j] < arr[i]) {
+                let temp = [...dp[j], arr[i]]
+                if(temp.length > dp[i].length) dp[i] = temp
+            }
+        }
+        if(dp[i].length > res.length) res = dp[i]
+    }
+    return res
+}
 ```
-
+[使用二分查找](https://leetcode-cn.com/problems/longest-increasing-subsequence/solution/300-zui-chang-shang-sheng-zi-xu-lie-by-alexer-660/)
+```javascript
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var lengthOfLIS = function(nums) {
+    let n = nums.length;
+    if(n <= 1){
+        return n;
+    }
+    let tail = new Array(n);
+    tail[0] = nums[0];
+    let end = 0;
+    for(let i = 1;i < n;i++){
+        if(nums[i] > tail[end]){
+            end++;
+            tail[end] = nums[i];
+        }else{
+            let left = 0;
+            let right = end;
+            while(left < right){
+                let mid = left + ((right - left) >> 1);
+                if(tail[mid] < nums[i]){
+                    left = mid + 1;
+                }else{
+                    right = mid;
+                }
+            }
+            tail[left] = nums[i];
+        }
+    }
+    return end + 1;
+};
+```
 ### [编辑距离](https://leetcode-cn.com/problems/edit-distance/)
 
 [思路](https://mp.weixin.qq.com/s/uWzSvWWI-bWAV3UANBtyOw)

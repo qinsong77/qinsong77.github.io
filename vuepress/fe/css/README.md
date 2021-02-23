@@ -355,3 +355,6 @@ transition 和animation支持的属性， [CSS animated properties](https://deve
 ### [如何写出高性能的CSS3动画](https://www.cnblogs.com/ypppt/p/12937506.html)
 
 ### [shadow-dom](https://www.cnblogs.com/coco1s/p/5711795.html)
+
+#### transform失效的问题
+可被transform的元素有：block-level element 或 atomic inline-level element等，但不包括inline element。比如**没有**被设置成`display: inline-block`的`span`标签就会失效
