@@ -4,6 +4,9 @@ title: 常用笔记
 
 ### 事件防抖和节流
 >节流防抖就好比乘电梯，比如delay是10秒，那么防抖就是电梯每进来一个人就要等10秒再运行，而节流就是电梯保证每10秒可以运行一次
+
+区别：防抖动是将多次执行变为最后一次执行，节流是将多次执行变成每隔一段时间执行。
+
 #### 函数防抖(debounce)(立即防抖和非立即防抖)
 在事件被触发n秒后再执行回调，如果在这n秒内又被触发，则重新计时。
 核心思想：每次事件触发都会删除原有定时器，建立新的定时器。通俗意思就是反复触发函数，只认最后一次，从最后一次开始计时。
@@ -31,20 +34,32 @@ function debounce(fn, delay) {
 
 [文章](https://github.com/mqyqingfeng/Blog/issues/26)
 ```javascript
-function throttle(fn, delay) {
-    let flag = true,
-        timer = null;
-    return function (...args) {
-        let context = this;
-        if (!flag) return;
-        flag = false;
-        clearTimeout(timer)
-        timer = setTimeout(() => {
-            fn.apply(context, args);
-            flag = true;
-        }, delay);
-    };
-};
+// 时间戳版本-- 立即执行
+function throttle(fn, wait){
+	let previous = 0
+	return function(...args){
+		const now = + new Date()
+		const context = this
+		if ( now - previous > wait) {
+			fn.apply(context, args)
+			previous = now
+		}
+	}
+}
+// 定时器 延迟执行
+function throttle(fn, wait){
+	let timer = null
+	return function(...args){
+		const context = this
+		if(!timer) {
+			timer = setTimeout(() => {
+				timer = null
+				fn.apply(context, args)
+			}, wait)
+		}
+	}
+}
+
 window.addEventListener('resize', throttle(() => console.log(new  Date().getTime()), 2000))
 ```
 ##### 适合应用场景：

@@ -25,6 +25,7 @@ title: 手写实现
 - [手写EventHub（发布-订阅）](#手写eventhub-发布-订阅)
 - [单例模式](#单例模式)
 - [数组reduce实现](#数组reduce实现)
+- [数组splice实现](https://mp.weixin.qq.com/s/wJhr1BufXNnfmCwCjLuaMw)
 - [数组去重](#数组去重)
 - [取并集，交集，差集，子集](#取并集，交集，差集，子集)
 - [数组扁平化](#数组扁平化)

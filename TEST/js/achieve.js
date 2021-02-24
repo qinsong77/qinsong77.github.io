@@ -331,7 +331,7 @@ function depC(data) {
 		origin: data,
 		copyData: cloneData
 	}]
-	
+
 	while (stack.length > 0) {
 		const [origin, copyData] = stack.pop()
 		if(!hash.has(copyData)) hash.set(copyData, copyData)
@@ -357,9 +357,9 @@ function depC(data) {
 }
 
 function deepClone2(data) {
-	
+
 	if (!needDeepClone(data)) return copyBaseValue(data)
-	
+
 	const hashMap = new WeakMap()
 	const cloneData = new data.constructor()
 	const stack = [
@@ -368,17 +368,17 @@ function deepClone2(data) {
 			target: cloneData,
 		}
 	]
-	
+
 	while (stack.length) {
 		// 深度优先遍历
 		const [source, target] = stack.pop()
-		
+
 		if (!hashMap.has(source)) {
 			hashMap.set(source, target)
 		}
-		
+
 		const stringType = Object.prototype.toString.call(source)
-		
+
 		switch (stringType) {
 			case '[object Object]':
 				const keys = Object.keys(source)
@@ -398,7 +398,7 @@ function deepClone2(data) {
 					}
 				})
 				break
-			
+
 			case '[object Array]':
 				source.forEach(v => {
 					if (!needDeepClone(v)) {
@@ -416,7 +416,7 @@ function deepClone2(data) {
 					}
 				})
 				break
-			
+
 			case '[object Map]':
 				source.forEach((v, k) => {
 					if (!needDeepClone(v)) target.set(k, copyBaseValue(v))
@@ -433,7 +433,7 @@ function deepClone2(data) {
 					}
 				})
 				break
-			
+
 			case '[object Set]':
 				source.forEach(v => {
 					if (!needDeepClone(v)) target.add(copyBaseValue(v))
@@ -452,7 +452,7 @@ function deepClone2(data) {
 				break
 		}
 	}
-	
+
 	return cloneData
 }
 
@@ -470,11 +470,11 @@ class Subject {
 	constructor() {
 		this.observers = []
 	}
-	
+
 	addObserver(observer) {
 		this.observers.push(observer)
 	}
-	
+
 	notifyObservers () {
 		console.log("notify all the observers");
 		this.observers.forEach(observer => observer.notify())
@@ -509,7 +509,7 @@ class EventEmitter {
 		else events.push(listener)
 		return true
 	}
-	
+
 	// 移除某个事件
 	removeListener(type, listener) {
 		const events = this._events.get(type)
@@ -574,3 +574,28 @@ Singleton.prototype.getInstance = function (arg) {
 
 console.log(Singleton.getInstance('tom', 12))
 console.log(Singleton.getInstance('tom11', 13))
+
+function throttle(fn, wait){
+	let previous = 0
+	return function(...args){
+		const now = + new Date()
+		const context = this
+		if ( now - previous > wait) {
+			fn.apply(context, args)
+			previous = now
+		}
+	}
+}
+
+function throttle(fn, wait){
+	let timer = null
+	return function(...args){
+		const context = this
+		if(!timer) {
+			timer = setTimeout(() => {
+				timer = null
+				fn.apply(context, args)
+			}, wait)
+		}
+	}
+}
