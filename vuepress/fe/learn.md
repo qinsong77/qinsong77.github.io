@@ -683,6 +683,17 @@ words.forEach(function(word) {
 // four
 ```
 
+#### Array.from和Array.fill
+Array.from第二个参数可以对item进行转换，相当于`map`
+```javascript
+let dp = Array.from(new Array(n+1),() => new Array(m+1).fill(0));
+```
+Array.fill()的参数是对象时，要写成箭头函数，不然引用是一个。
+```javascript
+const length = 100
+const arr = Array.from(new Array(length)).fill(() => [])
+```
+
 #### forEach 与async
  问题描述
  ```javascript
@@ -1302,3 +1313,5 @@ console.log(b);
 ```
 
 ## [垃圾回收](https://zh.javascript.info/garbage-collection)
+
+- [V8垃圾回收机制](https://blog.csdn.net/qq_17175013/article/details/103759055)
