@@ -110,6 +110,8 @@ console.log(html);
 
 简单点说，CSRF 就是利用用户的登录态发起恶意请求。
 
+![](./image/csrf.png)
+
 #### 如何攻击
 
 假设网站中有一个通过 Get 请求提交用户评论的接口，那么攻击者就可以在钓鱼网站中加入一个图片，图片的地址就是评论接口
@@ -134,7 +136,40 @@ console.log(html);
 2. 不让第三方网站访问到用户 Cookie
 3. 阻止第三方网站请求接口
 4. 请求时附带验证信息，比如验证码或者 token
+5. 检查 `Referer` 字段
+6. Axios CSRF 防御, 双重 Cookie 防御 的方案来防御 CSRF 攻击
+```javascript
+// lib/defaults.js
+var defaults = {
+  adapter: getDefaultAdapter(),
+  // 省略部分代码
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
+};
 
+// lib/adapters/xhr.js
+module.exports = function xhrAdapter(config) {
+  return new Promise(function dispatchXhrRequest(resolve, reject) {
+    var requestHeaders = config.headers;
+    
+    var request = new XMLHttpRequest();
+    // 省略部分代码
+    
+    // 添加xsrf头部
+    if (utils.isStandardBrowserEnv()) {
+      var xsrfValue = (config.withCredentials || isURLSameOrigin(fullPath)) && config.xsrfCookieName ?
+        cookies.read(config.xsrfCookieName) :
+        undefined;
+
+      if (xsrfValue) {
+        requestHeaders[config.xsrfHeaderName] = xsrfValue;
+      }
+    }
+
+    request.send(requestData);
+  });
+};
+```
 ##### [SameSite](http://www.ruanyifeng.com/blog/2019/09/cookie-samesite.html)
 
 可以对 Cookie 设置 `SameSite` 属性。该属性设置 Cookie 不随着跨域请求发送，该属性可以很大程度减少 CSRF 的攻击，但是该属性目前并不是所有浏览器都兼容。

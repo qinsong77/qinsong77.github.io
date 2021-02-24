@@ -31,9 +31,6 @@ MVVM框架的三大要素
 
 ### [SPA 路由](https://juejin.im/post/6895882310458343431)
 
-### Axios
-- [值得借鉴的地方](https://juejin.im/post/6885471967714115597)
-
 ### [Better Scroll](https://juejin.im/post/6876943860988772360)
 
 #### [git-rebase](https://www.jianshu.com/p/6960811ac89c)
@@ -84,3 +81,149 @@ ESLint 主要解决了两类问题,
 #### [Git Reset 三种模式](https://www.jianshu.com/p/c2ec5f06cf1a)
 
 ### [彻底理解服务端渲染 - SSR原理](https://github.com/yacan8/blog/issues/30)
+
+### Axios
+- [值得借鉴的地方](https://juejin.im/post/6885471967714115597)
+- [封装 axios 取消重复请求](https://mp.weixin.qq.com/s/b5W7Xq4UzTkAB1B8w80NXA)
+
+#### 取消请求有两种方式
+1. 统一批量取消， 通过`axios.CancelToken.source`生成取消令牌`token`和取消方法`cancel`
+```javascript
+const CancelToken = axios.CancelToken;
+const source = CancelToken.source();
+
+axios.get('/user/12345', {
+  cancelToken: source.token
+}).catch(function(thrown) {
+  if (axios.isCancel(thrown)) {
+    console.log('Request canceled', thrown.message);
+  } else {
+    // 处理错误
+  }
+});
+
+axios.post('/user/12345', {
+    name: 'new name'
+  }, {
+  cancelToken: source.token
+})
+
+// 取消请求 (消息参数是可选的)
+source.cancel('Operation canceled by the user.');
+```
+2. 单个取消，通过传递一个 `executor` 函数到 `CancelToken` 的构造函数来创建 `cancel token`
+
+```javascript
+const CancelToken = axios.CancelToken;
+let cancel;
+axios.get('/user/12345', {
+
+  cancelToken: new CancelToken(function executor(c) {
+    // executor 函数接收一个 cancel 函数作为参数
+    cancel = c;
+  })
+});
+// 取消请求
+cancel();
+```
+实现
+```javascript
+import axios from 'axios'
+import { Message } from '@cmiot/onenet-ui'
+import { API_BASE_URL } from '_com/constant'
+
+// 存储每个请求的标识和取消的函数
+const pendingAjax = new Map()
+// 生成重复标识的方式
+const duplicatedKeyFn = (config) => `${config.method}-${config.url}`
+/**
+ * 将请求添加到pendingAjax
+ * @param {Object} config
+ */
+const addPendingAjax = (config) => {
+  // 是否需要取消重复的请求
+  if (!config.cancelDuplicated) return
+
+  const duplicatedKey = duplicatedKeyFn(config)
+  if (pendingAjax.has(duplicatedKey)) return
+  config.cancelToken = config.cancelToken || new axios.CancelToken((cancel) => {
+    // 如果pendingAjax中不存在当前请求，添加进去
+    pendingAjax.set(duplicatedKey, cancel)
+  })
+}
+
+/**
+ * 从pendingAjax中删除请求
+ * @param {Object} config
+ */
+const removePendingAjax = (config) => {
+  // 是否需要取消重复的请求
+  if (!config.cancelDuplicated) return
+
+  const duplicatedKey = duplicatedKeyFn(config)
+  // 如果pendingAjax中存在当前请求, 取消当前请求并将其删除
+  if (duplicatedKey && pendingAjax.has(duplicatedKey)) {
+    const cancel = pendingAjax.get(duplicatedKey)
+    cancel(duplicatedKey)
+    pendingAjax.delete(duplicatedKey)
+  }
+}
+
+const removePending = (config) => {
+  const duplicatedKey = duplicatedKeyFn(config)
+  if (pendingAjax.has(duplicatedKey)) pendingAjax.delete(duplicatedKey)
+}
+
+const instance = axios.create({
+  timeout: 1000 * 10,
+  baseURL: API_BASE_URL,
+  validateStatus: () => {
+    return true
+  }
+})
+
+instance.interceptors.request.use(config => {
+  config.headers.testUid = (instance.$appStore && instance.$appStore.state.userInfo.userId) || (process.env.NODE_ENV === 'development' ? localStorage.getItem('testUid') : null)
+  removePendingAjax(config)
+  addPendingAjax(config)
+  return config
+}, error => {
+  console.log(error)
+  return Promise.reject(error)
+})
+
+instance.interceptors.response.use(
+  res => {
+    removePending(res.config)
+    if (res.status === 401) return instance.$appStore.dispatch('toLogin') // 未登录
+    if (res.status === 204) return res
+    const { code, message } = res.data
+    if (code !== '0' && code !== 0 && code !== 404) {
+      if (res.config.dontShowMessage) return Promise.reject(res.data) // 请求配置不弹出错误消息
+      Message.destroy()
+      Message.error({
+        content: message || res.statusText
+      })
+      return Promise.reject(message)
+    } else return res.data
+  },
+  error => {
+    if (axios.isCancel(error)) {
+      console.log('Request canceled', error.message)
+    }
+    return Promise.reject(error)
+  }
+)
+
+export default instance
+```
+使用
+```javascript
+export const getWorkList = (params) => {
+  return axios.request({
+    url: '/jobs',
+    params,
+    cancelDuplicated: true
+  })
+}
+```

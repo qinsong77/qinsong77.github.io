@@ -2,12 +2,47 @@
 title: 微前端
 ---
 
+### [微前端从入门到熟悉](https://juejin.im/post/6872132988780412935)
 ### [qiankun微前端方案实践及总结](https://juejin.im/post/6844904185910018062)
 ### [qiankun微前端实践总结（二）](https://juejin.im/post/6856569463950639117)
 ### [详细解析微前端、微前端框架qiankun以及源码](https://segmentfault.com/a/1190000022275991)
 ### [万字长文+图文并茂+全面解析 qiankun 源码 - qiankun 篇](https://www.jianshu.com/p/db08174fa4fc/)
 
 ### [一篇英语介绍文章](https://micro-frontends.org/)
+
+### [中台”到底是什么？](https://zhuanlan.zhihu.com/p/75223466)
+### 如何在一个子应用中复用另一个子应用的页面
+
+如果是使用umi脚手架，`plugin-qiankun` 提供了一个组件 `MicroAppWithMemoHistory` ，该组件可以在运行时，修改子应用为 `memory` 路由。
+
+借助`loadMicroApp`单独加载一个子应用的页面，在主应用将这个函数传给子应用，子应用在乾坤的声明周期函数中接受并挂载到`vue.prototype`
+子应用的比如弹窗中调用这个api，加载另一个的子应用页面，另一个子应用要如果是vue, 要`vue-router` 使用不依赖浏览器的 url 的`abstract` 模式(VueRouter内部使用数组进行模拟了路由管理)，并`push`相应的路由path，
+另外还要做其他处理，如mixin中的激活菜单处理等。`react-router` 使用 `memory history` 模式
+```javascript
+export default {
+    // ...
+    mounted () {
+      this.microApp = this.loadMicroApp(
+        {
+          name: 'asset',
+          entry: 'http://172.20.225.66:8083/ops/asset',
+          container: '#asset-container',
+          props: {
+            // store: this.$appStore,
+            ifAbstract: true,
+            path: '/asset'
+          }
+        }, {
+          singular: false // 重要
+        })
+      console.log(this.microApp)
+    },
+    beforeDestroy () {
+      this.microApp && this.microApp.unmount()
+    },
+    // ...
+}
+```
 
 #### `__INJECTED_PUBLIC_PATH_BY_QIANKUN__`
 `__INJECTED_PUBLIC_PATH_BY_QIANKUN__`这个变量是子应用配置的entry的域名路径，如`entry`的路径是`www.test.com/subapp/device`，他的值是`www.test.com/subapp/`,而
@@ -37,7 +72,7 @@ if (window.__POWERED_BY_QIANKUN__) {
 
 ```javascript
 
- // The require function
+  // The require `function`
  function __webpack_require__(moduleId) {
  
  	// 检测是否存在缓存

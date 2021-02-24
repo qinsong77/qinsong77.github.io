@@ -1709,6 +1709,77 @@ var lengthOfLIS = function(nums) {
 
 [思路](https://mp.weixin.qq.com/s/uWzSvWWI-bWAV3UANBtyOw)
 ```javascript
+// 递归-超时
+var minDistance = function(s1, s2) {
+    let m = s1.length
+    let n = s2.length
+    // 返回 s1[0..i] 和 s2[0..j] 的最小编辑距离
+    function dp(i, j) {
+        if (i === -1) return j + 1
+        if (j === -1) return i + 1
+        if (s1[i] === s2[j]) return dp(i -1, j - 1) // 什么多不做
+        else {
+            return Math.min(
+                dp(i, j - 1) + 1, // 插入
+                dp(i-1, j) + 1, // 删除
+                dp(i -1, j -1) + 1 // 替换
+            )
+        }
+    }
+    return dp(m -1, n -1)
+};
+// 优化 加备忘录
+var minDistance = function(s1, s2) {
+    let m = s1.length
+    let n = s2.length
+    const memo = Array.from(new Array(m), () => new Array(n).fill(null))
+    function dp(i, j) {
+        if (i === -1) return j + 1
+        if (j === -1) return i + 1
+        if(memo[i][j] !== null) return memo[i][j]
+        if (s1[i] === s2[j]) return memo[i][j] = dp(i -1, j - 1) // 什么多不做
+        else {
+            return memo[i][j] = Math.min(
+                dp(i, j - 1) + 1, // 插入
+                dp(i-1, j) + 1, // 删除
+                dp(i -1, j -1) + 1 // 替换
+            )
+        }
+    }
+    return dp(m - 1, n - 1)
+};
+// DP table 是自底向上求解，递归解法是自顶向下求解：
+// 动态规划使用dp表
+// dp 函数的 base case 是i,j等于 -1，而数组索引至少是 0，所以 dp 数组会偏移一位，dp[..][0]和dp[0][..]对应 base case。
+var minDistance = function(s1, s2) {
+    let m = s1.length
+    let n = s2.length
+    const dp = Array.from(new Array(m+1), () => new Array(n+1).fill(null))
+    // base case
+    for(let i = 1; i <= m; i++) {
+        dp[i][0] = i
+    }
+    for(let j = 1; j <= n; j++) {
+        dp[0][j] = j
+    }
+    // 自底向上求解
+    for(let i = 1; i <= m; i++) {
+        for(let j = 1; j <= n; j++) {
+            if(s1[i-1] === s2[j-1]) dp[i][j] = dp[i-1][j-1]
+            else {
+                dp[i][j] = Math.min(
+                    dp[i][j - 1] + 1, // 插入
+                    dp[i-1][j] + 1, // 删除
+                    dp[i-1][j-1] + 1 // 替换
+                )
+            }
+        }
+    }
+    return dp[m][n]
+};
+```
+
+```javascript
 
 // 链接：https://leetcode-cn.com/problems/edit-distance/solution/dong-tai-gui-hua-xiang-jie-xiang-jin-zhu-a8e5/
 /**
