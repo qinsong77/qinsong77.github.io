@@ -968,7 +968,7 @@ console.log([...new Set([...arrayA, ...arrayB])])
 
 // 取交集
 function intersectionArray(arrayA, arrayB, compareFun = (a, b) => a === b) {
-	return arrayA.filter(a => arrayB.find(b => compareFun(a, b)))
+	return arrayA.filter(a => arrayB.find(b => compareFun(a, b)) !== undefined)
 }
 console.log(intersectionArray(arrayA, arrayB))
 // 简化写法
@@ -977,7 +977,7 @@ console.log(intersectionResult)
 
 // 取差集
 function differenceArray(arrayA, arrayB, compareFun = (a, b) => a === b) {
-	return arrayA.filter(a => !arrayB.find(b => compareFun(a, b)))
+	return arrayA.filter(a => arrayB.find(b => compareFun(a, b))!== undefined)
 }
 console.log(differenceArray(arrayA, arrayB))
 const differenceResult = [...new Set(arrayA.filter(v => !new Set(arrayB).has(v)))]
@@ -1033,7 +1033,7 @@ function* flatten2(array, depth) {
     }
     for(const item of array) {
         if(Array.isArray(item) && depth > 0) {
-          yield* flatten(item, depth - 1);
+          yield* flatten2(item, depth - 1);
         } else {
           yield item;
         }
@@ -1050,6 +1050,30 @@ let str = JSON.stringify(ary);
 ary = arr.flat(Infinity);
 // replace + split
 ary = str.replace(/(\[|\])/g, '').split(',')
+```
+使用堆栈stack
+```javascript
+// 无递归数组扁平化，使用堆栈
+// 注意：深度的控制比较低效，因为需要检查每一个值的深度
+// 也可能在 shift / unshift 上进行 w/o 反转，但是末端的数组 OPs 更快
+var arr1 = [1,2,3,[1,2,3,4, [2,3,4]]];
+function flatten(input) {
+  const stack = [...input];
+  const res = [];
+  while (stack.length) {
+    // 使用 pop 从 stack 中取出并移除值
+    const next = stack.pop();
+    if (Array.isArray(next)) {
+      // 使用 push 送回内层数组中的元素，不会改动原始输入
+      stack.push(...next);
+    } else {
+      res.push(next);
+    }
+  }
+  // 反转恢复原数组的顺序
+  return res.reverse();
+}
+flatten(arr1);// [1, 2, 3, 1, 2, 3, 4, 2, 3, 4]
 ```
 
 ### 数组操作

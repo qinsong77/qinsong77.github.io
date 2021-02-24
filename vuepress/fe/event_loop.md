@@ -218,7 +218,98 @@ GUI线程就是渲染页面的，他解析HTML和CSS，然后将他们构建成D
 
 ## node的事件循环
 
+[官网介绍](https://nodejs.org/zh-cn/docs/guides/event-loop-timers-and-nexttick/)
+
+![](./image/node_event_loop.png)
+
+#### 阶段概述
+
+- 定时器：本阶段执行已经被 `setTimeout()` 和 `setInterval()` 的调度回调函数。
+- 待定回调：执行延迟到下一个循环迭代的 I/O 回调。
+- idle, prepare：仅系统内部使用。
+- 轮询：检索新的 I/O 事件;执行与 I/O 相关的回调（几乎所有情况下，除了关闭的回调函数，那些由计时器和 setImmediate() 调度的之外），其余情况 node 将在适当的时候在此阻塞。
+- 检测：`setImmediate()` 回调函数在这里执行。
+- 关闭的回调函数：一些关闭的回调函数，如：`socket.on('close', ...)`。
+- 在每次运行的事件循环之间，Node.js 检查它是否在等待任何异步 I/O 或计时器，如果没有的话，则完全关闭。
+#### 三大关键阶段
+首先，梳理一下 nodejs 三个非常重要的执行阶段:
+
+1. 执行 `定时器回调` 的阶段。检查定时器，如果到了时间，就执行回调。这些定时器就是`setTimeout`、`setInterval`。这个阶段暂且叫它`timer`。
+
+2. 轮询(英文叫`poll`)阶段。因为在node代码中难免会有异步操作，比如文件I/O，网络I/O等等，那么当这些异步操作做完了，就会来通知JS主线程，怎么通知呢？就是通过`data`、 `connect`等事件使得事件循环到达 `poll` 阶段。到达了这个阶段后:
+    
+如果当前已经存在定时器，而且有定时器到时间了，拿出来执行，eventLoop 将回到`timer`阶段。
+
+如果没有定时器, 会去看回调函数队列。
+
+- 如果队列不为空，拿出队列中的方法依次执行
+- 如果队列为空，检查是否有 `setImmediate` 的回调
+  - 有则前往`check`阶段(下面会说)
+  - 没有则继续等待，相当于阻塞了一段时间(阻塞时间是有上限的), 等待 `callback` 函数加入队列，加入后会立刻执行。一段时间后自动进入 `check` 阶段。
+  
+3. `check` 阶段。这是一个比较简单的阶段，直接执行 `setImmediate` 的回调。
+
+这三个阶段为一个循环过程。
+
+
+#### 完整流程
+
+首先，当第 1 阶段结束后，可能并不会立即等待到异步事件的响应，这时候 nodejs 会进入到 `I/O异常的回调阶段`。比如说 TCP 连接遇到ECONNREFUSED，就会在这个时候执行回调。
+
+并且在 `check` 阶段结束后还会进入到 `关闭事件的回调阶段`。如果一个 socket 或句柄（handle）被突然关闭，例如 socket.destroy()， 'close' 事件的回调就会在这个阶段执行。
+
+梳理一下，nodejs 的 eventLoop 分为下面的几个阶段:
+
+1. timer 阶段
+2. I/O 异常回调阶段
+3. 空闲、预备状态(第2阶段结束，poll 未触发之前)
+4. poll 阶段
+5. check 阶段
+6. 关闭事件的回调阶段
+
+#### 实例演示
+
+```javascript
+setTimeout(()=>{
+    console.log('timer1')
+    Promise.resolve().then(function() {
+        console.log('promise1')
+    })
+}, 0)
+setTimeout(()=>{
+    console.log('timer2')
+    Promise.resolve().then(function() {
+        console.log('promise2')
+    })
+}, 0)
+```
+node 版本 >= 11的，它会和浏览器表现一致，一个定时器运行完立即运行相应的微任务。
+```
+timer1
+promise1
+time2
+promise2
+```
+而 node 版本小于 11 的情况下，对于定时器的处理是:
+>若第一个定时器任务出队并执行完，发现队首的任务仍然是一个定时器，那么就将微任务暂时保存，**直接去执行**新的定时器任务，当新的定时器任务执行完后，**再一一执行**中途产生的微任务。
+
+因此会打印出这样的结果:
+```
+timer1
+timer2
+promise1
+promise2
+```
+
+#### nodejs 和 浏览器关于eventLoop的主要区别
+两者最主要的区别在于浏览器中的微任务是**在每个相应的宏任务**中执行的，而nodejs中的微任务是在**不同阶段之间**执行的。
+
+#### process.nextTick
 >在node环境下，process.nextTick的优先级高于Promise，也就是说：在宏任务结束后会先执行微任务队列中的nextTickQueue，然后才会执行微任务中的Promise。
+
+`process.nextTick` 是一个独立于 eventLoop 的任务队列。
+
+在每一个 eventLoop 阶段完成后会去检查这个队列，如果里面有任务，会让这部分任务**优先于微任务**执行。
 
 ### [setInterval](http://caibaojian.com/setinterval.html),[requestAnimationFrame](https://github.com/sisterAn/blog/issues/30)代替绘制动画
 

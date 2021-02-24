@@ -56,6 +56,7 @@ title: LeetCode
    - [最长公共子序列](#最长公共子序列)
    - [最长递增子序列](#最长递增子序列)
    - [编辑距离](#编辑距离)
+   - [买卖股票的最佳时机](#买卖股票的最佳时机)
 - [8.数组](#_8-数组)
    - [连续子数组的最大和](#连续子数组的最大和)
    - [合并两个有序数组](#合并两个有序数组)
@@ -1573,7 +1574,7 @@ const merge = (list_1, list_2) => {
 };
 ```
 #### [链表求和](https://leetcode-cn.com/problems/sum-lists-lcci/)
-
+[这道题一样的](https://leetcode-cn.com/problems/add-two-numbers/)
 ```javascript
 var addTwoNumbers = function(h1, h2) {
     const res = new ListNode(Infinity)
@@ -1876,6 +1877,28 @@ var minDistance = function(word1, word2) {
 
 ```
 
+#### [买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/comments/)
+DP思想：
+
+- 记录【今天之前买入的最小值】
+- 计算【今天之前最小值买入，今天卖出的获利】，也即【今天卖出的最大获利】
+- 比较【每天的最大获利】，取最大值即可
+
+```javascript
+/**
+ * @param {number[]} prices
+ * @return {number}
+ */
+var maxProfit = function(prices) {
+    if(prices.length <= 1) return 0
+    let min = prices[0], max = 0
+    for(let i = 1; i < prices.length; i++) {
+        max = Math.max(max, prices[i] - min)
+        min = Math.min(min, prices[i])
+    }
+    return max
+};
+```
 ## 8.数组
 
 ### [连续子数组的最大和](https://leetcode-cn.com/problems/maximum-subarray/)

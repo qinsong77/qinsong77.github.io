@@ -188,6 +188,17 @@ absolute 定位使元素的位置与文档流无关，因此不占据空间。ab
 伪类，指可以通过元素选择器，就可以实现的效果，如`first-child`，`active`, `:checked`，`:disabled`， `:nth-child()`等。 而伪元素，是指需要通过创元素，才可以实现的效果，如`first-letter`,`before`，`after`等。
 具体元素跟写法，可参考：<https://blog.csdn.net/qq_27674439/article/details/90608220>
 
+#### 行内元素，设置margin 
+行内元素设置 margin 会有位置的改变吗: 左右 margin 会变，上下 margin 不会变。
+
+行内元素中，padding-left / padding-right / margin-left / margin-right 有影响结果；
+
+行内元素中，padding-top / padding-bottom / margin-top / margin-bottom 不影响结果；
+
+padding-top / padding-bottom 虽然不影响结果，但实际上生效了。
+
+行内不可替换元素的外边距不会改变该元素的行高。
+
 #### `<img>`是什么元素
 
 > `<img />` 标签没有独占一行，所以是行内元素;既然是行内元素为什么能够设置宽高呢？`<img />` 标签属于替换元素，具有内置的宽高属性，所以可以设置，具体解释看下面。

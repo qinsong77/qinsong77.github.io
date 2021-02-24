@@ -599,3 +599,35 @@ function throttle(fn, wait){
 		}
 	}
 }
+
+Array.prototype.reduce = function (fn, prev) {
+	const arr = this
+	prev = prev || arr[0]
+	
+	for(let i = 0; i < arr.length; i++) {
+		prev = fn(prev, arr[i], i, arr)
+	}
+	return prev
+}
+
+function uniq(arr) {
+	return Array.from(new Set(arr))
+}
+
+function flat(arr) {
+	const stack = [...arr]
+	const res = []
+	while (stack.length) {
+		const next = stack.pop()
+		if(Array.isArray(next)) {
+			stack.push(...next)
+		} else {
+			res.push(next)
+		}
+	}
+	return res.reverse()
+}
+
+function flat(arr, depth) {
+	return depth > 0 ? arr.reduce((prev, val) =>  prev.concat(Array.isArray(val) ? flat(val, depth -1) : val), []) : arr.slice()
+}
