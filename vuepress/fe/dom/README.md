@@ -420,7 +420,7 @@ mc.addEventListener('message', event => {
 
 
 ### 浏览器缓存
-> [介绍](https://juejin.im/post/6844903829620686856)
+> [介绍](https://sanyuan0704.top/my_blog/blogs/perform/001.html)
 
 ### [web储存方案](https://juejin.im/post/6844904192549584903)
 

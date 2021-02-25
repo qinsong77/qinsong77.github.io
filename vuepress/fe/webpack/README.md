@@ -27,6 +27,8 @@ title: Summary
 
 ### [手把手带你入门前端工程化——超详细教程](https://zhuanlan.zhihu.com/p/276458191)
 
+#### [前端 DSL 实践指南](https://zhuanlan.zhihu.com/p/107947462)
+
 前端工程化可以分成四个方面来说，分别为模块化、组件化、规范化和自动化。
 
 #### 模块化

@@ -1270,6 +1270,20 @@ myCo(test()).then(data => {
   return accumulator + currentValue;
 }, 0);
 ```
+
+### JSON
+
+JSON 是一种数据格式，并不是编程语言，多用于数据传输交换和静态配置
+
+JSON的值只能是以下几种数据格式：
+
+1. 数字，包含浮点数和整数
+2. 字符串，需要包裹在双引号中
+3. `Bool`值，`true` 或者 `false`
+4. 数组，需要包裹在方括号中 []
+5. 对象，需要包裹在大括号中 {}
+6. `Null`
+
 #### `JSON.stringify`、`JSON.parse`深拷贝的缺点
 
 - 1. 如果obj里有函数，undefined，则序列化的结果会把函数或 `undefined`丢失；`JSON.parse`传入`undefined`会报错, `JSON.stringify`不会报错。有NaN、Infinity和-Infinity，则序列化的结果会变成null。如果obj里有RegExp(正则表达式的缩写)、Error对象，则序列化的结果将只得到空对象null；
