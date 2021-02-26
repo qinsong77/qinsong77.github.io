@@ -73,6 +73,7 @@ title: LeetCode
 - [二分查找](#二分查找)
     - [求平方根](#求平方根)
     - [寻找旋转排序数组中的最小值](#寻找旋转排序数组中的最小值)
+- [设计LRU缓存结构](#设计LRU缓存结构)
 - [扑克牌中的顺子](#扑克牌中的顺子)
 - [扁平化嵌套列表迭代器](#扁平化嵌套列表迭代器)
 
@@ -1576,6 +1577,7 @@ const merge = (list_1, list_2) => {
 #### [链表求和](https://leetcode-cn.com/problems/sum-lists-lcci/)
 [这道题一样的](https://leetcode-cn.com/problems/add-two-numbers/)
 ```javascript
+// mine
 var addTwoNumbers = function(h1, h2) {
     const res = new ListNode(Infinity)
     let curr = res
@@ -1610,6 +1612,32 @@ var addTwoNumbers = function(h1, h2) {
         prev.next = new ListNode(prevMoreVal)
     }
     return res.next
+};
+// better
+var addTwoNumbers = function(l1, l2) {
+    let dummy =new ListNode();
+    let curr=dummy;
+    let carry=0;
+
+    while(l1 !==null || l2 !==null){
+        let sum=0;
+        if(l1!==null){
+            sum+=l1.val;
+            l1=l1.next;
+        }
+        if(l2!==null){
+            sum+=l2.val;
+            l2=l2.next;
+        }
+        sum+=carry;
+        curr.next=new ListNode(sum%10);
+        carry=Math.floor(sum/10);
+        curr=curr.next;
+    }
+    if(carry>0){
+        curr.next=new ListNode(carry);
+    }
+    return dummy.next;
 };
 ```
 数位是正向存放的
@@ -1726,39 +1754,67 @@ function LIS( arr ) {
 }
 ```
 [使用二分查找](https://leetcode-cn.com/problems/longest-increasing-subsequence/solution/300-zui-chang-shang-sheng-zi-xu-lie-by-alexer-660/)
+[更好的思路](https://leetcode-cn.com/problems/longest-increasing-subsequence/solution/zui-chang-shang-sheng-zi-xu-lie-dong-tai-gui-hua-2/)
+
+维护一个列表 tails，其中每个元素 `tails[k]tails[k]` 的值代表 长度为 `k+1`的子序列尾部元素的值。
+如 `[1,4,6]`序列，长度为 1,2,3 的子序列尾部元素值分别为 `tails = [1,4,6]`。
+
+时间复杂度 O(NlogN)
 ```javascript
-/**
- * @param {number[]} nums
- * @return {number}
- */
 var lengthOfLIS = function(nums) {
-    let n = nums.length;
-    if(n <= 1){
-        return n;
+    const tails = new Array(nums.length).fill(-Infinity)
+    tails[0] = nums[0]
+    let res = 1 // 最长递增子序列res
+    for(let i = 1; i < nums.length; i++) {
+        if(nums[i] > tails[res - 1]) { // 比之前最长子序列的末位值都要大时
+            tails[res] = nums[i]
+            res++
+            continue
+        }
+        let left = 0, right = res
+        while(left < right) { // 二分查找，tails中找到第一个比 nums[i] 大的数 tails[left] ，并更新d[left]=nums[i]。
+            const mid = Math.floor((left + right)/2)
+            if(tails[mid] < nums[i]) left = left + 1
+            else right = mid
+        }
+        tails[left] = nums[i]
     }
-    let tail = new Array(n);
-    tail[0] = nums[0];
-    let end = 0;
-    for(let i = 1;i < n;i++){
-        if(nums[i] > tail[end]){
-            end++;
-            tail[end] = nums[i];
-        }else{
-            let left = 0;
-            let right = end;
-            while(left < right){
-                let mid = left + ((right - left) >> 1);
-                if(tail[mid] < nums[i]){
-                    left = mid + 1;
-                }else{
-                    right = mid;
-                }
+    return res
+};
+
+function LIS( arr ) {
+    // write code here
+    const length = arr.length
+    if(length === 0) return []
+    const dp = new Array(length)
+    const tails = new Array(length).fill(-Infinity)
+    tails[0] = arr[0]
+    dp[0] = 1
+    let count = 1
+    for(let i = 1; i < length; i++) {
+        if(arr[i] > tails[count - 1]) {
+            tails[count++] = arr[i]
+            dp[i] = count
+        } else {
+            let left = 0, right = count
+            while(left < right) {
+                const mid = Math.floor((left + right)/2)
+                if(arr[i] > tails[mid]) {
+                    left = left + 1
+                } else right = mid
             }
-            tail[left] = nums[i];
+            tails[left] = arr[i]
+            dp[i] = left + 1
         }
     }
-    return end + 1;
-};
+    let res = new Array(count);
+    for(let i=length-1; i>=0; i--){
+       if(dp[i]===count){
+            res[--count] = arr[i];
+       }
+    }
+    return res;
+}
 ```
 ### [编辑距离](https://leetcode-cn.com/problems/edit-distance/)
 
@@ -2391,6 +2447,85 @@ var findMin = function(nums) {
 };
 ```
 
+#### [设计LRU缓存结构](https://leetcode-cn.com/problems/lru-cache/)
+思路： 双链表+哈希表， 哈希表存取数据都是o(1), 双链表先预设表头和表尾。
+
+map结构刚好符合，且是有序存放的，但`Map.prototype.keys()`返回的是遍历器
+```javascript
+class LRUCache {
+	constructor(capacity) {
+		this.capacity = capacity
+		this.cache = new Map()
+	}
+	get (key) {
+		if(this.cache.has(key)) {
+			const value = this.cache.get(key)
+			this.cache.delete(key)
+			this.cache.set(key, value)
+			return value
+		}
+		else return -1
+	}
+	put (key, value) {
+		if(this.cache.has(key)) {
+			this.cache.delete(key)
+			this.cache.set(key, value)
+		} else {
+			const size = this.cache.size
+			if(size === this.capacity) {
+				const keys = this.cache.keys()
+				const key = keys.next().value
+				this.cache.delete(key)
+			}
+			this.cache.set(key, value)
+		}
+	}
+}
+
+```
+[牛客版本](https://www.nowcoder.com/practice/e3769a5f49894d49b871c09cadd13a61)
+```javascript
+/**
+ * lru design
+ * @param operators int整型二维数组 the ops
+ * @param k int整型 the k
+ * @return int整型一维数组
+ */
+function LRU( operators ,  k ) {
+    // write code here
+    const res = []
+    const map = new Map()
+    operators.forEach(arr => {
+        const opt = arr.shift()
+        if(opt === 1) {
+            const value = arr.pop()
+            const key = arr.pop()
+           if(map.has(key)) {
+               map.delete(key)
+               map.set(key, value)
+           } else {
+               if(map.size === k) {
+                   const keys = map.keys()
+                   map.delete(keys.next().value)
+               }
+               map.set(key, value)
+           }
+        } else {
+            const key = arr.pop()
+            if(map.has(key)) {
+                const value = map.get(key)
+                map.delete(key)
+                map.set(key, value)
+                res.push(value)
+            } else res.push(-1)
+        }
+    })
+    return res
+}
+module.exports = {
+    LRU : LRU
+};
+```
 #### [扑克牌中的顺子](https://leetcode-cn.com/problems/bu-ke-pai-zhong-de-shun-zi-lcof/)
 
 ```javascript
