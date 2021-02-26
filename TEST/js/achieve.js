@@ -631,3 +631,33 @@ function flat(arr) {
 function flat(arr, depth) {
 	return depth > 0 ? arr.reduce((prev, val) =>  prev.concat(Array.isArray(val) ? flat(val, depth -1) : val), []) : arr.slice()
 }
+
+class LRUCache {
+	constructor(capacity) {
+		this.capacity = capacity
+		this.cache = new Map()
+	}
+	get (key) {
+		if(this.cache.has(key)) {
+			const value = this.cache.get(key)
+			this.cache.delete(key)
+			this.cache.set(key, value)
+			return value
+		}
+		else return -1
+	}
+	put (key, value) {
+		if(this.cache.has(key)) {
+			this.cache.delete(key)
+			this.cache.set(key, value)
+		} else {
+			const size = this.cache.size
+			if(size === this.capacity) {
+				const keys = this.cache.keys()
+				const key = keys.next().value
+				this.cache.delete(key)
+			}
+			this.cache.set(key, value)
+		}
+	}
+}

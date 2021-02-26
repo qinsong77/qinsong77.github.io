@@ -1040,7 +1040,7 @@ class ChangeTheme extends React.Component {
 老树的每一个节点都去遍历新树的节点，直到找到新树对应的节点。那么这个流程就是 O(n^2)，再紧接着找到不同之后，再计算最短修改距离然后修改节点，这里是 O(n^3)
 
 相关Leetcode题目[编辑距离](https://leetcode-cn.com/problems/edit-distance/)
-```cvs
+```
 Diff算法 => O(n^3) => 将两个DOM树的所有节点两两对比，时间复杂度 O(n^2)
       prev                   last   
 
@@ -1066,7 +1066,7 @@ React 在以下三个假设的基础之上提出了一套 O(n) 的启发式算�
 3. 开发者可以通过 `key prop` 来暗示哪些子元素（同级的节点）在不同的渲染下能保持稳定；
 
 O(n^3)=> O(n) => 简单粗暴，所有的节点按层级比较，只会遍历一次
-```cvs
+```
 按叶子节点位置比较
  [0,0]           :  pA => lA      #相同，不理会
  [0.0,0.0]       :  pD => lB      #不同，删除pD，添加lB

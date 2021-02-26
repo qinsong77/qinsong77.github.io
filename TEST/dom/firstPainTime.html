@@ -1,10 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <meta charset="UTF-8">
-   <title>$Title$</title>
+   <meta charset=utf-8>
+   <title>first paint time</title>
+   <script>
+		 requestAnimationFrame(function () {
+
+			 var firstPaintTime = Date.now() - performance.timing.navigationStart;
+
+			 console.log(
+				 'get first paint time by raf:',
+				 firstPaintTime
+			 );
+		 });
+		 window.onload = function () {
+			 requestAnimationFrame(function () {
+				 var firstPaintTime =
+					 window.chrome.loadTimes().firstPaintTime * 1000 -
+					 window.performance.timing.navigationStart;
+
+				 console.log(
+					 'get first paint time by chrome.loadTimes().firstPaintTime:',
+					 firstPaintTime
+				 );
+			 });
+		 };
+   </script>
 </head>
 <body>
-$END$
+<script>
+	var start = Date.now();
+	while (Date.now() - start < 3000) {
+	} // white screen
+</script>
 </body>
 </html>

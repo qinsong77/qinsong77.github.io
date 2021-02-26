@@ -15,11 +15,11 @@ title: 前端性能优化
 
 2. FCP，First Contentful Paint。当页面绘制完第一个 DOM 内容，会触发首屏，这里的内容可以是文字、图片或者是 canvas。
 
-3. FMP，First Meaning Paint。
+3. FMP，First Meaning Paint。首次有效绘制。这是一个很主观的指标。根据业务的不同，每一个网站的有效内容都是不相同的，有效内容就是网页中"主角元素"。对于视频网站而言，主角元素就是视频。对于搜索引擎而言，主角元素就是搜索框。
 
 4. ATF，Above The Fold，首屏时间
 
-5. TTI，Time To Interact，首次交互时间，可以用DomReady时间。
+5. TTI，Time To Interact，首次交互时间，可以用DomReady时间。可交互时间。用于标记应用已进行视觉渲染并能可靠响应用户输入的时间点。应用可能会因为多种原因而无法响应用户输入：①页面组件运行所需的JavaScript尚未加载完成。②耗时较长的任务阻塞主线程
 
 6. 资源总下载时间。Load时间 >= DomContentLoaded时间
 
