@@ -20,6 +20,7 @@ title: LeetCode
   - [字符串相加](#字符串相加)
   - [字符串相乘](#字符串相乘)
   - [替换后的最长重复字符](#替换后的最长重复字符)
+  - [最长公共子串](#最长公共子串)
   - [最长公共子序列](#最长公共子序列)
   - [最小覆盖子串](#最小覆盖子串)
   - [字符串的排列](#字符串的排列)
@@ -382,6 +383,7 @@ var isValid = function(s) {
 
 回文串就是正着读和反着读都一样的字符串。
 
+中心扩展法
 ```javascript
 // https://labuladong.gitbook.io/algo/gao-pin-mian-shi-xi-lie/zui-chang-hui-wen-zi-chuan
 /**
@@ -407,7 +409,44 @@ function palidrome (s, l, r) {
     return s.slice(l+1, r)
 }
 ```
+动态规划
 
+状态定义： `dp[i,j]`：字符串s从索引i到j的子串是否是回文串
+- true： `s[i,j]` 是回文串
+- false：`s[i,j]` 不是回文串
+
+转移方程: `dp[i][j] = dp[i+1][j-1] && s[i] == s[j]`
+
+- `s[i] == s[j]`：说明当前中心可以继续扩张，进而有可能扩大回文串的长度
+- dp[i+1][j-1]：true
+  - 说明`s[i,j]`的子串`s[i+1][j-1]`也是回文串
+  - 说明，i是从最大值开始遍历的，j是从最小值开始遍历的
+- 特殊情况
+  - j - i < 2：意即子串是一个长度为0或1的回文串
+  
+总结: `dp[i][j] = s[i] == s[j] && ( dp[i+1][j-1] || j - i < 2)`
+
+```javascript
+/**
+ * @param {string} s
+ * @return {string}
+ */
+var longestPalindrome = function(s) {
+    let n = s.length;
+    let res = '';
+    let dp = Array.from(new Array(n),() => new Array(n).fill(0));
+    for(let i = n-1;i >= 0;i--){
+        for(let j = i;j < n;j++){
+            dp[i][j] = s[i] == s[j] && (j - i < 2 || dp[i+1][j-1]);
+            if(dp[i][j] && j - i +1 > res.length){
+                res = s.substring(i,j+1);
+            }
+        }
+    }
+    return res;
+};
+// 链接：https://leetcode-cn.com/problems/longest-palindromic-substring/solution/5-zui-chang-hui-wen-zi-chuan-by-alexer-660/
+```
 #### [最长不含重复字符的子字符串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/)
 
 滑动窗口解法，可以维护一个数组或下标
@@ -658,6 +697,37 @@ var characterReplacement = function(s, k) {
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 **/
 ````
+
+#### [最长公共子串](https://www.nowcoder.com/practice/f33f5adc55f444baa0e0ca87ad8a6aac)
+
+```javascript
+/**
+ * longest common substring
+ * @param str1 string字符串 the string
+ * @param str2 string字符串 the string
+ * @return string字符串
+ */
+function LCS( str1 ,  str2 ) {
+    // write code here
+    if(str1.length > str2.length) {
+        let temp = str1
+        str1 = str2
+        str2 = temp
+    }
+    let  right = 0, left = 0
+    let res = ''
+    while(left <= str1.length) {
+        left++
+        let str = str1.slice(right, left)
+        if(str2.indexOf(str) === -1) {
+            right++
+        } else {
+            res = str.length > res.length ? str : res
+        }
+    }
+    return res
+}
+```
 
 #### [最长公共子序列](https://leetcode-cn.com/problems/longest-common-subsequence/)
 
@@ -1933,7 +2003,12 @@ var minDistance = function(word1, word2) {
 
 ```
 
-#### [买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/comments/)
+#### [买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
+
+[股票问题全解](https://mp.weixin.qq.com/s/lQEj_K1lUY83QtIzqTikGA)
+
+一次交易
+
 DP思想：
 
 - 记录【今天之前买入的最小值】
@@ -1953,6 +2028,35 @@ var maxProfit = function(prices) {
         min = Math.min(min, prices[i])
     }
     return max
+};
+```
+
+##### [买卖股票的最佳时机II](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/)
+无数次交易但不能同时参与多笔交易
+```javascript
+// 动态规划
+var maxProfit = function(prices) {
+    const length = prices.length
+    let max = 0, min = -Infinity
+    for(let i = 0; i < length; i++) {
+        let temp = max
+        max = Math.max(max, min + prices[i])
+        min = Math.max(min, temp - prices[i])
+    }
+    return max
+};
+```
+贪心，贪心算法只能用于计算最大利润，**计算的过程并不是实际的交易过程**。
+```javascript
+var maxProfit = function(prices) {
+    const length = prices.length
+    let ans = 0
+    for (let i = 1; i < length; i++) {
+        if(prices[i] > prices[i-1]) { // 只要有利润就卖出
+            ans += (prices[i] - prices[i-1])
+        }
+    }
+    return ans
 };
 ```
 ## 8.数组

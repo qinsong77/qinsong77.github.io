@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>proxy</title>
+</head>
+<body>
+<p id="paragraph"></p>
+<input type="text" id="input">
+
+<script>
+	const paragraph = document.getElementById('paragraph');
+	const input = document.getElementById('input');
+	// 需要代理的数据对象
+	const data = {
+		text: 'hello world'
+	};
+	const handler = {
+		get (target, key, receiver) {
+			return Reflect.set(target, key, value,receiver)
+    },
+		// 监控data中text属性的变化
+		set (target, prop, value, receiver) {
+			if (prop === 'text') {
+				// 更新值
+				target[prop] = value;
+				// 更新视图
+				paragraph.innerHTML = value;
+				input.value = value;
+				return  true
+			}
+			return Reflect.set(target, key, value,receiver)
+		}
+	}
+	// 构造proxy对象
+	const myText = new Proxy(data, handler);
+	// 添加input监听事件
+	input.addEventListener('input', function (e) {
+		myText.text = e.target.value
+	}, false);
+	// 初始化值
+	myText.text = data.text;
+</script>
+</body>
+</html>

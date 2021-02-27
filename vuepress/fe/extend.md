@@ -253,7 +253,7 @@ anotherPerson.sayHi(); //"hi"
 
 - 子类想要在原型上添加方法，必须在继承之后添加，否则将覆盖掉原有原型上的方法。这样的话 若是已经存在的两个类，就不好办了。
 
-## 6、混入方式继承多个对象
+## 7、混入方式继承多个对象
 ```javascript
 
 function MyClass() {
@@ -279,7 +279,6 @@ MyClass.prototype.myMethod = function() {
 ## 8、ES6类继承extends
 >extends关键字主要用于类声明或者类表达式中，以创建一个类，该类是另一个类的子类。其中constructor表示构造函数，一个类中只能有一个构造函数，有多个会报出SyntaxError错误,如果没有显式指定构造方法，则会添加默认的 constructor方法，使用例子如下。
 ```javascript
-
 class Rectangle {
     static value = 'static'
     // constructor
@@ -356,6 +355,64 @@ function _inherits(subType, superType) {
     }
 }
 ```
+
+#### 静态方法和静态属性
+```javascript
+class Parent {
+	constructor(name) {
+		this.name = name
+	}
+	static sum = 0
+	static func() {
+		return this.sum
+	}
+}
+
+class Child extends Parent {}
+
+console.log(Parent.func()) // 0
+console.log(Child.func()) // 0
+```
+![](./image/es6_extend.png)
+
+#### super
+1. super作为函数调用时，代表父类的构造函数。ES6 要求，子类的构造函数必须执行一次super函数。只能在`constructor`中第一行调用.
+2. super作为对象时，在普通方法中，**指向父类的原型对象**；**在静态方法中，指向父类**。ES6 规定，在子类普通方法中通过super调用父类的方法时，**方法内部的this指向当前的子类实例**。由于this指向子类实例，所以如果通过super对某个属性赋值，这时super就是this，赋值的属性会变成子类实例的属性。
+```javascript
+class A {
+  constructor() {
+    this.x = 1;
+  }
+}
+
+class B extends A {
+  constructor() {
+    super();
+    this.x = 2;
+    super.x = 3;
+    console.log(super.x); // undefined
+    console.log(this.x); // 3
+  }
+}
+
+let b = new B();
+```
+
+#### extends
+Class 作为构造函数的语法糖，同时有`prototype`属性和`__proto__`属性，因此同时存在两条继承链。
+1. 子类的`__proto__`属性，表示构造函数的继承，总是指向父类。
+2. 子类`prototype`属性的`__proto__`属性，表示方法的继承，总是指向父类的`prototype`属性。
+```javascript
+class A {
+}
+
+class B extends A {
+}
+
+B.__proto__ === A // true
+B.prototype.__proto__ === A.prototype // true
+```
+
 
 ## 总结
 1、 函数声明和类声明的区别 

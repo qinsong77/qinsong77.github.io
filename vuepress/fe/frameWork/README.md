@@ -85,6 +85,7 @@ ESLint 主要解决了两类问题,
 ### Axios
 - [值得借鉴的地方](https://juejin.im/post/6885471967714115597)
 - [封装 axios 取消重复请求](https://mp.weixin.qq.com/s/b5W7Xq4UzTkAB1B8w80NXA)
+- [封装 axios 拦截器实现用户无感刷新](https://juejin.cn/post/6844903993274007565)
 
 #### 取消请求有两种方式
 1. 统一批量取消， 通过`axios.CancelToken.source`生成取消令牌`token`和取消方法`cancel`

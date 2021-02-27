@@ -111,3 +111,67 @@ function compose(middleware){
 		}
 	}
 }
+
+class Application extends Emitter {
+	constructor() {
+		super();
+		this.context = {}
+		this.middleware = []
+	}
+	
+	use (fn) {
+		if(typeof fn !== 'function') {
+			throw  new TypeError('middleware must be a function')
+		}
+		this.middleware.push(fn)
+		return this
+	}
+	
+	listen(...args) {
+		const server = http.createServer(this.callBack())
+		return server.listen(...args)
+	}
+	
+	createContext(req, res) {
+		const context = Object.create(this.context)
+		context.app = this
+		context.req = req
+		context.res = res
+		return context
+	}
+	
+	callBack() {
+		const fn = compose(this.middleware)
+		return (req, res) => {
+			const ctx = this.createContext(req, res)
+			return this.handleRequest(ctx, fn)
+		}
+	}
+	
+	handleRequest(ctx, fnMiddleware) {
+		const handleResponse = () => respond(ctx)
+		return fnMiddleware(ctx)
+			.then(handleResponse)
+			.catch(err => {
+				console.log('Something is wrong: ', err)
+			})
+	}
+}
+
+function compose(middleware) {
+	if(!Array.isArray(middleware)) {
+		throw new TypeError('dsd')
+	}
+	for(const fn of middleware) {
+		if(typeof fn !== 'function') {
+			throw new TypeError('das')
+		}
+	}
+	
+	return function (context, next) {
+		return dispatch(0)
+		function dispatch(i) {
+		
+		}
+	}
+}

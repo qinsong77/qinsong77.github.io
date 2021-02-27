@@ -572,8 +572,8 @@ Singleton.prototype.getInstance = function (arg) {
 	return this.instance
 }
 
-console.log(Singleton.getInstance('tom', 12))
-console.log(Singleton.getInstance('tom11', 13))
+// console.log(Singleton.getInstance('tom', 12))
+// console.log(Singleton.getInstance('tom11', 13))
 
 function throttle(fn, wait){
 	let previous = 0
@@ -661,3 +661,15 @@ class LRUCache {
 		}
 	}
 }
+class Singleton {
+	constructor(name) {
+		this.name = name
+	}
+	static instance = null
+	static getInstance (name) {
+		if(!this.instance) this.instance = new Singleton(name)
+		return this.instance
+	}
+}
+
+

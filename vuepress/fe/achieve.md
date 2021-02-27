@@ -24,6 +24,7 @@ title: 手写实现
 - [深拷贝](#深拷贝)
 - [手写EventHub（发布-订阅）](#手写eventhub-发布-订阅)
 - [单例模式](#单例模式)
+- [proxy实现响应式](#proxy实现响应式)
 - [数组reduce实现](#数组reduce实现)
 - [数组splice实现](https://mp.weixin.qq.com/s/wJhr1BufXNnfmCwCjLuaMw)
 - [数组去重](#数组去重)
@@ -686,6 +687,11 @@ Vue响应式原理就是基于此，实现了1.创建主题对象、2.添加观�
 
 发布订阅
 
+在软件架构中，发布/订阅是一种消息范式，消息的发送者（称为发布者）不会将消息直接发送给特定的接收者（称为订阅者）。而是将发布的消息分为不同的类别，然后分别发送给不同的订阅者。 同样的，订阅者可以表达对一个或多个类别的兴趣，只接收感兴趣的消息，无需了解哪些发布者存在。
+
+在发布订阅模式中有三个主要角色：Publisher（发布者）、 Channels（通道）和 Subscriber（订阅者）。
+
+
 核心思路是：
 
  - 使用一个对象作为缓存
@@ -719,7 +725,7 @@ class EventEmitter {
 		this._maxListeners = _maxListeners
 		this._events = new Map()
 	}
-	// 向事件队列添加事件
+	// 向事件队列添加事件，相当于订阅
 	// prepend为true表示向事件队列头部添加事件
 	addListener(type, listener, prepend = false) {
 		const events = this._events.get(type)
@@ -747,7 +753,7 @@ class EventEmitter {
 		only.origin = listener
 		this.addListener(type, only)
 	}
-	// 执行某类事件
+	// 执行某类事件，相当于发布
 	emit(type, ...args) {
 		const events = this._events.get(type)
 		if(Array.isArray(events)) {
@@ -855,6 +861,22 @@ elem.dispatchEvent(myEvent)
 ```
 
 ### 单例模式
+```javascript
+class Singleton {
+	constructor(name) {
+		this.name = name
+	}
+	static instance = null // 类的静态属性可遍历enumerable为true
+	static getInstance (name) { // 类的静态方法不遍历enumerable为false
+		if(!this.instance) this.instance = new Singleton(name)
+		return this.instance
+	}
+}
+var a = Singleton.getInstance('tom')
+var b = Singleton.getInstance('Tom')
+
+console.log(a === b)
+```
 使用闭包实现
 ```javascript
 function Singleton(name) {
@@ -878,7 +900,73 @@ Singleton.getInstance = (function () {
 var a = Singleton.getInstance('tom')
 var b = Singleton.getInstance('Tom')
 
-console.log(a === b)  
+console.log(a === b) 
+```
+
+### proxy实现响应式
+简单的example， 注意是变动logedObj才会触发Proxy的handler
+```javascript
+const obj = {}
+
+const logedObj = new Proxy(obj, {
+	get(target, name) {
+		console.log('get', target, name);
+		return Reflect.get(target, name);
+	},
+	set: function(target, name, value, receiver) {
+		const success = Reflect.set(target, name, value, receiver);
+		if (success) {
+			console.log('property ' + name + ' on ' + target + ' set to ' + value);
+		}
+		return success;
+	},
+	deleteProperty(target, name) {
+		console.log('delete' + name);
+		return Reflect.deleteProperty(target, name);
+	},
+	has(target, name) {
+		console.log('has' + name);
+		return Reflect.has(target, name);
+	}
+})
+```
+```html
+<p id="paragraph"></p>
+<input type="text" id="input">
+
+<script>
+	const paragraph = document.getElementById('paragraph');
+	const input = document.getElementById('input');
+	// 需要代理的数据对象
+	const data = {
+		text: 'hello world'
+	};
+	const handler = {
+		get (target, key, receiver) {
+			return Reflect.set(target, key, value,receiver)
+    },
+		// 监控data中text属性的变化
+		set (target, prop, value, receiver) {
+			if (prop === 'text') {
+				// 更新值
+				target[prop] = value;
+				// 更新视图
+				paragraph.innerHTML = value;
+				input.value = value;
+				return  true
+			}
+			return Reflect.set(target, key, value,receiver)
+		}
+	}
+	// 构造proxy对象
+	const myText = new Proxy(data, handler);
+	// 添加input监听事件
+	input.addEventListener('input', function (e) {
+		myText.text = e.target.value
+	}, false);
+	// 初始化值
+	myText.text = data.text;
+</script>
 ```
 
 ### 数组reduce实现

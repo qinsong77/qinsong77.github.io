@@ -68,9 +68,29 @@ Babel本身不支持转换，转换是通过一个个 plugin实现。
 
 ![](./image/babel.png)
 
+Babel的架构
+
+![](./image/babel_Architecture.png)
+
 [Babel介绍](https://mp.weixin.qq.com/s/1OyBkl5NnFO1q86L7GjQwg)
 
 [Babel7](https://juejin.cn/post/6844904008679686152)
+
+[深入浅出 Babel](https://juejin.cn/post/6844903956905197576)
+
+![](./image/babel_process.png)
+#### parse
+分为**词法解析**(Lexical Analysis)和**语法解析**(Syntactic Analysis)
+
+词法解析器(Tokenizer)在这个阶段将字符串形式的代码转换为Tokens(令牌). Tokens 可以视作是一些语法片段组成的数组， 每个 Token 中包含了语法片段、位置信息、以及一些类型信息. 这些信息有助于后续的语法分析。词法分析可以简单的理解为分词，利用存在的编程规则，进行匹配转换成token。
+
+词法分析被抽象为了一个“有限状态自动机”，在某个状态下，满足一些条件后，会进行状态转移，转移到新的状态，从代码层面看，是一系列的 switch case 语句。经过词法分析后，代码被准确的切割，每个被切分的词叫做 `token`。
+
+语法解析： 语法解析器(Parser)会把Tokens转换为抽象语法树(Abstract Syntax Tree，AST)，要做到语法分析，其实要做的就是对于语言要进行建模与抽象，就是一系列的规则的匹配与嵌套，优先级低的规则嵌套优先级高的规则（这样才能保证优先级高的先执行）
+
+#### transform
+
+AST 遍历和转换会使用**访问者模式**。访问者会以`深度优先`的顺序, 或者说`递归`地对 AST 进行遍历, `@babel/traverse`，实现了访问者模式，对 AST 进行遍历，**转换插件**会通过它获取感兴趣的AST节点，对节点继续操作
 
 ## core-js
 

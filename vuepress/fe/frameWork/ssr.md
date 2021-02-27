@@ -2,7 +2,10 @@
 title: 服务器渲染
 ---
 
-[彻底理解服务端渲染 ](https://github.com/yacan8/blog/issues/30)
+- [彻底理解服务端渲染 ](https://github.com/yacan8/blog/issues/30)
+- [vue-ssr-demo](https://github.com/qinsong77/vue-ssr-demo)
+- [VueSSR高阶指南](https://juejin.cn/post/6844903669922529287)
+- [SSR降级策略](https://cloud.tencent.com/developer/article/1738923)
 ### 服务端渲染的定义
 
 #### 页面的渲染流程：

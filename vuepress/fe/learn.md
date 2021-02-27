@@ -312,7 +312,7 @@ pureObj其实是个原子（原子是JavaScript中的对象的最小单元，它
 
 ### [九种常用的设计模式](https://juejin.cn/post/6881384600758091784)
 
-### [设计模式](https://juejin.im/post/6846687601785585677)
+- [使用设计模式封装代码](https://juejin.cn/post/6844904165836062734)
 
 ### [前端模块化](https://juejin.im/post/6844903744518389768)
 
