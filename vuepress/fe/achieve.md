@@ -1370,7 +1370,7 @@ start()
   <img src="loading.gif" data-src="https://cdn.pixabay.com/photo/2010/12/13/10/09/abstract-2384_1280.jpg" alt="">
   <img src="loading.gif" data-src="https://cdn.pixabay.com/photo/2015/10/24/11/09/drop-of-water-1004250_1280.jpg">
 ```
-通过图片offsetTop和window的innerHeight，scrollTop判断图片是否位于可视区域。
+通过图片`offsetTop`(元素距离页面顶部的高度)和window的innerHeight(页面可视高度)，scrollTop(滚动高度)判断图片是否位于可视区域。
 
 或者使用API [Element.getBoundingClientRect()](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/getBoundingClientRect)
 ```javascript
@@ -1394,7 +1394,7 @@ window.addEventListener('scroll', throttle(lazyload, 200))
 
 function lazyload() { //监听页面滚动事件
 	var seeHeight = window.innerHeight //可见区域高度
-	var scrollTop = document.documentElement.scrollTop || document.body.scrollTop //滚动条距离顶部高度
+	var scrollTop = document.documentElement.scrollTop || document.body.scrollTop //滚动条距离顶部高度 document.body.scrollTop兼容IE
 	for (var i = n; i < img.length; i++) {
 		console.log(img[i].offsetTop, seeHeight, scrollTop)
 		if (img[i].offsetTop < seeHeight + scrollTop) {
@@ -1582,29 +1582,25 @@ class Promise {
 ```
 3. promise.all
 ```javascript
-Promise.all = function(values){
-	if (!Array.isArray(values)) {
-		const type = typeof values
-		return new TypeError(`TypeError: ${type} ${values} is not iterable`)
-	}
+Promise.all = function(promiseArrays){
 	return new Promise((resolve, reject) => {
-		let resultArr = []
-		let orderIndex = 0
-		const processResultByKey = (value, index) => {
-			resultArr[index] = value
-			if (++orderIndex === values.length) {
-				resolve(resultArr)
-			}
+		if (!Array.isArray(promiseArrays)) {
+			const type = typeof promiseArrays
+			return reject(new TypeError(`TypeError: ${type} ${promiseArrays} is not iterable`))
 		}
-		for (let i = 0; i < values.length; i++) {
-			let value = values[i]
-			if (value && typeof value.then === 'function') {
-				value.then((value) => {
-					processResultByKey(value, i)
-				}, reject)
-			} else {
-				processResultByKey(value, i)
-			}
+		const length = promiseArrays.length
+		let resultArr = []
+		let counter = 0
+		for (let i = 0; i < length; i++) {
+			Promise.resolve(promiseArrays[i])
+				.then(res => {
+					resultArr[i] = res
+					counter++
+					if(counter === length) resolve(resultArr)
+				})
+				.catch(err => {
+					reject(err)
+				})
 		}
 	})
 }

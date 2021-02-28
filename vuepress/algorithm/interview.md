@@ -1,6 +1,12 @@
 ---
 title: 面试记录
 ---
+ - [实现一个string的indexOf方法](#_1-一面实现一个string的indexof方法)
+ - [树形结构数据打印](#_1、树形结构数据打印)
+ - [React Input 表单组件](#_2、react-input-表单组件)
+ - [JSON Key 驼峰转换](#_3、json-key-驼峰转换)
+ - [因数分解-神策数据](#因数分解-神策数据)
+ - [promise并发控制](#promise并发控制)
 
 ## 美团
 
@@ -319,7 +325,7 @@ function PrimeFactorizer(n) {
 
 console.log(PrimeFactorizer(24))
 ```
-
+### promise并发控制
 实现一个批量请求函数 multiRequest(urls, maxNum)，要求如下：
 - 要求最大并发数 maxNum
 - 每当有一个请求返回，就留下一个空位，可以增加新的请求

@@ -34,7 +34,7 @@ function debounce(fn, delay) {
 
 [文章](https://github.com/mqyqingfeng/Blog/issues/26)
 ```javascript
-// 时间戳版本-- 立即执行
+// 时间戳版本-- 立即执行，第一次肯定立即执行，最后一次不一定执行
 function throttle(fn, wait){
 	let previous = 0
 	return function(...args){
@@ -46,7 +46,7 @@ function throttle(fn, wait){
 		}
 	}
 }
-// 定时器 延迟执行
+// 定时器 第一次延迟执行，
 function throttle(fn, wait){
 	let timer = null
 	return function(...args){
@@ -60,6 +60,24 @@ function throttle(fn, wait){
 	}
 }
 
+function throttle(fn, wait) {
+	let timer = null
+	let startTime = 0
+	return function () {
+		const arg = arguments
+		const remaining = wait - (Date.now() - startTime)
+		if(timer) clearTimeout(timer)
+		if(remaining <= 0) {
+			startTime = Date.now()
+			fn.apply(this, arg)
+		} else {
+			timer = setTimeout(() => {
+				fn.apply(this, arg)
+				timer = null
+			}, remaining)
+		}
+	}
+}
 window.addEventListener('resize', throttle(() => console.log(new  Date().getTime()), 2000))
 ```
 ##### 适合应用场景：

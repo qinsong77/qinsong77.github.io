@@ -673,3 +673,45 @@ class Singleton {
 }
 
 
+Promise.all = function(promiseArrays){
+	return new Promise((resolve, reject) => {
+		if (!Array.isArray(promiseArrays)) {
+			const type = typeof promiseArrays
+			return reject(new TypeError(`TypeError: ${type} ${promiseArrays} is not iterable`))
+		}
+		const length = promiseArrays.length
+		let resultArr = []
+		let counter = 0
+		for (let i = 0; i < length; i++) {
+			Promise.resolve(promiseArrays[i])
+				.then(res => {
+					resultArr[i] = res
+					counter++
+					if(counter === length) resolve(resultArr)
+				})
+				.catch(err => {
+					reject(err)
+				})
+		}
+	})
+}
+
+function throttle(fn, wait) {
+	let timer = null
+	let startTime = Date.now()
+	return function () {
+		const arg = arguments
+		const remaining = wait - (Date.now() - startTime)
+		if(timer) clearTimeout(timer)
+		if(remaining <= 0) {
+			startTime = Date.now()
+			fn.apply(this, arg)
+		} else {
+			timer = setTimeout(() => {
+				fn.apply(this, arg)
+				timer = null
+			}, remaining)
+		}
+	}
+}
+window.addEventListener('resize', throttle((e) => console.log(new  Date().getTime()), 2000))

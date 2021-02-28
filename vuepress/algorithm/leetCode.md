@@ -74,7 +74,8 @@ title: LeetCode
 - [二分查找](#二分查找)
     - [求平方根](#求平方根)
     - [寻找旋转排序数组中的最小值](#寻找旋转排序数组中的最小值)
-- [设计LRU缓存结构](#设计LRU缓存结构)
+- [设计LRU缓存结构](#设计lru缓存结构)
+- [接雨水](#接雨水)
 - [扑克牌中的顺子](#扑克牌中的顺子)
 - [扁平化嵌套列表迭代器](#扁平化嵌套列表迭代器)
 
@@ -2628,6 +2629,61 @@ function LRU( operators ,  k ) {
 }
 module.exports = {
     LRU : LRU
+};
+```
+#### [接雨水](https://leetcode-cn.com/problems/trapping-rain-water/)
+```javascript
+/**
+ * @param {number[]} height
+ * @return {number}
+ */
+var trap = function (height) {
+	let n = height.length
+	if (n === 0) return 0
+	let res = 0
+	
+	let left_max = [], right_max = []
+	//记录左边数组的最大值
+	left_max[0] = height[0]
+	for (let i = 1; i < n; i++) {
+		left_max[i] = Math.max(left_max[i - 1], height[i])
+	}
+	//记录右边数组的最大值
+	right_max[n - 1] = height[n - 1]
+	for (let i = n - 2; i >= 0; i--) {
+		right_max[i] = Math.max(right_max[i + 1], height[i])
+	}
+	//统计每一列的面积之和
+	for (let i = 0; i < n; i++) {
+		res += Math.min(left_max[i], right_max[i]) - height[i]
+	}
+	return res
+}
+```
+双指针
+```javascript
+/**
+ * @param {number[]} height
+ * @return {number}
+ */
+var trap = function (height) {
+  let left = 0;
+  let right = height.length - 1;
+  let res = 0;
+  let leftMax = 0;
+  let rightMax = 0;
+  while (left < right) {
+    if (height[left] < height[right]) {
+      leftMax = Math.max(height[left], leftMax);
+      res += leftMax - height[left];
+      left++;
+    } else {
+      rightMax = Math.max(height[right], rightMax);
+      res += rightMax - height[right];
+      right--;
+    }
+  }
+  return res;
 };
 ```
 #### [扑克牌中的顺子](https://leetcode-cn.com/problems/bu-ke-pai-zhong-de-shun-zi-lcof/)
