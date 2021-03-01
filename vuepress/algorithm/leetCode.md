@@ -2666,6 +2666,25 @@ var trap = function (height) {
  * @param {number[]} height
  * @return {number}
  */
+// myself
+var trap = function(height) {
+    const { length } = height
+    let res = 0
+    let left = 0, right = length - 1
+    let left_max = 0, right_max = 0
+    while(left < right) {
+        if(height[left] < height[right]) {
+            res += Math.max(left_max - height[left], 0)
+            left_max = Math.max(height[left], left_max)
+            left++
+        } else {
+            res += Math.max(right_max - height[right], 0)
+            right_max = Math.max(right_max, height[right])
+            right--
+        }
+    }
+    return res
+};
 var trap = function (height) {
   let left = 0;
   let right = height.length - 1;

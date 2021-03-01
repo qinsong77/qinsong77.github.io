@@ -18,9 +18,9 @@ title: Vue
 
  ![An image](./image/vue1.png)
 
-> vue采用数据劫持结合发布-订阅模式的方式，通过Object.defineProperty()来劫持各个属性的setter，getter，在数据变动时通知订阅者(watcher)，触发相应的监听回调。
+> vue采用数据劫持结合观察者模式的方式，通过Object.defineProperty()来劫持各个属性的setter，getter，在数据变动时通知订阅者(watcher)，触发相应的监听回调。
 > 每个组件实例都对应一个 watcher 实例，它会在组件渲染的过程中把“接触”过的数据 property 记录为依赖。之后当依赖项的 setter 触发时，会通知 watcher，从而使它关联的组件重新渲染。
-Dep 对象用于依赖收集，它实现了一个发布订阅模式，完成了数据 Data 和渲染视图 Watcher 的订阅
+Dep 对象用于依赖收集，它实现了一个观察者模式，完成了数据 Data 和渲染视图 Watcher 的订阅
 
 
 [vue MVVM原理](https://juejin.cn/post/6844903586103558158)
@@ -693,6 +693,17 @@ optimize(ast, options)
 可以看到，optimize实际上就做了2件事情，一个是调用markStatic()来标记静态节点，另一个是调用markStaticRoots()来标记静态根节点。
 
 - 3.code generate：将优化后的AST树转换成可执行的代码(主要功能就是根据 AST 结构拼接生成 render 函数的字符串。通过`new Function`生成可运行的`render function`)。
+ ::: details render function中有with的原因
+```javascript
+function render () {
+  with (this) {
+    return _c('div',{on:{"click":change}},[_c('span',[_v(_s(number))]),_v(" "),_c('span',     [_v(_s(name))])])
+  }
+}
+```
+ vue并没有对模板中的javascript表达式进行ast语法分析，如果要移除with，就需要对javascript表达式进行ast语法分析，并且还需要一个专门的解释器对ast语法树进行解释，这样就会导致存在两个并行的解析器，这样维护成本高，还可能会有潜在的bug风险。所以呢，作者并没有想做这个事情，麻烦费力不讨好
+ 
+ :::
 
 ```javascript
  var code = generate(ast, options);
@@ -802,7 +813,7 @@ optimize(ast, options)
 **注意这个`__ob__`中dep怎么添加的**
 
 `observe(data)`方法中`new Observer(value)`(value及data), new的时候这里也`new Dep()`，这个和`defineReactive$$1`中建的dep不一样，执行` def(value, '__ob__', this);`把`__ob__`定义个对象和数组，
-**而这个`__ob__`中的dep怎么添加watcher的？**在`defineReactive$$1`调用`var childOb = !shallow && observe(val);`获取ob，然后在getter中
+而这个`__ob__`中的dep怎么添加watcher的？在`defineReactive$$1`调用`var childOb = !shallow && observe(val);`获取ob，然后在getter中
 ```javascript
 get: function reactiveGetter () {
         var value = getter ? getter.call(obj) : val;
@@ -1025,7 +1036,7 @@ get: function reactiveGetter () {
     this.vmCount = 0;
     def(value, '__ob__', this);
     if (Array.isArray(value)) { // 数组的处理
-      if (hasProto) {
+      if (hasProto) { //   var hasProto = '__proto__' in {};
         protoAugment(value, arrayMethods);
       } else {
         copyAugment(value, arrayMethods, arrayKeys); // var arrayKeys = Object.getOwnPropertyNames(arrayMethods);

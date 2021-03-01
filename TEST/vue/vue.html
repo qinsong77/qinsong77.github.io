@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>vue</title>
+   <script src="./vue.js"></script>
+</head>
+<body>
+<div id="app">
+   <ul>
+      <li v-for="(value, index) in arr" :key="index">
+         <test />
+      </li>
+   </ul>
+   <button @click="handleDelete">delete</button>
+   <p id="msg">{{ message }}</p>
+   <p>{{ someObj.test }}</p>
+   <button v-on:click="reverseMessage">反转消息</button>
+</div>
+<script>
+	var app = new Vue({
+		el: '#app',
+		components: {
+			test: {
+				template: "<li>{{Math.random()}}</li>"
+			}
+		},
+		data:  {
+			message: 'Hello Vue!',
+			arr: [1, 2, 3],
+      someObj: {
+      }
+		},
+    created () {
+	    debugger
+			this.message = 'test content'
+	    const p = document.getElementById('msg')
+	    this.$nextTick(() => {
+		    this.message = 'test content1111111111'
+		    console.log(p.textContent)
+      })
+    },
+		methods: {
+			reverseMessage: function () {
+				this.message = this.message.split('').reverse().join('')
+			},
+			handleDelete() {
+				this.arr.splice(0, 1);
+			}
+		}
+	})
+  // app.message = 112
+   console.log(app)
+   app.$set(app.someObj, 'test', 'add test')
+   // console.log(app.someObj._Ob_)
+</script>
+</body>
+</html>
