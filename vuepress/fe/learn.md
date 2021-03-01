@@ -182,7 +182,7 @@ a = 20;
 console.log(a);
 fn();
 fn = 'I want cover function name fn.'
-console . log(fn);
+console.log(fn);
 ```
 函数声明后面的会覆盖之前的同名声明。而当声明变量也是`fn`时，不会覆盖函数
 ```javascript
@@ -232,7 +232,23 @@ Object.defineProperty(Object, 'is', {
 ````
 
 
-#### [set, map, weakMap, weakSet](https://juejin.im/post/6844904169417998349)
+#### [Set, Map, WeakMap, WeakSet](https://juejin.im/post/6844904169417998349)
+- Map的键值可以是原始数据类型和引用类型，WeakMap的键值只能说引用类型（object）
+- Map可以迭代遍历键，WeakMap不可迭代遍历键
+
+WeakMap所构建的实例中，**其key键所对应引用地址的引用断开或不属于指向同一个内存地址的时候**，其对应value值就会被加入垃圾回收队伍。
+
+而Map没有这种机制，因为可能存在这种情况
+
+```javascript
+let me = null
+let friend = {
+  name: 'friend'
+}
+me = friend
+
+friend = null // 对象不会被回收，因为还存在着me引用着对象
+```
 
 #### `Object.defineProperty(obj, prop, descriptor)`
 
@@ -296,8 +312,8 @@ Object.isExtensible(empty) === false
 **总结**
 
 - `Object.preventExtensions(obj)` ：用于锁住对象属性，使其不能够拓展，也就是不能增加新的属性，但是属性的值仍然可以更改，也可以把属性删除。
-- `Object.seal(obj)` ：把对象密封，也就是让对象既不可以拓展也不可以删除属性（把每个属性的 `configurable` 设为 false），单数属性值仍然可以修改。
-- `Object.freeze(obj)` ：完全冻结对象，在 seal 的基础上，属性值也不可以修改（每个属性的 `writable` 也被设为 false）。
+- `Object.seal(obj)` ：把对象密封，也就是让对象既不可以拓展也不可以删除属性（把每个属性的 `configurable` 设为 false），单数属性值仍然可以修改（`writable`还是true)。-`Object.isSealed(obj)`
+- `Object.freeze(obj)` ：完全冻结对象，在 seal 的基础上，属性值也不可以修改（每个属性的 `writable` 也被设为 false）。`Object.isFrozen(obj)`
 
 
 #### Object.create()方法创建一个新对象，使用现有的对象来提供新创建的对象的[`__proto__`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
@@ -324,7 +340,7 @@ pureObj其实是个原子（原子是JavaScript中的对象的最小单元，它
  - CommonJS 模块输出的是一个值的拷贝(浅拷贝)，ES6 模块输出的是值的引用。
  - CommonJS 模块是运行时加载，ES6 模块是编译时输出接口。
  - CommonJS 模块的require()是同步加载模块，ES6 模块的import命令是异步加载，有一个独立的模块依赖的解析阶段。
- - CommonJS 模块处理循环加载的方法是返回的是当前已经执行的部分的值，而不是代码全部执行后的值，两者可能会有差异。因为CommonJS 输入的是被输出值的拷贝，不是引用,只会在第一次加载时运行一次，以后再加载，就返回第一次运行的结果，除非手动清除系统缓存。
+ - CommonJS 模块处理循环加载的方法是返回的是当前已经执行的部分的值，而不是代码全部执行后的值，两者可能会有差异。因为CommonJS 输入的是被输出值的拷贝，不是引用，只会在第一次加载时运行一次，以后再加载，就返回第一次运行的结果，除非手动清除系统缓存。
  - ES6 处理“循环加载”与 CommonJS 有本质的不同。ES6 模块是动态引用，如果使用import从一个模块加载变量（即`import foo from 'foo'`），那些变量不会被缓存，而是成为一个指向被加载模块的引用，需要开发者自己保证，真正取值的时候能够取到值。
  >AMD(require.js) 推崇依赖前置、提前执行，CMD(sea.js)推崇依赖就近、延迟执行。
 
@@ -345,6 +361,7 @@ IEEE 754 规定了包括：单精度（32位）、双精度（64位）、延伸�
 
  64 位双精度浮点型具体的字节分配：
 ![An image](./image/number/2.png)
+
 从上图中可以看到，从高到低，64位被分成3段，分别是:
  1. 符号位（sign），只占 1 位，0 表示+，1 表示-。
  2. 指数位（exponent），占 11 位(取值范围 `[0, 2048)`)，记为 e。
@@ -478,7 +495,27 @@ function sum(a, b) {
 }
 sum(1, 2);//3
 ```
-
+以下都可以正常打印
+```javascript
+function argTest(...arg){
+	function test1(a, b, c){
+		console.log(a)
+		console.log(b)
+		console.log(c)
+	}
+	test1(...arg)
+}
+argTest(1,2,3)
+function argTest2(){
+	function test1(a, b, c){
+		console.log(a)
+		console.log(b)
+		console.log(c)
+	}
+	test1(...arguments)
+}
+argTest2(1,2,3)
+```
 3. ES6展开运算符
 ```javascript
 function sum(a, b) {
@@ -692,6 +729,14 @@ Array.fill()的参数是对象时，要写成箭头函数，不然引用是一�
 ```javascript
 const length = 100
 const arr = Array.from(new Array(length)).fill(() => [])
+```
+
+#### reduce
+`reduce` `reduceRight`
+```javascript
+[0, 1, 2, 3, 4].reduce(function(accumulator, currentValue, currentIndex, array){
+  return accumulator + currentValue;
+}, 0);
 ```
 
 #### forEach 与async
@@ -1016,7 +1061,7 @@ new Promise((resolve, reject) => {
 ```
     
 - `Promise.prototype.catch()`方法是`.then(null, rejection)`或`.then(undefined, rejection)`的别名，用于指定发生错误时的回调函数。
-- `Promise.all() `: 所有的状态都变成`fulfilled`才会变成`fulfilled`,只要p1、p2、p3之中有一个被`rejected`，p的状态就变成`rejected`，此时第一个被reject的实例的返回值，会传递给p的回调函数。
+- `Promise.all() `: 所有的状态都变成`fulfilled`才会变成`fulfilled`,只要p1、p2、p3之中有一个被`rejected`，p的状态就变成`rejected`，此时第一个被reject的实例的返回值，会传递给p的回调函数。其他promise会继续执行
 - `Promise.race() `: 只要p1、p2、p3之中有一个实例率先改变状态，p的状态就跟着改变。那个率先改变的 Promise 实例的返回值，就传递给p的回调函数。
 - `Promise.allSettled()`: 方法接受一组 Promise 实例作为参数，包装成一个新的 Promise 实例。只有等到所有这些参数实例都返回结果，不管是fulfilled还是rejected，包装实例才会结束。该方法返回的新的 Promise 实例，一旦结束，状态总是fulfilled，不会变成rejected。状态变成fulfilled后，Promise 的监听函数接收到的参数是一个数组，每个成员对应一个传入Promise.allSettled()的 Promise 实例。
 
@@ -1119,8 +1164,8 @@ asyncRT(function* () {
 		console.log('start')
 		console.time()
 		const result1 = yield getJSON('data/first.json')
-		const result2 = yield getJSON(result1)
-		const result3 = yield getJSON(result2)
+		const result2 = yield getJSON(result1.repeat(2))
+		const result3 = yield getJSON(result2.repeat(2))
 		console.log(result3)
 		console.timeEnd()
 	} catch (e) {
@@ -1129,27 +1174,33 @@ asyncRT(function* () {
 })
 
 function asyncRT(generator) {
-	// 创建一个迭代器
-	const gen = generator()
-	
-	// generator执行顺序控制器
-	function next(arg) {
-		const result = gen.next(arg)
-		// 如果已经结束，则直接return
-		if (result.done) return
-		const value = result.value
-		// 如果是Promise则在then里执行next
-		if (value instanceof Promise) {
-			value.then(res => next(res))
-				.catch(err => gen.throw(err))
-		} else next(value)
-	}
-	
-	try {
-		next()
-	} catch (e) {
-		gen.throw(e)
-	}
+    return new Promise(((resolve, reject) => {
+	    // 创建一个迭代器
+        const gen = fn()
+	    // generator执行顺序控制器
+        function next(...args){
+            const { done, value } = gen.next(...args)
+            if (done) return resolve(value)
+            // 如果是Promise则在then里执行next
+            /**
+            if (value instanceof Promise) {
+                value.then(res => next(res))
+                    .catch(err => gen.throw(err))
+            } else next(value)
+            **/
+            //  使用Promise.resolve包裹不用判断
+            Promise.resolve(value)
+                .then(res => {
+                    next(res)
+                })
+                .catch(e => gen.throw(e))
+        }
+        try {
+            next()
+        } catch (e) {
+            reject(e)
+        }
+    }))
 }
 
 ```
@@ -1263,14 +1314,6 @@ myCo(test()).then(data => {
 
 ```
 
-#### reduce
-`reduce` `reduceRight`
-```javascript
-[0, 1, 2, 3, 4].reduce(function(accumulator, currentValue, currentIndex, array){
-  return accumulator + currentValue;
-}, 0);
-```
-
 ### JSON
 
 JSON 是一种数据格式，并不是编程语言，多用于数据传输交换和静态配置
@@ -1286,7 +1329,7 @@ JSON的值只能是以下几种数据格式：
 
 #### `JSON.stringify`、`JSON.parse`深拷贝的缺点
 
-- 1. 如果obj里有函数，undefined，则序列化的结果会把函数或 `undefined`丢失；`JSON.parse`传入`undefined`会报错, `JSON.stringify`不会报错。有NaN、Infinity和-Infinity，则序列化的结果会变成null。如果obj里有RegExp(正则表达式的缩写)、Error对象，则序列化的结果将只得到空对象null；
+- 1. 如果obj里有函数，undefined，则序列化的结果会把函数或 `undefined`丢失；`JSON.parse`传入`undefined`会报错, `JSON.stringify`不会报错。有NaN、Infinity和-Infinity，则序列化的结果会变成null。如果obj里有RegExp(正则表达式的缩写)、Error对象，则序列化的结果将只得到空对象`{}`；
 ```javascript
 var funObj = {
 	name: 'a',
@@ -1298,7 +1341,7 @@ var funObj = {
 	in: Infinity,
 	una: -Infinity,
 }
-console.log(JSON.parse(JSON.stringify(funObj))) // { name: 'a', na: null, in: null, una: null }
+console.log(JSON.parse(JSON.stringify(funObj))) // { name: 'a', na: null, in: null, una: null } -Chrome运行结果，Edge下都能正确拷贝
 
 var obj = {
 	name: 'a',
@@ -1327,5 +1370,48 @@ console.log(b);
 ```
 
 ## [垃圾回收](https://zh.javascript.info/garbage-collection)
-
+- [V8 引擎如何进行垃圾内存的回收](https://sanyuan0704.top/my_blog/blogs/javascript/js-v8/002.html#v8-%E5%86%85%E5%AD%98%E9%99%90%E5%88%B6)
 - [V8垃圾回收机制](https://blog.csdn.net/qq_17175013/article/details/103759055)
+64位系统下，V8最多只能分配1.4G, 在 32 位系统中，最多只能分配0.7G。
+
+为什么只能分配那么少：
+1. JS是单线程运行的，这意味着一旦进入到垃圾回收，那么其它的各种运行逻辑都要暂停。
+2. 垃圾回收性能不行，垃圾回收其实是非常耗时间的操作。
+
+V8 把堆内存分成了两部分进行处理——`新生代内存和老生代内存`。顾名思义，新生代就是**临时分配的内存**，存活时间短， 老生代是**常驻内存，存活的时间长**。V8 的堆内存，也就是两个内存之和。
+
+#### 新生代的内存
+
+内存默认限制是多少？在 `64` 位和 `32` 位系统下分别为 `32MB` 和 `16MB`
+
+新生代内存空间一分为二:其中From部分表示正在使用的内存，To 是目前闲置-空闲的内存。
+
+当进行垃圾回收时，V8 将From部分的对象检查一遍，如果是存活对象那么复制到To内存中(在To内存中**按照顺序**从头放置的)，如果是非存活对象直接回收即可。
+
+当所有的From中的存活对象按照顺序进入到To内存之后，From 和 To 两者的角色`对调`，From现在被闲置，To为正在使用，如此循环。
+
+重头放置解决了**内存碎片**的问题，新生代垃圾回收算法也叫Scavenge算法。
+
+#### 老生代内存的回收
+
+新生代中的变量如果经过多次回收后依然存在，那么就会被放入到**老生代内存**中，这种现象就叫`晋升`。
+
+发生`晋升`的情况：
+1. 已经经历过一次 Scavenge 回收。
+2. To（闲置）空间的内存占用超过25%。
+
+那么对于老生代而言，采取的垃圾回收策略
+
+1. 进行标记-清除
+
+主要分成两个阶段，即标记阶段和清除阶段。首先会遍历堆中的所有对象，对它们做上标记，然后对于代码环境中使用的变量以及被强引用的变量取消标记，剩下的就是要删除的变量了，在随后的清除阶段对其进行空间的回收。
+
+当然这又会引发内存碎片的问题，存活对象的空间不连续对后续的空间分配造成障碍。
+
+第二步，整理内存碎片。V8 的解决方式非常简单粗暴，在清除阶段结束后，把存活的对象全部往一端靠拢。
+
+由于是移动对象，它的执行速度不可能很快，事实上也是整个过程中最耗时间的部分。
+
+#### 增量标记
+
+由于JS的单线程机制，V8 在进行垃圾回收的时候，不可避免地会阻塞业务逻辑的执行，倘若老生代的垃圾回收任务很重，那么耗时会非常可怕，严重影响应用的性能。那这个时候为了避免这样问题，V8 采取了增量标记的方案，即将一口气完成的标记任务分为很多小的部分完成，每做完一个小的部分就"歇"一下，就js应用逻辑执行一会儿，然后再执行下面的部分，如果循环，直到标记阶段完成才进入内存碎片的整理上面来。其实这个过程跟React Fiber的思路有点像。

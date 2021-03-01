@@ -152,6 +152,7 @@ GUI线程就是渲染页面的，他解析HTML和CSS，然后将他们构建成D
 ### 事件循环的流程大致如下
 
 ![](./image/event_loop3.png)
+
 ----
 - 执行一个宏任务（执行栈中没有就从事件队列中获取）
 
@@ -166,7 +167,7 @@ GUI线程就是渲染页面的，他解析HTML和CSS，然后将他们构建成D
 
 - 渲染判断阶段有一下过程，见下面说明
 
-- 渲染完毕后，JS引擎线程继续，开始下一个宏任务（从宏任务队列中获取）
+- 渲染完毕后，检查是否有Web worker任务，有则执行，JS引擎线程继续，开始下一个宏任务（从宏任务队列中获取）
 
 注意点
 1. 一个Event Loop可以有一个或多个任务队列，但是只有一个微任务队列。 `task queue` 是一个 **`set`** 而非 `queue`。（多个task: 浏览器可以为不同的 `queque` 分配不同的优先级，从而优先处理某种类型任务。为什么 task queue 不是队列，而是集合？因为浏览器总是会挑选可执行的任务去执行，而不是根据进入队列的时间。）
@@ -185,13 +186,13 @@ GUI线程就是渲染页面的，他解析HTML和CSS，然后将他们构建成D
 ### 微任务包括：
     
 - process.nextTick
-- Promise
+- Promise.then中的代码，及async函数中await后面的部分，await那一行是同步的
 - MutationObserver(html5新特性)
 
 
 ### 清空完微任务，进入更新渲染阶段的过程
 
-- 1. 进入更新渲染阶段，判断是否需要渲染，这里有一个 `rendering opportunity` 的概念，也就是说不一定每一轮 `event loop` 都会对应一次浏览 器渲染，要根据屏幕刷新率、页面性能、页面是否在后台运行来共同决定，通常来说这个渲染间隔是固定的。（所以多个 task 很可能在一次渲染之间执行）
+- 1. 进入更新渲染阶段，判断是否需要渲染，这里有一个 `rendering opportunity` 的概念，也就是说不一定每一轮 `event loop` 都会对应一次浏览器渲染，要根据屏幕刷新率、页面性能、页面是否在后台运行来共同决定，通常来说这个渲染间隔是固定的。（所以多个 task 很可能在一次渲染之间执行）
 
     - 浏览器会尽可能的保持帧率稳定，例如页面性能无法维持 60fps（每 16.66ms 渲染一次）的话，那么浏览器就会选择 30fps 的更新速率，而不是偶尔丢帧。
     - 如果浏览器上下文不可见，那么页面会降低到 4fps 左右甚至更低。
@@ -213,10 +214,10 @@ GUI线程就是渲染页面的，他解析HTML和CSS，然后将他们构建成D
     - 判断 task队列和`microTask`队列是否都为空，如果是的话，则进行 Idle 空闲周期的算法，判断是否要执行 `requestIdleCallback` 的回调函数。
     
 
-对于`resize` 和 `scroll`来说，并不是到了这一步才去执行滚动和缩放，那岂不是要延迟很多？浏览器当然会立刻帮你滚动视图，根据[CSSOM](https://drafts.csswg.org/cssom-view/#scrolling-events) 规范所讲，浏览器会保存一个 `p`ending scroll event targets`，等到事件循环中的 scroll这一步，去派发一个事件到对应的目标上，驱动它去执行监听的回调函数而已。resize也是同理。
+对于`resize` 和 `scroll`来说，并不是到了这一步才去执行滚动和缩放，那岂不是要延迟很多？浏览器当然会立刻帮你滚动视图，根据[CSSOM](https://drafts.csswg.org/cssom-view/#scrolling-events) 规范所讲，浏览器会保存一个 `pending scroll event targets`，等到事件循环中的 scroll这一步，去派发一个事件到对应的目标上，驱动它去执行监听的回调函数而已。resize也是同理。
 
 
-## node的事件循环
+## [node的事件循环](https://sanyuan0704.top/my_blog/blogs/javascript/js-v8/006.html)
 
 [官网介绍](https://nodejs.org/zh-cn/docs/guides/event-loop-timers-and-nexttick/)
 
@@ -260,12 +261,15 @@ GUI线程就是渲染页面的，他解析HTML和CSS，然后将他们构建成D
 
 梳理一下，nodejs 的 eventLoop 分为下面的几个阶段:
 
-1. timer 阶段
-2. I/O 异常回调阶段
-3. 空闲、预备状态(第2阶段结束，poll 未触发之前)
-4. poll 阶段
-5. check 阶段
-6. 关闭事件的回调阶段
+宏任务的执行顺序
+1. timers定时器： 执行已经安排的`setTimeout`和`setInterval`的回调函数
+2. pending callback待定回调：执行延迟到下一个轮询迭代的I/O回调
+3. idle,prepare: 仅系统内部使用
+4. poll：检索新的I/O事件, 执行与I/O相关的回调
+5. check： 执行setImmediate回调
+6. close callback(关闭事件的回调阶段)： socket.on('close', () => {})
+
+
 
 #### 实例演示
 
@@ -284,6 +288,7 @@ setTimeout(()=>{
 }, 0)
 ```
 node 版本 >= 11的，它会和浏览器表现一致，一个定时器运行完立即运行相应的微任务。
+
 ```
 timer1
 promise1
@@ -292,6 +297,10 @@ promise2
 ```
 而 node 版本小于 11 的情况下，对于定时器的处理是:
 >若第一个定时器任务出队并执行完，发现队首的任务仍然是一个定时器，那么就将微任务暂时保存，**直接去执行**新的定时器任务，当新的定时器任务执行完后，**再一一执行**中途产生的微任务。
+
+1. 执行完一个阶段的所有任务（及上面的1-6）
+2. 执行nextTrick队列里面的内容
+3. 执行完微任务队列的任务 
 
 因此会打印出这样的结果:
 ```
@@ -344,7 +353,7 @@ new Promise(function(resolve){
 	new Promise((resolve) => {
 		console.log('12')
 		resolve(1)
-	}).then(res => {
+	}).then(res => { //这里的微任务其实是比下面的先添加的
 		console.log('13')
 	})
 }).then(function(){
@@ -362,31 +371,31 @@ console.log('11')
 // 检查微任务队列，执行并清空微任务队列，如果在微任务的执行中又加入了新的微任务，也会在这一步一起执行。 所以10后输出 14 15
 ```
 ```javascript
-  console.log(1)
-  setTimeout(() => {
-  	console.log(9)
-  }, 0)
-  new Promise((resolve => {
-  	console.log(2)
-  	resolve(1)
-  })).then(res => {
-  	console.log(5)
-  })
+console.log(1)
+setTimeout(() => {
+    console.log(9)
+}, 0)
+new Promise((resolve => {
+    console.log(2)
+    resolve(1)
+})).then(res => {
+    console.log(5)
+})
 
+new Promise((resolve => {
+    resolve(1)
+    console.log(3)
+})).then(res => {
+    console.log(6)
     new Promise((resolve => {
         resolve(1)
-        console.log(3)
+        console.log(7)
     })).then(res => {
-        console.log(6)
-        new Promise((resolve => {
-            resolve(1)
-            console.log(7)
-        })).then(res => {
-            console.log(8)
-    
-        })
+        console.log(8)
+
     })
-  console.log(4)
+})
+console.log(4)
 ```
 从1依次输出到9， 在微任务队列中新建了微任务，也会添加进微任务队列，按顺序清空完微任务队列。
 

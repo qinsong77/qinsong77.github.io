@@ -603,7 +603,7 @@ function throttle(fn, wait){
 Array.prototype.reduce = function (fn, prev) {
 	const arr = this
 	prev = prev || arr[0]
-	
+
 	for(let i = 0; i < arr.length; i++) {
 		prev = fn(prev, arr[i], i, arr)
 	}
@@ -715,3 +715,79 @@ function throttle(fn, wait) {
 	}
 }
 window.addEventListener('resize', throttle((e) => console.log(new  Date().getTime()), 2000))
+
+function instanceofF(obj, con) {
+	if(typeof obj !== 'object' || obj === null) return false
+	let protype = con.prototype
+	let proto = obj.__proto__
+	while (true) {
+		if(proto === null) return true
+		if(proto === protype) return  true
+		proto = proto.__proto__
+	}
+}
+
+Object.is = function(x, y){
+	if(x === y) { // -0 === -0 true
+		return x !== 0
+	}
+	return  x!==x && y!== y // NaN !== NaN
+}
+
+
+function Async(fn){
+	return new Promise(((resolve, reject) => {
+		const gen = fn()
+
+		function next(...args){
+			const { done, value } = gen.next(...args)
+			if (done) return resolve(value)
+			Promise.resolve(value)
+				.then(res => {
+					next(res)
+				})
+				.catch(e => gen.throw(e))
+		}
+		try {
+			next()
+		} catch (e) {
+			reject(e)
+		}
+	}))
+}
+
+function getJSON(data) {
+	return new Promise((resolve, reject) => {
+		setTimeout(() => {
+			resolve(data)
+		}, 2000)
+	})
+}
+
+Async(function* () {
+	try {
+		console.log('start')
+		console.time()
+		const result1 = yield getJSON('data/first.json')
+		console.log(result1)
+		const result2 = yield getJSON(result1.repeat(2))
+		console.log(result2)
+		const result3 = yield getJSON(result2.repeat(3))
+		console.log(result3)
+		console.timeEnd()
+		return result3
+	} catch (e) {
+		console.log(e)
+	}
+}).then(res => {
+	console.log(res)
+})
+
+function argTest(){
+	function test1(a, b, c){
+		console.log(a)
+		console.log(b)
+		console.log(c)
+	}
+	test1(...arguments)
+}

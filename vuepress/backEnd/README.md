@@ -5,8 +5,10 @@ title: Summary of node
 ### Nest.js
 > [中文网](https://docs.nestjs.cn/)
 
-### [认识 V8 引擎](https://zhuanlan.zhihu.com/p/27628685)
-### [V8引擎详解](https://juejin.cn/post/6844904137792962567)
+### v8
+ - [认识 V8 引擎](https://zhuanlan.zhihu.com/p/27628685)
+ - [V8引擎详解](https://juejin.cn/post/6844904137792962567)
+ - [从Chrome源码看JS Object的实现](https://zhuanlan.zhihu.com/p/26169639)
 ### [一篇文章构建你的 NodeJS 知识体系](https://juejin.cn/post/6844903767926636558)
 
 ### [Cookie、Session、Token、JWT](https://juejin.im/post/6844904034181070861)
