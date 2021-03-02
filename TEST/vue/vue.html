@@ -31,12 +31,11 @@
       someObj: {
       }
 		},
-    created () {
+    mounted () {
 	    debugger
 			this.message = 'test content'
 	    const p = document.getElementById('msg')
 	    this.$nextTick(() => {
-		    this.message = 'test content1111111111'
 		    console.log(p.textContent)
       })
     },
@@ -53,6 +52,13 @@
    console.log(app)
    app.$set(app.someObj, 'test', 'add test')
    // console.log(app.someObj._Ob_)
+   new Promise(resolve => {
+   	resolve(1)
+   }).then(res => {
+	   console.log(res)
+   })
+   var a = 12
+	console.log(121)
 </script>
 </body>
 </html>
