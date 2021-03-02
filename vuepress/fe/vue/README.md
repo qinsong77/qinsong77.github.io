@@ -1205,7 +1205,7 @@ get: function reactiveGetter () {
 在$mount()中，会判断`options`是否有render，没有就开始编译模板，模板parse,optimize,generate,后得到render的字符串表达式，通过`new Function`生成`render function`
 - 接着到`mountComponent`,`callHook(vm, 'beforeMount');`
 - 执行了 `beforeMount` 钩子函数后，为组件`new Watcher`, 在 `new Watcher` 的时候，其实就是执行了`updateComponent`,调用了` _render` 方法得到Vdom, `_update`中patch，实现了 `dom` 的渲染，即在执行完 `vm._update()` 把 VNode patch 到真实 DOM 后，执行 `mounted` 钩子。
-- `beforeUpdate`: 实际上是在`watcher.run()`之前调用了`watcher.before();`触发了这个beforeUpdate，其他没做什么
+- `beforeUpdate`: 实际上是在`watcher.run()`之前调用了`watcher.before();`触发了这个beforeUpdate，其他没做什么。**数据更新时调用，发生在虚拟 DOM 打补丁之前。**，beforeUpdate是针对视图层，视图层的数据发生改变才会触发(废话，只有访问了数据的get才会收集依赖)
 - 在watcher.run之后调用了`callUpdatedHooks`, 因为有多个组件的时候，会有很多个 watcher ，在这里，就是检查当前的得 watcher 是哪个，是当前的话，就直接执行当前 updated 钩子。
 - beforeDestroy（卸载组件前）: 在卸载前，检查是否已经被卸载，如果已经被卸载，就直接 return 出去；执行 `beforeDestroy` 钩子
 - destroyed前： 从父级组件那里删除自己，`vm._watcher.teardown()` 拆解观察者，把所有有关自己痕迹的地方，都给删除掉。
