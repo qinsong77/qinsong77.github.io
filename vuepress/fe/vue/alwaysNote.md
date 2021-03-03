@@ -3,6 +3,9 @@ title: 常用笔记vue
 ---
 
 ## [性能优化技巧](https://juejin.cn/post/6922641008106668045)
+
+- [Vue 项目性能优化 — 实践指南](https://juejin.cn/post/6844903913410314247)
+
 1. 使用Functional components
 2. 局部变量, `computed`内不通过this获取参数而是通过函数结构，因为watcher获取value是执行` this.getter.call(vm, vm)`
 3. 用 `v-show` 指令替代了 `v-if` 指令来替代组件的显隐，`v-show`在 `patchVnode` 过程中，内部会对执行 `v-show` 指令对应的钩子函数 `update`，然后它会根据 `v-show` 指令绑定的值来设置它作用的 DOM 元素的 `style.display` 的值控制显隐。
@@ -11,6 +14,38 @@ title: 常用笔记vue
 6. 使用Object.freeze()冻结成为非相应式的数据
 7. 使用`Virtual scrolling `虚拟滚动组件
 8. 使用`requestAnimationFrame`时间切片提交响应式数据。
+
+(1）**代码层面的优化**
+
+- v-if 和 v-show 区分使用场景
+- computed 和 watch  区分使用场景
+- v-for 遍历必须为 item 添加 key，且避免同时使用 v-if
+- functional component
+- 长列表性能优化
+- 事件的销毁
+- 图片资源懒加载
+- 路由懒加载
+- 第三方插件的按需引入
+- 优化无限列表性能
+- 服务端渲染 SSR or 预渲染
+
+（2）**Webpack 层面的优化**
+
+- Webpack 对图片进行压缩
+- 减少 ES6 转为 ES5 的冗余代码
+- 提取公共代码
+- 模板预编译
+- 提取组件的 CSS
+- 优化 SourceMap
+- 构建结果输出分析
+- Vue 项目的编译优化
+
+（3）**基础的 Web 技术的优化**
+- 开启 gzip 压缩
+- 浏览器缓存
+- CDN 的使用
+- 使用 Chrome Performance 查找性能瓶颈
+
 ### [大文件上传和断点续传](https://juejin.im/post/6844904046436843527)
 
 ### Vue实现函数防抖组件

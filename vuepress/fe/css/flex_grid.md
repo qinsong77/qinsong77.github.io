@@ -56,19 +56,19 @@ flex左侧固定，右侧自适应，设置`min-width: 0;`保证内容不超出�
 ```
 ##### align-items和align-content
 align-items: 定义了项目在交叉轴上的对齐方式
-```css
+```
 .container {
     align-items: flex-start | flex-end | center | baseline | stretch;
 }
 ```
 align-content: 定义了多根轴线的对齐方式，如果项目只有一根轴线，那么该属性将不起作用
-```css
+```
 .container {
     align-content: flex-start | flex-end | center | space-between | space-around | stretch;
 }
 ```
-
-
+##### Flex布局如何实现最后一个元素右对齐（CSS）
+在最后一项元素使用样式：`margin-left: auto;`
 
 ### [Grid布局](http://www.ruanyifeng.com/blog/2019/03/grid-layout-tutorial.html)
 

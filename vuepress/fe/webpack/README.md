@@ -153,6 +153,117 @@ last 2 versions
 not dead
 ```
 
+##### 实现一个简单的按需打包功能babel插件
+例如 `ElementUI` 中把 `import { Button } from 'element-ui'` 转成 `import Button from 'element-ui/lib/button'`
+
+可以先对比下 `AST` ：
+```
+// import { Button } from 'element-ui'
+{
+    "type": "Program",
+    "body": [
+        {
+            "type": "ImportDeclaration",
+            "specifiers": [
+                {
+                    "type": "ImportSpecifier",
+                    "local": {
+                        "type": "Identifier",
+                        "name": "Button"
+                    },
+                    "imported": {
+                        "type": "Identifier",
+                        "name": "Button"
+                    }
+                }
+            ],
+            "source": {
+                "type": "Literal",
+                "value": "element-ui",
+                "raw": "'element-ui'"
+            }
+        }
+    ],
+    "sourceType": "module"
+}
+
+// import Button from 'element-ui/lib/button'
+{
+    "type": "Program",
+    "body": [
+        {
+            "type": "ImportDeclaration",
+            "specifiers": [
+                {
+                    "type": "ImportDefaultSpecifier",
+                    "local": {
+                        "type": "Identifier",
+                        "name": "Button"
+                    }
+                }
+            ],
+            "source": {
+                "type": "Literal",
+                "value": "element-ui/lib/button",
+                "raw": "'element-ui/lib/button'"
+            }
+        }
+    ],
+    "sourceType": "module"
+}
+```
+可以发现， `specifiers` 的 `type` 和 `source` 的 `value`、`raw` 不同。
+
+然后 `ElementUI` 官方文档中，`babel-plugin-component` 的配置如下：
+```
+// 如果 plugins 名称的前缀为 'babel-plugin-'，你可以省略 'babel-plugin-' 部分
+{
+  "presets": [["es2015", { "modules": false }]],
+  "plugins": [
+    [
+      "component",
+      {
+        "libraryName": "element-ui",
+        "styleLibraryName": "theme-chalk"
+      }
+    ]
+  ]
+}
+```
+```javascript
+import * as babel from '@babel/core'
+
+const str = `import { Button } from 'element-ui'`
+const { result } = babel.transform(str, {
+    plugins: [
+        function({types: t}) {
+            return {
+                visitor: {
+                    ImportDeclaration(path, { opts }) {
+                        const { node: { specifiers, source } } = path
+                        // 比较 source 的 value 值 与配置文件中的库名称
+                        if (source.value === opts.libraryName) {
+                            const arr = specifiers.map(specifier => (
+                                t.importDeclaration(
+                                
+                                    [t.ImportDefaultSpecifier(specifier.local)],
+                                    // 拼接详细路径
+                                    t.stringLiteral(`${source.value}/lib/${specifier.local.name}`)
+                                )
+                            ))
+                            path.replaceWithMultiple(arr)
+                        }
+                    }
+                }
+            }
+        }
+    ]
+})
+
+console.log(result) // import Button from "element-ui/lib/Button";
+```
+
+
 ## 简述 webpack 工作流程
 
 ### 概念

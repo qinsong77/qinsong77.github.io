@@ -16,8 +16,18 @@
    <p id="msg">{{ message }}</p>
    <p>{{ someObj.test }}</p>
    <button v-on:click="reverseMessage">反转消息</button>
+   <test-computed :str="message"/>
 </div>
 <script>
+   Vue.component('test-computed', {
+      template: '<p>{{ com }}</p>',
+      props: ['str'],
+      computed: {
+         com ({ str }) {
+            return str.split('').reverse().join('')
+         }
+      }
+   })
 	var app = new Vue({
 		el: '#app',
 		components: {
@@ -32,7 +42,6 @@
       }
 		},
     created () {
-	    debugger
 			this.message = 'test content'
 	    const p = document.getElementById('msg')
 	    this.$nextTick(() => {
