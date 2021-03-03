@@ -525,3 +525,5 @@ new Promise((resolve, reject) => {
 [深入解析 EventLoop 和浏览器渲染、帧动画、空闲回调的关系](https://mp.weixin.qq.com/s?__biz=MzI2MjcxNTQ0Nw==&mid=2247488677&idx=1&sn=19f1facc24f2621ccf56b5ee049de359&chksm=ea47b5fddd303ceb93dba07c031454efa632cfe66042e9def8a187a53cb6e46f36480657705d&mpshare=1&scene=23&srcid=1212JYxP5sNTkmyUIDw4A2lL&sharer_sharetime=1607767237746&sharer_shareid=1958dfa2b35b63c7a7463d11712f39df#rd)
 
 [https://my.oschina.net/u/4412764/blog/3205999](https://my.oschina.net/u/4412764/blog/3205999)
+
+[当事件循环遇到更新渲染](https://zhuanlan.zhihu.com/p/267273074)

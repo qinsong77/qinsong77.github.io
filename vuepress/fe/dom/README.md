@@ -44,7 +44,7 @@ title: Dom
 
 - document.getElementsByClassName ：根据类名查找元素，多个类名用空格分隔，返回一个 HTMLCollection 。注意兼容性为IE9+（含）。另外，不仅仅是document，其它元素也支持 getElementsByClassName 方法；
 
-- document.getElementsByTagName ：根据标签查找元素， * 表示查询所有标签，返回一个 HTMLCollection 。
+- document.getElementsByTagName ：根据标签查找元素，表示查询所有标签，返回一个 HTMLCollection 。
 
 - document.getElementsByName ：根据元素的name属性查找，返回一个 NodeList 。
 

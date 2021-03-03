@@ -31,6 +31,7 @@ title: LeetCode
    - [翻转二叉树](#翻转二叉树)
    - [填充每个节点的下一个右侧节点指针](#填充每个节点的下一个右侧节点指针)
    - [二叉树展开为链表](#二叉树展开为链表)
+   - [二叉树的最近公共祖先](#二叉树的最近公共祖先)
    - [最大二叉树](#最大二叉树)
    - [从前序与中序遍历序列构造二叉树](#最大二叉树)
    - [从中序与后序遍历序列构造二叉树](#最大二叉树)
@@ -224,7 +225,41 @@ const threeSum = function(nums) {
     return result
 };
 ```
-
+```javascript
+// https://www.nowcoder.com/practice/345e2ed5f81d4017bbb8cc6055b0b711 数组中相加和为0的三元组
+/**
+ * 
+ * @param num int整型一维数组 
+ * @return int整型二维数组
+ */
+function threeSum( num ) {
+    // write code here
+    const res = []
+    const len = num.length
+    num.sort((a,b) => a - b)
+    // console.log(num)
+    for(let i = 0; i < len - 2; i++){
+        let head = i + 1
+        let tail = len - 1
+        while(head < tail){
+            let sum = num[i] + num[head] + num[tail]
+            if(sum > 0)
+                tail--
+            else if(sum < 0)
+                head++
+            else{
+                res.push([num[i], num[head], num[tail]])
+                while(head + 1 < tail && num[head + 1] === num[head]) head++
+                while(tail - 1 > head && num[tail + 1] === num[tail]) tail--
+                head++
+                tail--
+            }
+        }
+        while(i < len - 2 && num[i+1] === num[i]) i++
+    }
+    return res
+}
+```
 #### [四数之和](https://leetcode-cn.com/problems/4sum/)
 三数之和**再套一层循环**
 ```javascript
@@ -1033,6 +1068,58 @@ var flatten2 = function(root) {
 // 链接：https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/solution/114er-cha-shu-zhan-kai-wei-lian-biao-chao-jian-dan/
 ```
 
+#### [二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
+
+````javascript
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val) {
+ *     this.val = val;
+ *     this.left = this.right = null;
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @param {TreeNode} p
+ * @param {TreeNode} q
+ * @return {TreeNode}
+ */
+var lowestCommonAncestor = function(root, p, q) {
+    if(root === null) return null
+    if(root === q || root === p) return root
+    const left = lowestCommonAncestor(root.left, p, q)
+    const right = lowestCommonAncestor(root.right, p, q)
+
+    if(left && right) return root
+    else if (left) return left
+    else if(right) return right
+    else return null
+};
+````
+
+```javascript
+// https://www.nowcoder.com/practice/e0cc33a83afe4530bcec46eba3325116
+/**
+ * 
+ * @param root TreeNode类 
+ * @param o1 int整型 
+ * @param o2 int整型 
+ * @return int整型
+ */
+function lowestCommonAncestor( root ,  o1 ,  o2 ) {
+    // write code here
+    if(root === null) return -1
+    if(root.val === o1 || root.val === o2) return root.val
+    
+    const left = lowestCommonAncestor(root.left, o1,o2)
+    const right = lowestCommonAncestor(root.right, o1,o2)
+    
+     if (left !== -1 && right !== -1) return root.val;
+     else if (left != -1) return left;
+     else if (right != -1) return right;
+     else return -1;
+}
+```
 
 #### [最大二叉树](https://leetcode-cn.com/problems/maximum-binary-tree/)
 
