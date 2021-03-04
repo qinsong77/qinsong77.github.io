@@ -791,3 +791,17 @@ function argTest(){
 	}
 	test1(...arguments)
 }
+
+
+function getJsonP(url, callback){
+	const callbackName = 'jsonp_cb_' + Date.now() + Math.random().toString().replace('.', '')
+	url = url + '?callback=' + callbackName
+	const script = document.createElement('script')
+	script.src = url
+	script.type = 'text/javascript'
+	window[callbackName] = function(data){
+		callback(data)
+		document.body.removeChild(script)
+	}
+	document.body.appendChild(script)
+}

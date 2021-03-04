@@ -232,8 +232,6 @@ div.classList.replace("foo", "bar");
 ### [输入URL到页面展示发生了什么](https://zhuanlan.zhihu.com/p/190320054)
 >[git地址](https://github.com/venaissance/myBlog/issues/17)
 
-### [浏览器的渲染原理](https://mp.weixin.qq.com/s?__biz=MzIxMjE5MTE1Nw==&mid=2653218120&idx=1&sn=bb06f680de8cbbadcd8df92ff68d14fc&chksm=8c999792bbee1e8454c7a858353f5de69ed0261ee23183eaab1a161a5c5e748b8cb5e4b4a417&mpshare=1&scene=23&srcid=1229XZoiB6bnwfUCq9pyC20r&sharer_sharetime=1609233596674&sharer_shareid=1958dfa2b35b63c7a7463d11712f39df#rd)
-
 ### [事件机制](https://zh.javascript.info/introduction-browser-events)
 #### 事件触发有三个阶段
 1. 捕获阶段：事件从window对象自上而下向目标节点传播的阶段；
@@ -515,6 +513,10 @@ event 包含的关键信息：
 ### 浏览器页面渲染机制
 > [介绍](https://juejin.im/post/6844903815758479374)
 
+#### [浏览器的渲染原理](https://mp.weixin.qq.com/s?__biz=MzIxMjE5MTE1Nw==&mid=2653218120&idx=1&sn=bb06f680de8cbbadcd8df92ff68d14fc&chksm=8c999792bbee1e8454c7a858353f5de69ed0261ee23183eaab1a161a5c5e748b8cb5e4b4a417&mpshare=1&scene=23&srcid=1229XZoiB6bnwfUCq9pyC20r&sharer_sharetime=1609233596674&sharer_shareid=1958dfa2b35b63c7a7463d11712f39df#rd)
+
+![](./image/Browser_principle.png)
+
 浏览器的渲染机制一般分为以下几个步骤
 
 1. 处理 HTML 并构建 DOM 树。
@@ -545,7 +547,7 @@ DOMContentLoaded 事件触发代表初始的 HTML 被完全加载和解析，不
 通过以下几个常用属性可以生成新图层
 
 - 3D 变换：`translate3d`、`translateZ`
-- `will-change`
+- [`will-change`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/will-change)
 - `video`、`iframe` 标签
 - 通过动画实现的 `opacity` 动画转换
 - `position: fixed`

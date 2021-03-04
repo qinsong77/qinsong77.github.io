@@ -1,13 +1,14 @@
 ---
 title: canvas
 ---
-- canvas绘图不清晰的解决方案
-- svg和canvas绘图的区别
+- [canvas绘图不清晰的解决方案](#canvas绘图不清晰的解决方案)
+- [File、Blob、dataURL 和 canvas 的应用与转换](#file、blob、dataurl-和-canvas-的应用与转换)
+- [svg和canvas绘图的区别](#svg和canvas绘图的区别)
 
 ### canvas绘图不清晰的解决方案
 
 canvas 作图经常会遇到canvas绘制的图片模糊不清问题，这种问题实际上是画布尺寸与画布范围内实际像素不一致造成的。了解 [dpr](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/devicePixelRatio)
-可以使用`window.matchMedia()` 检查`devicePixelRatio`的值是否发生更改（例如，如果用户将窗口拖动到带有 不同的像素密度）
+可以使用`window.matchMedia()` 检查`devicePixelRatio`的值是否发生更改（例如，如果用户将窗口拖动到带有不同的像素密度的屏幕）
 ##### dpr
 
 `Window` 接口的`devicePixelRatio`返回当前显示设备的物理像素分辨率与CSS像素分辨率之比。 此值也可以解释为像素大小的比率：一个CSS像素的大小与一个物理像素的大小。 简单来说，它告诉浏览器应使用多少屏幕实际像素来绘制单个CSS像素。
@@ -68,9 +69,10 @@ function setupCanvas2(width, height){
 
 　　60x60    ——》     60x60     ——》        30x30       ——》     60x60
 
-　　图片像素——》实际像素
+　　图片像素 ——》 实际像素
 
-　　1：  ——》     1 
+　　1：     ——》  1 
+
 而canvas的设计的时候正好有对象的属性来分别管理画布尺寸和显示尺寸；canvas的width、height属性用于管理画布尺寸；canvas的style属性中的width、height正好是显示尺寸。
 
 也就是说解决方案就是设置画布尺寸与实际像素的一致，显示尺寸为正常显示尺寸；

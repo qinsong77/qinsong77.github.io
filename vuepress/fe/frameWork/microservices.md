@@ -45,8 +45,10 @@ export default {
 ```
 
 #### `__INJECTED_PUBLIC_PATH_BY_QIANKUN__`
-`__INJECTED_PUBLIC_PATH_BY_QIANKUN__`这个变量是子应用配置的entry的域名路径，如`entry`的路径是`www.test.com/subapp/device`，他的值是`www.test.com/subapp/`,而
-是`www.test.com/subapp/device/`的话,值就是`entry`，即`www.test.com/subapp/device/`。末尾带不带`/`的影响。
+`__INJECTED_PUBLIC_PATH_BY_QIANKUN__`这个变量是子应用配置的entry的域名路径，如`entry`的路径是`www.test.com/subapp/device`，他的值是`www.test.com/subapp/`，而
+是`www.test.com/subapp/device/`的话，值就是`entry`，即`www.test.com/subapp/device/`。
+
+末尾带不带`/`的影响。
 
 - `http://wwww.baidu.com`: 这种 URI 并没有直接指定要访问哪个文件，像这种没有路径的情况，就代表访问根目录下预先设置的默认文件，一般就是 `/index.html`，`/default.html` 一类的文件，在 Java 中，我们也可以在 web.xml 中来配置这个默认文件。
 - `http://www.baidu.com/folder/`: 这个 URI 以一个 `/` 结尾，表示 folder 是一个目录，我们要访问的是这个目录下的文件，但是又没有说明是这个目录下的哪个文件，此时依然是采用该目录下 index.html 或者 default.html 一类的文件。 

@@ -34,7 +34,7 @@ px像素（Pixel）。相对长度单位。像素px是相对于显示器屏幕�
 
 **em**，`em`值的大小是动态的。当定义或继承`font-size`属性时，`1em`等于该元素的字体大小。如果你在网页中任何地方都没有设置文字大小的话，那它将等于浏览器默认文字大小，通常是`16px`。所以通常1em = 16px。2em = 32px。 如果你设置了body元素的字体大小为20px，那1em = 20px、2em = 40px。那个2就是当前em大小的倍数。
 
-`em`单位受父元素的影响，是因为font-size本身是继承属性。如果没有定义，就要基于父元素，直到html,html未设置则是浏览器的默认文字大小`16px`
+`em`单位受父元素的影响，是因为font-size本身是继承属性。如果没有定义，就要基于父元素，直到html，html未设置则是浏览器的默认文字大小`16px`
 
 所有未经调整的浏览器都符合: 1em=16px。那么12px=0.75em,10px=0.625em。为了简化font-size的换算，需要在css中的body选择器中声明Font-size=62.5%，这就使em值变为 16px*62.5%=10px, 这样12px=1.2em, 10px=1em, 也就是说只需要将你的原来的px数值除以10，然后换上em作为单位就行了。
 
@@ -42,12 +42,16 @@ px像素（Pixel）。相对长度单位。像素px是相对于显示器屏幕�
 
 `rem`即 root em，顾名思义，就是根元素 `em` 大小。 `em` 相对于当前元素， `rem` 相对于根元素，本质差别在于当前元素是多变的，根元素是固定的，也就是说，如果使用 rem，我们的计算值不会受当前元素 `font-size` 大小的影响。css3新增。
 
+- [盒模型](#盒模型)
+- [优先级](#优先级)
+- [定位position](#定位position)
+- [CSS的层叠上下文](#css的层叠上下文)
 - [伪类和伪元素](#伪类和伪元素)
 - [img是什么元素](#img-是什么元素)
 - [line-height:1.5和line-height:150%的区别](#line-height-1-5和line-height-150-的区别)
 - [元素居中](#元素居中)
 - [比较 opacity: 0、visibility: hidden、display: none 优劣和适用场景](#比较-opacity-0、visibility-hidden、display-none-优劣和适用场景)
-
+- [CSS实现文本的单行和多行溢出省略效果](css实现文本的单行和多行溢出省略效果)
 ### 盒模型
 
 组成：盒模型由内容区域、内边距、边框、外边距四部分组成。
@@ -55,7 +59,7 @@ px像素（Pixel）。相对长度单位。像素px是相对于显示器屏幕�
 实际大小：盒模型实际大小由内容区域、内边距、边框三部分组成，css设置`width`和`height`是对盒子内容区域设置的。
 
 `box-sizing`属性：
-- W3C标准盒模型（content-box）: 一个块的总宽度= width + margin(左右) + padding(左右) + border(左右);
+- W3C标准盒模型（content-box）: 一个块的总宽度= width + padding(左右) + border(左右);
 - IE（怪异）盒模型（border-box：border、padding 的设置不会影响元素的宽高，那么css给盒子设置的`width`和`height`属性就等于盒模型的实际大小（包括内容区域、内边距、边框）;
 ![](./imgs/content_box.png)
 ![](./imgs/box-sizing.png)
@@ -67,7 +71,7 @@ color 计算值作为边框色。具有类似特性的 CSS 属性还有 outline�
 当`margin`和`padding`的值设置为百分比时，是指相对于最近的块级父元素width（非总宽度）的相应百分比的值，即使是margin-top、margin-bottom、padding-top、padding-bottom，设置为百分比时也是以最近块级父元素的width（非总宽度）为基准，而非height。
 
 
-请写出 inner 的实际高度。
+请写出 inner 的实际内容高度。
 ```html
 <style>
   .outer {
@@ -82,7 +86,7 @@ color 计算值作为边框色。具有类似特性的 CSS 属性还有 outline�
 </style>
 <div class="outer"><div class="inner"></div></div>
 ```
-inner 的实际高度为60px，未设置box-sizing为border-box，padding-top百分比取父元素宽的20%为40px,内容高度为60px。box-sizing为border-box时内容高度是20px。
+inner 的实际内容高度为60px，未设置box-sizing为border-box，padding-top百分比取父元素宽的20%为40px,内容高度为60px。box-sizing为border-box时内容高度是20px。
 ![](./imgs/inherit.png)
 
 ### 优先级
@@ -133,30 +137,30 @@ absolute 定位使元素的位置与文档流无关，因此不占据空间。ab
 
 使用条件：
 
-1、父元素不能`overflow:hidden`或者`overflow:auto`属性；
+1. 父元素不能`overflow:hidden`或者`overflow:auto`属性；
 
-2、必须指定`top、bottom、left、right`4个值之一，否则只会处于相对定位；
+2. 必须指定`top、bottom、left、right`4个值之一，否则只会处于相对定位；
 
-3.父元素的高度不能低于`sticky`元素的高度；
+3. 父元素的高度不能低于`sticky`元素的高度；
 
-4、sticky元素仅在其父元素内生效。
+4. sticky元素仅在其父元素内生效。
 
 特性（坑）：
-1.sticky不会触发BFC，
+1. sticky不会触发BFC；
 
-2.z-index无效，
+2. z-index无效；
 
-3.当父元素的height：100%时，页面滑动到一定高度之后sticky属性会失效。
+3. 当父元素的height：100%时，页面滑动到一定高度之后sticky属性会失效；
 
-4.父元素不能有overflow:hidden或者overflow:auto属性。
+4. 父元素不能有overflow:hidden或者overflow:auto属性；
 
-5.父元素高度不能低于sticky高度，必须指定top、bottom、left、right4个值之一。
+5. 父元素高度不能低于sticky高度，必须指定top、bottom、left、right4个值之一。
 
 
 - inherit
 规定应该从父元素继承 position 属性的值。
 
-### CSS 的层叠上下文
+### CSS的层叠上下文
 
 层叠上下文是 HTML 中的一个三维的概念，每个层叠上下文中都有一套元素的层叠排列顺序。页面根元素天生具有层叠上下文，所以整个页面处于一个“层叠结界”中。
 
@@ -175,7 +179,7 @@ absolute 定位使元素的位置与文档流无关，因此不占据空间。ab
 
 - background/border
 - 负 z-index
-- - block 块状水平盒子
+- block 块状水平盒子
 - float 浮动盒子
 - inline 水平盒子
 - z-index:auto, 或看成 z-index:0
@@ -308,7 +312,7 @@ top、left和css中的理解很相似，right是指元素右边界距窗口最�
 
 ![](./imgs/ele_center.png)
 
-### CSS 实现文本的单行和多行溢出省略效
+### CSS实现文本的单行和多行溢出省略效果
 
 #### 单行文本
 
