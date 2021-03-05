@@ -365,36 +365,36 @@ xhr.setRequestHeader("Content-Type", "multipart/form-data");
 
 3、 `GET` 以外的 HTTP 请求，或者搭配某些 MIME 类型的 `POST` 请求会触发`options`请求。
 
-4、服务器验证OPTIONS完成后才会允许发送世界的http请求。
+4、服务器验证OPTIONS完成后才会允许发送实际的http请求。
 
-不会触发http预检请求的便是简单请求，想法能够触发http预检请求的便是复杂请求。
+不会触发http预检请求的便是简单请求，能够触发http预检请求的便是复杂请求。
 
 简单请求定义
 - 1、使用下列方法之一：
 
-GET、
-
-POST、
-
-HEAD。
+    GET、
+    
+    POST、
+    
+    HEAD。
 
 - 2、不得人为设置该集合之外的其他首部字段。该集合为：
 
-Accept
-
-Accept-Language
-
-Content-Language
-
-Content-Type 
+    Accept
+    
+    Accept-Language
+    
+    Content-Language
+    
+    Content-Type 
 
 - 3、Content-Type 的值仅限于下列三者之一：
 
-text/plain
-
-multipart/form-data
-
-application/x-www-form-urlencoded
+    text/plain
+    
+    multipart/form-data
+    
+    application/x-www-form-urlencoded
 
 - 4、请求中的任意XMLHttpRequestUpload 对象均没有注册任何事件监听器；XMLHttpRequestUpload 对象可以使用 XMLHttpRequest.upload 属性访问
 
@@ -476,17 +476,17 @@ HTTP 状态码为 3 位数，被归为 5 类：
 
 **3XX 重定向**
 
-* 301 moved permanently，永久性重定向，表示资源已被分配了新的 URL,HTTP 升级 HTTPS，之前站点再也不用，那就是 301。
-* 302 Found, Moved Temporarily，临时性重定向，表示资源临时被分配了新的 URL
+* 301 moved permanently，永久性重定向，表示资源已被分配了新的 URL，HTTP 升级 HTTPS，之前站点再也不用，那就是 301。
+* 302 not Found, Moved Temporarily，临时性重定向，表示资源临时被分配了新的 URL
 * 303 see other，表示资源存在着另一个 URL，应使用 GET 方法获取资源
 * 304 not modified，表示服务器允许访问资源，但因发生请求未满足条件的情况, 当命中协商缓存时会返回这个状态码。
 * 307 temporary redirect，临时重定向，和302含义类似，但是期望客户端保持请求方法不变向新的地址发出请求
 
 **4XX 客户端错误**
 
-* 400 bad request，请求报文存在语法错误,请求无效。通常为前后端数据格式不一致或者其他原因。
+* 400 bad request，请求报文存在语法错误，请求无效。通常为前后端数据格式不一致或者其他原因。
 * 401 unauthorized，表示发送的请求需要有通过 HTTP 认证的认证信息
-* 403 forbidden，表示对请求资源的访问被服务器拒绝,服务器已经得到请求，但是拒绝执行，比如没权限、法律禁止等。
+* 403 forbidden，表示对请求资源的访问被服务器拒绝，服务器已经得到请求，但是拒绝执行，比如没权限、法律禁止等。
 * 404 not found，表示在服务器上没有找到请求的资源
 
 **5XX 服务器错误**

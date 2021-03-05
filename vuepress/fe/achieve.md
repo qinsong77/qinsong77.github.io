@@ -1393,12 +1393,12 @@ function throttle(event, time) {
 window.addEventListener('scroll', throttle(lazyload, 200))
 
 function lazyload() { //监听页面滚动事件
-	var seeHeight = window.innerHeight //可见区域高度
+	var seeHeight = document.documentElement.clientHeight //可见区域高度
 	var scrollTop = document.documentElement.scrollTop || document.body.scrollTop //滚动条距离顶部高度 document.body.scrollTop兼容IE
 	for (var i = n; i < img.length; i++) {
 		console.log(img[i].offsetTop, seeHeight, scrollTop)
 		if (img[i].offsetTop < seeHeight + scrollTop) {
-			if (img[i].getAttribute('src') == 'loading.gif') {
+			if (img[i].getAttribute('src') === 'loading.gif') {
 				img[i].src = img[i].getAttribute('data-src')
 			}
 			n = i + 1
