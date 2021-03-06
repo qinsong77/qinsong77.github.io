@@ -488,6 +488,25 @@ var longestPalindrome = function(s) {
 滑动窗口解法，可以维护一个数组或下标
 
 ![](./leetcode_img/str1.png)
+
+左右指针控制滑动窗口，i相当于右指针
+```javascript
+var lengthOfLongestSubstring = function(s) {
+    if(!s) return 0
+    let res = 1
+    let left = 0
+    for(let i = 1; i< s.length; i++) {
+        let findIndex = s.slice(left, i).indexOf(s[i])
+        if(findIndex > -1) {
+            left = left + findIndex + 1
+        }
+        res = Math.max(res, i - left + 1)
+    }
+    return res
+};
+```
+
+
  ::: details 点击查看代码
 ```javascript
 var lengthOfLongestSubstring = function(s) {
@@ -527,25 +546,6 @@ var lengthOfLongestSubstring = function(s) {
     return max
 };
 
-// https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/solution/zi-jie-leetcode3wu-zhong-fu-zi-fu-de-zui-chang-zi-/
-
-var lengthOfLongestSubstring = function(s) {
-    if(!s) return 0
-    let res = 1
-    let prev = 1
-    let lastIndex = 0
-    for(let i = 1; i< s.length; i++) {
-        let findIndex = s.slice(lastIndex, i).indexOf(s[i])
-        if(findIndex > -1) {
-            prev = i - findIndex - lastIndex
-            lastIndex = findIndex + 1 + lastIndex
-        } else {
-            prev = prev + 1
-        }
-        res = Math.max(prev, res)
-    }
-    return res
-};
 ```
  ::: 
  
