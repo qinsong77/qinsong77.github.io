@@ -145,6 +145,7 @@ module.exports = {
 						'frameWork/network',
 						'frameWork/http',
 						'frameWork/https',
+						'frameWork/websocket',
 						'frameWork/performance'
 					]
 				}

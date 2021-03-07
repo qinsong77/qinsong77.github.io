@@ -14,6 +14,7 @@ title: LeetCode
 - [3.字符串](#_3-字符串)
   - [括号序列](#括号序列)
   - [最长回文子串](#最长回文子串)
+  - [分割回文串](#分割回文串)
   - [最长不含重复字符的子字符串](#最长不含重复字符的子字符串)
   - [最长公共前缀](#最长公共前缀)
   - [翻转字符串里的单词](#翻转字符串里的单词)
@@ -482,6 +483,71 @@ var longestPalindrome = function(s) {
     return res;
 };
 // 链接：https://leetcode-cn.com/problems/longest-palindromic-substring/solution/5-zui-chang-hui-wen-zi-chuan-by-alexer-660/
+```
+
+#### [分割回文串](https://leetcode-cn.com/problems/palindrome-partitioning/)
+
+回文串+回溯
+```javascript
+// https://leetcode-cn.com/problems/palindrome-partitioning/solution/shou-hua-tu-jie-san-chong-jie-fa-hui-su-q5zjt/
+/**
+ * @param {string} s
+ * @return {string[][]}
+ */
+var partition = function(s) {
+    const res = []
+    
+    function backTrack(temp, start) {
+        if(start === s.length) {
+            res.push([...temp])
+            return
+        }
+        for (let i = start; i < s.length; i++) {
+            if (isPalindrome(s, start, i)) {
+                temp.push(s.slice(start, i + 1))
+                backTrack(temp, i + 1)
+                temp.pop()
+            }
+        }
+    }
+    backTrack([], 0)
+    return res
+};
+
+function isPalindrome(s, l, r) {
+    while(l < r) {
+        if(s[l] !== s[r]) {
+            return false
+        }
+        l++
+        r--
+    }
+    return true
+}
+```
+动态规化 + 回溯。
+```javascript
+var partition = function(s) {
+    const n = s.length
+    if (n === 0) return []
+    const res = [], dp = Array.from({ length: n }, () => Array(n).fill(0))
+    for(let i = n - 1; i >= 0; i--) { // 动规
+        for (let j = i; j < n; j++) {
+            dp[i][j] = s[i] === s[j] && (j - i < 2 || dp[i+1][j-1])
+        }
+    }
+    function backTrack(path, start) { // 回溯
+        if (start === n) res.push([...path])
+        for(let i = start; i < n; i++) {
+            if (!dp[start][i]) continue
+            path.push(s.substring(start, i + 1))
+            backTrack(path, i + 1)
+            path.pop()
+        }
+    }
+    backTrack([], 0)
+    return res
+};
 ```
 #### [最长不含重复字符的子字符串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/)
 
@@ -1465,9 +1531,19 @@ var hasCycle = function(head) {
 ```
 
 #### [链表中环的入口节点](#https://leetcode-cn.com/problems/linked-list-cycle-ii/)
-快慢指针
+
+![](./image/link_list_circle2.png)
+快慢指针：慢指针每次走一步，快指针每次走2步，如果有环肯定相遇。
+```
+slow * 2 = fast;
+slow = a + b;
+fast = a + n(c + b) + b= a + (n+1)b + nc; fast是走了n圈环，slow还没有走完一圈就相遇了
+a + (n+1)b + nc = 2(a+b) ⟹ a = c + (n−1)(b+c)
+a = c + (n-1)(b+c)
+```
+从相遇点到入环点的距离加上 n-1圈的环长，恰好等于从链表头部到入环点的距离。
+
 ```javascript
-// https://leetcode-cn.com/problems/linked-list-cycle-ii/solution/linked-list-cycle-ii-kuai-man-zhi-zhen-shuang-zhi-/
 var detectCycle = function(head) {
     // const set = new Set()
     // let res = null
