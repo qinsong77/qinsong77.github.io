@@ -146,7 +146,8 @@ module.exports = {
 						'frameWork/http',
 						'frameWork/https',
 						'frameWork/websocket',
-						'frameWork/performance'
+						'frameWork/performance',
+						'frameWork/component_library_design',
 					]
 				}
 			],
