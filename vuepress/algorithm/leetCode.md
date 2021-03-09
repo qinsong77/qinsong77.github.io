@@ -11,10 +11,12 @@ title: LeetCode
   - [四数之和](#四数之和)
   - [N数之和](#n数之和)
 - [2.回文数](#_2-回文数)
+  - [回文排列](#回文排列)
 - [3.字符串](#_3-字符串)
   - [括号序列](#括号序列)
   - [最长回文子串](#最长回文子串)
   - [分割回文串](#分割回文串)
+  - [分割回文串2](#分割回文串2)
   - [最长不含重复字符的子字符串](#最长不含重复字符的子字符串)
   - [最长公共前缀](#最长公共前缀)
   - [翻转字符串里的单词](#翻转字符串里的单词)
@@ -404,6 +406,26 @@ var isPalindrome = function(x: number): boolean {
 };
 ```
 
+#### [回文排列](https://leetcode-cn.com/problems/palindrome-permutation-lcci/)
+
+```javascript
+/**
+ * @param {string} s
+ * @return {boolean}
+ */
+var canPermutePalindrome = function(s) {
+    const map = new Map()
+    for(let i = 0; i < s.length; i++) {
+        if(map.has(s[i])) {
+            map.delete(s[i])
+        }
+        else map.set(s[i], 1)
+    }
+
+    return map.size === 0 || map.size === 1
+};
+```
+
 ## 3.字符串
 
 #### [括号序列](https://leetcode-cn.com/problems/valid-parentheses/) 
@@ -496,6 +518,8 @@ var longestPalindrome = function(s) {
 
 #### [分割回文串](https://leetcode-cn.com/problems/palindrome-partitioning/)
 
+中等难度
+
 回文串+回溯
 ```javascript
 // https://leetcode-cn.com/problems/palindrome-partitioning/solution/shou-hua-tu-jie-san-chong-jie-fa-hui-su-q5zjt/
@@ -558,6 +582,11 @@ var partition = function(s) {
     return res
 };
 ```
+
+#### [分割回文串2](https://leetcode-cn.com/problems/palindrome-partitioning-ii/)
+
+-- hard  两次动态规划
+
 #### [最长不含重复字符的子字符串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/)
 
 滑动窗口解法，可以维护一个数组或下标
