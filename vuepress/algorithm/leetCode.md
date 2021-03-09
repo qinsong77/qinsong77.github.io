@@ -23,6 +23,8 @@ title: LeetCode
   - [替换后的最长重复字符](#替换后的最长重复字符)
   - [最长公共子串](#最长公共子串)
   - [最长公共子序列](#最长公共子序列)
+  - [两个字符串的删除操作](#两个字符串的删除操作)
+  - [两个字符串的最小ASCII删除和](#两个字符串的最小ASCII删除和)
   - [最小覆盖子串](#最小覆盖子串)
   - [字符串的排列](#字符串的排列)
   - [编辑距离](#编辑距离)
@@ -91,6 +93,13 @@ const bigLetters = []
 for (let i = 0; i < 26; i++) {
         bigLetters.push(String.fromCharCode((65 + i)));
     }
+```
+- 字符转ASCII码：用`charCodeAt()`;
+- ASCII码砖字符：用`fromCharCode()`;
+- 大写字母A 到Z 的值是从65 到90;
+- 小写a到z 是从91 到 122;
+```javascript
+'a'.charCodeAt() // 97
 ```
 
 Math 对象方法
@@ -617,6 +626,8 @@ var lengthOfLongestSubstring = function(s) {
  
 #### [最长公共前缀](https://leetcode-cn.com/problems/longest-common-prefix/)
 
+[多种题解](https://mp.weixin.qq.com/s/t6hfGuIBk3jqmBMJJ5o7RQ)
+
  ::: details 点击查看代码
 ```javascript
 /**
@@ -636,6 +647,24 @@ var longestCommonPrefix = function(strs) {
     }
 
     return result
+};
+```
+字符串比较大小时会转换成ASCII码逐一比较。
+```javascript
+var longestCommonPrefix = function(strs) {
+    if(strs.length === 0) return ''
+    let res = ''
+    let min = 0; max = 0
+    for(let i = 1; i < strs.length; i++) {
+        if(strs[i] < strs[min]) min = i
+        if(strs[i] > strs[max]) max = i
+    }
+    let minStr = strs[min]
+    while(minStr) {
+        if(minStr === strs[max].slice(0, minStr.length)) return minStr
+        else minStr = minStr.slice(0, minStr.length -1)
+    }
+    return minStr
 };
 ```
  ::: 
@@ -836,6 +865,52 @@ function LCS( str1 ,  str2 ) {
 对于两个字符串求子序列的问题，都是用两个指针i和j分别在两个字符串上移动，大概率是动态规划思路。
 
 [思路](https://mp.weixin.qq.com/s/ZhPEchewfc03xWv9VP3msg)
+
+先是自顶向下的递归解法，使用memo备忘录。
+
+核心dp函数的递归框架：
+```javascript
+function dp(i, j) {
+    dp(i + 1, j + 1); // #1
+    dp(i, j + 1);     // #2
+    dp(i + 1, j);     // #3
+}
+```
+
+想从`dp(i, j)`转移到`dp(i+1, j+1)`，有不止一种方式，可以直接走#1，也可以走#2 -> #3，也可以走#3 -> #2。
+
+这就是重叠子问题，如果不用memo备忘录消除子问题，那么dp(i+1, j+1)就会被多次计算，这是没有必要的。
+```javascript
+var longestCommonSubsequence = function(text1, text2) {
+	
+    const n = text1.length
+    const m = text2.length
+    const memo = Array.from(new Array(n), () => new Array(m).fill(-1))
+
+    function dp(s1, i, s2, j) {
+        if(i === n || j === m) return 0
+        // 如果之前计算过，则直接返回备忘录中的答案
+        if (memo[i][j] !== -1) {
+            return memo[i][j]
+        }
+        // 根据 s1[i] 和 s2[j] 的情况做选择
+        if (s1[i] === s2[j]) {
+            // s1[i] 和 s2[j] 必然在 lcs 中
+            memo[i][j] = 1 + dp(s1, i + 1, s2, j + 1)
+        } else {
+            // s1[i] 和 s2[j] 至少有一个不在 lcs 中
+            memo[i][j] = Math.max(
+                dp(s1, i + 1, s2, j),
+                dp(s1, i, s2, j + 1)
+            )
+        }
+
+        return memo[i][j]
+    }
+
+    return dp(text1, 0, text2, 0)
+};
+```
 ```javascript
 /**
  * @param {string} text1
@@ -859,6 +934,60 @@ var longestCommonSubsequence = function(text1, text2) {
 };
 
 ```
+
+#### [两个字符串的删除操作](https://leetcode-cn.com/problems/delete-operation-for-two-strings/)
+
+计算将两个字符串变得相同的最少删除次数, 其实删除的结果就是他们的最长公共子序列
+
+那么，要计算删除的次数，就可以通过最长公共子序列的长度推导出来：
+```javascript
+var minDistance = function(word1, word2) {
+    const n = word1.length
+    const m = word2.length
+    const longMax = longestCommonSubsequence(word1, word2)
+    return m - longMax + n - longMax
+};
+```
+
+#### [两个字符串的最小ASCII删除和](https://leetcode-cn.com/problems/minimum-ascii-delete-sum-for-two-strings/)
+
+```javascript
+var minimumDeleteSum = function(s1, s2) {
+    const n = s1.length
+    const m = s2.length
+    let s1_TotalAsc = 0
+    let s2_TotalAsc = 0
+    for(let i = 0; i < n; i++) {
+        s1_TotalAsc += s1[i].charCodeAt()
+    }
+     for(let j = 0; j < m; j++) {
+        s2_TotalAsc += s2[j].charCodeAt()
+    }
+
+    if(n === 0 || m === 0) {
+        return n === 0 ? s2_TotalAsc : s1_TotalAsc
+    }
+
+    let longSum = 0
+    const dp = Array.from(new Array(n + 1), () => new Array(m + 1).fill(0))
+
+    for(let i = 1; i <= n; i++) {
+        for(let j = 1; j <= m; j++) {
+            if(s1[i-1] === s2[j-1]) {
+                dp[i][j] = dp[i-1][j-1] + s1[i-1].charCodeAt()
+            } else {
+                dp[i][j] = Math.max(dp[i][j-1], dp[i-1][j])
+            }
+
+            longSum = Math.max(longSum, dp[i][j])
+        }
+    }
+
+    return s1_TotalAsc + s2_TotalAsc - 2 * longSum
+
+};
+```
+
 #### [最小覆盖子串](https://leetcode-cn.com/problems/minimum-window-substring/)
 难度：困难
 ```javascript

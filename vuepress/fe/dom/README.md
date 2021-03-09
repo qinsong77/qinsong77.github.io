@@ -9,8 +9,9 @@ title: Dom
 - [事件机制](#%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6)
   - [事件触发有三个阶段](#事件触发有三个阶段)
   - [注册事件](#%E6%B3%A8%E5%86%8C%E4%BA%8B%E4%BB%B6)
+  - [passive为什么能优化页面的滚动性能](#passive为什么能优化页面的滚动性能)
   - [事件委托](#事件委托)
-  - [e.target和e.currentTarget](#e-target和e-currentTarget)
+  - [e.target和e.currentTarget](#e-target和e-currenttarget)
 - [跨域](#%E8%B7%A8%E5%9F%9F)
   - [JSONP](#jsonp)
   - [CORS](#cors)
@@ -268,11 +269,36 @@ el.addEventListener(
 
 - `capture`，布尔值，和 `useCapture` 作用一样
 - `once`，布尔值，值为`true`表示该回调只会调用一次，调用后会移除监听
-- `passive`，布尔值，表示永远不会调用`preventDefault`
+- `passive`，布尔值，表示永远不会调用`preventDefault`，用于优化浏览器页面滚动的性能，让页面滚动更顺滑
 
 一般来说，我们只希望事件只触发在目标上，这时候可以使用`stopPropagation` 来阻止事件的进一步传播。通常我们认为`stopPropagation` 是用来阻止事件冒泡的，
 其实该函数也可以阻止捕获事件。`stopImmediatePropagation` 同样也能实现阻止事件，但是还能阻止该事件目标执行别的注册事件。
 
+##### passive为什么能优化页面的滚动性能
+
+chrome的线程化渲染框架的两个线程：
+
+- 内核线程（Main/Render Thread）：负责DOM树构建、元素的布局、图层绘制记录部分（main-thread side）、JavaScript的执行
+- 合成线程（Compositor Thread）：图层绘制实现部分（impl-side）、图层图像合成
+
+![](./image/chrome_render.png)
+
+上图可知，页面`Frame#1`在内核线程中完成js执行、布局和绘制后，经过一个周期合成线程去执行`Frame#1`页面图像的合成。
+
+用户输入事件分类：
+
+- 在内核线程处理的事件
+- 直接由合成线程处理的事件
+
+区别
+
+在内核线程处理的事件：需要经过内核线程处理的输入事件要在内核线程执行逻辑，**遇到内核线程在忙，无法立即响应**。如用户的大部分输入事件都跟页面元素有关系，一旦页面元素注册了对应事件的监听器，监听器的逻辑代码（JavaScript）必须在内核线程中执行（V8引擎运行在内核线程），因此这种输入事件经常无法立即得到响应。
+
+直接由合成线程处理的事件：不经过内核线程就能快速处理的输入事件为手势输入事件（滑动、捏合）。
+
+虽然手势事件可以不在内核线程处理，但是手势事件的产生还是离不开内核线程。
+
+passive 的意思是“顺从的”，表示它不会对事件的默认行为说 no，浏览器知道了一个监听器是 passive 的，它就可以在两个线程里同时执行监听器中的 JavaScript 代码和浏览器的默认行为了。
 
 #### [事件委托](https://zh.javascript.info/event-delegation)
 

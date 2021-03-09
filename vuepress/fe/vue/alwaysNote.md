@@ -48,6 +48,16 @@ title: 常用笔记vue
 
 ### [大文件上传和断点续传](https://juejin.im/post/6844904046436843527)
 
+### 长列表优化
+    
+ - [长列表优化](https://juejin.cn/post/6844903577631227912)
+   
+ - [Vue - Table表格渲染上千数据优化](https://zhuanlan.zhihu.com/p/53455289)
+
+ - [记一次vue长列表的内存性能分析和优化](https://www.cnblogs.com/imwtr/p/10428819.html#top)
+
+### [如何在Vue项目中更优雅地使用svg](https://cloud.tencent.com/developer/article/1624103)
+
 ### Vue实现函数防抖组件
 ```javascript
 const debounce = (func, time, ctx) => {
@@ -477,9 +487,3 @@ export default {
 </style>
 
 ```
-
-### [Vue - Table表格渲染上千数据优化](https://zhuanlan.zhihu.com/p/53455289)
-
-### [记一次vue长列表的内存性能分析和优化](https://www.cnblogs.com/imwtr/p/10428819.html#top)
-
-### [如何在Vue项目中更优雅地使用svg](https://cloud.tencent.com/developer/article/1624103)
