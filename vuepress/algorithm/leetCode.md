@@ -874,13 +874,13 @@ function LCS( str1 ,  str2 ) {
         str1 = str2
         str2 = temp
     }
-    let  right = 0, left = 0
+    let left = 0, right = 0
     let res = ''
-    while(left <= str1.length) {
-        left++
-        let str = str1.slice(right, left)
+    while(right < str1.length) {
+        right++
+        let str = str1.slice(left, right)
         if(str2.indexOf(str) === -1) {
-            right++
+            left++
         } else {
             res = str.length > res.length ? str : res
         }

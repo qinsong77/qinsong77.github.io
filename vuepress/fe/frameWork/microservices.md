@@ -2,16 +2,15 @@
 title: 微前端
 ---
 
-### [微前端从入门到熟悉](https://juejin.im/post/6872132988780412935)
-### [qiankun微前端方案实践及总结](https://juejin.im/post/6844904185910018062)
-### [qiankun微前端实践总结（二）](https://juejin.im/post/6856569463950639117)
-### [详细解析微前端、微前端框架qiankun以及源码](https://segmentfault.com/a/1190000022275991)
-### [万字长文+图文并茂+全面解析 qiankun 源码 - qiankun 篇](https://www.jianshu.com/p/db08174fa4fc/)
+#### [微前端从入门到熟悉](https://juejin.im/post/6872132988780412935)
+#### [qiankun微前端方案实践及总结](https://juejin.im/post/6844904185910018062)
+#### [qiankun微前端实践总结（二）](https://juejin.im/post/6856569463950639117)
+#### [详细解析微前端、微前端框架qiankun以及源码](https://segmentfault.com/a/1190000022275991)
 
-### [一篇英语介绍文章](https://micro-frontends.org/)
+#### [一篇英语介绍文章](https://micro-frontends.org/)
 
-### [中台”到底是什么？](https://zhuanlan.zhihu.com/p/75223466)
-### 如何在一个子应用中复用另一个子应用的页面
+#### [中台”到底是什么？](https://zhuanlan.zhihu.com/p/75223466)
+#### 如何在一个子应用中复用另一个子应用的页面
 
 如果是使用umi脚手架，`plugin-qiankun` 提供了一个组件 `MicroAppWithMemoHistory` ，该组件可以在运行时，修改子应用为 `memory` 路由。
 
