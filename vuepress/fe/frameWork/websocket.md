@@ -108,3 +108,28 @@ WebSocket客户端、服务端通信的最小单位是帧（frame），由1个�
 ```
 
 ![](./image/websocket/data_struct_explin.png)
+
+## [SSE](https://www.ruanyifeng.com/blog/2017/05/server-sent_events.html)
+
+服务器向浏览器推送信息，除了 WebSocket的另外一种方式。总体来说，WebSocket 更强大和灵活。因为它是全双工通道，可以双向通信；SSE 是单向通道，只能服务器向浏览器发送，因为流信息本质上就是下载。如果浏览器向服务器发送信息，就变成了另一次 HTTP 请求。
+
+所谓`SSE（Sever-Sent Event）`，就是浏览器向服务器发送一个HTTP请求，保持长连接，服务器不断单向地向浏览器推送“信息”（message），这么做是为了节约网络资源，不用一直发请求，建立新连接。其实就是类似长轮询。
+
+也可以跨域
+
+```javascript
+// client
+
+const source = new EventSource(url, { 
+      withCredentials: true // 跨域时，可以指定第二个参数，打开withCredentials属性，表示是否一起发送 Cookie。
+    });
+
+source.onopen = function (event) {
+  // ...
+};
+
+// 另一种写法
+source.addEventListener('open', function (event) {
+  // ...
+}, false);
+```

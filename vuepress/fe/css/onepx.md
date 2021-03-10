@@ -6,8 +6,6 @@ title: 1px及相关概念
 
 [移动端适配](https://juejin.cn/post/6844903631993454600)
 
-[JS Bridge 通信原理](https://mp.weixin.qq.com/s?__biz=MzA5NzkwNDk3MQ==&mid=2650596088&idx=1&sn=f7e83721338f13ae7d997439e073f306&chksm=8891f2dcbfe67bca758277adc959055e7ed29f914031ebca1cf184bcfc100a1c808ef724cfb9&mpshare=1&scene=23&srcid=0121TToDcL3JkEH4ZbCHgTIl&sharer_sharetime=1611235708543&sharer_shareid=1958dfa2b35b63c7a7463d11712f39df#rd)
-
 [深入浅出主流的几款小程序跨端框架原理](https://juejin.cn/post/6881597846307635214)
 
 [40条移动端H5坑位指南](https://juejin.cn/post/6921886428158754829)
@@ -15,6 +13,8 @@ title: 1px及相关概念
 ## 1px问题
 
 [文章](https://juejin.cn/post/6896713964848152589)
+
+设备像素比device pixel ratio简称`dpr`，即物理像素和设备独立像素的比值。css写`1px`是，这个px单位是**逻辑像素**，所以导致逻辑像素根据这个设备像素比（dpr）去映射到设备上就为1px, 或者2px，或者3px。这个px是实际的物理像素。
 
 ### 伪类+transform实现
 
@@ -190,6 +190,10 @@ Layout viewport是为了能将电脑上的网页正确的显示到手机上。�
 
 
 ## 移动端适配问题
+
+第一种方案是`lib-flexible` + `postcss-pxtorem`
+
+第二种方案是`viewport`, 使用`postcss-px-to-viewport`插件，它将`px`转换成视口单位`vw`
 
 在html根元素上设定了设计稿相关的vw后，后面都是用rem单位的。比如:
 

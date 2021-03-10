@@ -58,6 +58,12 @@ title: 常用笔记vue
 
 ### [如何在Vue项目中更优雅地使用svg](https://cloud.tencent.com/developer/article/1624103)
 
+重置vue实例的data： Object.assign(this.$data, this.$options.data());
+
+如果需要对data的某个对象的某个属性值做监听，可以通过computed把这个属性值的层级提上来，然后在watch中监听computed里面的属性。
+
+只有被html用到的属性才会去做依赖收集，到时候才会去做更新通知。
+
 ### Vue实现函数防抖组件
 ```javascript
 const debounce = (func, time, ctx) => {
@@ -212,6 +218,7 @@ export default {
 </style>
 ```
 
+- [在vue项目中封装echarts的正确姿势](https://www.cnblogs.com/zhangnan35/p/12680038.html)
 ### echart 地图
 ```vue
 <template>

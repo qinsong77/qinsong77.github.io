@@ -140,6 +140,7 @@ module.exports = {
 					children: [
 						['frameWork/', 'Summary'],
 						'frameWork/microservices',
+						'frameWork/mobile',
 						'frameWork/miniprogram',
 						'frameWork/ssr',
 						'frameWork/network',

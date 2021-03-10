@@ -1381,8 +1381,23 @@ var buildTree = function(preorder, inorder) {
 };
 ```
 
-#### [通过后序和中序遍历结果构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/)
-
+#### [从中序与后序遍历序列构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/)
+```javascript
+/**
+ * @param {number[]} inorder
+ * @param {number[]} postorder
+ * @return {TreeNode}
+ */
+var buildTree = function(inorder, postorder) {
+    if(inorder.length === 0) return null
+    const rootValue = postorder[postorder.length -1]
+    const root = new TreeNode(rootValue)
+    const inorderFindIndex = inorder.findIndex(v => v === rootValue) // 1
+    root.left = buildTree(inorder.slice(0, inorderFindIndex), postorder.slice(0, inorderFindIndex))
+    root.right = buildTree(inorder.slice(inorderFindIndex+1), postorder.slice(inorderFindIndex, postorder.length -1))
+    return root
+};
+```
 #### [寻找重复的子树](https://leetcode-cn.com/problems/find-duplicate-subtrees/)
 1.拼接字符串使二叉树序列化
 
