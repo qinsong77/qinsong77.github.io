@@ -10,6 +10,221 @@ title: 微前端
 #### [一篇英语介绍文章](https://micro-frontends.org/)
 
 #### [中台”到底是什么？](https://zhuanlan.zhihu.com/p/75223466)
+
+
+### 沙箱实现原理
+
+qiankun 的JS沙箱隔离主要分为三种：
+
+- legacySandBox
+- proxySandBox
+- snapshotSandBox。
+
+其中 legacySandBox、proxySandBox 是基于 `Proxy API` 来实现的，在不支持 `Proxy API` 的低版本浏览器中，会降级为 snapshotSandBox。在现版本中，legacySandBox 仅用于 singular 单实例模式，而多实例模式会使用 proxySandBox。
+
+#### legacySandBox
+
+legacySandBox 的本质上还是操作 window 对象，但是他会存在三个状态池，分别用于子应用卸载时还原主应用的状态和子应用加载时还原子应用的状态：
+
+- addedPropsMapInSandbox： 存储在子应用运行时期间新增的全局变量，用于卸载子应用时还原主应用全局变量；
+- modifiedPropsOriginalValueMapInSandbox：存储在子应用运行期间更新的全局变量，用于卸载子应用时还原主应用全局变量；
+- currentUpdatedPropsValueMap：存储子应用全局变量的更新，用于运行时切换后还原子应用的状态；
+
+总结起来，legacySandBox 还是**会操作 `window` 对象**，但是他通过激活沙箱时还原子应用的状态，卸载时还原主应用的状态来实现沙箱隔离的。
+
+![](./image/microservices/legancySandbox.png)
+
+```typescript
+const rawWindow = window;
+const fakeWindow = Object.create(null) as Window;
+// 创建对fakeWindow的劫持，fakeWindow就是我们传递给自执行函数的window对象
+const proxy = new Proxy(fakeWindow, {
+  set(_: Window, p: PropertyKey, value: any): boolean {
+    // 运行时的判断
+    if (sandboxRunning) {
+      // 如果window对象上没有这个属性，那么就在状态池中记录状态的新增；
+      if (!rawWindow.hasOwnProperty(p)) {
+        addedPropsMapInSandbox.set(p, value);
+ 
+        // 如果当前 window 对象存在该属性，并且状态池中没有该对象，那么证明改属性是运行时期间更新的值，记录在状态池中用于最后window对象的还原
+      } else if (!modifiedPropsOriginalValueMapInSandbox.has(p)) {
+        const originalValue = (rawWindow as any)[p];
+        modifiedPropsOriginalValueMapInSandbox.set(p, originalValue);
+      }
+ 
+      // 记录全局对象修改值，用于后面子应用激活时还原子应用
+      currentUpdatedPropsValueMap.set(p, value);
+      (rawWindow as any)[p] = value;
+ 
+      return true;
+    }
+ 
+    return true;
+  },
+ 
+  get(_: Window, p: PropertyKey): any {
+    // iframe的window上下文
+    if (p === "top" || p === "window" || p === "self") {
+      return proxy;
+    }
+ 
+    const value = (rawWindow as any)[p];
+    return getTargetValue(rawWindow, value);
+  },
+});
+```
+子应用沙箱的激活 / 卸载：
+
+```typescript
+ // 子应用沙箱激活
+  active() {
+    // 通过状态池，还原子应用上一次写在前的状态
+    if (!this.sandboxRunning) {
+      this.currentUpdatedPropsValueMap.forEach((v, p) => setWindowProp(p, v));
+    }
+ 
+    this.sandboxRunning = true;
+  }
+ 
+  // 子应用沙箱卸载
+  inactive() {
+    // 还原运行时期间修改的全局变量
+    this.modifiedPropsOriginalValueMapInSandbox.forEach((v, p) => setWindowProp(p, v));
+    // 删除运行时期间新增的全局变量
+    this.addedPropsMapInSandbox.forEach((_, p) => setWindowProp(p, undefined, true));
+ 
+    this.sandboxRunning = false;
+  }
+```
+
+```typescript
+// 子应用脚本文件的执行过程：
+eval(
+  // 这里将 proxy 作为 window 参数传入
+  // 子应用的全局对象就是该子应用沙箱的 proxy 对象
+  (function(window) {
+    /* 子应用脚本文件内容 */
+  })(proxy)
+);
+```
+
+#### proxySandBox
+
+proxySandBox 用于多实例场景。和 legacySandBox 最直接的不同点就是，为了支持多实例的场景，**proxySandBox 不会直接操作 `window` 对象**。并且为了避免子应用操作或者修改主应用上诸如 window、document、location 这些重要的属性，会遍历这些属性到子应用 window 副本（`fakeWindow`）上。
+
+创建子应用 `window` 的副本：
+
+```typescript
+
+function createFakeWindow(global: Window) {
+  // 在has和check的场景下，map有着更好的性能
+  const propertiesWithGetter = new Map<PropertyKey, boolean>();
+  const fakeWindow = {} as FakeWindow;
+ 
+  // 从window对象拷贝不可配置的属性
+  // 举个例子：window、document、location这些都是挂在Window上的属性，他们都是不可配置的
+  // 拷贝出来到fakeWindow上，就间接避免了子应用直接操作全局对象上的这些属性方法
+  Object.getOwnPropertyNames(global)
+    .filter((p) => {
+      const descriptor = Object.getOwnPropertyDescriptor(global, p);
+      // 如果属性不存在或者属性描述符的configurable的话
+      return !descriptor?.configurable;
+    })
+    .forEach((p) => {
+      const descriptor = Object.getOwnPropertyDescriptor(global, p);
+      if (descriptor) {
+        // 判断当前的属性是否有getter
+        const hasGetter = Object.prototype.hasOwnProperty.call(
+          descriptor,
+          "get"
+        );
+ 
+        // 为有getter的属性设置查询索引
+        if (hasGetter) propertiesWithGetter.set(p, true);
+ 
+        // freeze the descriptor to avoid being modified by zone.js
+        // zone.js will overwrite Object.defineProperty
+        // const rawObjectDefineProperty = Object.defineProperty;
+        // 拷贝属性到fakeWindow对象上
+        rawObjectDefineProperty(fakeWindow, p, Object.freeze(descriptor));
+      }
+    });
+ 
+  return {
+    fakeWindow,
+    propertiesWithGetter,
+  };
+}
+```
+
+proxySandBox 的 getter/setter：
+
+```typescript
+const rawWindow = window;
+// window副本和上面说的有getter的属性的索引
+const { fakeWindow, propertiesWithGetter } = createFakeWindow(rawWindow);
+
+const descriptorTargetMap = new Map<PropertyKey, SymbolTarget>();
+const hasOwnProperty = (key: PropertyKey) =>
+  fakeWindow.hasOwnProperty(key) || rawWindow.hasOwnProperty(key);
+
+const proxy = new Proxy(fakeWindow, {
+  set(target: FakeWindow, p: PropertyKey, value: any): boolean {
+    if (sandboxRunning) {
+      // 在fakeWindow上设置属性值
+      target[p] = value;
+      // 记录属性值的变更
+      updatedValueSet.add(p);
+
+      // SystemJS属性拦截器
+      interceptSystemJsProps(p, value);
+
+      return true;
+    }
+
+    // 在 strict-mode 下，Proxy 的 handler.set 返回 false 会抛出 TypeError，在沙箱卸载的情况下应该忽略错误
+    return true;
+  },
+
+  get(target: FakeWindow, p: PropertyKey): any {
+    if (p === Symbol.unscopables) return unscopables;
+
+    // 避免window.window 或 window.self 或window.top 穿透sandbox
+    if (p === "top" || p === "window" || p === "self") {
+      return proxy;
+    }
+
+    if (p === "hasOwnProperty") {
+      return hasOwnProperty;
+    }
+
+    // 批处理场景下会有场景使用，这里就不多赘述了
+    const proxyPropertyGetter = getProxyPropertyGetter(proxy, p);
+    if (proxyPropertyGetter) {
+      return getProxyPropertyValue(proxyPropertyGetter);
+    }
+
+    // 取值
+    const value = propertiesWithGetter.has(p)
+      ? (rawWindow as any)[p]
+      : (target as any)[p] || (rawWindow as any)[p];
+    return getTargetValue(rawWindow, value);
+  },
+
+});
+```
+因为 proxySandBox 不直接操作 window，所以在激活和卸载的时候也不需要操作状态池更新 / 还原主子应用的状态了。相比较看来，proxySandBox 是现阶段 qiankun 中最完备的沙箱模式，完全隔离了主子应用的状态，不会像 legacySandBox 模式下在运行时期间仍然会污染 window。
+
+
+#### snapshotSandBox
+
+在不支持 Proxy 的场景下会降级为 snapshotSandBox，snapshotSandBox 的原理就是在子应用激活 / 卸载时分别去通过快照的形式记录/还原状态来实现沙箱的。
+
+![](./image/microservices/snapshot.png)
+
+![](./image/microservices/snapshotProcess.png)
+
+
 #### 如何在一个子应用中复用另一个子应用的页面
 
 如果是使用umi脚手架，`plugin-qiankun` 提供了一个组件 `MicroAppWithMemoHistory` ，该组件可以在运行时，修改子应用为 `memory` 路由。
@@ -42,6 +257,15 @@ export default {
     // ...
 }
 ```
+
+#### 样式隔离
+采用一定的编程约束：
+
+- 尽量不要使用可能冲突全局的 class 或者直接为标签定义样式；
+- 定义唯一的 class 前缀，现在的项目都是用诸如 antd 这样的组件库，这类组件库都支持自定义组件 class 前缀；
+- 主应用一定要有自定义的 class 前缀；
+
+在主应用中为每一个子应用，分配一个唯一标识的div， 子应用渲染到对应的div下， 子应用在编译时，通过postcss,统一添加 div 的 id 前辍
 
 #### `__INJECTED_PUBLIC_PATH_BY_QIANKUN__`
 `__INJECTED_PUBLIC_PATH_BY_QIANKUN__`这个变量是子应用配置的entry的域名路径，如`entry`的路径是`www.test.com/subapp/device`，他的值是`www.test.com/subapp/`，而

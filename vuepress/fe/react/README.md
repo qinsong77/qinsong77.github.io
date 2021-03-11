@@ -1033,6 +1033,8 @@ class ChangeTheme extends React.Component {
 
 ## Diff算法
 
+- [React 和 Vue 的 diff 时间复杂度O(n^3) 和 O(n) 是如何计算出来的](https://github.com/sisterAn/blog/issues/22)
+
 如何将传统O(n^3)Diff算法的时间复杂度降为O(n)
 
 原来的 O(n^3) 的 diff 流程是：

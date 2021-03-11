@@ -800,3 +800,16 @@ return __webpack_require__(__webpack_require__.s = "./src/main.js");
 });
 
 ````
+
+### [SourceMap](https://mp.weixin.qq.com/s/87VqGBaT9aF1B1Tokr4CKQ)
+
+sourceMap可以帮我们直接定位到编译前代码的特定位置。
+
+sourceMap其实就是就是一段维护了前后代码映射关系的json描述文件，包含了以下一些信息：
+
+- version：sourcemap版本（现在都是v3）
+- file：转换后的文件名。
+- sourceRoot：转换前的文件所在的目录。如果与转换前的文件在同一目录，该项为空。
+- sources：转换前的文件。该项是一个数组，表示可能存在多个文件合并。
+- names：转换前的所有变量名和属性名。
+- mappings：记录位置信息的字符串。mappings 信息是关键，它使用Base64 VLQ 编码，包含了源代码与生成代码的位置映射信息。

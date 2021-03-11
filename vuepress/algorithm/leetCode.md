@@ -80,10 +80,16 @@ title: LeetCode
 - [二分查找](#二分查找)
     - [求平方根](#求平方根)
     - [寻找旋转排序数组中的最小值](#寻找旋转排序数组中的最小值)
+- [双指针](#双指针)
+    - [盛最多水的容器](#盛最多水的容器)
+    - [接雨水](#接雨水)
 - [设计LRU缓存结构](#设计lru缓存结构)
-- [接雨水](#接雨水)
 - [扑克牌中的顺子](#扑克牌中的顺子)
 - [扁平化嵌套列表迭代器](#扁平化嵌套列表迭代器)
+- [计算器](#计算器)
+    - [计算器1](#计算器1)
+    - [基本计算器](#基本计算器)
+    - [基本计算器2](#基本计算器2)
 
 获取26个字母
 ```javascript
@@ -2888,6 +2894,109 @@ var findMin = function(nums) {
 };
 ```
 
+### 双指针
+
+- [双指针技巧总结](https://mp.weixin.qq.com/s/yLc7-CZdti8gEMGWhd0JTg)
+
+#### [盛最多水的容器](https://leetcode-cn.com/problems/container-with-most-water/)
+
+```javascript
+/**
+ * @param {number[]} height
+ * @return {number}
+ */
+var maxArea = function(height) {
+    const n = height.length
+    let left = 0, right = n - 1
+    let res = 0
+    while(left < right) {
+        if(height[left] < height[right]) {
+            res = Math.max(res, (right - left) * height[left])
+            left++
+        } else {
+            res = Math.max(res, (right - left) * height[right])
+            right--
+        }
+    }
+    return res
+};
+```
+
+#### [接雨水](https://leetcode-cn.com/problems/trapping-rain-water/)
+```javascript
+/**
+ * @param {number[]} height
+ * @return {number}
+ */
+var trap = function (height) {
+	let n = height.length
+	if (n === 0) return 0
+	let res = 0
+	
+	let left_max = [], right_max = []
+	//记录左边数组的最大值
+	left_max[0] = height[0]
+	for (let i = 1; i < n; i++) {
+		left_max[i] = Math.max(left_max[i - 1], height[i])
+	}
+	//记录右边数组的最大值
+	right_max[n - 1] = height[n - 1]
+	for (let i = n - 2; i >= 0; i--) {
+		right_max[i] = Math.max(right_max[i + 1], height[i])
+	}
+	//统计每一列的面积之和
+	for (let i = 0; i < n; i++) {
+		res += Math.min(left_max[i], right_max[i]) - height[i]
+	}
+	return res
+}
+```
+双指针
+```javascript
+/**
+ * @param {number[]} height
+ * @return {number}
+ */
+// myself
+var trap = function(height) {
+    const { length } = height
+    let res = 0
+    let left = 0, right = length - 1
+    let left_max = 0, right_max = 0
+    while(left < right) {
+        if(height[left] < height[right]) {
+            res += Math.max(left_max - height[left], 0)
+            left_max = Math.max(height[left], left_max)
+            left++
+        } else {
+            res += Math.max(right_max - height[right], 0)
+            right_max = Math.max(right_max, height[right])
+            right--
+        }
+    }
+    return res
+};
+var trap = function (height) {
+  let left = 0;
+  let right = height.length - 1;
+  let res = 0;
+  let leftMax = 0;
+  let rightMax = 0;
+  while (left < right) {
+    if (height[left] < height[right]) {
+      leftMax = Math.max(height[left], leftMax);
+      res += leftMax - height[left];
+      left++;
+    } else {
+      rightMax = Math.max(height[right], rightMax);
+      res += rightMax - height[right];
+      right--;
+    }
+  }
+  return res;
+};
+```
+
 #### [设计LRU缓存结构](https://leetcode-cn.com/problems/lru-cache/)
 思路： 双链表+哈希表， 哈希表存取数据都是o(1), 双链表先预设表头和表尾。
 
@@ -2965,80 +3074,6 @@ function LRU( operators ,  k ) {
 }
 module.exports = {
     LRU : LRU
-};
-```
-#### [接雨水](https://leetcode-cn.com/problems/trapping-rain-water/)
-```javascript
-/**
- * @param {number[]} height
- * @return {number}
- */
-var trap = function (height) {
-	let n = height.length
-	if (n === 0) return 0
-	let res = 0
-	
-	let left_max = [], right_max = []
-	//记录左边数组的最大值
-	left_max[0] = height[0]
-	for (let i = 1; i < n; i++) {
-		left_max[i] = Math.max(left_max[i - 1], height[i])
-	}
-	//记录右边数组的最大值
-	right_max[n - 1] = height[n - 1]
-	for (let i = n - 2; i >= 0; i--) {
-		right_max[i] = Math.max(right_max[i + 1], height[i])
-	}
-	//统计每一列的面积之和
-	for (let i = 0; i < n; i++) {
-		res += Math.min(left_max[i], right_max[i]) - height[i]
-	}
-	return res
-}
-```
-双指针
-```javascript
-/**
- * @param {number[]} height
- * @return {number}
- */
-// myself
-var trap = function(height) {
-    const { length } = height
-    let res = 0
-    let left = 0, right = length - 1
-    let left_max = 0, right_max = 0
-    while(left < right) {
-        if(height[left] < height[right]) {
-            res += Math.max(left_max - height[left], 0)
-            left_max = Math.max(height[left], left_max)
-            left++
-        } else {
-            res += Math.max(right_max - height[right], 0)
-            right_max = Math.max(right_max, height[right])
-            right--
-        }
-    }
-    return res
-};
-var trap = function (height) {
-  let left = 0;
-  let right = height.length - 1;
-  let res = 0;
-  let leftMax = 0;
-  let rightMax = 0;
-  while (left < right) {
-    if (height[left] < height[right]) {
-      leftMax = Math.max(height[left], leftMax);
-      res += leftMax - height[left];
-      left++;
-    } else {
-      rightMax = Math.max(height[right], rightMax);
-      res += rightMax - height[right];
-      right--;
-    }
-  }
-  return res;
 };
 ```
 #### [扑克牌中的顺子](https://leetcode-cn.com/problems/bu-ke-pai-zhong-de-shun-zi-lcof/)
@@ -3123,3 +3158,9 @@ NestedIterator.prototype.next = function() {
  * while (i.hasNext()) a.push(i.next());
 */
 ```
+
+### 计算器
+
+#### [计算器1](https://leetcode-cn.com/problems/calculator-lcci/)
+#### [基本计算器](https://leetcode-cn.com/problems/basic-calculator/)
+#### [基本计算器2](https://leetcode-cn.com/problems/basic-calculator-ii/)

@@ -232,14 +232,39 @@ Object.defineProperty(Object, 'is', {
 ````
 
 
-#### [Set, Map, WeakMap, WeakSet](https://juejin.im/post/6844904169417998349)
-- Map的键值可以是原始数据类型和引用类型，WeakMap的键值只能说引用类型（object）
+#### [Set, Map, WeakMap, WeakSet](https://mp.weixin.qq.com/s/YwJxwkEVc711NOdHd54ZIQ)
+
+- [你不知道的 WeakMap](https://juejin.cn/post/6844904169417998349)
+
+- Map的键值可以是原始数据类型和引用类型，WeakMap的键是**弱引用对象**，而值可以是任意。键在没有其他引用和该键引用同一对象，这个对象将会被垃圾回收（相应的key则变成无效的）
 - Map可以迭代遍历键，WeakMap不可迭代遍历键
+- Set 和 Map 的`forEach(callbackFn,  thisArg)`：用于对集合成员执行`callbackFn`操作，如果提供了 `thisArg` 参数，回调中的`this`会是这个参数，没有返回值
 
 WeakMap所构建的实例中，**其key键所对应引用地址的引用断开或不属于指向同一个内存地址的时候**，其对应value值就会被加入垃圾回收队伍。
 
+因为map和set底层都是数组去实现的，类似于这种操作，虽然被赋值为null，但在map中还放着tom的引用。
+```javascript
+let Jerry = { name: "Jerry" };
+let array = [ Jerry ];
+Jerry = null; // 覆盖引用
+
+// Jerry 被存储在数组里, 所以它不会被垃圾回收机制回收
+// 可以通过 array[0] 来获取它
+
+
+let tom = { name: "Tom" }
+
+let map = new Map();
+map.set(tom, "he is tom");
+tom = null; // 覆盖引用
+
+// tom被存储在map中
+// 可以使用map.keys()来获取它
+```
+
 而Map没有这种机制，因为可能存在这种情况
 
+forEach中第二个参数指向。
 ```javascript
 let me = null
 let friend = {
@@ -249,6 +274,40 @@ me = friend
 
 friend = null // 对象不会被回收，因为还存在着me引用着对象
 ```
+
+```javascript
+const reporter = {
+  report: function(key, value) {
+    console.log("Key: %s, Value: %s", key, value);
+  }
+};
+
+let map = new Map([
+    ['name', 'An'],
+    ['des', 'JS']
+])
+map.forEach(function(value, key, map) {
+  this.report(key, value);
+}, reporter);
+// Key: name, Value: An
+// Key: des, Value: JS
+```
+
+Set
+- 成员唯一、无序且不重复
+- `[value,  value]`，键值与键名是一致的（或者说只有键值，没有键名）
+- 可以遍历，方法有：`add`、`delete`、`has`
+WeakSet
+- 成员都是对象
+- 成员都是弱引用，可以被垃圾回收机制回收，可以用来保存DOM节点，不容易造成内存泄漏
+- 不能遍历，方法有`add`、`delete`、`has`
+Map
+- 本质上是键值对的集合，类似集合
+- 可以遍历，方法很多可以跟各种数据格式转换
+WeakMap
+- 只接受对象作为键名（null除外），不接受其他类型的值作为键名
+- 键名是弱引用，键值可以是任意的，键名所指向的对象可以被垃圾回收，此时键名是无效的
+- 不能遍历，方法有get、set、has、delete
 
 #### `Object.defineProperty(obj, prop, descriptor)`
 
@@ -1415,3 +1474,5 @@ V8 把堆内存分成了两部分进行处理——`新生代内存和老生代�
 #### 增量标记
 
 由于JS的单线程机制，V8 在进行垃圾回收的时候，不可避免地会阻塞业务逻辑的执行，倘若老生代的垃圾回收任务很重，那么耗时会非常可怕，严重影响应用的性能。那这个时候为了避免这样问题，V8 采取了增量标记的方案，即将一口气完成的标记任务分为很多小的部分完成，每做完一个小的部分就"歇"一下，就js应用逻辑执行一会儿，然后再执行下面的部分，如果循环，直到标记阶段完成才进入内存碎片的整理上面来。其实这个过程跟React Fiber的思路有点像。
+
+#### [定时器setTimeout源码深入](https://mp.weixin.qq.com/s/YW7ckqa0gu_CPfNGtS-9Pw)

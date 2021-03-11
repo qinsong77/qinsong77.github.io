@@ -40,6 +40,12 @@
 	// …which we'll attach to both elements
 	inner.addEventListener('click', onClick);
 	outer.addEventListener('click', onClick);
+
+	
+	// inner.click();
+  //
+	// console.log('done');
+	
 	/**
 	inner
 	click
@@ -52,31 +58,20 @@
 	timeout
 	timeout
   **/
-
-	console.log(1)
-  setTimeout(() => {
-  	console.log(9)
-  }, 0)
-  new Promise((resolve => {
-  	console.log(2)
-  	resolve(1)
-  })).then(res => {
-  	console.log(5)
-  })
-	new Promise((resolve => {
-		resolve(1)
-    console.log(3)
-	})).then(res => {
-		console.log(6)
-		new Promise((resolve => {
-			resolve(1)
-			console.log(7)
-		})).then(res => {
-			console.log(8)
-
-		})
-	})
-  console.log(4)
+	
+	// 如果是运行45行和47行
+	/**
+	inner
+  click
+	inner
+	click
+	done
+	promise
+	mutate
+	promise
+	timeout
+	timeout
+  **/
 </script>
 </body>
 </html>

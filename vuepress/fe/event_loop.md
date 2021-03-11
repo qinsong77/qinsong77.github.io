@@ -177,12 +177,15 @@ GUI线程就是渲染页面的，他解析HTML和CSS，然后将他们构建成D
 5. microtask必然是在某个宏任务执行的时候创建的，而在下一个宏任务开始之前，浏览器会对页面重新渲染(task >> 渲染 >> 下一个task(从任务队列中取一个))。同时，在上一个宏任务执行完成后，渲染页面之前，会执行当前微任务队列中的所有微任务。
 6. requestIdleCallback在渲染屏幕之后执行，并且是否有空执行要看浏览器的调度，如果你一定要它在某个时间内执行，请使用 timeout参数。
 7. resize和scroll事件其实自带节流，它只在 Event Loop 的渲染阶段去执行事件。
+8. 微任务并不是在宏任务完成之后才会触发，在回调函数之后，**只要执行栈是空的，就会执行microtask。** 也就是说，macrotask执行期间，执行栈可能是空的（比如在**冒泡事件**的处理时）
 ### 宏任务包括：
 - script(整体代码)
 - setTimeout, setInterval, setImmediate,
 - I/O
 - UI rendering
-    　　
+- dispatch event事件派发
+
+dispatch event主要用来描述事件触发之后的执行任务，比如用户点击一个按钮，触发的onClick回调函数。需要注意的是，事件的触发是同步的。　　
 ### 微任务包括：
     
 - process.nextTick
@@ -219,6 +222,8 @@ GUI线程就是渲染页面的，他解析HTML和CSS，然后将他们构建成D
 
 ## [node的事件循环](https://sanyuan0704.top/my_blog/blogs/javascript/js-v8/006.html)
 
+事件循环是 Node.js 处理**非阻塞 I/O 操作**的机制
+
 [官网介绍](https://nodejs.org/zh-cn/docs/guides/event-loop-timers-and-nexttick/)
 
 ![](./image/node_event_loop.png)
@@ -226,12 +231,14 @@ GUI线程就是渲染页面的，他解析HTML和CSS，然后将他们构建成D
 #### 阶段概述
 
 - 定时器：本阶段执行已经被 `setTimeout()` 和 `setInterval()` 的调度回调函数。
-- 待定回调：执行延迟到下一个循环迭代的 I/O 回调。
+- 待定回调：执行延迟到下一个循环迭代的 I/O 回调。几乎所有的回调在这里执行，除了 `close` 回调、定时器 `timer`s 阶段的回调和 `setImmediate()`。
 - idle, prepare：仅系统内部使用。
-- 轮询：检索新的 I/O 事件;执行与 I/O 相关的回调（几乎所有情况下，除了关闭的回调函数，那些由计时器和 setImmediate() 调度的之外），其余情况 node 将在适当的时候在此阻塞。
+- 轮询：检索新的 I/O 事件；执行与 I/O 相关的回调（几乎所有情况下，除了关闭的回调函数，那些由计时器和 setImmediate() 调度的之外），其余情况 node 将在适当的时候在此阻塞。
 - 检测：`setImmediate()` 回调函数在这里执行。
 - 关闭的回调函数：一些关闭的回调函数，如：`socket.on('close', ...)`。
 - 在每次运行的事件循环之间，Node.js 检查它是否在等待任何异步 I/O 或计时器，如果没有的话，则完全关闭。
+
+当 Event Loop 需要执行 I/O 操作时，它将从一个池（通过` Libuv `库）中使用系统线程，当这个作业完成时，回调将排队等待在 “pending callbacks” 阶段被执行。
 #### 三大关键阶段
 首先，梳理一下 nodejs 三个非常重要的执行阶段:
 
@@ -269,7 +276,7 @@ GUI线程就是渲染页面的，他解析HTML和CSS，然后将他们构建成D
 5. check： 执行setImmediate回调
 6. close callback(关闭事件的回调阶段)： socket.on('close', () => {})
 
-
+每一轮事件循环都会经过六个阶段，在每个阶段后，都会执行microtask
 
 #### 实例演示
 
@@ -502,11 +509,35 @@ new Promise((resolve, reject) => {
 	mutate
 	timeout
 	timeout
-  **/
+    **/
+    // inner.click();
+    // console.log('done');
+    // 如果是运行上面2行，结果是
+    /**
+    inner
+    click
+    inner
+    click
+    done
+    promise
+    mutate
+    promise
+    timeout
+    timeout
+    **/
 </script>
 </body>
 </html>
 ```
+
+两个timeout回调都在最后才触发，因为click事件冒泡了，事件派发这个macrotask任务包括了前后两个onClick回调，两个回调函数都执行完之后，才会执行接下来的 setTimeout任务
+
+期间第一个onClick回调完成后执行栈为空，就马上接着执行microtask队列中的任务
+
+运行`inner.click()`可以看到，事件处理是同步的，`done`在连续输出两个`click`之后才输出
+
+而`mutate`只有一个，是因为当前执行第二个`onClick`回调的时候，microtask队列中已经有一个MutationObserver，它是第一个回调的，因为事件同步的原因没有被及时执行。浏览器会对MutationObserver进行优化，不会重复添加监听回调。
+
 
 - [Tasks, microtasks, queues and schedules](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/)
 - [JavaScript 执行机制](https://juejin.im/post/6844903512845860872)
