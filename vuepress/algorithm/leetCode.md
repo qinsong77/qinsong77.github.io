@@ -3161,6 +3161,49 @@ NestedIterator.prototype.next = function() {
 
 ### 计算器
 
+[如何拆解复杂问题：实现一个计算器](https://mp.weixin.qq.com/s/ds0guq9gPTLIHLEQnFxZVQ)
+
 #### [计算器1](https://leetcode-cn.com/problems/calculator-lcci/)
 #### [基本计算器](https://leetcode-cn.com/problems/basic-calculator/)
+
+```javascript
+var calculate = function(s) {
+    const n = s.length
+    let res = 0
+    let sign = 1
+    const ops = [1]
+    let i = 0
+    while(i < n) {
+        const ch = s[i]
+        switch(ch) {
+            case ' ':
+                break;
+            case '+':
+                sign = ops[ops.length -1]
+                break
+            case '-':
+                sign = -ops[ops.length -1] // 比如2个减好久要逆转为+
+                break
+            case '(':
+                ops.push(sign)
+                break
+            case ')':
+                ops.pop()
+                break
+            default:
+                let j = i
+                let chNew = ''
+                while(j < n && !(isNaN(Number(s[j]))) && s[j] !== ' ') { // 可能是9989这种不是一位的字符串数字的处理
+                    chNew = chNew + s[j]
+                    j++
+                }
+                res += parseInt(chNew) * sign
+                i = j
+                if(i > 0) i--
+        }
+        i++
+    }
+    return res
+};
+```
 #### [基本计算器2](https://leetcode-cn.com/problems/basic-calculator-ii/)

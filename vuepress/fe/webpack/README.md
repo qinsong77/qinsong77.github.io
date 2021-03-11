@@ -136,7 +136,7 @@ presets: [
 ]
 
 import "core-js/stable";
-import "regenerator-runtime/runtime";
+import "regenerator-runtime/runtime"; //  Standalone runtime for Regenerator-compiled generator and async functions. 解决generate和async的兼用问题
 ```
 #### vue/cli3下.browserslistrc文件含义
 

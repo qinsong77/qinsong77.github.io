@@ -149,6 +149,7 @@ module.exports = {
 						'frameWork/websocket',
 						'frameWork/performance',
 						'frameWork/component_library_design',
+						'frameWork/thought',
 					]
 				}
 			],
