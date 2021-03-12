@@ -544,7 +544,6 @@ new Promise((resolve, reject) => {
 - [文章1](https://juejin.im/post/6844903971228745735)
 - [文章2](https://juejin.im/post/6844903711106400264)
 - [文章3](https://juejin.cn/post/6844904100195205133)
-- [文章4](https://zhuanlan.zhihu.com/p/33058983)
 
 
 [requestIdleCallback](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/requestIdleCallback)
