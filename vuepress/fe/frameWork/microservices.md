@@ -1,7 +1,8 @@
 ---
 title: 微前端
 ---
-
+#### [微前端框架 之 single-spa 从入门到精通](https://juejin.cn/post/6862661545592111111)
+#### [微前端框架 之 qiankun 从入门到源码分析](https://juejin.cn/post/6885211340999229454)
 #### [微前端从入门到熟悉](https://juejin.im/post/6872132988780412935)
 #### [qiankun微前端方案实践及总结](https://juejin.im/post/6844904185910018062)
 #### [qiankun微前端实践总结（二）](https://juejin.im/post/6856569463950639117)
@@ -259,6 +260,123 @@ export default {
 ```
 
 #### 样式隔离
+
+qiankun 的样式隔离有两种方式，一种是严格样式隔离，通过 `shadow dom` 来实现，另一种是实验性的样式隔离，就是 `scoped css`，两种方式不可共存
+
+
+##### 严格样式隔离
+
+
+在 qiankun 中的严格样式隔离，就是在 `createElement` 方法中做的，通过 `shadow dom` 来实现， `shadow dom` 是浏览器原生提供的一种能力，
+在过去的很长一段时间里，浏览器用它来封装一些元素的内部结构。以一个有着默认播放控制按钮的 `<video>` 元素为例，实际上，在它的 `Shadow DOM` 中，包含来一系列的按钮和其他控制器。
+`Shadow DOM` 标准允许你为你自己的元素（`custom element`）维护一组 `Shadow DOM`。
+
+![](./image/microservices/strictStyleIsolation.png)
+
+```typescript
+/**
+ * 做了两件事
+ *  1、将 appContent 由字符串模版转换成 html dom 元素
+ *  2、如果需要开启严格样式隔离，则将 appContent 的子元素即微应用的入口模版用 shadow dom 包裹起来，达到样式严格隔离的目的
+ * @param appContent = `<div id="__qiankun_microapp_wrapper_for_${appInstanceId}__" data-name="${appName}">${template}</div>`
+ * @param strictStyleIsolation 是否开启严格样式隔离
+ */
+function createElement(appContent: string, strictStyleIsolation: boolean): HTMLElement {
+  // 创建一个 div 元素
+  const containerElement = document.createElement('div');
+  // 将字符串模版 appContent 设置为 div 的innerHTML
+  containerElement.innerHTML = appContent;
+  // appContent always wrapped with a singular div，appContent 由模版字符串变成了 DOM 元素
+  const appElement = containerElement.firstChild as HTMLElement;
+  // 如果开启了严格的样式隔离，则将 appContent 的子元素（微应用的入口模版）用 shadow dom 包裹，以达到微应用之间样式严格隔离的目的
+  if (strictStyleIsolation) {
+    if (!supportShadowDOM) {
+      console.warn(
+        '[qiankun]: As current browser not support shadow dom, your strictStyleIsolation configuration will be ignored!',
+      );
+    } else {
+      const { innerHTML } = appElement;
+      appElement.innerHTML = '';
+      let shadow: ShadowRoot;
+
+      if (appElement.attachShadow) {
+        shadow = appElement.attachShadow({ mode: 'open' });
+      } else {
+        // createShadowRoot was proposed in initial spec, which has then been deprecated
+        shadow = (appElement as any).createShadowRoot();
+      }
+      shadow.innerHTML = innerHTML;
+    }
+  }
+
+  return appElement;
+}
+
+```
+##### 实验性样式隔离
+设置`experimentalStyleIsolation: true`
+实验性样式的隔离方式其实就是 `scoped css`，qiankun 会通过动态改写一个特殊的选择器约束来限制 `css` 的生效范围，应用的样式会按照如下模式改写：
+
+![](./image/microservices/experimentalStyleIsolation.png)
+
+```css
+/** 假设应用名是 react16 **/
+.app-main {
+  font-size: 14px;
+}
+div[data-qiankun-react16] .app-main {
+  font-size: 14px;
+}
+```
+process
+````typescript
+/**
+ * 做了两件事：
+ *  实例化 processor = new ScopedCss()，真正处理样式选择器的地方
+ *  生成样式前缀 `div[data-qiankun]=${appName}`
+ * @param appWrapper = <div id="__qiankun_microapp_wrapper_for_${appInstanceId}__" data-name="${appName}">${template}</div>
+ * @param stylesheetElement = <style>xx</style>
+ * @param appName 微应用名称
+ */
+export const process = (
+  appWrapper: HTMLElement,
+  stylesheetElement: HTMLStyleElement | HTMLLinkElement,
+  appName: string,
+) => {
+  // lazy singleton pattern，单例模式
+  if (!processor) {
+    processor = new ScopedCSS();
+  }
+
+  // 目前支持 style 标签
+  if (stylesheetElement.tagName === 'LINK') {
+    console.warn('Feature: sandbox.experimentalStyleIsolation is not support for link element yet.');
+  }
+
+  // 微应用模版
+  const mountDOM = appWrapper;
+  if (!mountDOM) {
+    return;
+  }
+
+  // div
+  const tag = (mountDOM.tagName || '').toLowerCase();
+
+  if (tag && stylesheetElement.tagName === 'STYLE') {
+    // 生成前缀 `div[data-qiankun]=${appName}`
+    const prefix = `${tag}[${QiankunCSSRewriteAttr}="${appName}"]`;
+     /**
+     * 实际处理样式的地方
+     * 拿到样式节点中的所有样式规则，然后重写样式选择器
+     *  含有根元素选择器的情况：用前缀替换掉选择器中的根元素选择器部分，
+     *  普通选择器：将前缀插到第一个选择器的后面
+     */
+    processor.process(stylesheetElement, prefix);
+  }
+}
+
+
+````
 采用一定的编程约束：
 
 - 尽量不要使用可能冲突全局的 class 或者直接为标签定义样式；

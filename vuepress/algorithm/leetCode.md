@@ -33,13 +33,14 @@ title: LeetCode
 - [4.二叉树](#_4-二叉树)
    - [二叉树的层序遍历](#二叉树的层序遍历)
    - [二叉树的序列化与反序列化](#二叉树的序列化与反序列化)
+   - [验证二叉树的前序序列化](#验证二叉树的前序序列化)
+   - [从前序与中序遍历序列构造二叉树](#从前序与中序遍历序列构造二叉树)
+   - [从中序与后序遍历序列构造二叉树](#从中序与后序遍历序列构造二叉树)
    - [翻转二叉树](#翻转二叉树)
    - [填充每个节点的下一个右侧节点指针](#填充每个节点的下一个右侧节点指针)
    - [二叉树展开为链表](#二叉树展开为链表)
    - [二叉树的最近公共祖先](#二叉树的最近公共祖先)
    - [最大二叉树](#最大二叉树)
-   - [从前序与中序遍历序列构造二叉树](#从前序与中序遍历序列构造二叉树)
-   - [从中序与后序遍历序列构造二叉树](#从中序与后序遍历序列构造二叉树)
    - [寻找重复的子树](#寻找重复的子树)
    - [求二叉树中最大路径和](#求二叉树中最大路径和)
 - [5.二叉搜索树](#_5-二叉搜索树)
@@ -1116,7 +1117,7 @@ const inorderTraversal = (root) => {
 };
 ```
 
-### [二叉树的层序遍历](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/)
+#### [二叉树的层序遍历](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/)
 ```javascript
 /**
  * Definition for a binary tree node.
@@ -1148,7 +1149,7 @@ var levelOrder = function(root) {
 };
 ```
 
-### [二叉树的序列化与反序列化](https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/)
+#### [二叉树的序列化与反序列化](https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/)
 
 前序遍历法，后续遍历法差不多一样，而中序遍历的方式行不通，因为无法实现反序列化方法`deserialize`。
 ```javascript
@@ -1217,7 +1218,62 @@ var deserialize = function(data) {
  */
 ```
 
-### [翻转二叉树](https://leetcode-cn.com/problems/invert-binary-tree/)
+#### [验证二叉树的前序序列化](https://leetcode-cn.com/problems/verify-preorder-serialization-of-a-binary-tree/)
+
+```javascript
+// https://leetcode-cn.com/problems/verify-preorder-serialization-of-a-binary-tree/solution/pai-an-jiao-jue-de-liang-chong-jie-fa-zh-66nt/
+/**
+ * @param {string} preorder
+ * @return {boolean}
+ */
+var isValidSerialization = function(preorder) {
+    const nodes = preorder.split(',')
+    const stack = []
+    for(let i = 0; i < nodes.length;i++) {
+        stack.push(nodes[i])
+        while(stack.length > 2 && stack[stack.length - 1] === '#' && stack[stack.length - 2] === '#' && stack[stack.length - 3] !== '#') {
+            stack.pop()
+            stack.pop()
+            stack.pop()
+            stack.push('#')
+        }
+    }
+    return stack.length === 1 && stack.pop() === '#'
+};
+```
+
+#### [从前序与中序遍历序列构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/)
+先构造根节点，接着思考如何构造左右节点，而构造左右节点也是构造根节点。剩下的就是分割数组
+```javascript
+var buildTree = function(preorder, inorder) {
+    if (preorder.length === 0) return null
+    const root = new TreeNode(preorder[0])
+    const inorderRootIndex = inorder.findIndex(v => v === preorder[0])
+    root.left = buildTree(preorder.slice(1,inorderRootIndex + 1), inorder.slice(0, inorderRootIndex)) 
+    root.right = buildTree(preorder.slice(inorderRootIndex+1), inorder.slice(inorderRootIndex+1))
+    return root
+};
+```
+
+#### [从中序与后序遍历序列构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/)
+```javascript
+/**
+ * @param {number[]} inorder
+ * @param {number[]} postorder
+ * @return {TreeNode}
+ */
+var buildTree = function(inorder, postorder) {
+    if(inorder.length === 0) return null
+    const rootValue = postorder[postorder.length -1]
+    const root = new TreeNode(rootValue)
+    const inorderFindIndex = inorder.findIndex(v => v === rootValue) // 1
+    root.left = buildTree(inorder.slice(0, inorderFindIndex), postorder.slice(0, inorderFindIndex))
+    root.right = buildTree(inorder.slice(inorderFindIndex+1), postorder.slice(inorderFindIndex, postorder.length -1))
+    return root
+};
+```
+
+#### [翻转二叉树](https://leetcode-cn.com/problems/invert-binary-tree/)
 ![](./image/leetcode_tree/reverse_tree.png)
 ```javascript
 var invertTree = function(root) {
@@ -1231,7 +1287,7 @@ var invertTree = function(root) {
 };
 ```
 
-### [填充每个节点的下一个右侧节点指针](https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node/)
+#### [填充每个节点的下一个右侧节点指针](https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node/)
 
 ```javascript
 var connect = function(root) {
@@ -1372,37 +1428,6 @@ function getBuildResult(arr) {
         arr.slice(maxIndex+1)
     ]
 }
-```
-
-#### [从前序与中序遍历序列构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/)
-先构造根节点，接着思考如何构造左右节点，而构造左右节点也是构造根节点。剩下的就是分割数组
-```javascript
-var buildTree = function(preorder, inorder) {
-    if (preorder.length === 0) return null
-    const root = new TreeNode(preorder[0])
-    const inorderRootIndex = inorder.findIndex(v => v === preorder[0])
-    root.left = buildTree(preorder.slice(1,inorderRootIndex + 1), inorder.slice(0, inorderRootIndex)) 
-    root.right = buildTree(preorder.slice(inorderRootIndex+1), inorder.slice(inorderRootIndex+1))
-    return root
-};
-```
-
-#### [从中序与后序遍历序列构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/)
-```javascript
-/**
- * @param {number[]} inorder
- * @param {number[]} postorder
- * @return {TreeNode}
- */
-var buildTree = function(inorder, postorder) {
-    if(inorder.length === 0) return null
-    const rootValue = postorder[postorder.length -1]
-    const root = new TreeNode(rootValue)
-    const inorderFindIndex = inorder.findIndex(v => v === rootValue) // 1
-    root.left = buildTree(inorder.slice(0, inorderFindIndex), postorder.slice(0, inorderFindIndex))
-    root.right = buildTree(inorder.slice(inorderFindIndex+1), postorder.slice(inorderFindIndex, postorder.length -1))
-    return root
-};
 ```
 #### [寻找重复的子树](https://leetcode-cn.com/problems/find-duplicate-subtrees/)
 1.拼接字符串使二叉树序列化
