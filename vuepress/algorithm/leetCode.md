@@ -91,6 +91,7 @@ title: LeetCode
     - [计算器1](#计算器1)
     - [基本计算器](#基本计算器)
     - [基本计算器2](#基本计算器2)
+- [电话号码的字母组合](#电话号码的字母组合)
 
 获取26个字母
 ```javascript
@@ -3232,3 +3233,50 @@ var calculate = function(s) {
 };
 ```
 #### [基本计算器2](https://leetcode-cn.com/problems/basic-calculator-ii/)
+
+
+#### [电话号码的字母组合](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)
+
+思路： dfs(晦溯)，bfs
+
+```javascript
+// https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/solution/shou-hua-tu-jie-liang-chong-jie-fa-dfshui-su-bfsya/
+/**
+ * @param {string} digits
+ * @return {string[]}
+ */
+var letterCombinations = function(digits) {
+     if(digits.length === 0) {
+        return []
+    }
+
+    const dictionary = {
+        2: 'abc',
+        3: 'def',
+        4: 'ghi',
+        5: 'jkl',
+        6: 'mno',
+        7: 'pqrs',
+        8: 'tuv',
+        9: 'wxyz'
+    }
+    const treeLength = digits.length
+
+    const res = []
+
+    const dfs = (str, pos) => {
+
+        if(pos > treeLength - 1) {
+            res.push(str)
+            return
+        }
+        
+        const charts = dictionary[digits[pos]]
+        for(let i = 0; i < charts.length; i++) {
+            dfs(str + charts[i], pos + 1)
+        }
+    }
+    dfs('', 0)
+    return res
+};
+```
