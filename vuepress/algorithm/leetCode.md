@@ -3233,7 +3233,56 @@ var calculate = function(s) {
 };
 ```
 #### [基本计算器2](https://leetcode-cn.com/problems/basic-calculator-ii/)
-
+```javascript
+/**
+ * @param {string} s
+ * @return {number}
+ */
+var calculate = function(s) {
+    s = s.trim()
+    const length = s.length
+    const stack = []
+    let prevSign = '+'
+    let prevNum = 0
+    for(let i = 0; i < length + 1; i++) {
+        const char = s[i]
+        if(char === ' ') continue
+        if (!isNaN(Number(char))) {
+            // 获取正确的数字
+            let j = i + 1
+            let chNew = char
+            while(j < length && !(isNaN(Number(s[j]))) && s[j] !== ' ') { // 可能是9989这种不是一位的字符串数字的处理
+                chNew = chNew + s[j]
+                j++
+            }
+            i = j
+            if(i > 0) i--
+            prevNum = parseInt(chNew)
+        } else {
+            switch(prevSign) {
+                case '+':
+                    stack.push(prevNum)
+                    break
+                case '-':
+                    stack.push(-prevNum)
+                    break
+                case '*':
+                    stack.push(stack.pop() * prevNum)
+                    break
+                default:
+                    stack.push(stack.pop() / prevNum | 0)
+                }
+                prevSign = char
+                prevNum = 0
+        }
+    }
+    let ans = 0
+    while (stack.length) {
+        ans += stack.pop()
+    }
+    return ans;
+};
+```
 
 #### [电话号码的字母组合](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)
 
@@ -3279,4 +3328,10 @@ var letterCombinations = function(digits) {
     dfs('', 0)
     return res
 };
+```
+
+#### [下一个排列](https://leetcode-cn.com/problems/next-permutation/)
+[解释及题解](https://leetcode-cn.com/problems/next-permutation/solution/xia-yi-ge-pai-lie-suan-fa-xiang-jie-si-lu-tui-dao-/)
+```javascript
+
 ```

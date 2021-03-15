@@ -169,7 +169,7 @@ instanceof 能够判断出 `[]._proto_` 指向 `Array.prototype`，而 `Array.pr
 - function Object()也是个函数，所以我们可以认为Object()是通过 new Function() 出来的，所以Object()此时是实例对象，实例对象上面一定有__proto__属性，所以`Object.__proto__` === `Function.prototype`
 - function Function()同样也是函数，我们也可以认为他是通过 new Function() 出来的，所以Function()此时是实例对象，实例对象上面一定有__proto__属性，所以`Function.__proto__`=== `Function.prototype`
 - 我们说过任何东西都是new Object()所出来的，所以Function() 也是new Object() 出来的，此时Function()是实例对象，实例对象上面一定有__proto__属性，但是Function的__proto__属性的连线已经连到了Function的显式原型对象，所以它通过上图的红线进行连接，
-`Function.__proto__.__proto__`=== `Object.prototype`是(true)
+`Function.__proto__.__proto__`=== `Object.prototype`是(true)，即`Function.prototype.__proto__ === Object.prototype`
 ![An image](./image/prototype/Funcion_Object.png)
 ![An image](./image/prototype/Fun_Obj.png)
 
