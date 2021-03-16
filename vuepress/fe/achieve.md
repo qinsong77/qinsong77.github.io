@@ -36,6 +36,7 @@ title: 手写实现
 - [异步循环打印](#异步循环打印)
 - [图片懒加载](#图片懒加载)
 - [Promise](#promise)
+- [async的实现](#async的实现)
 
 
 
@@ -1607,6 +1608,7 @@ Promise.all = function(promiseArrays){
 ```
 这个思路比较清晰，但没有通过官方872个测试用例
 > [文章](https://juejin.im/post/6844903665686282253)
+ ::: details 点击查看代码
 ```javascript
 // 定义Promise的三种状态常量
 const PENDING = 'PENDING'
@@ -1818,12 +1820,13 @@ class MyPromise {
 	}
 }
 ```
-
+ ::: 
 [Promises/A+规范](https://promisesaplus.com/)
 
 [Promises/A+规范-译文](https://www.ituring.com.cn/article/66566)
 
 [100 行代码实现 Promises/A+ 规范](https://juejin.cn/post/6903725134977171463)
+ ::: details 点击查看代码
 ```javascript
 
 const isFunction = obj => typeof obj === 'function'
@@ -1942,5 +1945,170 @@ myPromise.defer = Promise.deferred = function () {
 	})
 	return deferred
 }
+
+```
+ ::: 
+
+### async的实现
+
+结合promise和generator，实现async函数
+```javascript
+function getJSON(data) {
+	return new Promise((resolve, reject) => {
+		setTimeout(() => {
+			resolve(data)
+		}, 3000)
+	})
+}
+
+asyncRT(function* () {
+	try {
+		console.log('start')
+		console.time()
+		const result1 = yield getJSON('data/first.json')
+		const result2 = yield getJSON(result1.repeat(2))
+		const result3 = yield getJSON(result2.repeat(2))
+		console.log(result3)
+		console.timeEnd()
+	} catch (e) {
+		console.log(e)
+	}
+})
+
+function asyncRT(generator) {
+    return new Promise(((resolve, reject) => {
+	    // 创建一个迭代器
+        const gen = fn()
+	    // generator执行顺序控制器
+        function next(...args){
+            const { done, value } = gen.next(...args)
+            if (done) return resolve(value)
+            // 如果是Promise则在then里执行next
+            /**
+            if (value instanceof Promise) {
+                value.then(res => next(res))
+                    .catch(err => gen.throw(err))
+            } else next(value)
+            **/
+            //  使用Promise.resolve包裹不用判断
+            Promise.resolve(value)
+                .then(res => {
+                    next(res)
+                })
+                .catch(e => gen.throw(e))
+        }
+        try {
+            next()
+        } catch (e) {
+            reject(e)
+        }
+    }))
+}
+
+```
+
+async 函数的实现原理，就是将 `Generator` 函数和自动执行器，包装在一个函数里。
+```javascript
+async function fn(args) {
+  // ...
+}
+
+// 等同于
+
+function fn(args) {
+  return spawn(function* () {
+    // ...
+  });
+}
+```
+所有的`async`函数都可以写成上面的第二种形式，其中的`spawn`函数就是自动执行器。
+
+```javascript
+function spawn(genF) {
+  return new Promise(function(resolve, reject) {
+    const gen = genF();
+    function step(nextF) {
+      let next;
+      try {
+        next = nextF();
+      } catch(e) {
+        return reject(e);
+      }
+      if(next.done) {
+        return resolve(next.value);
+      }
+      Promise.resolve(next.value).then(function(v) {
+        step(function() { return gen.next(v); });
+      }, function(e) {
+        step(function() { return gen.throw(e); });
+      });
+    }
+    step(function() { return gen.next(undefined); });
+  });
+}
+
+function timeout(ms) {
+	return new Promise((resolve => {
+		setTimeout(resolve,ms)
+	}))
+}
+async function asyncPrint(value, ms) {
+	await timeout(ms);
+	console.log(value);
+}
+
+function fn(value, ms) {
+	return spawn(function* () {
+		yield timeout(ms)
+		console.log(value);
+	});
+}
+
+// asyncPrint('hello world', 2000);
+fn('hello world', 2000);
+```
+
+version2
+```javascript
+function myCo(gen) {
+	return new Promise(((resolve, reject) => {
+		function next(data) {
+			try {
+				var { value, done } = gen.next(data)
+			} catch (e) {
+				return reject(e)
+			}
+			if (!done) {
+				//done为true,表示迭代完成
+				//value 不一定是 Promise，可能是一个普通值。使用 Promise.resolve 进行包装。
+				Promise.resolve(value).then(val => {
+					next(val)
+				}, reject)
+			} else {
+				resolve(value)
+			}
+		}
+		
+		next() //第一次调用next函数时，传递的参数无效
+	}))
+}
+
+function* test() {
+	yield new Promise((resolve, reject) => {
+		setTimeout(resolve, 100)
+	})
+	yield new Promise((resolve, reject) => {
+		// throw Error(1);
+		resolve(10)
+	})
+	yield 10
+	return 1000
+}
+
+myCo(test()).then(data => {
+	console.log(data) //输出1000
+}).catch((err) => {
+	console.log('err: ', err)
+})
 
 ```

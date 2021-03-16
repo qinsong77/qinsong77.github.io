@@ -80,6 +80,8 @@ title: LeetCode
     - [二维数组中的查找](#二维数组中的查找)
     - [螺旋矩阵](#螺旋矩阵)
     - [托普利茨矩阵](#托普利茨矩阵)
+    - [不同路径-hot](#不同路径)
+    - [最小路径和-hot](#最小路径和)
 - [二分查找](#二分查找)
     - [求平方根](#求平方根)
     - [寻找旋转排序数组中的最小值](#寻找旋转排序数组中的最小值)
@@ -2857,6 +2859,94 @@ var isToeplitzMatrix = function(matrix) {
         }
     }
     return true
+};
+```
+
+#### [不同路径](https://leetcode-cn.com/problems/unique-paths/)
+递归加memo
+```javascript
+/**
+ * @param {number} m
+ * @param {number} n
+ * @return {number}
+ */
+var uniquePaths = function(m, n) {
+    const memo = Array.from(new Array(m), () => new Array(n).fill(null))
+
+    memo[0][0] = 1
+    function dp(i, j) {
+        if(memo[i][j] !== null) return memo[i][j]
+        if(i === 0 || j === 0) return memo[i][j] = 1
+        return memo[i][j] = dp(i - 1, j) +  dp(i, j -1)
+    }
+    return dp(m -1, n -1)
+};
+```
+
+动态规划
+
+```javascript
+var uniquePaths = function(m, n) {
+
+    const dp = Array.from(new Array(m), () => new Array(n).fill(1))
+  
+    for(let i = 1; i < m; i++) {
+        for(let j = 1; j < n; j++) {
+            dp[i][j] = dp[i -1][j] +  dp[i][j-1]
+        }
+    }
+
+    return dp[m-1][n-1]
+};
+```
+
+#### [最小路径和](https://leetcode-cn.com/problems/minimum-path-sum/)
+递归加memo
+```javascript
+/**
+ * @param {number[][]} grid
+ * @return {number}
+ */
+var minPathSum = function(grid) {
+    const rows = grid.length, cloumns = grid[0].length
+    const memo = Array.from(new Array(rows), () => new Array(cloumns).fill(null))
+    
+    memo[0][0] = grid[0][0]
+    function dp(row, cloumn) {
+        if(memo[row][cloumn] !== null) return memo[row][cloumn]
+        if(row === 0) return memo[row][cloumn] = grid[row][cloumn] + dp(row,cloumn - 1)
+        if(cloumn === 0) return memo[row][cloumn] = grid[row][cloumn] + dp(row-1,cloumn)
+        return memo[row][cloumn] = grid[row][cloumn] + Math.min(dp(row - 1, cloumn), dp(row, cloumn -1))
+    }
+
+    return dp(rows -1, cloumns -1)
+};
+```
+
+动态规划
+
+```javascript
+/**
+ * @param {number[][]} grid
+ * @return {number}
+ */
+var minPathSum = function(grid) {
+    const m = grid.length, n = grid[0].length
+    const dp = Array.from(new Array(m), () => new Array(n).fill(null))
+    dp[0][0] = grid[0][0]
+    for(let i = 1; i < m; i++) {
+        dp[i][0] = grid[i][0] + dp[i-1][0]
+    }
+    for(let i = 1; i < n; i++) {
+        dp[0][i] = grid[0][i] + dp[0][i-1]
+    }
+
+    for(let i = 1; i < m; i++) {
+        for(let j = 1; j < n; j++) {
+            dp[i][j] = grid[i][j] + Math.min(dp[i -1][j], dp[i][j-1])
+        }
+    }
+    return dp[m-1][n -1]
 };
 ```
 
