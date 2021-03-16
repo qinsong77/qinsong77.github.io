@@ -2,8 +2,6 @@
 title: 组件库设计
 ---
 
-- [Element-UI（2.11.1） 构建流程](https://juejin.cn/post/6844904003541663757)
-
 
 - [面试官: 写过『通用前端组件』吗?](https://www.jianshu.com/p/81128ab478e9)
 
@@ -42,8 +40,11 @@ title: 组件库设计
 - 层次结构和 UML 类图
 - 扁平化、面向数据的 state/props
 - 更加纯粹的 `State` 变化
-- 低耦合
+- 高内聚，低耦合
 - 辅助代码分离
 - 提炼精华
 - 及时模块化
 - 集中/统一的状态管理
+
+### Element-ui
+- [Element-UI（2.11.1） 构建流程](https://juejin.cn/post/6844904003541663757)

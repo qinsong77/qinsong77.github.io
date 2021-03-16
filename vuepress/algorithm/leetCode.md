@@ -10,13 +10,15 @@ title: LeetCode
   - [三数之和](#三数之和)
   - [四数之和](#四数之和)
   - [N数之和](#n数之和)
-- [2.回文数](#_2-回文数)
+- [2.回文](#_2-回文)
+  - [回文数](#回文数)
   - [回文排列](#回文排列)
-- [3.字符串](#_3-字符串)
-  - [括号序列](#括号序列)
   - [最长回文子串](#最长回文子串)
   - [分割回文串](#分割回文串)
   - [分割回文串2](#分割回文串2)
+- [3.字符串](#_3-字符串)
+  - [有效的括号](#有效的括号)
+  - [括号生成](#括号生成)
   - [最长不含重复字符的子字符串](#最长不含重复字符的子字符串)
   - [最长公共前缀](#最长公共前缀)
   - [翻转字符串里的单词](#翻转字符串里的单词)
@@ -367,7 +369,9 @@ const search = (arr, count, sum) => {
 }
 ```
 
-#### 2.[回文数](https://leetcode-cn.com/problems/palindrome-number/)
+#### 2.回文
+
+#### [回文数](https://leetcode-cn.com/problems/palindrome-number/)
 > 判断一个整数是否是回文数。回文数是指正序（从左向右）和倒序（从右向左）读都是一样的整数。
   
   ***
@@ -436,7 +440,7 @@ var canPermutePalindrome = function(s) {
 
 ## 3.字符串
 
-#### [括号序列](https://leetcode-cn.com/problems/valid-parentheses/) 
+#### [有效的括号](https://leetcode-cn.com/problems/valid-parentheses/) 
 使用栈
 ```javascript
 /**
@@ -455,6 +459,47 @@ var isValid = function(s) {
     return stack.length === 0
 };
 ```
+
+#### [括号生成](https://leetcode-cn.com/problems/generate-parentheses/)
+
+**回溯**，死抓三个要点
+- 选择
+ 在这里，每次最多两个选择，选左括号，或右括号，“选择”会展开出一棵解的空间树。
+用 DFS 的方式遍历这棵树，找出所有的解，这个过程叫回溯。
+- 约束条件
+即，什么情况下可以选左括号，什么情况下可以选右括号。
+利用约束做“剪枝”，即，去掉不会产生解的选项，即，剪去不会通往合法解的分支。
+比如()，现在左右括号各剩一个，再选)就成了())，这是错的选择，不能让它成为选项（不落入递归）：
+```javascript
+if (right > left) { // 右括号剩的比较多，才能选右括号
+    dfs(str + ')', left, right - 1);
+}
+```
+- 目标
+构建出一个用尽 n 对括号的合法括号串。意味着，当构建的长度达到 2*n，就可以结束递归（不用继续选了）。
+
+```javascript
+var generateParenthesis = function (n) {
+  const res = [];
+
+  const dfs = (lRemain, rRemain, str) => { // 左右括号所剩的数量，str是当前构建的字符串
+    if (str.length === 2 * n) { // 字符串构建完成
+      res.push(str);           // 加入解集
+      return;                  // 结束当前递归分支
+    }
+    if (lRemain > 0) {         // 只要左括号有剩，就可以选它，然后继续做选择（递归）
+      dfs(lRemain - 1, rRemain, str + "(");
+    }
+    if (lRemain < rRemain) {   // 右括号比左括号剩的多，才能选右括号
+      dfs(lRemain, rRemain - 1, str + ")"); // 然后继续做选择（递归）
+    }
+  };
+
+  dfs(n, n, ""); // 递归的入口，剩余数量都是n，初始字符串是空串
+  return res;
+};
+```
+
 #### [最长回文子串](https://leetcode-cn.com/problems/longest-palindromic-substring/)
 
 回文串就是正着读和反着读都一样的字符串。
@@ -3286,7 +3331,7 @@ var calculate = function(s) {
 
 #### [电话号码的字母组合](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)
 
-思路： dfs(晦溯)，bfs
+思路： dfs(回溯)，bfs
 
 ```javascript
 // https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/solution/shou-hua-tu-jie-liang-chong-jie-fa-dfshui-su-bfsya/
@@ -3329,9 +3374,61 @@ var letterCombinations = function(digits) {
     return res
 };
 ```
+bfs解法，类似二叉树的层次遍历
+```javascript
+var letterCombinations = function(digits) {
+	if(digits.length === 0) return []
+    const dictionary = { '2': 'abc', '3': 'def', '4': 'ghi', '5': 'jkl', '6': 'mno', '7': 'pqrs', '8': 'tuv', '9': 'wxyz' }
+	
+    const queue = []
+    queue.push('')
+
+    for(let i = 0; i < digits.length; i++) {
+        const nodeLevelLength = queue.length
+        const words = dictionary[digits[i]]
+        for(let j = 0; j < nodeLevelLength; j++) {
+            let str = queue.shift()
+            for( let letter of words) {
+                queue.push(str + letter)
+            }
+        }
+    }
+
+    return queue
+};
+```
 
 #### [下一个排列](https://leetcode-cn.com/problems/next-permutation/)
 [解释及题解](https://leetcode-cn.com/problems/next-permutation/solution/xia-yi-ge-pai-lie-suan-fa-xiang-jie-si-lu-tui-dao-/)
 ```javascript
+/**
+ * @param {number[]} nums
+ * @return {void} Do not return anything, modify nums in-place instead.
+ */
+var nextPermutation = function(nums) {
+    if(nums.length < 2) return
+    for(let i = nums.length - 1; i >= 1; i--) {
+        if(nums[i] > nums[i-1]) { //找到相邻升序
+            for(let j = nums.length - 1; j >= i; j--) { // 找到最右边大于nums[i-1]的数，并交换，原本最右边[i, nums.length -1]肯定降序
+                if(nums[j] > nums[i-1]) {
+                    swap(nums, i-1, j)
+                    // reverse nums[i:end]
+                    for(let k = i, p = nums.length - 1; k < p; k++, p--) {
+                        swap(nums, k, p)
+                    }
 
+                    return
+                }
+            }
+        }
+    }
+    nums.sort((a, b) => a - b)
+
+};
+
+function swap (nums, i, j) {
+    const temp = nums[i]
+    nums[i] = nums[j]
+    nums[j] = temp
+}
 ```
