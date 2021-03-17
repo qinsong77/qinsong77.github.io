@@ -178,6 +178,7 @@ GUI线程就是渲染页面的，他解析HTML和CSS，然后将他们构建成D
 6. requestIdleCallback在渲染屏幕之后执行，并且是否有空执行要看浏览器的调度，如果你一定要它在某个时间内执行，请使用 timeout参数。
 7. resize和scroll事件其实自带节流，它只在 Event Loop 的渲染阶段去执行事件。
 8. 微任务并不是在宏任务完成之后才会触发，在回调函数之后，**只要执行栈是空的，就会执行microtask。** 也就是说，macrotask执行期间，执行栈可能是空的（比如在**冒泡事件**的处理时）
+9. The microtask queue is not a task queue.
 ### 宏任务包括：
 - script(整体代码)
 - setTimeout, setInterval, setImmediate,
@@ -222,6 +223,8 @@ dispatch event主要用来描述事件触发之后的执行任务，比如用户
 
 ## [node的事件循环](https://sanyuan0704.top/my_blog/blogs/javascript/js-v8/006.html)
 
+- [从源码解读 Node 事件循环](https://juejin.cn/post/6844903904958742535)
+
 事件循环是 Node.js 处理**非阻塞 I/O 操作**的机制
 
 [官网介绍](https://nodejs.org/zh-cn/docs/guides/event-loop-timers-and-nexttick/)
@@ -230,12 +233,12 @@ dispatch event主要用来描述事件触发之后的执行任务，比如用户
 
 #### 阶段概述
 
-- 定时器：本阶段执行已经被 `setTimeout()` 和 `setInterval()` 的调度回调函数。
-- 待定回调(I/O异常(挂起的)的回调阶段)：执行延迟到下一个循环迭代的 I/O 回调。比如说 `TCP` 连接遇到`ECONNREFUSED`，就会在这个时候执行回调。
-- idle, prepare：仅系统内部使用。
-- 轮询：检索新的 I/O 事件；执行与 I/O 相关的回调（几乎所有情况下，除了关闭的回调函数，那些由计时器和 setImmediate() 调度的之外），其余情况 node 将在适当的时候在此阻塞。
-- 检测：`setImmediate()` 回调函数在这里执行。
-- 关闭的回调函数：一些关闭的回调函数，如：`socket.on('close', ...)`。
+- timers定时器：本阶段执行已经被 `setTimeout()` 和 `setInterval()` 的调度回调函数。
+- pending callbacks待定回调(I/O异常(挂起的)的回调阶段)：执行延迟到下一个循环迭代的 I/O 回调。比如说 `TCP` 连接遇到`ECONNREFUSED`，就会在这个时候执行回调。
+- idle, prepare：仅系统内部使用。只是表达空闲、预备状态(第2阶段结束，poll 未触发之前)
+- poll轮询：检索新的 I/O 事件；执行与 I/O 相关的回调（几乎所有情况下，除了关闭的回调函数，那些由计时器和 setImmediate() 调度的之外），其余情况 node 将在适当的时候在此阻塞。
+- check检测：`setImmediate()` 回调函数在这里执行。
+- close callbacks关闭的回调函数：一些关闭的回调函数，如：`socket.on('close', ...)`。
 - 在每次运行的事件循环之间，Node.js 检查它是否在等待任何异步 I/O 或计时器，如果没有的话，则完全关闭。
 
 当 Event Loop 需要执行 I/O 操作时，它将从一个池（通过` Libuv `库）中使用系统线程，当这个作业完成时，回调将排队等待在 “pending callbacks” 阶段被执行。
@@ -278,6 +281,24 @@ dispatch event主要用来描述事件触发之后的执行任务，比如用户
 
 每一轮事件循环都会经过六个阶段，在每个阶段后，都会执行microtask
 
+#### pending callbacks
+
+此阶段对某些系统操作（如 TCP 错误类型）执行回调。例如，如果 `TCP` 套接字在尝试连接时接收到 `ECONNREFUSED`，则某些` *nix` 的系统希望等待报告错误。这将被排队以在 `pending callbacks `阶段执行。
+
+#### poll
+
+轮询 阶段有两个重要的功能：
+
+- 计算应该阻塞和 poll I/O 的时间。
+- 然后，处理 poll 队列里的事件。
+当事件循环进入 `poll阶段`且 `timers scheduled`，将发生以下两种情况之一：
+
+- if the poll queue is not empty, 事件循环将循环访问其回调队列并同步执行它们，直到队列已用尽，或者达到了与系统相关的硬限制
+- If the poll queue is empty，还有两件事发生
+
+  - 如果脚本已按 setImmediate() 排定，则事件循环将结束 轮询 阶段，并继续 检查 阶段以执行这些计划脚本。
+  - 如果脚本尚未按 setImmediate()排定，则事件循环将等待回调添加到队列中，然后立即执行。
+一旦 poll queue 为空，事件循环将检查 已达到时间阈值的timer计时器。如果一个或多个计时器已准备就绪，则事件循环将回到 timer 阶段以执行这些计时器的回调。
 
 #### setImmediate() 对比 setTimeout()
 
@@ -289,6 +310,46 @@ dispatch event主要用来描述事件触发之后的执行任务，比如用户
 如果运行以下不在 I/O 周期（即主模块）内的脚本，则执行两个计时器的顺序是非确定性的，因为它受进程性能的约束
 
 使用 `setImmediate()` 相对于`setTimeout()` 的主要优势是，如果`setImmediate()`是在 `I/O` 周期内被调度的，那它将会在其中任何的定时器**之前执行**，跟这里存在多少个定时器无关
+
+
+```javascript
+setTimeout(function() {
+  console.log('setTimeout')
+}, 0);
+setImmediate(function() {
+  console.log('setImmediate')
+});
+```
+
+上面的代码运行多次，会得到两种不同的输出结果。
+
+这是由 `setTimeout` 的执行特性导致的，`setTimeout` 中的回调会在超时时间后被执行，但是具体的执行时间却不是确定的，即使设置的超时时间为 0。所以，当事件循环启动时，定时任务可能尚未进入队列，于是，setTimeout 被跳过，转而执行了 check 阶段的任务。
+换句话说，这种情况下，setTimeout 和 setImmediate 不一定处于同一个循环内，所以它们的执行顺序是不确定的。
+
+```javascript
+const fs = require('fs');
+
+fs.readFile(__filename, () => {
+    setTimeout(() => {
+        console.log('timeout')
+    }, 0);
+    setImmediate(() => {
+        console.log('immediate')
+    })
+});
+```
+
+对于这种情况，immediate 将会永远先于 timeout 输出。
+
+1. 执行 fs.readFile，开始文件 I/O
+2. 事件循环启动
+3. 文件读取完毕，相应的回调会被加入事件循环中的 I/O 队列
+4. 事件循环执行到 pending 阶段，执行 I/O 队列中的任务
+5. 回调函数执行过程中，定时器被加入 timers 最小堆中，setImmediate 的回调被加入 immediates 队列中
+6. 当前事件循环处于 pending 阶段，接下来会继续执行，到达 check 阶段。这是，发现 immediates 队列中存在任务，从而执行 setImmediate 注册的回调函数
+7. 本轮事件循环执行完毕，进入下一轮，在 timers 阶段执行 setTimeout 注册的回调函数
+
+
 
 #### 实例演示
 
@@ -550,7 +611,7 @@ new Promise((resolve, reject) => {
 
 而`mutate`只有一个，是因为当前执行第二个`onClick`回调的时候，microtask队列中已经有一个MutationObserver，它是第一个回调的，因为事件同步的原因没有被及时执行。浏览器会对MutationObserver进行优化，不会重复添加监听回调。
 
-
+- [html规范文档](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model)
 - [Tasks, microtasks, queues and schedules](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/)
 - [JavaScript 执行机制](https://juejin.im/post/6844903512845860872)
 - [文章1](https://juejin.im/post/6844903971228745735)

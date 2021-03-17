@@ -1065,6 +1065,10 @@ for (let x of obj) {
   console.log(x);
 }
 ```
+
+
+- [异步I/O及异步编程](https://sanyuan0704.top/my_blog/blogs/javascript/js-async/001.html)
+
 ### promise
 
 ```javascript

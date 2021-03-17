@@ -1513,7 +1513,7 @@ data() {
 
 ### computed和watch
 
-- [Vue的Computed原理](https://juejin.cn/post/6844904116439744520)
+- [Vue的Computed原理](https://juejin.cn/post/6844904120290131982)
 - [手摸手带你理解Vue的Computed原理](https://juejin.cn/post/6844904199596015624)
 
 在`initState`时`initComputed`和`initWatch`
@@ -1548,6 +1548,19 @@ Watcher.prototype.evaluate = function evaluate () {
 watcher.dirty 是实现计算属性缓存的触发点，watcher.evaluate是对计算属性重新求值，依赖属性收集“渲染Watcher”，计算属性求值后会将值存储在 value 中，get 返回计算属性的值；
 dirty为false返回上传的结果，为true执行`watcher.evaluate()`。实际上是`defineReactive`中的`get`方法的`dep.depend()`将`computed`的`watcher`推入依赖`data`的`dep`的`sub队列`中，这正是依赖data的修改可以触发`dirty=true`的原因
 
+计算属性更新的路径
+1. computed使用的响应式的值更新
+2. 同时通知 `computed watcher` 和 `渲染 watcher` 更新
+3. `computed watcher` 把 `dirty` 设置为 `true`
+4. 视图渲染读取到 `computed` 的值，由于 `dirty` 所以 `computed watcher` 重新求值
+
+
+ComputedWatcher 和普通 Watcher 的区别：
+1. 用 `lazy` 为 `true` 标示为它是一个`计算Watcher`
+2. `计算Watcher`的`get`和`set`是在初始化(initComputed)时经过 defineComputed() 方法重写了的
+3. 当它所依赖的属性发生改变时虽然也会调用ComputedWatcher.update()，但是因为它的lazy属性为true，所以只执行把dirty设置为true这一个操作，并不会像其它的Watcher一样执行queueWatcher()或者run()
+4. 当有用到这个ComputedWatcher的时候，例如视图渲染时调用了它时，才会触发ComputedWatcher的get，但又由于这个get在初始化时被重写了，其内部会判断dirty的值是否为true来决定是否需要执行evaluate()重新计算
+5. 因此才有了这么一句话：当计算属性所依赖的属性发生变化时并不会马上重新计算(只是将dirty设置为了true而已)，而是要等到其它地方读取这个计算属性的时候(会触发重写的get)时才重新计算，因此它具备懒计算特性。
 
  ::: details 点击查看代码
 ```javascript
