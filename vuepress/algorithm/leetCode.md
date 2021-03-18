@@ -19,6 +19,7 @@ title: LeetCode
 - [3.字符串](#_3-字符串)
   - [有效的括号](#有效的括号)
   - [括号生成](#括号生成)
+  - [最长有效括号](#最长有效括号)
   - [最长不含重复字符的子字符串](#最长不含重复字符的子字符串)
   - [最长公共前缀](#最长公共前缀)
   - [翻转字符串里的单词](#翻转字符串里的单词)
@@ -501,7 +502,35 @@ var generateParenthesis = function (n) {
   return res;
 };
 ```
+- [最长有效括号](https://leetcode-cn.com/problems/longest-valid-parentheses/)
+hard
 
+```javascript
+// https://leetcode-cn.com/problems/longest-valid-parentheses/solution/shou-hua-tu-jie-zhan-de-xiang-xi-si-lu-by-hyj8/
+/**
+ * @param {string} s
+ * @return {number}
+ */
+var longestValidParentheses = function(s) {
+    let maxLength = 0
+    const stack = []
+    stack.push(-1)
+    for(let i = 0; i < s.length; i++) {
+        const char = s[i]
+        if(char === '(') {
+            stack.push(i)
+        } else {
+            stack.pop()
+            if(stack.length === 0) {
+                stack.push(i)
+            } else {
+                maxLength = Math.max(maxLength, i - stack[stack.length - 1])
+            }
+        }
+    }
+    return maxLength
+};
+```
 #### [最长回文子串](https://leetcode-cn.com/problems/longest-palindromic-substring/)
 
 回文串就是正着读和反着读都一样的字符串。
