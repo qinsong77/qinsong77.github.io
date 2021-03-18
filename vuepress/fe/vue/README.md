@@ -1205,7 +1205,8 @@ get: function reactiveGetter () {
 ```
 :::
 
-### [生命周期](https://juejin.im/post/6844903780736040973)
+### [生命周期](https://juejin.im/post/6844904114879463437)
+- [生命周期](https://juejin.im/post/6844903780736040973)
  ![An image](./image/vue2.png)
  
   ![An image](./image/vue_life_circle.png)

@@ -37,7 +37,7 @@ title: Summary
 模块化是指将一个文件拆分成多个相互依赖的文件，最后进行统一的打包和加载，这样能够很好的保证高效的多人协作。其中包含
 
 - JS 模块化：CommonJS、AMD、CMD 以及 ES6 Module。
-- CSS 模块化：Sass、Less、Stylus、BEM、CSS Modules 等。其中预处理器和 BEM 都会有的一个问题就是样式覆盖。而 CSS Modules 则是通过 JS 来管理依赖，最大化的结合了 JS 模块化和 CSS 生态，比如 Vue 中的 style scoped。
+- CSS 模块化：Sass、Less、Stylus、[BEM](https://www.bemcss.com/)（`即模块名 + 元素名 + 修饰器名`。）、CSS Modules 等。其中预处理器和 BEM 都会有的一个问题就是样式覆盖。而 CSS Modules 则是通过 JS 来管理依赖，最大化的结合了 JS 模块化和 CSS 生态，比如 Vue 中的 style scoped。
 - 资源模块化：任何资源都能以模块的形式进行加载，目前大部分项目中的文件、CSS、图片等都能直接通过 JS 做统一的依赖关系处理。
 
 #### 组件化
@@ -121,7 +121,7 @@ AST 遍历和转换会使用**访问者模式**。访问者会以`深度优先`�
 - 删除了过时的特性
 
 ### core-js@3与babel
-以前我们实现API的时候，会引入整个polyfill,其实polyfill只是包括了以下两个包
+以前我们实现API的时候，会引入整个polyfill，其实polyfill只是包括了以下两个包
 
 - `core-js`
 - `regenerator-runtime`
@@ -351,7 +351,7 @@ webpack的运行流程是一个串行的过程，从启动到结束会依次执�
 3. 确定入口 根据配置中的 `Entry` 找出所有入口文件
 4. 编译模块 从入口文件出发，调用所有配置的 `Loader` 对模块进行编译，再找出该模块依赖的模块，再递归本步骤直到所有入口依赖的文件都经过了本步骤的处理
 5. 完成模块编译 在经过第4步使用 `Loader` 翻译完所有模块后， 得到了每个模块被编译后的最终内容及它们之间的依赖关系
-6. 输出资源：根据入口和模块之间的依赖关系，组装成一个个包含多个模块的 Chunk,再将每个 Chunk 转换成一个单独的文件加入输出列表中，这是可以修改输出内容的最后机会
+6. 输出资源：根据入口和模块之间的依赖关系，组装成一个个包含多个模块的 `Chunk`，再将每个 `Chunk` 转换成一个单独的文件加入输出列表中，这是可以修改输出内容的最后机会
 7. 输出完成：在确定好输出内容后，根据配置确定输出的路径和文件名，将文件的内容写入文件系统中。
 
 在以上过程中， Webpack 会在特定的时间点广播特定的事件，插件在监听到感兴趣的事件后会执行特定的逻辑，井且插件可以调用 Webpack 提供的 API 改变 Webpack 的运行结果。其实以上7个步骤，可以简单归纳为初始化、编译、输出，三个过程，而这个过程其实就是前面说的基本模型的扩展。
@@ -368,7 +368,7 @@ webpack的运行流程是一个串行的过程，从启动到结束会依次执�
 
 - babel-loader：把 ES6 转换成 ES5;
 
-- css-loader：The css-loader interprets @import and url() like import/require() and will resolve them.负责处理 `@import`、`url` 等语句。例如 `import css from 'file.css'`、`url(image.png)`支持模块化、压缩、文件导入等特性;把 CSS 代码注入到 JavaScript 中
+- css-loader：The css-loader interprets @import and url() like import/require() and will resolve them. 负责处理 `@import`、`url` 等语句。例如 `import css from 'file.css'`、`url(image.png)`支持模块化、压缩、文件导入等特性；把 CSS 代码注入到 JavaScript 中
 
 - style-loader：Inject CSS into the DOM，在 DOM 里插入一个 `<style>` 标签，并且将 CSS 写入这个标签内;
 
@@ -473,21 +473,21 @@ module.exports = {
   //...
   optimization: {
     splitChunks: {
-      chunks: 'async', 
-      minSize: 30000,
-      maxSize: 0,
+      chunks: 'async', // 参数可能是：all，async和initial，这里表示拆分异步模块。
+      minSize: 30000, // 如果模块的大小大于30kb，才会被拆分
       minChunks: 1,
-      maxAsyncRequests: 5,
-      maxInitialRequests: 3,
-      automaticNameDelimiter: '~',
-      name: true,
+      maxAsyncRequests: 5, // 按需加载时最大的请求数，意思就是说，如果拆得很小，就会超过这个值，限制拆分的数量。
+      maxInitialRequests: 3, // 入口处的最大请求数
+      automaticNameDelimiter: '~', // webpack将使用块的名称和名称生成名称（例如vendors~main.js）
+      name: true, // 拆分块的名称
       cacheGroups: {
+        // 缓存splitchunks
         vendors: {
           test: /[\\/]node_modules[\\/]/,
           priority: -10
         },
         default: {
-          minChunks: 2,
+          minChunks: 2, // 一个模块至少出现2次引用时，才会被拆分
           priority: -20,
           reuseExistingChunk: true
         }
@@ -548,7 +548,7 @@ chunks有三个选项：initial、async和all。它指示应该优先分离同�
 - 1. 使用 `happypack`（多进程模型）(它将任务分解给多个子进程去并发执行，子进程处理完后再将结果发给主进程。) 加速构建
 - 2. 使用异步import，减小包的体积，路由懒加载，使用webpackChunkName实现更好的分包
 - 3. 使用`html-webpack-externals-plugin`，公共库和UI库html cdn引入
-- 4. 使用`optimization.splitChunks`，实现更好的打包，如用`cacheGroups-async`, 实现css文件合并成一个等
+- 4. 使用`optimization.splitChunks`，实现更好的打包，如用`cacheGroups-async`， 实现css文件合并成一个等
 - 5. dll Plugin（把每次打包不需要变动的文件（一般类库，如:react,lodash）提前打包好，这样每次打包项目的时候，就不需要单独打包这些文件，从而节约了时间）
 - 6. babel-loader 的 cacheDirectory， `loader: 'babel-loader?cacheDirectory=true',`
 开发环境编译慢: 需要考虑怎么在开发环境做资源缓存，每一次改动代码，让 rebuild 检查的模块越少越快。
@@ -556,7 +556,7 @@ chunks有三个选项：initial、async和all。它指示应该优先分离同�
 - DllPlugin 把一些第三方库，不会改改动的通过 dll 处理，让每一次 rebuild 的时候跳过这些模块的编译。
 - `Happypack` 多进程打包，加快编译速度。
 `thread loader`（把这个 loader 放置在其他 loader 之前， 放置在这个 loader 之后的 loader 就会在一个单独的 worker【worker pool】 池里运行，一个worker 就是一个nodeJS 进程【node.js proces】，每个单独进程处理时间上限为600ms，各个进程的数据交换也会限制在这个时间内。）
-- Webpack 5 , 多级“缓存”提高运行效率
+- Webpack 5 , 多级“缓存”提高运行效率 hard-source-webpack-plugin
 
 - [关于webpack性能调优](https://zhuanlan.zhihu.com/p/150731200)
 - [vue模块化按需编译，突破编译瓶颈](https://zhuanlan.zhihu.com/p/137120584)
@@ -674,7 +674,7 @@ Tree Shaking 是 ES2015 模块定义中的一个功能。它的核心点在于�
 
 ### [模块加载](https://zhuanlan.zhihu.com/p/243485307)
 ### [Webpack 模块打包原理](https://juejin.cn/post/6844903802382860296)
-webpack根据`webpack.config.j`s中的入口文件，在入口文件里识别模块依赖，不管这里的模块依赖是用`CommonJ`S写的，还是`ES6 Module`规范写的，webpack会自动进行分析，并通过转换、编译代码，打包成最终的文件。最终文件中的模块实现是基于webpack自己实现的`webpack_require`（es5代码），所以打包后的文件可以跑在浏览器上。
+webpack根据`webpack.config.js`中的入口文件，在入口文件里识别模块依赖，不管这里的模块依赖是用`CommonJS`写的，还是`ES6 Module`规范写的，webpack会自动进行分析，并通过转换、编译代码，打包成最终的文件。最终文件中的模块实现是基于webpack自己实现的`webpack_require`（es5代码），所以打包后的文件可以跑在浏览器上。
 
 使用一个立即执行函数，实现了类似Common Js require和exports的特性，核心是`__webpack_require__`的实现，
 创建模块缓存`installedModules `，从入口文件执行require。
