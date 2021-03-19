@@ -396,6 +396,22 @@ var isPalindrome = function(x) {
 };
 ```
 
+双指针
+```javascript
+var isPalindrome = function(x) {
+    if(x < 0) return false
+    const str = String(x)
+    let left = 0, right = str.length -1
+    while(left < right) {
+        if(str[left] === str[right]) {
+            left++
+            right--
+        } else return false
+    }
+    return true
+};
+```
+
 [官方题解](https://leetcode-cn.com/problems/palindrome-number/solution/hui-wen-shu-by-leetcode-solution/)
 ```typescript
 var isPalindrome = function(x: number): boolean {
@@ -502,7 +518,7 @@ var generateParenthesis = function (n) {
   return res;
 };
 ```
-- [最长有效括号](https://leetcode-cn.com/problems/longest-valid-parentheses/)
+#### [最长有效括号](https://leetcode-cn.com/problems/longest-valid-parentheses/)
 hard
 
 ```javascript
