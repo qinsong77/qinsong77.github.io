@@ -5,7 +5,7 @@ title: 网络相关
 
 ### [「查缺补漏」巩固你的HTTP知识体系](https://juejin.cn/post/6857287743966281736)
 
-
+- [OSI](#osi)
 - [UDP](#udp)
   - [面向报文](#%E9%9D%A2%E5%90%91%E6%8A%A5%E6%96%87)
   - [不可靠性](#%E4%B8%8D%E5%8F%AF%E9%9D%A0%E6%80%A7)
@@ -50,7 +50,22 @@ title: 网络相关
 
 
 
+## OSI
+OSI-Open Systems Interconncection，网络分层
+从上到下分别是：
+1. 应用层(Application)
 
+2. 表示层(Presentation)
+
+3.会话层(Session)
+
+4. 传输层(Transport)
+
+5. 网络层(Network) -- 路由器
+
+6. 数据链路层(Data Link) -- 交换机
+
+7. 物理层(Physical) -- 网卡、集线器（Hub）
 # UDP
 
 ## 面向报文

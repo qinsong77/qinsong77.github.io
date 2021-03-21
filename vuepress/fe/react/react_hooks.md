@@ -94,7 +94,7 @@ const useState = function(){
 }()
 
 function Demo(){
-	const [ counter, setCounter] = useState('0')
+	const [ counter, setCounter ] = useState('0')
 	console.log(counter)
 	return function(value){
 		setCounter(value)
@@ -441,6 +441,7 @@ clear: xx -- 组件销毁时
 **和setInterval**
 
 [React Hooks 中的闭包问题](https://juejin.cn/post/6847902217031122951)
+
 [使用 React Hooks 声明 setInterval](https://overreacted.io/zh-hans/making-setinterval-declarative-with-react-hooks/)
 ```jsx harmony
 import React, { useState, useEffect } from 'react'
@@ -541,8 +542,8 @@ useLayoutEffect(() => {
 
 会在所有的 `DOM` 变更之后**同步**调用 effect。可以使用它来读取 DOM 布局并**同步触发重渲染**。**在浏览器执行绘制之前**，useLayoutEffect 内部的更新计划将被同步刷新。这是和`useEffect`唯一的区别。
 
-1. `useLayoutEffec`t和`componentDidMount`和`componentDidUpdate`触发时机一致（都在在DOM修改后且浏览器渲染之前）；
-2. `useLayoutEffec`t要比`useEffect`更早的触发执行；
+1. `useLayoutEffect`和`componentDidMount`和`componentDidUpdate`触发时机一致（都在在DOM修改后且浏览器渲染之前）；
+2. `useLayoutEffect`要比`useEffect`更早的触发执行；
 3. `useLayoutEffect`会阻塞浏览器渲染，切记执行同步的耗时操作。
 
 [解析 useEffect 和 useLayoutEffect](https://juejin.cn/post/6862624266723000328)
@@ -702,7 +703,6 @@ const Reducer = (state:number, action: Actions) => {
     }
 }
 
-
 export default function ReactHooksWay() {
     const initialState: number = 0
     const [counter, dispatch] = useReducer(Reducer, initialState)
@@ -732,11 +732,9 @@ interface Injected  {
 // eslint-disable-next-line
 export const context = createContext<Injected>({} as Injected)
 
-
 interface Props {
     children?: ReactNode
 }
-
 
 export function CounterProvider({ children }: Props) {
     const [counter, setCounter] = useState(0);
@@ -1080,6 +1078,7 @@ export default function () {
 ### useCallback
 
 useCallback的使用几乎与useMemo一样，不过useCallback缓存的是一个函数体，当依赖项中的一项发现变化，函数体会重新创建。
+`useCallback(fn, deps)` 相当于 `useMemo(() => fn, deps)`
 
 1. 函数比较复杂，用`useCallback`避免重复创建同样方法的负担
 2. 当函数当做props传递给子组件时，可以使用`useCallback`，避免当父组件重新`render`时，重新创建发送导致子组件更新。
@@ -1096,7 +1095,7 @@ React 的性能优化方向主要是两个：**一个是减少重新 render 的�
 
 一个组件重新重新渲染，一般三种情况：
 1. 要么是组件自己的状态改变
-2. 要么是父组件重新渲染，导致子组件重新渲染，但是父组件的 props 没有改版
+2. 要么是父组件重新渲染，导致子组件重新渲染，但是父组件的 props 没有改变
 3. 要么是父组件重新渲染，导致子组件重新渲染，但是父组件传递的 props 改变
 
 减少不必要的渲染，可以使用`use.memo`和`useCallback`，或者之前的`shouldComponentUpdate`和`pureComponent`

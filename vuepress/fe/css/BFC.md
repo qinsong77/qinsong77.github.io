@@ -1,5 +1,5 @@
 ---
-title: BFC和清除浮动
+title: BFC、IFC和清除浮动
 ---
 
 ## 一、css定位机制
@@ -226,6 +226,39 @@ In this specification, the expression collapsing margins means that adjoining ma
 </body>
 </html>
 ```
+## IFC
+
+IFC 的形成条件非常简单，**块级元素中仅包含内联级别元素**，需要注意的是当IFC中有块级元素插入时，会产生两个匿名块将父元素分割开来，产生两个 IFC。
+
+### IFC 渲染规则
+
+- 子元素在水平方向上一个接一个排列，在垂直方向上将以容器顶部开始向下排列；
+- **节点无法声明宽高**，其中 `margin` 和 `padding` 在水平方向有效在**垂直方向无效**；
+- 节点在垂直方向上以不同形式对齐；
+- 能把在一行上的框都完全包含进去的一个矩形区域，被称为该行的线盒（line box）。线盒的宽度是由包含块（containing box）和与其中的浮动来决定；
+- IFC 中的 line box 一般左右边贴紧其包含块，但 float 元素会优先排列。
+- IFC 中的 line box 高度由 line-height 计算规则来确定，同个 IFC 下的多个 line box 高度可能会不同；
+- 当内联级盒子的总宽度少于包含它们的 line box 时，其水平渲染规则由 text-align 属性值来决定；
+- 当一个内联盒子超过父元素的宽度时，它会被分割成多盒子，这些盒子分布在多个 line box 中。如果子元素未设置强制换行的情况下，inline box 将不可被分割，将会溢出父元素。
+
+example
+```html
+<p>It can get <strong>very complicated</storng> once you start looking into it.</p>
+```
+![](./imgs/IFC_example.png)
+对应上面这样一串 HTML 分析如下：
+
+- p 标签是一个 block container，对内将产生一个 IFC；
+- 由于一行没办法显示完全，所以产生了 2 个线盒（line box）；线盒的宽度就继承了 p 的宽度；高度是由里面的内联盒子的 line-height 决定；
+- It can get：匿名的内联盒子；
+- very complicated：strong 标签产生的内联盒子；
+- once you start：匿名的内联盒子；
+- looking into it.：匿名的内联盒子。
+
+### IFC 应用场景
+- 水平居中：当一个块要在环境中水平居中时，设置其为 inline-block 则会在外层产生 IFC，通过 text-align 则可以使其水平居中。
+- 垂直居中：创建一个 IFC，用其中一个元素撑开父元素的高度，然后设置其 vertical-align: middle，其他行内元素则可以在此父元素下垂直居中。
+
 
 ## 清除浮动
 

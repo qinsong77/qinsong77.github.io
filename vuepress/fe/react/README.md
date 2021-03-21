@@ -177,7 +177,7 @@ componentWillUnmount
 5. low 稍微延迟（100-200ms）执行也没关系
 6. offscreen 下一次render时或scroll时才执行
 
-`synchronous`首屏（首次渲染）用，要求尽量快，不管会不会阻塞UI线程。`animation`通过`requestAnimationFrame`来调度，这样在下一帧就能立即开始动画过程；后3个都是由`requestIdleCallbac`k回调执行的；`offscreen`指的是当前隐藏的、屏幕外的（看不见的）元素
+`synchronous`首屏（首次渲染）用，要求尽量快，不管会不会阻塞UI线程。`animation`通过`requestAnimationFrame`来调度，这样在下一帧就能立即开始动画过程；后3个都是由`requestIdleCallback`回调执行的；`offscreen`指的是当前隐藏的、屏幕外的（看不见的）元素
 
 高优先级的比如键盘输入（希望立即得到反馈），低优先级的比如网络请求，让评论显示出来等等。另外，**紧急的事件允许插队**
 
@@ -346,6 +346,7 @@ Fiber是链表结构
 fiber可以划分为3层含义分类：
 1. 作为Fiber树结构的，链表结构的3个指针
 2. 作为一种静态的数据结构，保存了组件相关的信息
+3. 作为动态的工作单元的属性
 ```typescript jsx
 function FiberNode(
   tag: WorkTag,
@@ -398,9 +399,9 @@ function FiberNode(
 ```
 #### 双缓存Fiber树
 
-在React中最多会同时存在两棵`Fiber`树。当前屏幕上显示内容对应的Fiber树称为`current Fibe`r树，正在内存中构建的Fiber树称为`workInProgress Fiber`树。
+在React中最多会同时存在两棵`Fiber`树。当前屏幕上显示内容对应的Fiber树称为`current Fiber`树，正在内存中构建的Fiber树称为`workInProgress Fiber`树。
 
-`current Fiber`树中的Fiber节点被称为current fiber，workInProgress Fiber树中的Fiber节点被称为workInProgress fiber，他们通过`alternate属性连接。
+`current Fiber`树中的Fiber节点被称为current fiber，workInProgress Fiber树中的Fiber节点被称为workInProgress fiber，他们通过`alternate`属性连接。
 
 ```javascript
 currentFiber.alternate === workInProgressFiber;
@@ -518,7 +519,7 @@ React应用的根节点通过current指针在不同Fiber树的rootFiber间切换
 
 也可以说是组件外部能控制组件内部的状态，则表示该组件为受控组件。
 
-外部想要控制内部的组件，就必须要往组件内部传入props。而通常情况下，受控组件内部又自己有维护自己的状态。例如input组件。
+外部想要控制内部的组件，就必须要往组件内部传入props。而通常情况下，受控组件内部又自己维护自己的状态。例如input组件。
 
 如下实现
 
@@ -685,7 +686,7 @@ React创建`Fiber`树时，每个组件对应的`fiber`都是通过如下两个�
 - 1. oldProps === newProps ？
 即本次更新的props（newProps）不等于上次更新的props（oldProps）。注意这里是**全等比较**。
 
-组件`rende`r会返回`JSX`，`JSX`是`React.createElement`的语法糖。
+组件`render`会返回`JSX`，`JSX`是`React.createElement`的语法糖。
 
 所以`render`的返回结果实际上是`React.createElement`的执行结果，即一个包含`props`属性的对象。
 
@@ -933,7 +934,7 @@ export default function () {
 
 - 数据流向更直观了，子孙组件可以很明确地看到数据来源
 - 但本质上`Render Props`是基于闭包实现的(传入的props是父组件的state)，大量地用于组件的复用将不可避免地引入了`callback hell`问题
-- ender比高阶组件更为强大，但是也有一个小小的缺点，就是难以优化。因为组件内部是一个匿名函数，这就导致即便传入的属性没有任何变化，内部的子组件还是会整个渲染一遍。解决方法就是将该匿名函数再次包装，不过每次都这样做终究还是比较麻烦的。
+- render比高阶组件更为强大，但是也有一个小小的缺点，就是难以优化。因为组件内部是一个匿名函数，这就导致即便传入的属性没有任何变化，内部的子组件还是会整个渲染一遍。解决方法就是将该匿名函数再次包装，不过每次都这样做终究还是比较麻烦的。
 
 
 问题
@@ -1033,7 +1034,9 @@ class ChangeTheme extends React.Component {
 
 ## Diff算法
 
-- [React 和 Vue 的 diff 时间复杂度O(n^3) 和 O(n) 是如何计算出来的](https://github.com/sisterAn/blog/issues/22)
+- [React 和 Vue 的 diff 时间复杂度O(n^3) 和 O(n) 是如何计算出来的](https://mp.weixin.qq.com/s/rd0MjARQcYEPz9FseVgElA)
+
+- [讨论](https://github.com/sisterAn/blog/issues/22)
 
 如何将传统O(n^3)Diff算法的时间复杂度降为O(n)
 
@@ -1354,7 +1357,7 @@ oldIndex 2 < lastPlacedIndex 3
 - 工作循环（requestIdleCallback）、优先级策略。
 ### 笔记
 
-利用scheduler（相当于`requestIdleCallback` API）调度任务，即拆分异步的一个一个得构建fiber节点。待构建完成，再同步遍历fiber树，appendChild添加dom
+利用scheduler（相当于`requestIdleCallback` API）调度任务，即拆分异步的一个一个得构建fiber节点。待构建完成，再同步遍历fiber树，`appendChild`添加dom
 
 
 ### React懒加载

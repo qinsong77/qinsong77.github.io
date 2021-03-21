@@ -1936,7 +1936,7 @@ module.exports = Promise
 
 // promise 测试工具
 // npm install promises-aplus-tests -D
-myPromise.defer = Promise.deferred = function () {
+Promise.defer = Promise.deferred = function () {
 	let deferred = {}
 	
 	deferred.promise = new Promise((resolve, reject) => {

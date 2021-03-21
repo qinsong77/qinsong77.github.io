@@ -21,6 +21,7 @@
   "homepage": "https://github.com/qinsong77/qinsong77.github.io#readme",
   "devDependencies": {
     "@vuepress/plugin-back-to-top": "^1.7.1",
+    "promises-aplus-tests": "^2.1.2",
     "vuepress": "^1.7.1",
     "vuepress-theme-reco": "^1.5.4"
   }
