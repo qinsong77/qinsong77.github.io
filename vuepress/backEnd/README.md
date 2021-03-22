@@ -11,6 +11,7 @@ title: Summary of node
  - [从Chrome源码看JS Object的实现](https://zhuanlan.zhihu.com/p/26169639)
 ### [一篇文章构建你的 NodeJS 知识体系](https://juejin.cn/post/6844903767926636558)
 
+- [Node.js 并发能力总结](https://mp.weixin.qq.com/s/6LsPMIHdIOw3KO6F2sgRXg)
 - [MongoDB 极简入门实践](https://mp.weixin.qq.com/s/lcoa6X-aSaUJHzdXFEjuzA)
 
 ### [Cookie、Session、Token、JWT](https://juejin.im/post/6844904034181070861)

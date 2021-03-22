@@ -39,6 +39,7 @@ title: LeetCode
    - [验证二叉树的前序序列化](#验证二叉树的前序序列化)
    - [从前序与中序遍历序列构造二叉树](#从前序与中序遍历序列构造二叉树)
    - [从中序与后序遍历序列构造二叉树](#从中序与后序遍历序列构造二叉树)
+   - [对称二叉树](#对称二叉树)
    - [翻转二叉树](#翻转二叉树)
    - [填充每个节点的下一个右侧节点指针](#填充每个节点的下一个右侧节点指针)
    - [二叉树展开为链表](#二叉树展开为链表)
@@ -86,6 +87,7 @@ title: LeetCode
 - [二分查找](#二分查找)
     - [求平方根](#求平方根)
     - [寻找旋转排序数组中的最小值](#寻找旋转排序数组中的最小值)
+    - [搜索旋转排序数组](#搜索旋转排序数组)
 - [双指针](#双指针)
     - [盛最多水的容器](#盛最多水的容器)
     - [接雨水](#接雨水)
@@ -1363,6 +1365,50 @@ var buildTree = function(inorder, postorder) {
     root.left = buildTree(inorder.slice(0, inorderFindIndex), postorder.slice(0, inorderFindIndex))
     root.right = buildTree(inorder.slice(inorderFindIndex+1), postorder.slice(inorderFindIndex, postorder.length -1))
     return root
+};
+```
+
+#### [对称二叉树](https://leetcode-cn.com/problems/symmetric-tree/)
+
+递归
+```javascript
+var isSymmetric = function(root) {
+    function check(left, right) {
+        if(left === null && right === null) return true
+        else if(left && right) {
+            return left.val === right.val && check(left.left, right.right) && check(left.right, right.left)
+        } else return false
+    }
+
+    if(root === null) return true
+    return check(root.left, root.right)
+};
+```
+
+迭代
+
+```javascript
+var isSymmetric = function(root) {
+  if (!root) return true;
+  let stack = [];
+  stack.push(root.left, root.right);
+  while (stack.length) {
+    const right = stack.pop();
+    const left = stack.pop();
+    if (left === null && right === null) {
+      // 节点为空什么都不做
+    } else if (left && right && left.val === right.val) {
+      //左左节点和对称右右节点入栈
+      stack.push(left.left);
+      stack.push(right.right);
+      //左右节点和对称右左节点入栈
+      stack.push(left.right);
+      stack.push(right.left);
+    } else {
+      return false;
+    }
+  }
+  return true;
 };
 ```
 
@@ -3100,6 +3146,39 @@ var findMin = function(nums) {
 };
 ```
 
+#### [搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
+
+时间复杂度要求`O(log n)`
+
+思路：如果中间的数小于最右边的数，则右半段是有序的，若中间数大于最右边数，则左半段是有序的，只要在有序的半段里用首尾两个数组来判断目标值是否在这一区域内，这样就可以确定保留哪半边了
+```javascript
+var search = function(nums, target) {
+    // for(let i = 0; i < nums.length; i++) {
+    //     if(target === nums[i]) {
+    //         return i
+    //     }
+    // }
+    // return -1
+    let left = 0, right = nums.length - 1
+    
+    while(left <= right) {
+        const mid = Math.floor((left + right)/2)
+        if(target === nums[mid]) return mid
+        else if(nums[mid] < nums[right]){
+            if(nums[mid] < target && target <= nums[right])
+                left = mid+1
+            else
+                right = mid-1
+        } else{
+            if(nums[left] <= target && target < nums[mid])
+                right = mid-1
+            else
+                left = mid+1
+        }
+    }
+    return -1
+};
+```
 ### 双指针
 
 - [双指针技巧总结](https://mp.weixin.qq.com/s/yLc7-CZdti8gEMGWhd0JTg)
