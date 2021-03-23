@@ -1642,10 +1642,10 @@ ComputedWatcher 和普通 Watcher 的区别：
     return function computedGetter () {
       var watcher = this._computedWatchers && this._computedWatchers[key];
       if (watcher) {
-        if (watcher.dirty) {
+        if (watcher.dirty) { // 开始时初始化的dirty为true，执行evaluate，及执行watcher的get，这一步相当于，依赖的data的dep收集了这个watcher
           watcher.evaluate();
         }
-        if (Dep.target) {
+        if (Dep.target) { // 收集了渲染watcher
           watcher.depend();
         }
         return watcher.value
@@ -1860,7 +1860,7 @@ function patchVnode (oldVnode, vnode){
   - oldEndVnode === newEndVnode =》 patchVnode
   - oldStartVnode === newEndVnode =》 pathVode 并且，newEndVode移动到右边，即把旧的开始节点插入到旧的结束节点后面
   - oldEndVnode === newStartVnode =》 pathVode 并且，newEndVode移动到左边，即把旧的结束节点插入到旧的开始节点前面
-  - 生成一个key与旧VNode的key对应的哈希表， 如果找不到key,则创建插入，找到的话如果是相同的节点，则patchNode并且插入，不是则创建插入
+  - 生成一个key与旧VNode的key对应的哈希表， 如果找不到key，则创建插入，找到的话如果是相同的节点，则patchNode并且插入，不是则创建插入
 - while结束时，如果是oldStartIdx > oldEndIdx，说明老节点已经遍历完了，新节点比老节点多，所以这时候多出来的新节点需要一个一个创建出来加入到真实DOM中。
 newStartIdx > newEndIdx，则说明新节点已经遍历完了，老节点多余新节点，这个时候需要将多余的老节点从真实DOM中移除
 
