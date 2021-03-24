@@ -12,7 +12,7 @@ title: Vue 3.0
 - Composition API
 - Fragment、Teleport、Suspense
 - 自定义渲染API
-- - 更好的 TS 支持
+- 更好的 TS 支持
 
 #### 编译时对VDom的性能优化
 

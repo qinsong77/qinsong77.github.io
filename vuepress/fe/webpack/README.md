@@ -379,7 +379,10 @@ webpack的运行流程是一个串行的过程，从启动到结束会依次执�
 - eslint-loader：通过 ESLint 检查 JavaScript 代码;
 
 ### 常用plugin
+- HotModuleReplacementPlugin：webpack内置的模块热更新插件。Hot-Module-Replacement 的热更新是依赖于 webpack-dev-server，后者是在打包文件改变时更新打包文件或者 reload 刷新整个页面，HRM 是只更新修改的部分。
 - clean-webpack-plugin：打包前自动清理 dist 目录，防止文件残留。
+- terser-webpack-plugin： Webpack4.0 默认是使用 terser-webpack-plugin 这个压缩插件
+- compression-webpack-plugin：gzip 压缩
 - copy-webpack-plugin：将单个文件或者整个目录复制到构建目录
 - mini-css-extract-plugin：将 CSS 抽离出来单独打包并且通过配置可以设置是否压缩。
 - html-webpack-plugin：这个插件可以配置生成一个 HTML5 文件，其中 script 标签包含所有 Webpack 包。如果你设置多个入口点，你可以据此实现多页面应用打包。

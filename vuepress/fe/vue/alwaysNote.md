@@ -7,11 +7,11 @@ title: 常用笔记vue
 - [Vue 项目性能优化 — 实践指南](https://juejin.cn/post/6844903913410314247)
 
 1. 使用Functional components
-2. 局部变量, `computed`内不通过this获取参数而是通过函数结构，因为watcher获取value是执行` this.getter.call(vm, vm)`
+2. 局部变量, `computed`内不通过this获取data而是通过参数解构，因为watcher获取value是执行` this.getter.call(vm, vm)`
 3. 用 `v-show` 指令替代了 `v-if` 指令来替代组件的显隐，`v-show`在 `patchVnode` 过程中，内部会对执行 `v-show` 指令对应的钩子函数 `update`，然后它会根据 `v-show` 指令绑定的值来设置它作用的 DOM 元素的 `style.display` 的值控制显隐。
 4. KeepAlive
 5. 延迟渲染，把一个组件的一次渲染拆成多次,按优先级使用`requestAnimationFrame`，使用v-if判断是否要渲染
-6. 使用Object.freeze()冻结成为非相应式的数据
+6. 使用Object.freeze()冻结成为非响应式的数据
 7. 使用`Virtual scrolling `虚拟滚动组件
 8. 使用`requestAnimationFrame`时间切片提交响应式数据。
 
@@ -58,7 +58,7 @@ title: 常用笔记vue
 
 ### [如何在Vue项目中更优雅地使用svg](https://cloud.tencent.com/developer/article/1624103)
 
-重置vue实例的data： Object.assign(this.$data, this.$options.data());
+#### 重置vue实例的data： `Object.assign(this.$data, this.$options.data());`
 
 如果需要对data的某个对象的某个属性值做监听，可以通过computed把这个属性值的层级提上来，然后在watch中监听computed里面的属性。
 
