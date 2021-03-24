@@ -8,12 +8,13 @@ function hex2rgb(hex) {
 			}
 			hex = newHex
 		}
-		
+
 		const arr = []
 		for(let i = 1; i < hex.length; i = i + 2) {
 			arr.push(parseInt('0x' + hex.slice(i, i+2)))
+			console.log(arr)
 		}
-		
+
 		return `rgb(${arr.join(',')})`
 	} else {
 		return hex
