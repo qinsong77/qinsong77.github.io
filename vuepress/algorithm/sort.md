@@ -202,6 +202,29 @@ function shellSort(array) {
   子数组）重复之前的两个步骤，直至数组已完全排序。
 
 ```javascript
+function quickSort(array, start, end) {
+	if (start >= end) return 
+	const target = array[start];
+	let l = start;
+	let r = end;
+	while (l < r) {
+		while (l < r && array[r] >= target) {
+			r--;
+		}
+		array[l] = array[r];
+		while (l < r && array[l] < target) {
+			l++;
+		}
+		array[r] = array[l];
+	}
+	array[l] = target;
+	quickSort(array, start, l - 1);
+	quickSort(array, l + 1, end);
+	return array;
+}
+```
+
+```javascript
 // 递归版本
 function quick1(arr, left = 0, right = arr.length - 1) {
 	if (left >= right) return;
@@ -291,31 +314,6 @@ function partition(array, left, right) {
 // [7,12,43,3,34,56,36] i = 2; j = 2; pivot = 7
 
 
-```
-
-```javascript
-function quickSort(array, start, end) {
-	if (end - start < 1) {
-		return;
-	}
-	const target = array[start];
-	let l = start;
-	let r = end;
-	while (l < r) {
-		while (l < r && array[r] >= target) {
-			r--;
-		}
-		array[l] = array[r];
-		while (l < r && array[l] < target) {
-			l++;
-		}
-		array[r] = array[l];
-	}
-	array[l] = target;
-	quickSort(array, start, l - 1);
-	quickSort(array, l + 1, end);
-	return array;
-}
 ```
 
 ### 7. 堆排序

@@ -11,6 +11,8 @@ cp -R vuepress/.vuepress/dist/* $(pwd)
 
 # 删除dist文件夹
 rm -r vuepress/.vuepress/dist/*
+# 删除js文件
+rm -r assets/js/*
 
 # 如果是发布到自定义域名
 echo 'sysuke.com' > CNAME

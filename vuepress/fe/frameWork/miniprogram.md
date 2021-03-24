@@ -10,7 +10,7 @@ title: 小程序
 
 而**小程序的逻辑层和渲染层是分开的**，逻辑层运行在 `JSCore` 中，并没有一个完整浏览器对象，因而缺少相关的`DOM API`和`BOM API`。
 这一区别导致了前端开发非常熟悉的一些库，例如 jQuery、 Zepto 等，在小程序中是无法运行的。同时 JSCore 的环境同 NodeJS 环境也是不尽相同，所以一些 NPM 的包在小程序中也是无法运行的。
-
+[深入理解JavaScriptCore](https://zhuanlan.zhihu.com/p/42859905)
 
 小程序的运行环境
 
