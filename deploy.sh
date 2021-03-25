@@ -3,16 +3,17 @@
 # 确保脚本抛出遇到的错误
 set -e
 
+# 删除js文件
+rm -r assets/js/*
+
 # 生成静态文件
 npm run build
 
 # 拷贝文件
-cp -R vuepress/.vuepress/dist/* $(pwd)git
+cp -R vuepress/.vuepress/dist/* $(pwd)
 
 # 删除dist文件夹
 rm -r vuepress/.vuepress/dist/*
-# 删除js文件
-rm -r assets/js/*
 
 # 如果是发布到自定义域名
 echo 'sysuke.com' > CNAME
