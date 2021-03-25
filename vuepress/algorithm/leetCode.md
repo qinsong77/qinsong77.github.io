@@ -63,6 +63,8 @@ title: LeetCode
    - [合并有序链表](#合并有序链表)
    - [合并k个有序链表](#合并k个有序链表)
    - [链表求和](#链表求和)
+   - [删除排序链表中的重复元素](#删除排序链表中的重复元素)
+   - [删除排序链表中的重复元素II](#删除排序链表中的重复元素II)
 - [7.动态规划](#_7-动态规划)
    - [凑零钱问题](#凑零钱问题)
    - [最长公共子序列](#最长公共子序列)
@@ -2268,6 +2270,44 @@ function addInList( head1 ,  head2 ) {
     return reverNode(res.next)
 }
 ````
+
+#### [删除排序链表中的重复元素](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list/)
+```javascript
+var deleteDuplicates = function(head) {
+    const prevHead = new ListNode(0, head)
+    while(head) {
+        let next = head.next
+        while(head && next && head.val === next.val) {
+            next = next.next
+        }
+        head.next = next
+        head = next
+    }
+
+    return prevHead.next
+};
+```
+#### [删除排序链表中的重复元素II](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list-ii/)
+```javascript
+var deleteDuplicates = function(head) {
+    let prevHead = new ListNode(0, head)
+    let prev = prevHead
+    while(prev) {
+        let curr = prev.next
+        while(curr && curr.next && curr.val === curr.next.val) {
+            curr = curr.next
+        }
+        if(prev.next !== curr) { // 找到了重复的，应该还要删除curr
+            prev.next = curr.next
+        } else {
+            prev = curr
+        }
+        
+    }
+
+    return prevHead.next
+};
+```
 ## 7.动态规划
 
 ### [凑零钱问题](https://leetcode-cn.com/problems/coin-change/)

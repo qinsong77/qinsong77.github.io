@@ -7,7 +7,7 @@ set -e
 npm run build
 
 # 拷贝文件
-cp -R vuepress/.vuepress/dist/* $(pwd)
+cp -R vuepress/.vuepress/dist/* $(pwd)git
 
 # 删除dist文件夹
 rm -r vuepress/.vuepress/dist/*
