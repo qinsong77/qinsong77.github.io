@@ -420,8 +420,9 @@ function foo () {
     }
     return obj.c;
 }
-console.log(window.foo()); // 20
+console.log(window.foo()); // 40
 console.log(foo()); //报错 TypeError
+// 非严格模式都是输出40
 ```
 对象字面量的写法并不会产生自己的作用域，因此 obj.c上的`this`属性并不会指向obj ，而是与foo函数内部的this一样。
 
@@ -451,11 +452,11 @@ arr[1]() // window
 ```
 ```javascript
 window.data=5
-var foo={
-  data:6,
-  click(){
-  console.log(this.data)
-}
+var fo = {
+   data:6,
+   click() {
+   	 console.log(this.data)
+   }
 }
 div.addEventListener('click',foo.click)
 // 点击div写出控制台的打印值
