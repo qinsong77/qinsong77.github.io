@@ -52,6 +52,7 @@ px像素（Pixel）。相对长度单位。像素px是相对于显示器屏幕�
 - [比较 opacity: 0、visibility: hidden、display: none 优劣和适用场景](#比较-opacity-0、visibility-hidden、display-none-优劣和适用场景)
 - [CSS实现文本的单行和多行溢出省略效果](css实现文本的单行和多行溢出省略效果)
 - [垂直居中和常见布局](#垂直居中和常见布局)
+- [css样式管理方案]
 ### 盒模型
 
 组成：盒模型由内容区域、内边距、边框、外边距四部分组成。
@@ -472,3 +473,50 @@ transition 和animation支持的属性， [CSS animated properties](https://deve
 ![](./imgs/css_layout1.jpg)
 
 ![](./imgs/css_layout2.jpg)
+
+### [css样式管理方案](https://juejin.cn/post/6844903971857907720)
+
+1. 命名空间 + BEM规范[BEM](https://www.bemcss.com/)（`即模块名 + 元素名 + 修饰器名`。）
+```
+.componentA {
+    &__title {
+        font-size: 14px;
+    }
+}
+<div class="componentA">
+    <h1 class="componentA__title">组件A的title</h1>
+</div>
+```
+该方案适用于组件库的编写。
+
+2. CSS in JS
+3. CSS Modules
+
+原理：利用 webpack 等构建工具自动将类名转换成局部。 详细配置:
+```
+{
+    loader: 'css-loader',
+    options: {
+          importLoaders: 2,
+          modules: isModules,
+          localIdentName: '[name]__[local]__[hash:base64:5]'
+    }
+}
+```
+```jsx harmony
+/**
+App.css
+.title {
+   color: red;
+}
+**/
+import React from 'react';
+import style from './App.css';
+export default () => {
+ return (
+   <h1 className={style.title}>
+     Hello World
+   </h1>
+ );
+};
+```

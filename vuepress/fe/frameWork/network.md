@@ -682,6 +682,7 @@ PS：DNS 是基于 UDP 做的查询。
 强缓存 --- HTTP/1.0: 响应头中 Expires 字段(),有问题，相对于本地实际， HTTP/1.1：  `Cache-Control`字段
 协商缓存 --- HTTP/1.0 中的 `Last-Modified`(Last-Modified 验证规则：浏览器第一次发送请求，服务器在响应头中带上 Last-Modified，并返回资源，浏览器下次发送相同请求时，会把之前收到的 Last-Modified 内容放到请求头中的 If-Modified-Since 字段，服务器收到后会跟请求资源的最后修改时间做对比，如果相同，返回 HTTP 304，如果不相同，返回HTTP 200，并返回最新的资源。)
 HTTP/1.1: E-Tag 验证规则：验证过程跟 Last-Modified 类似，只不过是浏览器第一次收到的是 etag，第二次发送的是 If-None-Match。跟 Last-Modified 的区别是 E-Tag 的内容是资源的唯一标识符，Last-Modified 的内容是最后修改时间，且 E-Tag 优先级高于 Last-Modified。
+
 ![](./image/web_cache.png)
 
 ## 从输入 URL 到页面加载完成的过程

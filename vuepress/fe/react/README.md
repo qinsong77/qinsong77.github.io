@@ -1028,6 +1028,29 @@ class ChangeTheme extends React.Component {
 
 ### 真实DOM操作和Virtual Dom
 
+- [从 React 历史的长河里聊虚拟DOM及其价值](https://mp.weixin.qq.com/s/zCGQEpEGJYQWMMvZfyUYHg)
+
+react和vue等框架的出现使得前端的编程方式重**命令式**，即直接操纵 DOM，告诉浏览器该怎么干。这样的问题就是，大量的代码被用于操作 DOM 元素，且代码可读性差，可维护性低。
+变成了**声明式**，摒弃了直接操作 DOM 的细节，只关注数据的变动，DOM 操作由框架来完成，从而大幅度提升了代码的可读性和可维护性。
+
+而`diff`的出现，可以避免数据变动的导致整个页面的刷新，所以就有了 `Diff` 过程，将数据变动前后的 `DOM` 结构先进行比较，找出两者的不同处，然后再对不同之处进行更新渲染。
+
+但是由于整个 DOM 结构又太大，所以采用了更轻量级的对 DOM 的描述—**虚拟 DOM**。
+
+优点
+- Virtual DOM 在牺牲(牺牲很关键)部分性能的前提下，增加了可维护性，这也是很多框架的通性。
+- 实现了对 DOM 的集中化操作，在数据改变时先对虚拟 DOM 进行修改，再反映到真实的 DOM 中，用最小的代价来更新 DOM，提高效率(提升效率要想想是跟哪个阶段比提升了效率，别只记住了这一条)。
+- 打开了函数式 UI 编程的大门。
+- 可以渲染到 DOM 以外的端，使得框架跨平台，比如 ReactNative，React VR 等。
+- 可以更好的实现 SSR，同构渲染等。这条其实是跟上面一条差不多的。
+- 组件的高度抽象化。
+
+缺点
+
+- 首次渲染大量 DOM 时，由于多了一层虚拟 DOM 的计算，会比 innerHTML 插入慢。
+- 虚拟 DOM 需要在内存中的维护一份 DOM 的副本(更上面一条其实也差不多，上面一条是从速度上，这条是空间上)。
+- 如果虚拟 DOM 大量更改，这是合适的。但是单一的，频繁的更新的话，虚拟 DOM 将会花费更多的时间处理计算的工作。所以，如果你有一个 DOM 节点相对较少页面，用虚拟 DOM，它实际上有可能会更慢。但对于大多数单页面应用，这应该都会更快。
+
 尤雨溪大佬知乎的回答
 
 ![](./image/domVsReact.png)
@@ -1037,6 +1060,8 @@ class ChangeTheme extends React.Component {
 - [React 和 Vue 的 diff 时间复杂度O(n^3) 和 O(n) 是如何计算出来的](https://mp.weixin.qq.com/s/rd0MjARQcYEPz9FseVgElA)
 
 - [讨论](https://github.com/sisterAn/blog/issues/22)
+
+- [详解 React 16 的 Diff 策略](https://mp.weixin.qq.com/s/_jAW4Z3VR-uW0AEnjHgAEw)
 
 如何将传统O(n^3)Diff算法的时间复杂度降为O(n)
 

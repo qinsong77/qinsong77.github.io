@@ -4,6 +4,7 @@ title: 组件库设计
 
 
 - [面试官: 写过『通用前端组件』吗?](https://www.jianshu.com/p/81128ab478e9)
+- [使用mono-repo实现跨项目组件共享](https://juejin.cn/post/6913788953971654663)
 
 ### 前端组件库的设计原则
 

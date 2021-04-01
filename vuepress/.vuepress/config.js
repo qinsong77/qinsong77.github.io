@@ -93,6 +93,7 @@ module.exports = {
 					children: [
 						['react/', '总结'],
 						'react/react_hooks',
+						'react/react_around',
 						'react/react_native',
 						'react/typescript',
 						'react/build_mini_react'

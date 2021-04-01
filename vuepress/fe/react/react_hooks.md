@@ -164,7 +164,8 @@ function Test() {
 		setSate((state+1))
 		setTimeout(() => {
 			setSate(number=>number+1)
-			// setSate((state+1)) // 不起作用
+			// setState(state+1) // 加1不起作用，因为这个state是之前的那个及0，而之前就已经加1变成1了，
+            // setState(state + 2)// state会变成2
 			alert(state) // 0
 		}, 3000)
 	}
@@ -231,7 +232,8 @@ function Test() {
 		setSate((state + 1))
 		setTimeout(() => {
 			setSate(number => number + 1)
-			// setSate((state+1)) // 不起作用
+			// setState(state+1) // 加1不起作用，因为这个state是之前的那个及0，而之前就已经加1变成1了，
+            // setState(state + 2)// state会变成2
 			alert(state) // 0
 		}, 3000)
 	}
