@@ -158,3 +158,24 @@ var coinChange = function(coins, amount) {
     return dp[amount] === Infinity ? -1 : dp[amount]
 }
 ```
+#### [单词拆分](https://leetcode-cn.com/problems/word-break/)
+```javascript
+var wordBreak = function(s, wordDict) {
+    const { length } = s
+    const dp = new Array(length + 1).fill(false)
+    const set = new Set(wordDict)
+    dp[0] = true
+    for(let i = 1; i <= length; i++) {
+        for(let j = i - 1; j >= 0; j--) {
+            if (dp[i] === true) break;
+            if (dp[j] === false) continue;
+            const suffix = s.slice(j,i)
+            if(set.has(suffix ) && dp[j]) {
+                dp[i] = true
+                break
+            }
+        }
+    }
+    return dp[length]
+};
+```

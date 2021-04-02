@@ -60,6 +60,7 @@ title: LeetCode
    - [链表的中间结点](#链表的中间结点)
    - [寻找链表的倒数第k个元素](#寻找链表的倒数第k个元素)
    - [k个一组翻转链表](#k个一组翻转链表)
+   - [排序链表](#排序链表)
    - [合并有序链表](#合并有序链表)
    - [合并k个有序链表](#合并k个有序链表)
    - [链表求和](#链表求和)
@@ -2000,6 +2001,35 @@ var reverseKGroup = function(head, k) {
     return preHead.next
 };
 ````
+
+#### [排序链表](https://leetcode-cn.com/problems/sort-list/)
+
+时间复杂度要求`O(log n)`, 常数级空间复杂度
+
+v1: O(n*n)
+```javascript
+var sortList = function(head) {
+    if(head === null) return null
+    let newHead = new ListNode(head.val)
+    while(head.next) {
+        let node = head.next
+        let temp = newHead
+        let prev = null
+        while(temp && temp.val < node.val) {
+            prev = temp
+            temp = temp.next
+        }
+        if(prev) {
+            prev.next = new ListNode(node.val, temp)
+        } else {
+            newHead = new ListNode(node.val, temp)
+        }
+        head = head.next
+    }
+
+    return newHead
+};
+```
 
 #### [合并有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
 mine
