@@ -7,6 +7,7 @@
 </head>
 <body>
 <div id="app">
+  <p>{{ addStr }}</p>
   <p>{{ message }}</p>
   <function-component :text="text"/>
   <text-com :msg="text"/>
@@ -44,9 +45,16 @@
 		el: '#app',
 		data: {
 			message: 'Hello Vue!',
-			text: 'text111!'
-		}
+			text: 'text111!',
+      noUseStr: 'saddfjk'
+		},
+    computed: {
+		  addStr () {
+		    return this.message + this.noUseStr
+      }
+    }
 	})
+  console.log(app)
 </script>
 </body>
 </html>

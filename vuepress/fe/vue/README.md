@@ -1528,10 +1528,10 @@ data() {
 function computedGetter(){
 	var watcher = this._computedWatchers && this._computedWatchers[key]
 	if (watcher) {
-		if (watcher.dirty) {
+		if (watcher.dirty) { // 初始化时这里依赖属性是先收集的computed的watcher
 			watcher.evaluate()
 		}
-		if (Dep.target) {
+		if (Dep.target) { // 这里其实是给依赖的属性的dep添加渲染的watcher（如果已经添加会有去重校验不再添加）
 			watcher.depend()
 		}
 		return watcher.value
@@ -1547,7 +1547,7 @@ Watcher.prototype.evaluate = function evaluate () {
 
 
 watcher.dirty 是实现计算属性缓存的触发点，watcher.evaluate是对计算属性重新求值，依赖属性收集“渲染Watcher”，计算属性求值后会将值存储在 value 中，get 返回计算属性的值；
-dirty为false返回上传的结果，为true执行`watcher.evaluate()`。实际上是`defineReactive`中的`get`方法的`dep.depend()`将`computed`的`watcher`推入依赖`data`的`dep`的`sub队列`中，这正是依赖data的修改可以触发`dirty=true`的原因
+dirty为false返回上次的求值结果`watcher.value`，为true执行`watcher.evaluate()`重新求职。实际上是`defineReactive`中的`get`方法的`dep.depend()`将`computed`的`watcher`推入依赖`data`的`dep`的`sub队列`中，这正是依赖data的修改可以触发`dirty=true`的原因
 
 计算属性更新的路径
 1. computed使用的响应式的值更新

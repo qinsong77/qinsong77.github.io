@@ -2,45 +2,14 @@
 title: Summary of CSS
 ---
 
-### [104个 CSS 面试题](https://mp.weixin.qq.com/s/FXN__hiDx3S6aKPGeHXsJg)
-
-### [css晦涩难懂的点](https://juejin.cn/post/6888102016007176200)
-
-### [Web开发者应该掌握的CSS tricks](https://lhammer.cn/You-need-to-know-css/#/zh-cn/)
-
-### [各种页面常见布局知名网站实例分析相关阅读推荐](https://sweet-kk.github.io/css-layout/)
-
-### 网页布局
-> [总结](https://www.zhihu.com/question/21775016/answer/1358336033)
-
-### [前端DEMO以及基础的效果，CSS3简单的动画特效](http://codehtml.cn/front-end-demo/#/)
-
-### [你未必知道的49个CSS知识点](https://juejin.im/post/6844903902123393032)
-
+文章汇总
+-----
+#### [104个 CSS 面试题](https://mp.weixin.qq.com/s/FXN__hiDx3S6aKPGeHXsJg)
+#### [css晦涩难懂的点](https://juejin.cn/post/6888102016007176200)
+#### [Web开发者应该掌握的CSS tricks](https://lhammer.cn/You-need-to-know-css/#/zh-cn/)
+#### [前端DEMO以及基础的效果，CSS3简单的动画特效](http://codehtml.cn/front-end-demo/#/)
+#### [你未必知道的49个CSS知识点](https://juejin.im/post/6844903902123393032)
 #### [从网易与淘宝的font-size思考前端设计稿与工作流](https://www.cnblogs.com/lyzg/p/4877277.html)
-
-### 自适应布局和响应式布局
-
-响应式布局实现一个网站能够兼容多个终端，网页的布局针对屏幕大小的尺寸而进行响应，流式布局+弹性布局，再搭配媒体查询技术使用。
-
-自适应布局大致是指网页能够在不同大小的终端设备上自行适应显示。就是让一个网站在不同大小的设备上呈现显示同一样的页面，让同一个页面适应不同大小屏幕，根据屏幕的大小，自动缩放。多用rem+js实现，在移动端适配多种屏幕。
-
-
-### em&&[rem](https://yanhaijing.com/css/2017/09/29/principle-of-rem-layout/)
-
-px像素（Pixel）。相对长度单位。像素px是相对于显示器屏幕分辨率而言的。
-
-#### em
-
-**em**，`em`值的大小是动态的。当定义或继承`font-size`属性时，`1em`等于该元素的字体大小。如果你在网页中任何地方都没有设置文字大小的话，那它将等于浏览器默认文字大小，通常是`16px`。所以通常1em = 16px。2em = 32px。 如果你设置了body元素的字体大小为20px，那1em = 20px、2em = 40px。那个2就是当前em大小的倍数。
-
-`em`单位受父元素的影响，是因为font-size本身是继承属性。如果没有定义，就要基于父元素，直到html，html未设置则是浏览器的默认文字大小`16px`
-
-所有未经调整的浏览器都符合: 1em=16px。那么12px=0.75em,10px=0.625em。为了简化font-size的换算，需要在css中的body选择器中声明Font-size=62.5%，这就使em值变为 16px*62.5%=10px, 这样12px=1.2em, 10px=1em, 也就是说只需要将你的原来的px数值除以10，然后换上em作为单位就行了。
-
-#### rem
-
-`rem`即 root em，顾名思义，就是根元素 `em` 大小。 `em` 相对于当前元素， `rem` 相对于根元素，本质差别在于当前元素是多变的，根元素是固定的，也就是说，如果使用 rem，我们的计算值不会受当前元素 `font-size` 大小的影响。css3新增。
 
 - [盒模型](#盒模型)
 - [优先级](#优先级)
@@ -48,11 +17,12 @@ px像素（Pixel）。相对长度单位。像素px是相对于显示器屏幕�
 - [CSS的层叠上下文](#css的层叠上下文)
 - [伪类和伪元素](#伪类和伪元素)
 - [img是什么元素](#img-是什么元素)
+- [px,em,rem](#em-rem)
 - [line-height:1.5和line-height:150%的区别](#line-height-1-5和line-height-150-的区别)
 - [比较 opacity: 0、visibility: hidden、display: none 优劣和适用场景](#比较-opacity-0、visibility-hidden、display-none-优劣和适用场景)
 - [CSS实现文本的单行和多行溢出省略效果](css实现文本的单行和多行溢出省略效果)
 - [垂直居中和常见布局](#垂直居中和常见布局)
-- [css样式管理方案]
+- [css样式管理方案](#css样式管理方案)
 ### 盒模型
 
 组成：盒模型由内容区域、内边距、边框、外边距四部分组成。
@@ -230,6 +200,21 @@ padding-top / padding-bottom 虽然不影响结果，但实际上生效了。
 
 - 对于表单元素，浏览器也有默认的样式，包括宽度和高度
 - `<img>、<input>`属于行内替换元素。height/width/padding/margin均可用。效果等于块元素。
+
+### em&&[rem](https://yanhaijing.com/css/2017/09/29/principle-of-rem-layout/)
+px像素（Pixel）。相对长度单位。像素px是相对于显示器屏幕分辨率而言的。
+
+#### em
+
+**em**，`em`值的大小是动态的。当定义或继承`font-size`属性时，`1em`等于该元素的字体大小。如果你在网页中任何地方都没有设置文字大小的话，那它将等于浏览器默认文字大小，通常是`16px`。所以通常1em = 16px。2em = 32px。 如果你设置了body元素的字体大小为20px，那1em = 20px、2em = 40px。那个2就是当前em大小的倍数。
+
+`em`单位受父元素的影响，是因为font-size本身是继承属性。如果没有定义，就要基于父元素，直到html，html未设置则是浏览器的默认文字大小`16px`
+
+所有未经调整的浏览器都符合: 1em=16px。那么12px=0.75em,10px=0.625em。为了简化font-size的换算，需要在css中的body选择器中声明Font-size=62.5%，这就使em值变为 16px*62.5%=10px, 这样12px=1.2em, 10px=1em, 也就是说只需要将你的原来的px数值除以10，然后换上em作为单位就行了。
+
+#### rem
+`rem`即 root em，顾名思义，就是根元素 `em` 大小。 `em` 相对于当前元素， `rem` 相对于根元素，本质差别在于当前元素是多变的，根元素是固定的，也就是说，如果使用 rem，我们的计算值不会受当前元素 `font-size` 大小的影响。css3新增。
+
 
 ### line-height:1.5和line-height:150%的区别
 
@@ -466,6 +451,17 @@ transition 和animation支持的属性， [CSS animated properties](https://deve
 可被transform的元素有：block-level element 或 atomic inline-level element等，但不包括inline element。比如**没有**被设置成`display: inline-block`的`span`标签就会失效
 
 ### 垂直居中和常见布局
+
+#### [各种页面常见布局知名网站实例分析相关阅读推荐](https://sweet-kk.github.io/css-layout/)
+
+#### [网页布局总结](https://www.zhihu.com/question/21775016/answer/1358336033)
+
+#### 自适应布局和响应式布局
+
+响应式布局实现一个网站能够兼容多个终端，网页的布局针对屏幕大小的尺寸而进行响应，流式布局+弹性布局，再搭配媒体查询技术使用。
+
+自适应布局大致是指网页能够在不同大小的终端设备上自行适应显示。就是让一个网站在不同大小的设备上呈现显示同一样的页面，让同一个页面适应不同大小屏幕，根据屏幕的大小，自动缩放。多用rem+js实现，在移动端适配多种屏幕。
+
 
 ![](./imgs/ele_center.png)
 
