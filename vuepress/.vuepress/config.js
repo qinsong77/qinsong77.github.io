@@ -81,6 +81,7 @@ module.exports = {
 					// sidebarDepth: 2,    // 可选的, 默认值是 1
 					children: [
 						['vue/', '原理'],
+						'vue/vuex',
 						'vue/alwaysNote',
 						'vue/vue3',
 					]

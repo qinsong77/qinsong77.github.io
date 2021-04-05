@@ -4,8 +4,8 @@ title: React Around
 
 ### redux
 
-- [源码解析1](https://juejin.cn/post/6844904036013965325)
-- [源码解析2](https://juejin.cn/post/6937491452838559781)
+- [8k字 | Redux/react-redux/redux中间件设计实现剖析](https://juejin.cn/post/6844904036013965325)
+- [一文吃透react-redux源码](https://juejin.cn/post/6937491452838559781)
 
 ### immutable.js
 
