@@ -1302,6 +1302,10 @@ Vue.prototype._init = function (options) {
 ```
 :::
 
+### Vue事件绑定原理
+
+原生事件绑定是通过`addEventListener`绑定给真实元素的，组件事件绑定是通过Vue自定义的`$on`实现的。
+
 ### 抽象组件
 常用的`transition`和`keep-alive`就是一个抽象组件。抽象组件是无状态的，同样也是“不存在的”，它自己并不会被渲染为实际的`DOM`，而是直接返回以及操作它的子元素。
 

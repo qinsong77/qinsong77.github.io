@@ -14,8 +14,7 @@ title: React Hooks
 - [Hooks 解决的问题](#二、hooks-解决的问题)
 - [Hooks 优势](#hooks-优势)
 - [注意事项](#注意事项)
-- [React15架构](#react-hooks能够让函数组件拥有内部状态的基本原理)
-- [React Hooks能够让函数组件拥有内部状态的基本原理](#react15架构)
+- [React Hooks能够让函数组件拥有内部状态的基本原理](#react-hooks能够让函数组件拥有内部状态的基本原理)
 - [useState](#usestate)
 - [useEffect](#useeffect)
 - [useLayoutEffect](#uselayouteffect)
@@ -478,6 +477,35 @@ export default function App() {
 }
 ```
 使用useRef
+```typescript jsx
+import React, { useState, useEffect, useRef } from 'react'
+
+function App() {
+	const [ counter, setCounter ] = useState(0)
+	
+	const ref = useRef(null)
+	
+	function addCounter() {
+		console.log(counter)
+		setCounter(counter + 1)
+	}
+	
+	useEffect(() => {
+		ref.current = addCounter // 重新赋值current，实际上是addCounter函数每次重新生成，所以引用的counter是最新的
+	})
+	
+	useEffect(() => {
+		const id = setInterval(() => {
+			ref.current && ref.current()
+		},1000)
+		return () => clearInterval(id)
+	}, [])
+	
+	return <p>{ counter }</p>
+}
+
+export default App
+```
 ```jsx harmony
 function Counter() {
   const [count, setCount] = useState(0);

@@ -42,5 +42,158 @@ title: React Around
 
 3. [styled-jsx](https://github.com/vercel/styled-jsx)
 
-#### react如何实现keep-alive
+### react如何实现keep-alive
 - [React 中的状态自动保存](https://juejin.cn/post/6844903942522929160)
+
+#### 什么是状态保存？
+
+假设有下述场景：
+
+移动端中，用户访问了一个列表页，上拉浏览列表页的过程中，随着滚动高度逐渐增加，数据也将采用触底分页加载的形式逐步增加，列表页浏览到某个位置，用户看到了感兴趣的项目，点击查看其详情，进入详情页，从详情页退回列表页时，需要停留在离开列表页时的浏览位置上
+
+类似的数据或场景还有已填写但未提交的表单、管理系统中可切换和可关闭的功能标签等，这类数据随着用户交互逐渐变化或增长，这里理解为状态，在交互过程中，因为某些原因需要临时离开交互场景，则需要对状态进行保存
+
+在 React 中，通常会使用路由去管理不同的页面，而在切换页面时，路由将会卸载掉未匹配的页面组件，所以上述列表页例子中，当用户从详情页退回列表页时，会回到列表页顶部，因为列表页组件被路由卸载后重建了，状态被丢失
+
+#### 解决方式
+
+##### 手动保存状态
+
+手动保存状态，是比较常见的解决方式，可以配合 React 组件的 `componentWillUnmount` 生命周期通过 `redux` 之类的状态管理层对数据进行保存，通过 `componentDidMount` 周期进行数据恢复
+
+在需要保存的状态较少时，这种方式可以比较快地实现所需功能，但在数据量大或者情况多变时，手动保存状态就会变成一件麻烦事。
+
+##### 通过路由实现自动状态保存（通常使用 `react-router`）
+
+1. 重写 `<Route>` 组件，可参考[react-live-route](https://github.com/fi3ework/react-live-route)
+    
+重写可以实现想要的功能，但成本也比较高，需要注意对原始 `<Route>` 功能的保存，以及多个 `react-router` 版本的兼容
+    
+2. 重写路由库，可参考[react-keeper](https://github.com/vifird/react-keeper)
+    
+重写路由库成本是一般开发者无法承受的，且完全替换掉路由方案是一个风险较大的事情，需要较为慎重地考虑
+
+3. 基于 `<Route>` 组件现有行为做拓展，可参考[react-router-cache-route](https://github.com/CJY0208/react-router-cache-route/blob/master/README_CN.md)
+
+4. [react-activation](https://github.com/CJY0208/react-router-cache-route/blob/master/README_CN.md)
+
+- [简单实现](https://blog.csdn.net/yehuozhili/article/details/107435885)
+
+ ::: details 点击查看代码
+ ```typescript jsx
+import React, {
+	createContext,
+	useState,
+	useEffect,
+	useRef,
+	useContext,
+	useMemo
+} from 'react'
+
+const Context = createContext(null)
+
+interface KeepState {
+	id: {
+		id: string,
+		children: React.ReactChildren
+	}
+}
+
+export function AliveScope(props) {
+	const [state, setState] = useState< KeepState | {}>({})
+	const ref = useMemo(() => {
+		return {}
+	}, [])
+	const keep = useMemo(() => {
+		return (id, children) =>
+			new Promise((resolve) => {
+				setState({
+					[id]: {id, children}
+				})
+				setTimeout(() => {
+					//需要等待setState渲染完拿到实例返回给子组件。
+					resolve(ref[id])
+				})
+			})
+	}, [ref])
+	return (
+		<Context.Provider value={keep}>
+			{props.children}
+			{Object.values(state).map(({id, children}) => (
+				<div
+					key={id}
+					ref={(node) => {
+						ref[id] = node
+					}}
+				>
+					{children}
+				</div>
+			))}
+		</Context.Provider>
+	)
+}
+
+function KeepAlive(props) {
+	const keep = useContext(Context)
+	useEffect(() => {
+		const init = async ({id, children}) => {
+			const realContent = await keep(id, children)
+			if (ref.current) {
+				ref.current.appendChild(realContent)
+			}
+		}
+		init(props)
+	}, [props, keep])
+	const ref = useRef(null)
+	return <div ref={ref}/>
+}
+
+export default KeepAlive
+```
+ :::
+ 
+ 使用
+  ::: details 点击查看代码
+  ```typescript jsx
+import React, {useState} from 'react'
+import KeepAlive, { AliveScope } from './Keep-Alive'
+
+function Counter() {
+	const [count, setCount] = useState(0)
+	return (
+		<div>
+			count: {count}
+			<button onClick={() => setCount((count) => count + 1)}>add</button>
+		</div>
+	)
+}
+
+function App() {
+	const [show, setShow] = useState(true)
+	return (
+		<AliveScope>
+			<div>
+				<button onClick={() => setShow((show) => !show)}>Toggle</button>
+				<p>无 KeepAlive</p>
+				{show && <Counter/>}
+				<p>有 KeepAlive</p>
+				{show && (
+					<KeepAlive id='Test'>
+						<Counter/>
+					</KeepAlive>
+				)}
+				<hr/>
+				{show && (
+					<KeepAlive id='Test2'>
+						<Counter/>
+					</KeepAlive>
+				)}
+			</div>
+		</AliveScope>
+	)
+}
+
+export default App
+
+```
+  :::
