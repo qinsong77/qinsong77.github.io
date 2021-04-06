@@ -1852,9 +1852,57 @@ function patchVnode (oldVnode, vnode){
 #### Vue中key属性的作用
 >当 Vue.js 用`v-for`正在更新已渲染过的元素列表时，它默认用“就地复用”策略。如果数据项的顺序被改变，Vue 将不会移动 DOM 元素来匹配数据项的顺序， 而是简单复用此处每个元素，并且确保它在特定索引下显示已被渲染过的每个元素。————官方文档
 
-[用 index 做为 key](https://zhuanlan.zhihu.com/p/124019708)
+#### [用 index 做为 key](https://zhuanlan.zhihu.com/p/124019708)
 
+1. 虽然找到了以index为key的节点复用了，在进行 `patchVnode` 的时候， 但是props变了，vue会改变props，更新这个响应式的值，触发 `dep.notify`，触发子组件视图的重新渲染等一套很重的逻辑。
+
+然后，还会额外的触发以下几个钩子，假设我们的组件上定义了一些dom的属性或者类名、样式、指令，那么都会被全量的更新。
+
+1. updateAttrs
+2. updateClass
+3. updateDOMListeners
+4. updateDOMProps
+5. updateStyle
+6. updateDirectives
+
+**简单说就是性能损耗**
 ### updateChildren
+
+2. 节点删除场景:可能导致错误删除
+```vue
+<template>
+  <div>
+    <ul>
+      <li v-for="(value, index) in arr" :key="index">
+        <test :index='index'/>
+      </li>
+    </ul>
+    <button @click="this.handleDelete">delete</button>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "App",
+  data() {
+    return {
+      arr: [1, 2, 3]
+    };
+  },
+  methods: {
+    handleDelete() {
+      this.arr.splice(0, 1); // 删除的第一项，实际删除的最后一项， 如果props传的value，可以正确删除
+    }
+  },
+  components: {
+    test: {
+      props: ['index'],
+      template: "<li>{{Math.random()}} - {{ index }} </li>"
+    }
+  }
+};
+</script>
+```
 
 过程可以概括为：`oldCh`和`newCh`各有两个头尾的变量`StartIdx`和`EndIdx`，它们的2个变量相互比较，一共有4种比较方式。如果4种比较都没匹配，如果设置了`key`，就会用`key`进行比较，在比较的过程中，变量会往中间靠，一旦`StartIdx>EndIdx`表明`oldCh`和`newCh`至少有一个已经遍历完了，就会结束比较。
 
