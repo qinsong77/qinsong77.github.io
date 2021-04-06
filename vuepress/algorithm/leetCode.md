@@ -1216,6 +1216,7 @@ const inorderTraversal = (root) => {
 ```
 
 #### [二叉树的层序遍历](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/)
+bfs
 ```javascript
 /**
  * Definition for a binary tree node.
@@ -1246,7 +1247,22 @@ var levelOrder = function(root) {
     return res
 };
 ```
-
+dfs
+```javascript
+var levelOrder = function(root) {
+    if(root == null) return []
+    const res = []
+    const dfs = (node, step) => {
+        if(node === null) return
+        if(!res[step]) res[step] = []
+        res[step].push(node.val)
+        dfs(node.left, step + 1)
+        dfs(node.right, step + 1)
+    }
+    dfs(root, 0)
+    return res
+};
+```
 #### [二叉树的序列化与反序列化](https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/)
 
 前序遍历法，后续遍历法差不多一样，而中序遍历的方式行不通，因为无法实现反序列化方法`deserialize`。
@@ -2401,6 +2417,7 @@ function LIS( arr ) {
 }
 ```
 [使用二分查找](https://leetcode-cn.com/problems/longest-increasing-subsequence/solution/300-zui-chang-shang-sheng-zi-xu-lie-by-alexer-660/)
+
 [更好的思路](https://leetcode-cn.com/problems/longest-increasing-subsequence/solution/zui-chang-shang-sheng-zi-xu-lie-dong-tai-gui-hua-2/)
 
 维护一个列表 tails，其中每个元素 `tails[k]tails[k]` 的值代表 长度为 `k+1`的子序列尾部元素的值。
@@ -2463,6 +2480,41 @@ function LIS( arr ) {
     return res;
 }
 ```
+贪心 + 二分查找
+
+贪心： 同样是长度为 2 的序列，`[1,2] `一定比 `[1,4] `好，因为它更有潜力。即想要组成最长的递增子序列， 就要让这个子序列中上升的尽可能的慢，这样才能更长。
+```javascript
+var lengthOfLIS = function(nums) {
+    let len = nums.length
+    if (len <= 1) {
+        return len
+    }
+    let tails = [nums[0]]
+    for (let i = 0; i < len; i++) {
+        // 当前遍历元素 nums[i] 大于 前一个递增子序列的 尾元素时，追加到后面即可
+        if (nums[i] > tails[tails.length - 1]) {
+            tails.push(nums[i])
+        } else {
+            // 否则，查找递增子序列中第一个大于当前值的元素，用当前遍历元素 nums[i] 替换它
+            // 递增序列，可以使用二分查找
+            let left = 0
+            let right = tails.length - 1
+            while (left < right) {
+                const mid = Math.floor((left + right)/2)
+                // let mid = (left + right) >> 1
+                if (tails[mid] < nums[i]) {
+                    left = mid + 1
+                } else {
+                    right = mid
+                }
+            }
+            tails[left] = nums[i]
+        }
+    }
+    return tails.length
+};
+```
+
 ### [编辑距离](https://leetcode-cn.com/problems/edit-distance/)
 
 [思路](https://mp.weixin.qq.com/s/uWzSvWWI-bWAV3UANBtyOw)

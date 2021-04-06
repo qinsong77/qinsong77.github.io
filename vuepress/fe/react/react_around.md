@@ -75,7 +75,7 @@ title: React Around
 
 3. 基于 `<Route>` 组件现有行为做拓展，可参考[react-router-cache-route](https://github.com/CJY0208/react-router-cache-route/blob/master/README_CN.md)
 
-4. [react-activation](https://github.com/CJY0208/react-router-cache-route/blob/master/README_CN.md)
+4. [react-activation](https://github.com/CJY0208/react-activation)
 
 - [简单实现](https://blog.csdn.net/yehuozhili/article/details/107435885)
 

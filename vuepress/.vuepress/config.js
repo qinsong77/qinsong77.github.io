@@ -132,6 +132,7 @@ module.exports = {
 					children: [
 						['webpack/', 'Summary'],
 						'webpack/webpack5',
+						'webpack/vite2',
 					]
 				},
 				{
@@ -183,6 +184,15 @@ module.exports = {
 					children: [
 						['base/', 'Concept'],
 						'base/docker'
+					]
+				},
+				{
+					title: 'v8',
+					path: '/backEnd/v8/',
+					collapsable: false,
+					// sidebarDepth: 2,
+					children: [
+						['v8/', 'Summary'],
 					]
 				}
 			],
