@@ -9,6 +9,7 @@
 <div id="app">
   <p>{{ addStr }}</p>
   <p>{{ message }}</p>
+  <p>{{ objAdd.num }}</p>
   <function-component :text="text"/>
   <text-com :msg="text"/>
   <text-com/>
@@ -46,7 +47,10 @@
 		data: {
 			message: 'Hello Vue!',
 			text: 'text111!',
-      noUseStr: 'saddfjk'
+      noUseStr: 'saddfjk',
+      objAdd: {
+			  num: 123
+      }
 		},
     computed: {
 		  addStr () {

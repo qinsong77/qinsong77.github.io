@@ -30,13 +30,15 @@ Dep 对象用于依赖收集，它实现了一个观察者模式，完成了数�
 [Vue 的响应式更新粒度](https://juejin.cn/post/6844904113432444942)
 ##### 总结
  - 1、在beforeCreate和created之间调用initState(vm)方法， 获取data并遍历,调用observe方法，ob = new Observer(value)进行依赖收集和派发更新
- - 2、在Observer中调用defineReactive使用defineProperty进行get和set操作，defineReactive中var dep = new Dep();
+ - 2、在Observer中调用`defineReactive`使用`defineProperty`进行get和set操作，defineReactive中var dep = new Dep();
  Object.defineProperty 在getter时if (Dep.target) 则执行 dep.depend()即Dep.target.addDep(this);setter的时候dep.notify()派发更新。
  - 3、在beforeMount和mounted之间new Watcher(),watcher实例化的时候，会执行this.get()方法，把Dep.target赋值为当前渲染watcher并压入栈(为了恢复用),具体是`new`的时候执行
  `this.get()`,然后这个get先执行 `pushTarget(this);`然后执行`this.getter.call(vm, vm)`, 这个`getter`是`new`的时候赋值的`updateComponent`函数，里面执行了render组件的方法。
  接着执行vm._render()方法，生成渲染VNode,并且在这个过程中对vm上的数据访问，这个时候就触发了数据对象的getter(执行了Dep.target.addDep(this)方法，
  将watcher订阅到这个数据持有的dep的subs中，为后续数据变化时通知到拉下subs做准备).然后递归遍历添加所有子项的getter。
  
+>data中的数据是对象或者基本类型，对比多做了一些工作，会给这个对象属性添加`__ob__`的属性，即`new Observer`中创建了依赖收集`dep`,在`Object.defineReactive`中判断有这个
+>属性，则添加依赖，方便后续的`$set`,`$delete`api的处理
 
  ![An image](./image/vue3.png)
  
@@ -1783,6 +1785,8 @@ ComputedWatcher 和普通 Watcher 的区别：
     return typeA === typeB || isTextInputType(typeA) && isTextInputType(typeB)
   }
 ```
+
+- [Vue 3.0 diff 算法及原理](https://mp.weixin.qq.com/s/fUnKx_Cts8nCaM7n31kKVw)
 
 在 Vue3 中将采用另外一种核心 Diff 算法，它借鉴于 ivi 和 inferno。
 

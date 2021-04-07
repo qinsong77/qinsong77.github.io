@@ -13,6 +13,7 @@ title: LeetCode
 - [2.回文](#_2-回文)
   - [回文数](#回文数)
   - [回文排列](#回文排列)
+  - [回文子串个数](#回文子串个数)
   - [最长回文子串](#最长回文子串)
   - [分割回文串](#分割回文串)
   - [分割回文串2](#分割回文串2)
@@ -461,6 +462,8 @@ var canPermutePalindrome = function(s) {
     return map.size === 0 || map.size === 1
 };
 ```
+
+#### [回文子串个数](https://leetcode-cn.com/problems/palindromic-substrings/)
 
 ## 3.字符串
 

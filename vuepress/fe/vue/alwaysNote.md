@@ -5,13 +5,13 @@ title: 常用笔记vue
 ## [性能优化技巧](https://juejin.cn/post/6922641008106668045)
 
 - [Vue 项目性能优化 — 实践指南](https://juejin.cn/post/6844903913410314247)
-
+- [揭秘 Vue.js 九个性能优化技巧](https://juejin.cn/post/6922641008106668045)
 1. 使用Functional components
-2. 局部变量, `computed`内不通过this获取data而是通过参数解构，因为watcher获取value是执行` this.getter.call(vm, vm)`
+2. 局部变量, `computed`内不通过this获取data而是通过参数解构，因为watcher获取value是执行` this.getter.call(vm, vm)`，其实是在前面提取data或者props中的数据，而不是一次一次的使用`this.`去访问，这样就只走一个getter的响应式收集。
 3. 用 `v-show` 指令替代了 `v-if` 指令来替代组件的显隐，`v-show`在 `patchVnode` 过程中，内部会对执行 `v-show` 指令对应的钩子函数 `update`，然后它会根据 `v-show` 指令绑定的值来设置它作用的 DOM 元素的 `style.display` 的值控制显隐。
-4. KeepAlive
-5. 延迟渲染，把一个组件的一次渲染拆成多次,按优先级使用`requestAnimationFrame`，使用v-if判断是否要渲染
-6. 使用Object.freeze()冻结成为非响应式的数据
+4. `KeepAlive`
+5. 延迟渲染，把一个组件的一次渲染拆成多次，按优先级使用`requestAnimationFrame`，使用`v-if`判断是否要渲染
+6. 使用`Object.freeze()`冻结成为非响应式的数据
 7. 使用`Virtual scrolling `虚拟滚动组件
 8. 使用`requestAnimationFrame`时间切片提交响应式数据。
 

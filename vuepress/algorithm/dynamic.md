@@ -158,6 +158,27 @@ var coinChange = function(coins, amount) {
     return dp[amount] === Infinity ? -1 : dp[amount]
 }
 ```
+#### [爬楼梯](https://leetcode-cn.com/problems/climbing-stairs/)
+动态规划思路： 要考虑第爬到第n阶楼梯时候可能是一步，也可能是两步。 
+1. 计算爬上n-1阶楼梯的方法数量。因为再爬1阶就到第n阶 
+2. 计算爬上n-2阶楼梯体方法数量。因为再爬2阶就到第n阶 那么f(n)=f(n-1)+f(n-2);
+```javascript
+/**
+ * @param {number} n
+ * @return {number}
+ */
+var climbStairs = function(n) {
+    if(n === 1) return 1
+    if(n === 2) return 2
+    let a = 1, b = 2
+    for(let i = 3; i <= n; i++) {
+        let temp = a + b
+        a = b
+        b = temp
+    }
+    return b
+};
+```
 #### [单词拆分](https://leetcode-cn.com/problems/word-break/)
 ```javascript
 var wordBreak = function(s, wordDict) {
