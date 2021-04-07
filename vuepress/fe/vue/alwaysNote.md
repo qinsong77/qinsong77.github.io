@@ -49,12 +49,205 @@ title: 常用笔记vue
 ### [大文件上传和断点续传](https://juejin.im/post/6844904046436843527)
 
 ### 长列表优化
+
+虚拟列表的实现，实际上就是在首屏加载的时候，只加载 **可视区域内**需要的列表项，当滚动发生时，**动态计算**获得可视区域内的列表项。
+
+- 计算当前 可视区域起始数据索引( startIndex)
+
+- 计算当前 可视区域结束数据索引( endIndex)
+
+- 计算当前 可视区域的数据，并渲染到页面中
+
+- 计算 startIndex对应的数据在整个列表中的偏移位置 startOffset并设置到列表上
+
+![](./image/virtual-list.png)
+
+```html
+<div class="infinite-list-container">
+    <div class="infinite-list-phantom"></div>
+    <div class="infinite-list">
+      <!-- item-1 -->
+      <!-- item-2 -->
+      <!-- ...... -->
+      <!-- item-n -->
+    </div>
+</div>
+```
+- infinite-list-container 为可视区域的容器
+- infinite-list-phantom 为容器内的占位，高度为总列表高度，用于形成滚动条
+- infinite-list 为列表项的渲染区域
+
+监听infinite-list-container的`scroll`事件，获取滚动位置`scrollTop`
+
+#### 列表项动态高度
+1. 对组件属性props的itemSize进行扩展，支持传递类型为数字、数组、函数
+
+- 可以是一个固定值，如 100，此时列表项是固高的
+- 可以是一个包含所有列表项高度的数据，如 `[50, 20, 100, 80, ...]`
+- 可以是一个根据列表项索引返回其高度的函数：`(index: number): number`
+
+2.将列表项**渲染到屏幕外**，对其高度进行测量并缓存，然后再将其渲染至可视区域内。
+
+3.以**预估高度**先行渲染，然后获取真实高度并缓存。
+
+ - [高性能渲染十万条数据(虚拟列表)](https://juejin.cn/post/6844903982742110216)
     
  - [长列表优化](https://juejin.cn/post/6844903577631227912)
    
  - [Vue - Table表格渲染上千数据优化](https://zhuanlan.zhihu.com/p/53455289)
 
  - [记一次vue长列表的内存性能分析和优化](https://www.cnblogs.com/imwtr/p/10428819.html#top)
+ 
+  ::: details 点击查看代码
+ ```vue
+<template>
+  <div
+    class="list-view"
+    @scroll.passive="handleScrollFn">
+    <div
+      class="list-view-phantom"
+      :style="{
+         height: contentHeight
+      }">
+    </div>
+    <div
+      ref="content"
+      class="list-view-content">
+      <div
+        class="list-view-item"
+        :style="{
+          height: itemHeight + 'px'
+        }"
+        v-for="(item) in visibleData"
+        :key="item.id">
+        <slot :row="item" :index="data.indexOf(item)">
+        </slot>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'ListView',
+
+  props: {
+    data: {
+      type: Array,
+      required: true
+    },
+
+    itemHeight: {
+      type: Number,
+      default: 30
+    },
+
+    itemSizeGetter: {
+      type: Function
+    }
+  },
+
+  data () {
+    return {
+      visibleData: [],
+      handleScroll: () => {}
+    }
+  },
+
+  computed: {
+    contentHeight ({ data, itemHeight }) { // 提取this中的值，固定值不用走依赖收集
+      return data.length * itemHeight + 'px'
+    }
+  },
+
+  created () {
+    this.handleScroll = this.throttle(this.handleScrollFn, 200)
+  },
+
+  mounted () {
+    this.updateVisibleData()
+  },
+
+  methods: {
+    updateVisibleData (scrollTop = 0) {
+      const visibleCount = Math.ceil(this.$el.clientHeight / this.itemHeight) // 取得可见区域的可见列表项数量
+      const start = Math.floor(scrollTop / this.itemHeight) // 取得可见区域的起始数据索引
+      const end = start + visibleCount // 取得可见区域的结束数据索引
+      this.visibleData = this.data.slice(start, end) // 计算出可见区域对应的数据，让 Vue.js 更新
+      this.$refs.content.style.webkitTransform = `translate3d(0, ${start * this.itemHeight}px, 0)` // 把可见区域的 top 设置为起始元素在整个列表中的位置（使用 transform 是为了更好的性能）
+    },
+
+    handleScrollFn (e) {
+      const scrollTop = this.$el.scrollTop
+      this.updateVisibleData(scrollTop)
+    },
+    throttle (fn, wait) {
+      let timer = null
+      return function () {
+        const args = arguments
+        const context = this
+        if (timer) return
+        timer = setTimeout(() => {
+          fn.apply(context, args)
+          timer = null
+        }, wait)
+      }
+    }
+  }
+}
+</script>
+<style>
+  .list-view {
+    height: 400px;
+    overflow: auto; /* 浏览器知道添加滚动条 */
+    position: relative;
+    border: 1px solid #aaa;
+  }
+
+  .list-view-phantom {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    z-index: -1;
+  }
+
+  .list-view-content {
+    left: 0;
+    right: 0;
+    top: 0;
+    position: absolute;
+  }
+
+  .list-view-item {
+    padding: 5px;
+    color: #666;
+    line-height: 30px;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+</style>
+
+```
+  ::: 
+  
+  使用
+```vue
+<ListView :data="data">
+  <template v-slot:default="{ row, index }">
+    <div class="list-item-tr">
+      <span>{{ index }}</span>
+      <span>{{ row.address }}</span>
+      <span>{{ row.level }}</span>
+      <span> {{row.time | ftime('s')}}</span>
+      <span class="text-tow-ellipsis">{{ row.message || '-' }}</span>
+      <a type="text" @click="openDetailDrawer(row)">查看详情</a>
+    </div>
+  </template>
+</ListView>
+```
 
 ### [如何在Vue项目中更优雅地使用svg](https://cloud.tencent.com/developer/article/1624103)
 

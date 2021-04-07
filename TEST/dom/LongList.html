@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LongList</title>
+</head>
+<body>
+<button id="button">button</button>
+<ul id="container"></ul>
+<script>
+  document.getElementById('button')
+  .addEventListener('click', function(){
+    // 记录任务开始时间
+    let start = Date.now()
+    
+    const total = 10000
+    
+    let ul = document.getElementById('container')
+    const nodeFragment = document.createDocumentFragment()
+    for(let i = 0; i < total; i++) {
+    	let li = document.createElement('li')
+      li.innerText = ~~(Math.random() * total)
+      nodeFragment.appendChild(li)
+    }
+    ul.appendChild(nodeFragment)
+	  console.log( 'JS运行时间：', Date.now() - start)
+    setTimeout(() => {
+	    console.log('总运行时间: ', Date.now() - start )
+    })
+    // print JS运行时间：23
+    // print 总运行时间：485
+  })
+</script>
+</body>
+</html>
