@@ -2,9 +2,11 @@
 title: Vuex
 ---
 
+- [Vuex、Flux、Redux、Redux-saga、Dva、MobX](https://zhuanlan.zhihu.com/p/53599723)
+
 不管是Vue，还是 React，都需要管理状态（state），比如组件之间都有**共享状态**的需要。什么是共享状态？比如一个组件需要使用另一个组件的状态，或者一个组件需要改变另一个组件的状态，都是共享状态。
 
-为了使得状态便于管理、追踪，测试，总结来说就是不混乱，根据一下设计思想，比如约定大于配置，中间件模式等，状态管理的解决思路就是：**把组件之间需要共享的状态抽取出来，遵循特定的约定，统一来管理，让状态的变化可以预测。**
+为了使得状态便于管理、追踪，测试，总结来说就是不混乱，根据一些设计思想，比如约定大于配置，中间件模式等，状态管理的解决思路就是：**把组件之间需要共享的状态抽取出来，遵循特定的约定，统一来管理，让状态的变化可以预测。**
 
 ### Flux
 
@@ -35,8 +37,72 @@ Flux 的最大特点，就是数据的**单向流动**。
 
 ![](./image/Redux.png)
 
+```javascript
+import { createStore } from 'redux';
+const store = createStore(reducer);
+
+// reducer
+const defaultState = 0;
+const reducer = (state = defaultState, action) => {
+  switch (action.type) {
+    case 'ADD':
+      return state + action.payload;
+    default: 
+      return state;
+  }
+};
+
+const createStore = (reducer) => {
+  let state;
+  let listeners = [];
+
+  const getState = () => state;
+
+  const dispatch = (action) => {
+      state = reducer(state, action)
+      listeners.forEach(listener => listener())
+  }
+  
+  const subscribe = (listener) => {
+      listeners.push(listener)
+      return () => {
+      	listeners = listeners.filter(l => l !== listener)
+      } 
+  }
+  dispatch({});
+  return {
+    getState,
+    dispatch,
+    subscribe
+  }
+}
+```
+Redux 有很多的 Reducer，对于大型应用来说，State 必然十分庞大，导致 Reducer 函数也十分庞大，所以需要做拆分。Redux 里每一个 Reducer 负责维护 State 树里面的一部分数据，多个 Reducer 可以通过 combineReducers 方法合成一个根 Reducer，这个根 Reducer 负责维护整个 State。
+
+```javascript
+import { combineReducers } from 'redux';
+
+// 注意这种简写形式，State 的属性名必须与子 Reducer 同名
+const rootReducer = combineReducers({
+  Reducer1,
+  Reducer2,
+  Reducer3
+})
+
+const combineReducers = reducers => {
+  return (state = {}, action) => {
+    return Object.keys(reducers).reduce(
+      (nextState, key) => {
+        nextState[key] = reducers[key](state[key], action);
+        return nextState;
+      },
+      {} 
+    );
+  };
+};
+```
+
 ### Vuex
-- [Vuex、Flux、Redux、Redux-saga、Dva、MobX](https://zhuanlan.zhihu.com/p/53599723)
 - [vuex工作原理详解](https://www.jianshu.com/p/d95a7b8afa06)
 - [Vuex源码解读](https://mp.weixin.qq.com/s/uOVFpApoFJ7culotTQ5f3A)
 
