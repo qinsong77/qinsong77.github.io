@@ -268,6 +268,7 @@ JSX在编译时会被`Babel`编译为`React.createElement`方法。
 
 `React.createElement`最终会调用`ReactElement`方法返回一个包含组件数据的对象，该对象有个参数`$$typeof: REACT_ELEMENT_TYPE`标记了该对象是个`React Element`。
 
+`props.children`打印出来是个`React.element`
 ```js
 export function createElement(type, config, children) {
   let propName;
@@ -739,7 +740,7 @@ example的详细执行逻辑
 
 但是在`example`中`Son`是如下形式：`{props.children}`
 
-其中，`props.children`是Son对应的JSX，而这里的`props`是`App fibe`r走`bailout`逻辑后返回的。
+其中，`props.children`是Son对应的JSX，而这里的`props`是`App fiber`走`bailout`逻辑后返回的。
 
 所以`Son`对应的`JSX`与上次更新时一致，`JSX`中保存的`props`也就一致，满足条件1。
 
