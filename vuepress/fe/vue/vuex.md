@@ -25,9 +25,9 @@ Flux 的最大特点，就是数据的**单向流动**。
 
 三大原则：
 
-- 单一数据源：整个应用的 state 被储存在一棵 object tree 中，并且这个 object tree 只存在于唯一一个 store 中。
+- **单一数据源**：整个应用的 state 被储存在一棵 object tree 中，并且这个 object tree 只存在于唯一一个 store 中。
 - State 是只读的: 唯一改变 state 的方法就是触发 action，action 是一个用于描述已发生事件的普通对象。
-- 使用纯函数reducer来执行修改
+- 使用纯函数reducer来执行修改，Redux 的 Reducer 就是 reduce 一个列表（action的列表）和一个 initialValue（初始的 State）到一个新的 value（新的 State）。
 
 ![](./image/flux-vs-redux.png)
 
@@ -101,6 +101,13 @@ const combineReducers = reducers => {
   };
 };
 ```
+
+### react-redux
+
+Redux中一个组件如果想从store存取公用状态，需要进行四步操作：import引入store、getState获取状态、dispatch修改状态、subscribe订阅更新，代码相对冗余，我们想要合并一些重复的操作，而react-redux就提供了一种合并操作的方案：react-redux提供`Provider`和`connect`两个API，Provider将store放进this.context里，省去了import这一步，connect将getState、dispatch合并进了this.props，并自动订阅更新，简化了另外三步
+
+Redux将React组件分为容器型组件和展示型组件，容器型组件一般通过`connect`函数生成，它订阅了全局状态的变化，通过`mapStateToProps`函数，可以对全局状态进行过滤，而展示型组件不直接从`global state`获取数据，其数据来源于父组件。
+
 
 ### Vuex
 - [vuex工作原理详解](https://www.jianshu.com/p/d95a7b8afa06)

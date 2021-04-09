@@ -531,26 +531,58 @@ server {
 
 ```
 
-#### nginx配置proxy_pass时url末尾带“/”与不带“/”的区别
+#### nginx配置`proxy_pass`时url末尾带“/”与不带“/”的区别
+-[nginx location中斜线的位置](https://blog.csdn.net/u010509052/article/details/105455813)
+
+在proxy_pass中
+1. proxy_pass包含路径如 `http://127.0.0.1:8080/abc` 和`http://127.0.0.1:8080`规则都有区别。
+
+2. proxy_pass结尾加斜杠/和不加斜杠的有区别
+
 当`location`为正则表达式匹配模式时，`proxy_pass`中的url末尾是不允许有"/"的，因此正则表达式匹配模式不在讨论范围内。
 **proxy_pass配置中url末尾带/时，nginx转发时，会将原uri去除location匹配表达式后的内容拼接在proxy_pass中url之后。**
-测试地址：http://192.168.171.129/test/index.html
-- 场景一：
-```
-location ^~ /test/ {
- proxy_pass http://192.168.171.129:8080/server/;
-}
-```
-代理后实际访问地址：http://192.168.171.129:8080/server/index.html
-```
-location ^~ /test {
- proxy_pass http://192.168.171.129:8080/server/;
-}
-```
-场景二：
-代理后实际访问地址：http://192.168.171.129:8080/server//index.html
+测试地址：`http://192.168.10.1/proxy/test.html`访问
 
-proxy_pass配置中url末尾不带/时，如url中不包含path，则直接将原uri拼接在proxy_pass中url之后；如url中包含path，则将原uri去除location匹配表达式后的内容拼接在proxy_pass中的url之后。
+- 场景一：第一种(末尾加斜杠，proxy_pass中不包含路径）：
+```
+location  /proxy/ {
+   proxy_pass http://127.0.0.1:81/;
+}
+```
+代理后实际访问地址：`http://127.0.0.1:81/test.html`( (proxy_pass+请求url匹配的location路径后的内容）)
+
+- 场景二：末尾不加斜杠,proxy_pass不包含路径
+```
+location  /proxy/ {
+   proxy_pass http://127.0.0.1:81;
+}
+```
+代理后实际访问地址：`http://127.0.0.1:81/proxy/test.html` (proxy_pass替换请求url的ip和端口）
+
+- 场景三：末尾加斜杠,proxy_pass包含路径
+```
+location  /proxy/ {
+   proxy_pass http://127.0.0.1:81/abc/;
+}
+```
+代理后实际访问地址：`http://127.0.0.1:81/abc/test.html` (proxy_pass+请求url匹配的location路径后的内容）
+
+- 场景四：末尾不加斜杠,url包含路径
+```
+location  /proxy/ {
+   proxy_pass http://127.0.0.1:81/abc;
+}
+```
+代理后实际访问地址：`http://127.0.0.1:81/abctest.html` (proxy_pass+请求url匹配的location路径后的内容）
+
+1. 如果`proxy_pass`后面有斜杠。转发url为`proxy_pass+原url匹配的location路径之后的内容`。
+2. proxy_pass后面没有斜杠
+
+  a. 只有当proxy_pass只有IP加端口，无路径时。匹配规则为proxy_pass替换原请求url的ip和端口，
+  
+  同时保留了location路径。例子为上述的第二种情况。
+   
+  b. 当proxy_pass端口后包含路径时，匹配规则同1.
 
 
 ### 打包成UMD, UMD
@@ -588,6 +620,7 @@ UMD会先判断是否支持Node.js的模块（export)是不是存在。存在则
 3. 通过webpack 插件    
 
 ##### cdn-adaptor.js
+ ::: details 点击查看代码
 ```javascript
 const gulp = require('gulp');
 const through2 = require('through2');
@@ -618,12 +651,14 @@ gulp.task('css', function(cb) {
 
 gulp.task('default', gulp.parallel('css'));
 ```
+ ::: 
     
 2. copy-webpack-plugin配置
+ ::: details 点击查看代码
 ```js
 new Copy([
         {
-          from: path.resolve(__dirname, 'node_modules/@cmiot/one-ui/dist'),
+          from: path.resolve(__dirname, 'node_modules/@cmi/one-ui/dist'),
           to: 'static/one-ui',
           ignore: ['.*'],
           cache: true,
@@ -666,11 +701,11 @@ class CdnAdaptorPlugin {
 }
 
 module.exports = CdnAdaptorPlugin
-
 ```
+ ::: 
 
-#### 主应用vue.config.jg
-
+#### 主应用vue.config.js
+ ::: details 点击查看代码
 ```javascript
 const path = require('path');
 const Copy = require('copy-webpack-plugin');
@@ -805,7 +840,8 @@ module.exports = {
 };
 
 ```
-
+ ::: 
+ 
 ##### 子应用vue.config.js
 
 ```
@@ -815,6 +851,7 @@ FONT_BASE_URL=/ops/subapp/stateManage
 PUBLIC_PATH=/ops/subapp/stateManage
 CDN_DOMIAN=http://www.one.com/ops/static
 ```
+ ::: details 点击查看代码
 ```javascript
 const path = require('path')
 const packages = require('./package.json')
@@ -988,3 +1025,4 @@ module.exports = {
 }
 
 ```
+ ::: 

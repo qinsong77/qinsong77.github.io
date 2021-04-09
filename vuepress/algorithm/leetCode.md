@@ -71,10 +71,12 @@ title: LeetCode
    - [凑零钱问题](#凑零钱问题)
    - [最长公共子序列](#最长公共子序列)
    - [最长递增子序列](#最长递增子序列)
+   - [乘积最大子数组](#乘积最大子数组)
    - [编辑距离](#编辑距离)
    - [买卖股票的最佳时机](#买卖股票的最佳时机)
 - [8.数组](#_8-数组)
    - [连续子数组的最大和](#连续子数组的最大和)
+   - [乘积最大子数组](#乘积最大子数组)
    - [合并两个有序数组](#合并两个有序数组)
    - [全排列](#全排列)
    - [最长湍流子数组](#最长湍流子数组)
@@ -2729,6 +2731,24 @@ var maxSubArray = function(nums) {
        sum = Math.max(prevSum, sum)
     }
     return sum
+};
+```
+
+### [乘积最大子数组](https://leetcode-cn.com/problems/maximum-product-subarray/)
+// https://leetcode-cn.com/problems/maximum-product-subarray/solution/dong-tai-gui-hua-152-cheng-ji-zui-da-zi-shu-zu-by-/
+```javascript
+var maxProduct = function(nums) {
+    const length = nums.length
+    let min = nums[0]
+    let max = nums[0]
+    let res = nums[0]
+    for(let i = 1; i < length; i++) {
+        let temp = min
+        min = Math.min(nums[i], Math.min(nums[i] * min, nums[i] * max))
+        max = Math.max(nums[i], Math.max(nums[i] * temp, nums[i] * max))
+        res = Math.max(max, res)
+    }
+    return res
 };
 ```
 

@@ -161,9 +161,10 @@ axios.get('/user/12345', {
 cancel();
 ```
 实现
+ ::: details 点击查看代码
 ```javascript
 import axios from 'axios'
-import { Message } from '@cmiot/onenet-ui'
+import { Message } from '@com/onet-ui'
 import { API_BASE_URL } from '_com/constant'
 
 // 存储每个请求的标识和取消的函数
@@ -251,6 +252,7 @@ instance.interceptors.response.use(
 
 export default instance
 ```
+ ::: 
 使用
 ```javascript
 export const getWorkList = (params) => {
