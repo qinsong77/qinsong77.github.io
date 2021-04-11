@@ -128,6 +128,7 @@ js引擎遇到一个异步事件后并不会一直等待其返回结果，而是
 
 图中的`stack`表示我们所说的`执行栈`，web apis则是代表一些异步事件，而callback queue即事件队列。
 
+![](./image/event_loop7.png)
 
 ### 浏览器的进程
 

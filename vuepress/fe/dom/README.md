@@ -23,7 +23,7 @@ title: Dom
 - [浏览器页面渲染机制](#浏览器页面渲染机制)
   - [Load 和 DOMContentLoaded 区别](#load-%E5%92%8C-domcontentloaded-%E5%8C%BA%E5%88%AB)
   - [图层](#%E5%9B%BE%E5%B1%82)
-  - [重绘（Repaint）和回流（Reflow）](#%E9%87%8D%E7%BB%98repaint%E5%92%8C%E5%9B%9E%E6%B5%81reflow)
+  - [重绘（Repaint）和回流（Reflow）](#重绘-repaint-和回流-reflow)
   - [减少重绘和回流](#%E5%87%8F%E5%B0%91%E9%87%8D%E7%BB%98%E5%92%8C%E5%9B%9E%E6%B5%81)
 - [Event loop](#event-loop)
   - [Node 中的 Event loop](#node-%E4%B8%AD%E7%9A%84-event-loop)
@@ -537,6 +537,7 @@ event 包含的关键信息：
 - localstorage.setItem(key, value) 只有当后一次设置的 value 不同的时候才会触发该事件，相同的话也没有必要触发了；
 
 ### 浏览器页面渲染机制
+- [【Web动画】CSS3 3D 行星运转 && 浏览器渲染原理](https://www.cnblogs.com/coco1s/p/5439619.html)
 > [介绍](https://juejin.im/post/6844903815758479374)
 
 #### [浏览器的渲染原理](https://mp.weixin.qq.com/s?__biz=MzIxMjE5MTE1Nw==&mid=2653218120&idx=1&sn=bb06f680de8cbbadcd8df92ff68d14fc&chksm=8c999792bbee1e8454c7a858353f5de69ed0261ee23183eaab1a161a5c5e748b8cb5e4b4a417&mpshare=1&scene=23&srcid=1229XZoiB6bnwfUCq9pyC20r&sharer_sharetime=1609233596674&sharer_shareid=1958dfa2b35b63c7a7463d11712f39df#rd)
@@ -582,8 +583,19 @@ DOMContentLoaded 事件触发代表初始的 HTML 被完全加载和解析，不
 
 重绘和回流是渲染步骤中的一小节，但是这两个步骤对于性能影响很大。
 
-- 重绘是当节点需要更改外观而不会影响布局的，比如改变 `color` 就叫称为重绘
+- 回流（reflow）
+
+当渲染树（render Tree）中的一部分(或全部)因为元素的规模尺寸，布局，隐藏等改变而需要重新构建。这就称为回流（reflow），也就是重新布局（relayout）。
+
+每个页面至少需要一次回流，就是在页面第一次加载的时候。在回流的时候，浏览器会使渲染树中受到影响的部分失效，并重新构造这部分渲染树，完成回流后，浏览器会重新绘制受影响的部分到屏幕中，该过程成为重绘。
+
+- 重绘（repaint）
+
+当render tree中的一些元素需要更新属性，而这些属性只是影响元素的外观，风格，而不会影响布局的，比如 background-color 。则就叫称为重绘。
+
 - 回流是布局或者几何属性需要改变就称为回流。
+- 重绘是当节点需要更改外观而不会影响布局的，比如改变 `color` 就叫称为重绘
+
 
 回流必定会发生重绘，重绘不一定会引发回流。回流所需的成本比重绘高的多，改变深层次的节点很可能导致父节点的一系列回流。
 

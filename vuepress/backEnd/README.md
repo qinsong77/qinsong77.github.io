@@ -15,7 +15,7 @@ title: Summary of node
 - [MongoDB 极简入门实践](https://mp.weixin.qq.com/s/lcoa6X-aSaUJHzdXFEjuzA)
 
 ### [Cookie、Session、Token、JWT](https://juejin.im/post/6844904034181070861)
-
+- [前端登录介绍](https://juejin.cn/post/6845166891393089544)
 - [JSON Web Token 入门教程](http://www.ruanyifeng.com/blog/2018/07/json_web_token-tutorial.html)
 
 简单token的组成： uid(用户唯一的身份标识)、time(当前时间的时间戳)、sign（签名，token 的前几位以哈希算法压缩成的一定长度的十六进制字符串）
@@ -24,6 +24,50 @@ JWT 的三个部分依次如下。
 - Header（头部）
 - Payload（负载）
 - Signature（签名）
+header 部分指定了该 JWT 使用的签名算法:
+```javascript
+header = '{"alg":"HS256","typ":"JWT"}'   // `HS256` 表示使用了 HMAC-SHA256 来生成签名。
+```
+playload 部分表明了 JWT 的意图：
+```javascript
+payload = '{"loggedInAs":"admin","iat":1422779638}'     //iat 表示令牌生成的时间
+```
+signature 部分为 JWT 的签名，主要为了让 JWT 不能被随意篡改，签名的方法分为两个步骤：
+1. 输入 `base64url` 编码的 header 部分、 `.` 、`base64url` 编码的 playload 部分，输出 `unsignedToken`。
+2. 输入服务器端**私钥**、unsignedToken，输出 signature 签名。
+```javascript
+const base64Header = encodeBase64(header)
+const base64Payload = encodeBase64(payload)
+const unsignedToken = `${base64Header}.${base64Payload}`
+const key = '服务器私钥'
+
+signature = HMAC(key, unsignedToken)
+```
+最后的 Token 计算如下：
+```javascript
+const base64Header = encodeBase64(header)
+const base64Payload = encodeBase64(payload)
+const base64Signature = encodeBase64(signature)
+
+token = `${base64Header}.${base64Payload}.${base64Signature}`
+```
+服务器在判断 Token 时：
+```javascript
+const [base64Header, base64Payload, base64Signature] = token.split('.')
+
+const signature1 = decodeBase64(base64Signature)
+const unsignedToken = `${base64Header}.${base64Payload}`
+const signature2 = HMAC('服务器私钥', unsignedToken)
+
+if(signature1 === signature2) {
+  return '签名验证成功，token 没有被篡改'
+}
+
+const payload =  decodeBase64(base64Payload)
+if(new Date() - payload.iat < 'token 有效期'){
+  return 'token 有效'
+}
+```
 
 Token 和 JWT 的区别
 

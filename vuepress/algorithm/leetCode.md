@@ -466,7 +466,69 @@ var canPermutePalindrome = function(s) {
 ```
 
 #### [回文子串个数](https://leetcode-cn.com/problems/palindromic-substrings/)
+1. 暴力求解，找出所有子串，看是否是回文
+```javascript
+function isPalindromic(s) {
+    let i = 0, j = s.length - 1
+    while(i <= j) {
+        if(s[i] !== s[j]) return false
+        i++
+        j-- 
+    }
+    return true
+}
+var countSubstrings = function(s) {
+    let count = 0
+    for(let i = 0; i < s.length; i++) {
+        for(let j = i; j < s.length; j++) {
+            if(isPalindromic(s.slice(i, j+1))) {
+                count++
+            }
+        }
+    }
+    return count
+};
+```
+2. 中心扩展法
+```javascript
+var countSubstrings = function(s) {
+    let num = 0
+    for(let i = 0; i < s.length; i++) {
+        count(s, i, i) //回文串长度为奇数
+        count(s, i, i+1) //回文串长度为偶数
+    }
+    function count(s, start, end) {
+        while(start >= 0 && end < s.length && s[start] === s[end]) {
+            num++
+            start--
+            end++
+        }
+   }
+   return num   
+};
+```
+3. [动态规划](https://leetcode-cn.com/problems/palindromic-substrings/solution/shou-hua-tu-jie-dong-tai-gui-hua-si-lu-by-hyj8/)
 
+```javascript
+const countSubstrings = (s) => {
+  const len = s.length;
+  let count = 0;
+  const dp = new Array(len);
+
+  for (let j = 0; j < len; j++) {
+    for (let i = 0; i <= j; i++) {
+      if (s[i] === s[j] && (j - i <= 1 || dp[i + 1])) {
+        dp[i] = true;
+        count++;
+      } else {
+        dp[i] = false;
+      }
+    }
+  }
+  return count;
+};
+
+```
 ## 3.字符串
 
 #### [有效的括号](https://leetcode-cn.com/problems/valid-parentheses/) 
@@ -2735,7 +2797,7 @@ var maxSubArray = function(nums) {
 ```
 
 ### [乘积最大子数组](https://leetcode-cn.com/problems/maximum-product-subarray/)
-// https://leetcode-cn.com/problems/maximum-product-subarray/solution/dong-tai-gui-hua-152-cheng-ji-zui-da-zi-shu-zu-by-/
+[题解](https://leetcode-cn.com/problems/maximum-product-subarray/solution/dong-tai-gui-hua-152-cheng-ji-zui-da-zi-shu-zu-by-/)
 ```javascript
 var maxProduct = function(nums) {
     const length = nums.length

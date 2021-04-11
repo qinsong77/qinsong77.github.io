@@ -1,28 +1,24 @@
 ## todo and done list
 
-- [x] 已经完成
-- [ ] 未完成的
+- **JavaScript**
+- **CSS**
+- **Vue**
+- **React**
+- **Webpack**
+- **Http/https**
+- **Node**
+- **koa、v8**
+- **Browser**
 
-----
-
-**JavaScript**
-**CSS**
-**Vue**
-**React**
-**Webpack**
-**Http**
-**Node**
-**koa、v8、express**
-
-- [ ] js执行上下文，作用域，this的指向
-- [ ] 原型及原型链
-- [ ] 闭包
-- [ ] 防抖及节流
-- [ ] 循环in 和 of
-- [ ] 模块化
-- [ ] 事件循环
-- [ ] Object.create实现
-- [ ] 设计模式
+- js执行上下文，作用域，this的指向
+- 原型及原型链
+- 闭包
+- 防抖及节流
+- 循环in 和 of
+- 模块化
+- 事件循环
+- Object.create实现
+- 设计模式
 
 
 [深入JavaScript系列](https://github.com/mqyqingfeng/Blog)

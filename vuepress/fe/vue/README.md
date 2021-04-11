@@ -27,18 +27,22 @@ Dep 对象用于依赖收集，它实现了一个观察者模式，完成了数�
 
 [图解 Vue 响应式原理](https://juejin.cn/post/6857669921166491662)
 
+![](./image/vue_all_process.png)
+
+![](./image/vue_stream.png)
+
 [Vue 的响应式更新粒度](https://juejin.cn/post/6844904113432444942)
 ##### 总结
- - 1、在beforeCreate和created之间调用initState(vm)方法， 获取data并遍历,调用observe方法，ob = new Observer(value)进行依赖收集和派发更新
- - 2、在Observer中调用`defineReactive`使用`defineProperty`进行get和set操作，defineReactive中var dep = new Dep();
- Object.defineProperty 在getter时if (Dep.target) 则执行 dep.depend()即Dep.target.addDep(this);setter的时候dep.notify()派发更新。
- - 3、在beforeMount和mounted之间new Watcher(),watcher实例化的时候，会执行this.get()方法，把Dep.target赋值为当前渲染watcher并压入栈(为了恢复用),具体是`new`的时候执行
- `this.get()`,然后这个get先执行 `pushTarget(this);`然后执行`this.getter.call(vm, vm)`, 这个`getter`是`new`的时候赋值的`updateComponent`函数，里面执行了render组件的方法。
- 接着执行vm._render()方法，生成渲染VNode,并且在这个过程中对vm上的数据访问，这个时候就触发了数据对象的getter(执行了Dep.target.addDep(this)方法，
- 将watcher订阅到这个数据持有的dep的subs中，为后续数据变化时通知到拉下subs做准备).然后递归遍历添加所有子项的getter。
+ - 1、在beforeCreate和created之间调用initState(vm)方法， 获取data并遍历，调用observe方法，ob = new Observer(value)进行依赖收集和派发更新
+ - 2、在Observer中调用`defineReactive`使用`defineProperty`进行get和set操作，defineReactive中var dep = new Dep()；
+ Object.defineProperty 在getter时if (Dep.target) 则执行 dep.depend()即Dep.target.addDep(this)；setter的时候dep.notify()派发更新。
+ - 3、在beforeMount和mounted之间new Watcher()，watcher实例化的时候，会执行this.get()方法，把Dep.target赋值为当前渲染watcher并压入栈(为了恢复用)，具体是`new`的时候执行
+ `this.get()`，然后这个get先执行 `pushTarget(this);`然后执行`this.getter.call(vm, vm)`， 这个`getter`是`new`的时候赋值的`updateComponent`函数，里面执行了render组件的方法。
+ 接着执行vm._render()方法，生成渲染VNode，并且在这个过程中对vm上的数据访问，这个时候就触发了数据对象的getter(执行了Dep.target.addDep(this)方法，
+ 将watcher订阅到这个数据持有的dep的subs中，为后续数据变化时通知到拉下subs做准备)。然后递归遍历添加所有子项的getter。
  
->data中的数据是对象或者基本类型，对比多做了一些工作，会给这个对象属性添加`__ob__`的属性，即`new Observer`中创建了依赖收集`dep`,在`Object.defineReactive`中判断有这个
->属性，则添加依赖，方便后续的`$set`,`$delete`api的处理
+>data中的数据是对象或者基本类型，对比多做了一些工作，会给这个对象属性添加`__ob__`的属性，即`new Observer`中创建了依赖收集`dep`，在`Object.defineReactive`中判断有这个
+>属性，则添加依赖，方便后续的`$set`，`$delete`api的处理
 
  ![An image](./image/vue3.png)
  
@@ -574,7 +578,64 @@ Dep 对象用于依赖收集，它实现了一个观察者模式，完成了数�
       }
     }
   }
+  function flushSchedulerQueue () {
+    currentFlushTimestamp = getNow();
+    flushing = true;
+    var watcher, id;
 
+    // Sort queue before flush.
+    // This ensures that:
+    // 1. Components are updated from parent to child. (because parent is always
+    //    created before the child)
+    // 2. A component's user watchers are run before its render watcher (because
+    //    user watchers are created before the render watcher)
+    // 3. If a component is destroyed during a parent component's watcher run,
+    //    its watchers can be skipped.
+    queue.sort(function (a, b) { return a.id - b.id; });
+
+    // do not cache length because more watchers might be pushed
+    // as we run existing watchers
+    for (index = 0; index < queue.length; index++) {
+      watcher = queue[index];
+      if (watcher.before) {
+        watcher.before();
+      }
+      id = watcher.id;
+      has[id] = null;
+      watcher.run();
+      // in dev build, check and stop circular updates.
+      if (has[id] != null) {
+        circular[id] = (circular[id] || 0) + 1;
+        if (circular[id] > MAX_UPDATE_COUNT) {
+          warn(
+            'You may have an infinite update loop ' + (
+              watcher.user
+                ? ("in watcher with expression \"" + (watcher.expression) + "\"")
+                : "in a component render function."
+            ),
+            watcher.vm
+          );
+          break
+        }
+      }
+    }
+
+    // keep copies of post queues before resetting state
+    var activatedQueue = activatedChildren.slice();
+    var updatedQueue = queue.slice();
+
+    resetSchedulerState();
+
+    // call component updated and activated hooks
+    callActivatedHooks(activatedQueue);
+    callUpdatedHooks(updatedQueue);
+
+    // devtool hook
+    /* istanbul ignore if */
+    if (devtools && config.devtools) {
+      devtools.emit('flush');
+    }
+  }
 ```
 :::
 
@@ -605,10 +666,12 @@ function proxy (target, sourceKey, key) {
 就是`<input type="text" v-model="message">`变成了
 
 ```vue
-<input type="text" :value="message" @input="if($event.target.composing)return;message =$event.target.value">
+<input type="text" :value="message" @input="if($event.target.composing)return;message = $event.target.value">
 ```
 `event.target.composing`用于判断此次input事件是否是`IME`构成触发的，如果是`IME`构成，直接`return`。`IME` 是输入法编辑器(Input Method Editor) 的英文缩写，IME构成指我们在输入文字时，处于未确认状态的文字。
 ### template是如何编译成render function的？
+
+- [Template模版编译](https://mp.weixin.qq.com/s/uuXB0dj7gKRbn_UivcbwFg)
 
 Vue提供了两个版本，一个是Runtime+Compiler版本的，一个是Runtime only版本的。Runtime+Compiler是包含编译代码的，可以把编译过程放在运行时来做。而Runtime only是不包含编译代码的，所以需要借助webpack的vue-loader来把模版编译成render函数。
 
@@ -707,6 +770,7 @@ optimize(ast, options)
 可以看到，optimize实际上就做了2件事情，一个是调用markStatic()来标记静态节点，另一个是调用markStaticRoots()来标记静态根节点。
 
 - 3.code generate：将优化后的AST树转换成可执行的代码(主要功能就是根据 AST 结构拼接生成 render 函数的字符串。通过`new Function`生成可运行的`render function`)。
+`generate`就是将`AST`转化成`render funtion`字符串的过程，得到结果是`render`的字符串以及`staticRenderFns`字符串。最后render函数在执行时就会把`_c`和`_l`等替换成真正的函数，从而返回一个`vnode`，再继续完成`patch`，插入`真实dom树`完成渲染。
  ::: details render function中有with的原因
 ```javascript
 function render () {
@@ -826,7 +890,7 @@ function render () {
 
 **注意这个`__ob__`中dep怎么添加的**
 
-`observe(data)`方法中`new Observer(value)`(value及data), new的时候这里也`new Dep()`，这个和`defineReactive$$1`中建的dep不一样，执行` def(value, '__ob__', this);`把`__ob__`定义个对象和数组，
+`observe(data)`方法中`new Observer(value)`(value及data), new的时候这里也`new Dep()`，这个和`defineReactive$$1`中建的dep不一样，执行` def(value, '__ob__', this);`把`__ob__`定义成属性给这个对象和数组，
 而这个`__ob__`中的dep怎么添加watcher的？在`defineReactive$$1`调用`var childOb = !shallow && observe(val);`获取ob，然后在getter中
 ```javascript
 get: function reactiveGetter () {
@@ -981,7 +1045,7 @@ get: function reactiveGetter () {
 
 ### 数组响应式变化原理
 > 使用`Object.create`复制Array的原型对象prototype得到arrayMethods, 遍历一个7个数组方法的数组，包括`push,pop,shift,unshift,splice,sort，reverse`
->这些能改变数组的方法,使用函数劫持，在遍历时使用`Object.defineProperty`重写复制的原型对象arrayMethods对应方法的value,即重写方法，使用Array.prototype
+>这些能改变数组的方法，使用函数劫持，再遍历使用`Object.defineProperty`重写复制的原型对象arrayMethods对应方法的value,即重写方法，使用Array.prototype
 >的原函数方法`apply`获取并返回结果，同时通过`var ob = this.__ ob__`获取Observer,调用`ob.dep.notify()`，通知更新；
 >在Observe构造函数中，判断如果data的value如果是数组，1、如果该数组有`__proto__`属性，则直接把arrayMethods赋值给`__proto__`
 >2、如果没有，则调用copyAugment，遍历arrayMethods把方法直接赋值给该数组
@@ -1095,7 +1159,7 @@ get: function reactiveGetter () {
 >vue更新Dom也会把更新队列添加到nextTick中去执行
 
 ::: tip 总结描述
- 事件循环是在执行执行完宏任务后（script是第一个宏任务），执行完所有的微任务，在执行GUI渲染，然后开启事件队列中的下一个宏认为。
+ 事件循环是在执行执行完宏任务后（script是第一个宏任务），执行完所有的微任务，再执行GUI渲染，然后开启事件队列中的下一个宏任务。
  当执行this.xx = 'xx' 时，背后更新Dom的回调会加到callback数组中，当执行完脚本，会执行微任务队列，这时就会遍历callback运行所有的回调函数。
 :::
  
@@ -1724,7 +1788,7 @@ ComputedWatcher 和普通 Watcher 的区别：
 ```
 :::
 ### Vue中组件生命周期调用顺序
->组件的调用顺序都是**先父后子**,渲染完成的顺序是**先子后父**
+>组件的调用顺序都是**先父后子**，渲染完成的顺序是**先子后父**
 >组件的销毁操作是先父后子，销毁完成的顺序是先子后父
 - 加载渲染过程(在父组件mounted执行子组件beforeCreate到mounted的过程)
 父beforeCreate->父created->父beforeMount->子beforeCreate->子created->子beforeMount- >子mounted->父mounted
@@ -1743,9 +1807,11 @@ ComputedWatcher 和普通 Watcher 的区别：
 
 ### [vue Diff](https://mp.weixin.qq.com/s?__biz=MzUxNjQ1NjMwNw==&mid=2247484449&idx=1&sn=7f346b97a177218cc09fc50562ed121c&chksm=f9a66e3dced1e72b8a88fd0d78b5a5b8bd2e0ec95552e675d44923d368bba2ec438c520cd7be&token=946193943&lang=zh_CN#rd)
 
-[vue2.0的diff算法详解](https://www.jianshu.com/p/92a7496af50c)
+- [patch 机制](https://mp.weixin.qq.com/s/CMkXz-CbWIvR52ZzffcnOg)--梳理的比较清楚
 
-[深入剖析：Vue核心之虚拟DOM](https://juejin.cn/post/6844903895467032589)
+- [vue2.0的diff算法详解](https://www.jianshu.com/p/92a7496af50c)
+
+- [深入剖析：Vue核心之虚拟DOM](https://juejin.cn/post/6844903895467032589)
 
 对比 oldVnode 和 vnode(`patch`)
 - 1、没有旧节点
@@ -1785,6 +1851,7 @@ ComputedWatcher 和普通 Watcher 的区别：
     return typeA === typeB || isTextInputType(typeA) && isTextInputType(typeB)
   }
 ```
+- [vue3.0 diff算法详解](https://blog.csdn.net/zl_Alien/article/details/106595459)
 
 - [Vue 3.0 diff 算法及原理](https://mp.weixin.qq.com/s/fUnKx_Cts8nCaM7n31kKVw)
 
@@ -1820,19 +1887,22 @@ ComputedWatcher 和普通 Watcher 的区别：
 两个节点值得比较时，会调用patchVnode函数
 ```javascript
 function patchVnode (oldVnode, vnode){
-    const el = vnode.el = oldVnode.el
+    if (oldVnode === vnode) {
+        return
+    }
+    var elm = vnode.elm = oldVnode.elm;
     let i, oldCh = oldVnode.children, ch = vnode.children
     if (oldVnode === vnode) return
     if (oldVnode.text !== null && vnode.text !== null && oldVnode.text !== vnode.text) {
-        api.setTextContent(el, vnode.text)
+        api.setTextContent(elm, vnode.text)
     }else {
-        updateEle(el, vnode, oldVnode)
+        updateEle(elm, vnode, oldVnode)
         if (oldCh && ch && oldCh !== ch) {
-            updateChildren(el, oldCh, ch)
+            updateChildren(elm, oldCh, ch)
         }else if (ch){
             createEle(vnode) //create el's children dom
         }else if (oldCh){
-            api.removeChildren(el)
+            api.removeChildren(elm)
         }
     }
 }
@@ -1910,7 +1980,7 @@ export default {
 
 过程可以概括为：`oldCh`和`newCh`各有两个头尾的变量`StartIdx`和`EndIdx`，它们的2个变量相互比较，一共有4种比较方式。如果4种比较都没匹配，如果设置了`key`，就会用`key`进行比较，在比较的过程中，变量会往中间靠，一旦`StartIdx>EndIdx`表明`oldCh`和`newCh`至少有一个已经遍历完了，就会结束比较。
 
-- 1. 旧节点`oldStartVnode`或`oldEndVnode`为`undefined`或null，这index++
+- 1. 旧节点`oldStartVnode`或`oldEndVnode`为`undefined`或null，则index++
 - 2. 新旧开始和结束节点比较，四种情况其实是指定key的时候，判定为同一个VNode，则直接patchVnode即可，分别比较oldCh以及newCh的两头节点2*2=4种情况
   - oldStartVnode === newStartVnode =》 patchVnode
   - oldEndVnode === newEndVnode =》 patchVnode
@@ -2020,20 +2090,20 @@ newStartIdx > newEndIdx，则说明新节点已经遍历完了，老节点多余
 
 ![](./image/vdom_diff.jpg)
 
-### [Vue.js的computed和watch是如何工作的](https://juejin.cn/post/6844903667884097543)
+#### [Vue.js的computed和watch是如何工作的](https://juejin.cn/post/6844903667884097543)
 
-### [keep-alive原理](https://juejin.im/post/6862206197877964807)
+#### [keep-alive原理](https://juejin.im/post/6862206197877964807)
 
-### [虚拟 DOM 到底是什么？(长文建议收藏)](https://mp.weixin.qq.com/s/oAlVmZ4Hbt2VhOwFEkNEhw)
-### [探索Virtual DOM的前世今生](https://zhuanlan.zhihu.com/p/35876032)
-### [让虚拟DOM和DOM-diff不再成为你的绊脚石](https://juejin.cn/post/6844903806132568072)
-### [面试官: 你对虚拟DOM原理的理解?](https://juejin.cn/post/6844903902429577229)
-### [详解vue的diff算法](https://juejin.cn/post/6844903607913938951)
+#### [虚拟 DOM 到底是什么？(长文建议收藏)](https://mp.weixin.qq.com/s/oAlVmZ4Hbt2VhOwFEkNEhw)
+#### [探索Virtual DOM的前世今生](https://zhuanlan.zhihu.com/p/35876032)
+#### [让虚拟DOM和DOM-diff不再成为你的绊脚石](https://juejin.cn/post/6844903806132568072)
+#### [面试官: 你对虚拟DOM原理的理解?](https://juejin.cn/post/6844903902429577229)
+#### [详解vue的diff算法](https://juejin.cn/post/6844903607913938951)
 
-### [Vue.extend](https://zhuanlan.zhihu.com/p/342643253)
+#### [Vue.extend](https://zhuanlan.zhihu.com/p/342643253)
 
-### [实现双向绑定Proxy比defineProperty优劣如何](https://juejin.cn/post/6844903601416978439)
-### [为什么Vue3.0不再使用defineProperty实现数据监听？](https://mp.weixin.qq.com/s/O8iL4o8oPpqTm4URRveOIA)
+#### [实现双向绑定Proxy比defineProperty优劣如何](https://juejin.cn/post/6844903601416978439)
+#### [为什么Vue3.0不再使用defineProperty实现数据监听？](https://mp.weixin.qq.com/s/O8iL4o8oPpqTm4URRveOIA)
 
 ### 数据改变到页面渲染的过程是怎么样的？
 - 看下面的图片👇，这是执行click函数改变一个数据之后发生的函数调用栈，从图上的说明可以比较清楚个了解这个响应式过程的大概流程。下面简单讲解一下：
@@ -2107,8 +2177,8 @@ history 提供了 `pushState` 和 `replaceState` 两个方法，这两个方法�
 history 提供类似 `hashchange` 事件的 `popstate` 事件，但 `popstate` 事件有些不同：
 
 1. 通过浏览器前进后退改变 URL 时会触发 popstate 事件
-2. 通过pushState/replaceState或`<a>`标签改变 URL 不会触发 popstate 事件。
-3. 好在我们可以拦截 pushState/replaceState的调用和`<a>`标签的点击事件来检测 URL 变化，通过js 调用history的back，go，forward方法课触发该事件
+2. 通过`pushState`、`replaceState`或`<a>`标签改变 URL 不会触发 popstate 事件。
+3. 好在可以拦截` pushState`、`replaceState`的调用和`<a>`标签的点击事件来检测 `URL` 变化，通过js调用`history`的back，go，forward方法可触发该事件
 
 ```html
 <!DOCTYPE html>

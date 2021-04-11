@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>Record fps</title>
+</head>
+<body>
+<canvas id='fps_canvas'></canvas>
+<script>
+	let canvas = document.getElementById('fps_canvas');
+	let ctx = canvas && canvas.getContext('2d');
+	if (!ctx) {
+		console.info("浏览器不支持canvas")
+	} else {
+		let lastTime = 0;
+		let fpsInterVal = 30; // fps监听间隔次数
+		let fpsCount = 0; // fps监听间隔计数
+		let fps = 0; // fps值
+		let getFps = function () {
+			fpsCount++;
+			let nowTime = performance.now(); // 获取当前的时间
+			if (fpsCount >= fpsInterVal) {
+				fps = Math.round(1000 * fpsCount / (nowTime - lastTime))
+				lastTime = nowTime;
+				fpsCount = 0;
+			}
+			return fps;
+		}
+
+
+		let clearCanvas = function () {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+		}
+
+
+		let startDraw = function (time) {
+			clearCanvas();
+			ctx.font = "12px serif";
+			ctx.fillStyle = "#1bbb6e";
+			ctx.fillText(getFps() + ' fps', 10, 20);
+			window.requestAnimationFrame(startDraw)
+		}
+		startDraw();
+	}
+
+</script>
+</body>
+</html>

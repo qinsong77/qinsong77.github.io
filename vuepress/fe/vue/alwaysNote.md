@@ -250,7 +250,7 @@ export default {
 ```
 
 ### [如何在Vue项目中更优雅地使用svg](https://cloud.tencent.com/developer/article/1624103)
-
+`svg-sprite-loader` 将加载的 `svg` 图片拼接成 **雪碧图**，放到页面中，其它地方通过 `<use>` 复用
 #### 重置vue实例的data： `Object.assign(this.$data, this.$options.data());`
 
 如果需要对data的某个对象的某个属性值做监听，可以通过computed把这个属性值的层级提上来，然后在watch中监听computed里面的属性。

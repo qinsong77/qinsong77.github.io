@@ -7,6 +7,7 @@ title: 面试记录
  - [JSON Key 驼峰转换](#_3、json-key-驼峰转换)
  - [因数分解-神策数据](#因数分解-神策数据)
  - [promise并发控制](#promise并发控制)
+ - [promise串行控制](#promise串行控制)
 
 ## 美团
 
@@ -428,4 +429,76 @@ addTask(1000, '1')
 addTask(500, '2')
 addTask(300, '3')
 addTask(400, '4')
+```
+#### promise串行控制
+
+>页面上有三个按钮，分别为 A、B、C，点击各个按钮都会发送异步请求且互不影响，每次请求回来的数据都为按钮的名字。 请实现当用户依次点击 A、B、C、A、C、B 的时候，最终获取的数据为 ABCACB。
+
+这道题目主要两个考点：
+
+1. 请求不能阻塞，但是输出可以阻塞。比如说 B 请求需要耗时 3 秒，其他请求耗时 1 秒，那么当用户点击 BAC 时，三个请求都应该发起，但是因为 B 请求回来的慢，所以得等着输出结果。
+2. 如何实现一个队列？
+我的实现
+```javascript
+const delay = (params) => {
+	const time = Math.floor(Math.random() * 5)
+	
+	return new Promise((resolve => {
+		setTimeout(() => {
+			resolve(params)
+		}, time * 500)
+	}))
+}
+
+class Queue {
+	constructor() {
+		this.stack = []
+	}
+	execute (p) {
+		return new Promise((resolve => {
+			this.stack.push({
+				resolve
+			})
+			p.then(res => {
+				const index = this.stack.findIndex(v => v.resolve === resolve)
+				this.stack[index].res = res
+				for(let i = 0; i < this.stack.length; i++) {
+					if(this.stack[i].res) {
+						this.stack[i].resolve(this.stack[i].res)
+					} else {
+						break
+					}
+				}
+			})
+		}))
+	}
+}
+
+const queue = new Queue()
+
+const handleClick = async (name) => {
+	const res = await queue.execute(delay(name))
+	console.log(res)
+}
+
+handleClick('A');
+handleClick('B');
+handleClick('C');
+handleClick('A');
+handleClick('C');
+handleClick('B');
+```
+其实队列可以直接借助`promise.then`实现
+
+```javascript
+class Queue {
+	
+	constructor() {
+		this.promise = Promise.resolve();
+	}
+	execute(promise) {
+		this.promise = this.promise.then(() => promise);
+		return this.promise;
+	}
+}
 ```

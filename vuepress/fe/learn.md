@@ -1218,6 +1218,28 @@ g.next(true) // { value: 0, done: false }
 ```
 Generator 函数也不能跟new命令一起用，会报错。
 
+### async、await
+
+```javascript
+var a = 0
+var b = async () => {
+  console.log('async start')
+  a = a + await 10
+  console.log('a2: ', a) // -> ？
+}
+b()
+a++
+console.log('a1: ', a) // -> ？
+
+/** 输出
+async start
+a1: 1
+a2:  10 ------- 输出10，await左边的a是同步的先固定成0了
+**/
+```
+其实 a 为 0 是因为加法运算法，先算左边再算右边，所以会把 0 固定下来。如果把题目改成 `await 10 + a` 的话，答案就是 11 了。
+
+
 ### JSON
 
 JSON 是一种数据格式，并不是编程语言，多用于数据传输交换和静态配置

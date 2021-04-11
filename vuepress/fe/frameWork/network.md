@@ -57,7 +57,7 @@ OSI-Open Systems Interconncection，网络分层
 
 2. 表示层(Presentation)
 
-3.会话层(Session)
+3. 会话层(Session)
 
 4. 传输层(Transport)
 
