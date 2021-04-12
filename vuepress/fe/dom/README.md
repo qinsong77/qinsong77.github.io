@@ -34,6 +34,8 @@ title: Dom
 - [Preload&Prefetch](#preload-prefetch)
 - [websocket](https://juejin.cn/post/6854573221241421838)
 - [MutationObserver](#MutationObserver)
+- [浏览器每一帧都需要完成哪些工作](#浏览器每一帧都需要完成哪些工作)
+- [图片知识](#图片知识)
   
 ----
 
@@ -599,14 +601,48 @@ DOMContentLoaded 事件触发代表初始的 HTML 被完全加载和解析，不
 
 回流必定会发生重绘，重绘不一定会引发回流。回流所需的成本比重绘高的多，改变深层次的节点很可能导致父节点的一系列回流。
 
-所以以下几个动作可能会导致性能问题：
+回流何时触发：
+- 调整窗口大小（Resizing the window）
+- 改变字体（Changing the font）
+- 增加或者移除样式表（Adding or removing a stylesheet）
+- 内容变化，比如用户在input框中输入文字（Content changes, such as a user typing text inan input box）
+- 激活 CSS 伪类，比如 :hover (IE 中为兄弟结点伪类的激活)（Activation of CSS pseudo classes such as :hover (in IE the activation of the pseudo class of a sibling)）
+- 操作 class 属性（Manipulating the class attribute）
+- 脚本操作 DOM（A script manipulating the DOM）
+- 计算 offsetWidth 和 offsetHeight 属性（Calculating offsetWidth and offsetHeight）
+- 设置 style 属性的值 （Setting a property of the style attribute）
 
-- 改变 window 大小
-- 改变字体
-- 添加或删除样式
-- 文字改变
-- 定位或者浮动
-- 盒模型
+所以对于页面而言，我们的宗旨就是尽量减少页面的回流重绘，简单的一个栗子：
+
+````javascript
+// 下面这种方式将会导致回流reflow两次
+var newWidth = aDiv.offsetWidth + 10; // Read
+aDiv.style.width = newWidth + 'px'; // Write
+var newHeight = aDiv.offsetHeight + 10; // Read
+aDiv.style.height = newHeight + 'px'; // Write
+ 
+// 下面这种方式更好，只会回流reflow一次
+var newWidth = aDiv.offsetWidth + 10; // Read
+var newHeight = aDiv.offsetHeight + 10; // Read
+aDiv.style.width = newWidth + 'px'; // Write
+aDiv.style.height = newHeight + 'px'; // Write
+````
+上面四句，因为涉及了 offsetHeight 操作，浏览器强制 reflow 了两次，而下面四句合并了 offset 操作，所以减少了一次页面的回流。 
+
+减少回流、重绘其实就是需要减少对渲染树的操作（合并多次多DOM和样式的修改），并减少对一些style信息的请求，尽量利用好浏览器的优化策略。
+
+**flush队列**
+
+其实浏览器自身是有优化策略的，如果每句 Javascript 都去操作 DOM 使之进行回流重绘的话，浏览器可能就会受不了。所以很多浏览器都会优化这些操作，浏览器会维护 1 个队列，把所有会引起回流、重绘的操作放入这个队列，等队列中的操作到了一定的数量或者到了一定的时间间隔，浏览器就会 flush 队列，进行一个批处理。这样就会让多次的回流、重绘变成一次回流重绘。
+
+但是也有例外，因为有的时候我们需要精确获取某些样式信息，下面这些：
+
+- offsetTop, offsetLeft, offsetWidth, offsetHeight
+- scrollTop/Left/Width/Height
+- clientTop/Left/Width/Height
+- width,height
+- 请求了getComputedStyle(), 或者 IE的 currentStyle
+这个时候，浏览器为了反馈最精确的信息，需要立即回流重绘一次，确保给到我们的信息是准确的，所以可能导致 flush 队列提前执行了。
 
 很多人不知道的是，重绘和回流其实和 Event loop 有关。
 
@@ -668,6 +704,31 @@ DOMContentLoaded 事件触发代表初始的 HTML 被完全加载和解析，不
 
 ![An image](../image/dom/4.png)
 
+#### 动画的性能检测及优化
+
+chrome 勾选下面 `show FPS meter` 显示页面的 FPS 信息，以及 GPU 的使用率
+
+1. 使用 will-change 提高页面滚动、动画等渲染性能
+```css
+will-change: auto
+will-change: scroll-position
+will-change: contents
+will-change: transform        // Example of <custom-ident>
+will-change: opacity          // Example of <custom-ident>
+will-change: left, top        // Example of two <animateable-feature>
+ 
+will-change: unset
+will-change: initial
+will-change: inherit
+ 
+// 示例
+.example{
+    will-change: transform;
+}
+```
+2. 使用 transform3d api 代替 transform api，强制开始 GPU 加速。
+
+3D transform 会启用GPU加速，例如 translate3D, scaleZ 之类，当然我们的页面可能并没有 3D 变换，但是不代表我们不能启用 GPU 加速，在非 3D 变换的页面也使用 3D transform 来操作，算是一种 hack 加速法。我们实际上不需要z轴的变化，但是还是假模假样地声明了，去欺骗浏览器。
 
 ### Event loop
 众所周知 JS 是门非阻塞单线程语言，因为在最初 JS 就是为了和浏览器交互而诞生的。如果 JS 是门多线程的语言话，我们在多个线程中处理 DOM 就可能会发生问题（一个线程中新加节点，另一个线程中删除节点），当然可以引入读写锁解决这个问题。
@@ -975,3 +1036,20 @@ window.atob("Y2hpbmEgaXMgc28gbmI=") // 解码
 - property是DOM中的属性，是JavaScript里的对象；
 - attribute是HTML标签上的特性，它的值只能够是字符串；
 attributes是属于property的一个子集，它保存了HTML标签上定义属性。
+
+### 浏览器每一帧都需要完成哪些工作
+页面是一帧一帧绘制出来的，当每秒绘制的帧数（FPS）达到 60 时，页面是流畅的，小于这个值时，用户会感觉到卡顿。
+
+1s 60 帧，所以每一帧分到的时间是 `1000/60 ≈ 16 ms`。所以书写代码时力求不让一帧的工作量超过 16ms。
+![](./image/lifeOfaFrame.png)
+
+通过上图可看到，一帧内需要完成如下六个步骤的任务：
+- 处理用户的交互
+- JS 解析执行
+- 帧开始。窗口尺寸变更，页面滚去等的处理
+- rAF(requestAnimationFrame)
+- 布局
+- 绘制
+- 如果这六个步骤中，任意一个步骤所占用的时间过长，总时间超过 16ms 了之后，用户也许就能看到卡顿。
+
+#### [图片知识](https://mp.weixin.qq.com/s?__biz=MzI1ODk2Mjk0Nw==&mid=2247484351&idx=1&sn=e88a658e93cd5e3fa4abd035714d2fa4&chksm=ea0160d3dd76e9c56df658fab1466d41751b90e05bd6a27b972ebf5f5d7204d11c6cd4d8a089&scene=21#wechat_redirect)

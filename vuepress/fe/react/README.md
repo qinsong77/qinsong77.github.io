@@ -31,6 +31,7 @@ title: React
 - [JSX简介](#jsx简介)
 - [Fiber](#fiber)
     - [双缓存Fiber树](#双缓存fiber树)
+    - [Fiber是如何工作的](#fiber是如何工作的)
 - [生命周期](#生命周期)
     - [React16.3.0之前生命周期](#react16-3-0之前生命周期)
     - [React16.3.0之后的生命周期](#react16-3-0之后的生命周期)
@@ -417,6 +418,22 @@ React应用的根节点通过current指针在不同Fiber树的rootFiber间切换
 
 首次执行ReactDOM.render会创建fiberRootNode（源码中叫fiberRoot）和`rootFiber`。其中`fiberRootNode`是整个应用的根节点，`rootFiber`是`<App/>`所在组件树的根节点。
 
+### Fiber是如何工作的
+
+1. ReactDOM.render() 和 setState 的时候开始创建更新。
+
+2. 将创建的更新加入任务队列，等待调度。
+
+3. 在 requestIdleCallback 空闲时执行任务。
+
+4. 从根节点开始遍历 Fiber Node，并且构建 WokeInProgress Tree。
+
+5. 生成 effectList。
+
+6. 根据 EffectList 更新 DOM。
+
+![](./image/howReactFiberWork.png)
+
 ## [生命周期](https://zh-hans.reactjs.org/docs/react-component.html)
 
 ## React16.3.0之前生命周期
@@ -504,6 +521,9 @@ React应用的根节点通过current指针在不同Fiber树的rootFiber间切换
 #### 销毁时
 
 - componentWillUnmount()
+
+由于 `reconciliation` 阶段是可中断的，一旦中断之后恢复的时候又会重新执行，所以很可能 `reconciliation` 阶段的生命周期方法会被多次调用，所以在 `reconciliation` 阶段的生命周期的方法是不稳定的，
+我想这也是 React 为什么要废弃 `componentWillMount` 和 `componentWillReceiveProps方`法而改为静态方法 `getDerivedStateFromProps` `的原因吧。
 
 [示意图](https://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/)
 

@@ -223,7 +223,7 @@ var threeSum = function(nums) {
 解题思路： 先数组排序，排序完后遍历数组，以 `nums[i]` 作为第一个数 first ，以 `nums[i+1]` 作为第二个数 second ，将 `nums[nums.length - 1]` 作为第三个数 last ，判断三数之和是否为 0 ，
 
 - <0 ，则 second 往后移动一位（nums 是增序排列），继续判断
-- >0 ，则 last 往前移动一位（nums 是增序排列），继续判断
+- `>0` ，则 last 往前移动一位（nums 是增序排列），继续判断
 - ===0 ，则进入结果数组中，并且 second 往后移动一位， last 往前移动一位，继续判断下一个元组
 - 直至 second >= last 结束循环，此时， `nums[i]` 作为第一个数的所有满足条件的元组都已写入结果数组中了，继续遍历数组，直至 i === nums.length - 2 (后面需要有 second 、 last )
 
