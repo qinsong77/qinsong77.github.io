@@ -143,7 +143,7 @@ list.appendChild(fragment);
 ```
 #### 节点修改API
 - `appendChild`: `parent.appendChild(child);`
-- `insertBefore`: `parentNode.insertBefore(newNode, refNode);`
+- `insertBefore`: `parentNode.insertBefore(newNode, refNode);` 在指定的已有子节点之前插入新的子节点。
 - `removeChild`: removeChild用于删除指定的子节点并返回子节点,`var deletedChild = parent.removeChild(node);  `
 - `replaceChild`: 用于将一个节点替换另一个节点, `parent.replaceChild(newChild, oldChild);`
 - [`insertAdjacentHTML`](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/insertAdjacentHTML)

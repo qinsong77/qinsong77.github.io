@@ -1814,6 +1814,23 @@ ComputedWatcher 和普通 Watcher 的区别：
 - [深入剖析：Vue核心之虚拟DOM](https://juejin.cn/post/6844903895467032589)
 
 对比 oldVnode 和 vnode(`patch`)
+
+```javascript
+function patch (oldVnode, vnode, parentElm) {
+    if (!oldVnode) {
+        addVnodes(parentElm, null, vnode, 0, vnode.length - 1);
+    } else if (!vnode) {
+        removeVnodes(parentElm, oldVnode, 0, oldVnode.length - 1);
+    } else {
+        if (sameVnode(oldVNode, vnode)) {
+            patchVnode(oldVNode, vnode);
+        } else {
+            removeVnodes(parentElm, oldVnode, 0, oldVnode.length - 1);
+            addVnodes(parentElm, null, vnode, 0, vnode.length - 1);
+        }
+    }
+}
+```
 - 1、没有旧节点
 > 没有旧节点，说明是页面刚开始初始化的时候，此时，根本不需要比较了，直接全部都是新建，所以只调用 `createElm`
 - 2、旧节点 和 新节点 自身一样（不包括其子节点）
@@ -1824,7 +1841,7 @@ ComputedWatcher 和普通 Watcher 的区别：
    所以，`patchVnode`其中的一个作用，就是比较子节点。
 - 3、旧节点 和 新节点自身不一样
 > 当两个节点不一样的时候，不难理解，直接创建新节点，删除旧节点
-
+ ::: details 点击查看代码
 ```javascript
   function sameVnode (a, b) {
     return (
@@ -1850,27 +1867,111 @@ ComputedWatcher 和普通 Watcher 的区别：
     var typeB = isDef(i = b.data) && isDef(i = i.attrs) && i.type;
     return typeA === typeB || isTextInputType(typeA) && isTextInputType(typeB)
   }
+  function patch (oldVnode, vnode, hydrating, removeOnly) {
+      if (isUndef(vnode)) {
+        if (isDef(oldVnode)) { invokeDestroyHook(oldVnode); }
+        return
+      }
+
+      var isInitialPatch = false;
+      var insertedVnodeQueue = [];
+
+      if (isUndef(oldVnode)) {
+        // empty mount (likely as component), create new root element
+        isInitialPatch = true;
+        createElm(vnode, insertedVnodeQueue);
+      } else {
+        var isRealElement = isDef(oldVnode.nodeType);
+        if (!isRealElement && sameVnode(oldVnode, vnode)) {
+          // patch existing root node
+          patchVnode(oldVnode, vnode, insertedVnodeQueue, null, null, removeOnly);
+        } else {
+          if (isRealElement) {
+            // mounting to a real element
+            // check if this is server-rendered content and if we can perform
+            // a successful hydration.
+            if (oldVnode.nodeType === 1 && oldVnode.hasAttribute(SSR_ATTR)) {
+              oldVnode.removeAttribute(SSR_ATTR);
+              hydrating = true;
+            }
+            if (isTrue(hydrating)) {
+              if (hydrate(oldVnode, vnode, insertedVnodeQueue)) {
+                invokeInsertHook(vnode, insertedVnodeQueue, true);
+                return oldVnode
+              } else {
+                warn(
+                  'The client-side rendered virtual DOM tree is not matching ' +
+                  'server-rendered content. This is likely caused by incorrect ' +
+                  'HTML markup, for example nesting block-level elements inside ' +
+                  '<p>, or missing <tbody>. Bailing hydration and performing ' +
+                  'full client-side render.'
+                );
+              }
+            }
+            // either not server-rendered, or hydration failed.
+            // create an empty node and replace it
+            oldVnode = emptyNodeAt(oldVnode);
+          }
+
+          // replacing existing element
+          var oldElm = oldVnode.elm;
+          var parentElm = nodeOps.parentNode(oldElm);
+
+          // create new node
+          createElm(
+            vnode,
+            insertedVnodeQueue,
+            // extremely rare edge case: do not insert if old element is in a
+            // leaving transition. Only happens when combining transition +
+            // keep-alive + HOCs. (#4590)
+            oldElm._leaveCb ? null : parentElm,
+            nodeOps.nextSibling(oldElm)
+          );
+
+          // update parent placeholder node element, recursively
+          if (isDef(vnode.parent)) {
+            var ancestor = vnode.parent;
+            var patchable = isPatchable(vnode);
+            while (ancestor) {
+              for (var i = 0; i < cbs.destroy.length; ++i) {
+                cbs.destroy[i](ancestor);
+              }
+              ancestor.elm = vnode.elm;
+              if (patchable) {
+                for (var i$1 = 0; i$1 < cbs.create.length; ++i$1) {
+                  cbs.create[i$1](emptyNode, ancestor);
+                }
+                // #6513
+                // invoke insert hooks that may have been merged by create hooks.
+                // e.g. for directives that uses the "inserted" hook.
+                var insert = ancestor.data.hook.insert;
+                if (insert.merged) {
+                  // start at index 1 to avoid re-invoking component mounted hook
+                  for (var i$2 = 1; i$2 < insert.fns.length; i$2++) {
+                    insert.fns[i$2]();
+                  }
+                }
+              } else {
+                registerRef(ancestor);
+              }
+              ancestor = ancestor.parent;
+            }
+          }
+
+          // destroy old node
+          if (isDef(parentElm)) {
+            removeVnodes([oldVnode], 0, 0);
+          } else if (isDef(oldVnode.tag)) {
+            invokeDestroyHook(oldVnode);
+          }
+        }
+      }
+
+      invokeInsertHook(vnode, insertedVnodeQueue, isInitialPatch);
+      return vnode.elm
+    }
 ```
-- [vue3.0 diff算法详解](https://blog.csdn.net/zl_Alien/article/details/106595459)
-
-- [Vue 3.0 diff 算法及原理](https://mp.weixin.qq.com/s/fUnKx_Cts8nCaM7n31kKVw)
-
-在 Vue3 中将采用另外一种核心 Diff 算法，它借鉴于 ivi 和 inferno。
-
-在进行 Dom Diff 算法之前，先进行预处理过程，将公共的首尾提取出来。
-
-- 队首比较`oldChild[first] = newChild[first]`。
-  - 如果一致则，指针指向下一节点。
-  - 如果不一致，则执行 vue2 的双端比较。
-- 队尾比较`oldChild[last] = newChild[last]`。
-  - 如果一致则，指针指向下一节点。
-  - 如果不一致，则执行 vue2 的双端比较。
-  
-双端比较时的优化：
-
-- 判断是否有节点需要移动，将需要移动的节点加入 source 数组中。
-- 根据 source 数组计算出一个最长递增子序列（计算出最小的移动）。
-- 移动 Dom 操作。
+ ::: 
 
 ##### patchVnode(比较两个Vnode 的子节点)
 
@@ -1885,32 +1986,120 @@ ComputedWatcher 和普通 Watcher 的区别：
   -  3、只有旧节点(把所有的旧节点删除,也就是直接把DOM 删除)
 
 两个节点值得比较时，会调用patchVnode函数
+ ::: details 点击查看代码
 ```javascript
-function patchVnode (oldVnode, vnode){
+// 逻辑提取
+function patchVnode (oldVnode, vnode) {
     if (oldVnode === vnode) {
-        return
+        return;
     }
-    var elm = vnode.elm = oldVnode.elm;
-    let i, oldCh = oldVnode.children, ch = vnode.children
-    if (oldVnode === vnode) return
-    if (oldVnode.text !== null && vnode.text !== null && oldVnode.text !== vnode.text) {
-        api.setTextContent(elm, vnode.text)
-    }else {
-        updateEle(elm, vnode, oldVnode)
-        if (oldCh && ch && oldCh !== ch) {
-            updateChildren(elm, oldCh, ch)
-        }else if (ch){
-            createEle(vnode) //create el's children dom
-        }else if (oldCh){
-            api.removeChildren(elm)
+
+    if (vnode.isStatic && oldVnode.isStatic && vnode.key === oldVnode.key) {
+        vnode.elm = oldVnode.elm;
+        vnode.componentInstance = oldVnode.componentInstance;
+        return;
+    }
+
+    const elm = vnode.elm = oldVnode.elm;
+    const oldCh = oldVnode.children;
+    const ch = vnode.children;
+
+    if (vnode.text) {
+        nodeOps.setTextContent(elm, vnode.text);
+    } else {
+        if (oldCh && ch && (oldCh !== ch)) {
+            updateChildren(elm, oldCh, ch);
+        } else if (ch) {
+            if (oldVnode.text) nodeOps.setTextContent(elm, '');
+            addVnodes(elm, null, ch, 0, ch.length - 1);
+        } else if (oldCh) {
+            removeVnodes(elm, oldCh, 0, oldCh.length - 1)
+        } else if (oldVnode.text) {
+            nodeOps.setTextContent(elm, '')
         }
     }
 }
-```
+function patchVnode (
+  oldVnode,
+  vnode,
+  insertedVnodeQueue,
+  ownerArray,
+  index,
+  removeOnly
+) {
+  if (oldVnode === vnode) {
+    return
+  }
 
+  if (isDef(vnode.elm) && isDef(ownerArray)) {
+    // clone reused vnode
+    vnode = ownerArray[index] = cloneVNode(vnode);
+  }
+
+  var elm = vnode.elm = oldVnode.elm;
+
+  if (isTrue(oldVnode.isAsyncPlaceholder)) {
+    if (isDef(vnode.asyncFactory.resolved)) {
+      hydrate(oldVnode.elm, vnode, insertedVnodeQueue);
+    } else {
+      vnode.isAsyncPlaceholder = true;
+    }
+    return
+  }
+
+  // reuse element for static trees.
+  // note we only do this if the vnode is cloned -
+  // if the new node is not cloned it means the render functions have been
+  // reset by the hot-reload-api and we need to do a proper re-render.
+  if (isTrue(vnode.isStatic) &&
+    isTrue(oldVnode.isStatic) &&
+    vnode.key === oldVnode.key &&
+    (isTrue(vnode.isCloned) || isTrue(vnode.isOnce))
+  ) {
+    vnode.componentInstance = oldVnode.componentInstance;
+    return
+  }
+
+  var i;
+  var data = vnode.data;
+  if (isDef(data) && isDef(i = data.hook) && isDef(i = i.prepatch)) {
+    i(oldVnode, vnode);
+  }
+
+  var oldCh = oldVnode.children;
+  var ch = vnode.children;
+  if (isDef(data) && isPatchable(vnode)) {
+    for (i = 0; i < cbs.update.length; ++i) { cbs.update[i](oldVnode, vnode); }
+    if (isDef(i = data.hook) && isDef(i = i.update)) { i(oldVnode, vnode); }
+  }
+  if (isUndef(vnode.text)) {
+    if (isDef(oldCh) && isDef(ch)) {
+      if (oldCh !== ch) { updateChildren(elm, oldCh, ch, insertedVnodeQueue, removeOnly); }
+    } else if (isDef(ch)) {
+      {
+        checkDuplicateKeys(ch);
+      }
+      if (isDef(oldVnode.text)) { nodeOps.setTextContent(elm, ''); }
+      addVnodes(elm, null, ch, 0, ch.length - 1, insertedVnodeQueue);
+    } else if (isDef(oldCh)) {
+      removeVnodes(oldCh, 0, oldCh.length - 1);
+    } else if (isDef(oldVnode.text)) {
+      nodeOps.setTextContent(elm, '');
+    }
+  } else if (oldVnode.text !== vnode.text) {
+    nodeOps.setTextContent(elm, vnode.text);
+  }
+  if (isDef(data)) {
+    if (isDef(i = data.hook) && isDef(i = i.postpatch)) { i(oldVnode, vnode); }
+  }
+}
+```
+ ::: 
 `const el = vnode.el = oldVnode.el` 这是很重要的一步，让vnode.el引用到现在的真实dom，当el修改时，vnode.el会同步变化。
 
 节点的比较有5种情况:
+
+额外：在当新老 VNode 节点都是 isStatic（静态的），并且 key 相同时，只要将 componentInstance 与 elm 从老 VNode 节点“拿过来”即可。这里的 isStatic 也就是前面提到过的「编译」的时候会将静态节点标记出来，这样就可以跳过比对的过程。
 
 - 1. `if (oldVnode === vnode)`，他们的引用一致，可以认为没有变化。
 
@@ -1984,8 +2173,8 @@ export default {
 - 2. 新旧开始和结束节点比较，四种情况其实是指定key的时候，判定为同一个VNode，则直接patchVnode即可，分别比较oldCh以及newCh的两头节点2*2=4种情况
   - oldStartVnode === newStartVnode =》 patchVnode
   - oldEndVnode === newEndVnode =》 patchVnode
-  - oldStartVnode === newEndVnode =》 pathVode 并且，newEndVode移动到右边，即把旧的开始节点插入到旧的结束节点后面
-  - oldEndVnode === newStartVnode =》 pathVode 并且，newEndVode移动到左边，即把旧的结束节点插入到旧的开始节点前面
+  - oldStartVnode === newEndVnode =》 pathVode 并且，oldStartVnode移动到右边，即把旧的开始节点插入到旧的结束节点后面。就是老 `VNode` 节点的头部与新 `VNode` 节点的尾部是同一节点的时候，将 `oldStartVnode.elm` 这个节点直接移动到 `oldEndVnode.elm` 这个节点的后面即可。然后 `oldStartIdx` 向后移动一位，`newEndIdx` 向前移动一位。
+  - oldEndVnode === newStartVnode =》 pathVode 并且，oldEndVnode移动到左边，即把旧的结束节点插入到旧的开始节点前面。就是老 `VNode` 节点的尾部与新 `VNode` 节点的头部是同一节点的时候，将 `oldEndVnode.elm` 插入到 `oldStartVnode.elm` 前面。同样的，`oldEndIdx` 向前移动一位，`newStartIdx` 向后移动一位。
   - 生成一个key与旧VNode的key对应的哈希表， 如果找不到key，则创建插入，找到的话如果是相同的节点，则patchNode并且插入，不是则创建插入
 - while结束时，如果是oldStartIdx > oldEndIdx，说明老节点已经遍历完了，新节点比老节点多，所以这时候多出来的新节点需要一个一个创建出来加入到真实DOM中。
 newStartIdx > newEndIdx，则说明新节点已经遍历完了，老节点多余新节点，这个时候需要将多余的老节点从真实DOM中移除
@@ -2089,6 +2278,463 @@ newStartIdx > newEndIdx，则说明新节点已经遍历完了，老节点多余
 ![](./image/updateChildren.png)
 
 ![](./image/vdom_diff.jpg)
+
+
+#### vue3.0 diff
+ ::: details 点击查看代码
+```typescript
+  const patchChildren: PatchChildrenFn = (
+    n1,
+    n2,
+    container,
+    anchor,
+    parentComponent,
+    parentSuspense,
+    isSVG,
+    slotScopeIds,
+    optimized = false
+  ) => {
+    const c1 = n1 && n1.children
+    const prevShapeFlag = n1 ? n1.shapeFlag : 0
+    const c2 = n2.children
+
+    const { patchFlag, shapeFlag } = n2
+    // fast path
+    if (patchFlag > 0) {
+      if (patchFlag & PatchFlags.KEYED_FRAGMENT) {
+        // this could be either fully-keyed or mixed (some keyed some not)
+        // presence of patchFlag means children are guaranteed to be arrays
+        patchKeyedChildren(
+          c1 as VNode[],
+          c2 as VNodeArrayChildren,
+          container,
+          anchor,
+          parentComponent,
+          parentSuspense,
+          isSVG,
+          slotScopeIds,
+          optimized
+        )
+        return
+      } else if (patchFlag & PatchFlags.UNKEYED_FRAGMENT) {
+        // unkeyed
+        patchUnkeyedChildren(
+          c1 as VNode[],
+          c2 as VNodeArrayChildren,
+          container,
+          anchor,
+          parentComponent,
+          parentSuspense,
+          isSVG,
+          slotScopeIds,
+          optimized
+        )
+        return
+      }
+    }
+
+    // children has 3 possibilities: text, array or no children.
+    if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
+      // text children fast path
+      if (prevShapeFlag & ShapeFlags.ARRAY_CHILDREN) {
+        unmountChildren(c1 as VNode[], parentComponent, parentSuspense)
+      }
+      if (c2 !== c1) {
+        hostSetElementText(container, c2 as string)
+      }
+    } else {
+      if (prevShapeFlag & ShapeFlags.ARRAY_CHILDREN) {
+        // prev children was array
+        if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
+          // two arrays, cannot assume anything, do full diff
+          patchKeyedChildren(
+            c1 as VNode[],
+            c2 as VNodeArrayChildren,
+            container,
+            anchor,
+            parentComponent,
+            parentSuspense,
+            isSVG,
+            slotScopeIds,
+            optimized
+          )
+        } else {
+          // no new children, just unmount old
+          unmountChildren(c1 as VNode[], parentComponent, parentSuspense, true)
+        }
+      } else {
+        // prev children was text OR null
+        // new children is array OR null
+        if (prevShapeFlag & ShapeFlags.TEXT_CHILDREN) {
+          hostSetElementText(container, '')
+        }
+        // mount new if array
+        if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
+          mountChildren(
+            c2 as VNodeArrayChildren,
+            container,
+            anchor,
+            parentComponent,
+            parentSuspense,
+            isSVG,
+            slotScopeIds,
+            optimized
+          )
+        }
+      }
+    }
+  }
+
+  const patchUnkeyedChildren = (
+    c1: VNode[],
+    c2: VNodeArrayChildren,
+    container: RendererElement,
+    anchor: RendererNode | null,
+    parentComponent: ComponentInternalInstance | null,
+    parentSuspense: SuspenseBoundary | null,
+    isSVG: boolean,
+    slotScopeIds: string[] | null,
+    optimized: boolean
+  ) => {
+    c1 = c1 || EMPTY_ARR
+    c2 = c2 || EMPTY_ARR
+    const oldLength = c1.length
+    const newLength = c2.length
+    const commonLength = Math.min(oldLength, newLength)
+    let i
+    for (i = 0; i < commonLength; i++) { // 依次遍历新老vnode进行patch
+      const nextChild = (c2[i] = optimized
+        ? cloneIfMounted(c2[i] as VNode)
+        : normalizeVNode(c2[i]))
+      patch(
+        c1[i],
+        nextChild,
+        container,
+        null,
+        parentComponent,
+        parentSuspense,
+        isSVG,
+        slotScopeIds,
+        optimized
+      )
+    }
+    if (oldLength > newLength) {
+      // remove old 老vnode 数量大于新的vnode，删除多余的节点
+      unmountChildren(
+        c1,
+        parentComponent,
+        parentSuspense,
+        true,
+        false,
+        commonLength
+      )
+    } else {
+      // mount new 老vnode 数量小于于新的vnode，创造新的即可
+      mountChildren(
+        c2,
+        container,
+        anchor,
+        parentComponent,
+        parentSuspense,
+        isSVG,
+        slotScopeIds,
+        optimized,
+        commonLength
+      )
+    }
+  }
+
+  // can be all-keyed or mixed
+  const patchKeyedChildren = (
+    c1: VNode[],
+    c2: VNodeArrayChildren,
+    container: RendererElement,
+    parentAnchor: RendererNode | null,
+    parentComponent: ComponentInternalInstance | null,
+    parentSuspense: SuspenseBoundary | null,
+    isSVG: boolean,
+    slotScopeIds: string[] | null,
+    optimized: boolean
+  ) => {
+    let i = 0
+    const l2 = c2.length
+    let e1 = c1.length - 1 // prev ending index
+    let e2 = l2 - 1 // next ending index
+
+    // 1. sync from start
+    // (a b) c
+    // (a b) d e
+    while (i <= e1 && i <= e2) {
+      const n1 = c1[i]
+      const n2 = (c2[i] = optimized
+        ? cloneIfMounted(c2[i] as VNode)
+        : normalizeVNode(c2[i]))
+      if (isSameVNodeType(n1, n2)) {
+        patch(
+          n1,
+          n2,
+          container,
+          null,
+          parentComponent,
+          parentSuspense,
+          isSVG,
+          slotScopeIds,
+          optimized
+        )
+      } else {
+        break
+      }
+      i++
+    }
+
+    // 2. sync from end
+    // a (b c)
+    // d e (b c)
+    while (i <= e1 && i <= e2) {
+      const n1 = c1[e1]
+      const n2 = (c2[e2] = optimized
+        ? cloneIfMounted(c2[e2] as VNode)
+        : normalizeVNode(c2[e2]))
+      if (isSameVNodeType(n1, n2)) {
+        patch(
+          n1,
+          n2,
+          container,
+          null,
+          parentComponent,
+          parentSuspense,
+          isSVG,
+          slotScopeIds,
+          optimized
+        )
+      } else {
+        break
+      }
+      e1--
+      e2--
+    }
+
+    // 3. common sequence + mount
+    // (a b)
+    // (a b) c
+    // i = 2, e1 = 1, e2 = 2
+    // (a b)
+    // c (a b)
+    // i = 0, e1 = -1, e2 = 0
+    if (i > e1) {
+      if (i <= e2) {
+        const nextPos = e2 + 1
+        const anchor = nextPos < l2 ? (c2[nextPos] as VNode).el : parentAnchor
+        while (i <= e2) {
+          patch(
+            null,
+            (c2[i] = optimized
+              ? cloneIfMounted(c2[i] as VNode)
+              : normalizeVNode(c2[i])),
+            container,
+            anchor,
+            parentComponent,
+            parentSuspense,
+            isSVG,
+            slotScopeIds,
+            optimized
+          )
+          i++
+        }
+      }
+    }
+
+    // 4. common sequence + unmount
+    // (a b) c
+    // (a b)
+    // i = 2, e1 = 2, e2 = 1
+    // a (b c)
+    // (b c)
+    // i = 0, e1 = 0, e2 = -1
+    else if (i > e2) {
+      while (i <= e1) {
+        unmount(c1[i], parentComponent, parentSuspense, true)
+        i++
+      }
+    }
+
+    // 5. unknown sequence
+    // [i ... e1 + 1]: a b [c d e] f g
+    // [i ... e2 + 1]: a b [e d c h] f g
+    // i = 2, e1 = 4, e2 = 5
+    else {
+      const s1 = i // prev starting index
+      const s2 = i // next starting index
+
+      // 5.1 build key:index map for newChildren
+      const keyToNewIndexMap: Map<string | number, number> = new Map()
+      for (i = s2; i <= e2; i++) {
+        const nextChild = (c2[i] = optimized
+          ? cloneIfMounted(c2[i] as VNode)
+          : normalizeVNode(c2[i]))
+        if (nextChild.key != null) {
+          if (__DEV__ && keyToNewIndexMap.has(nextChild.key)) {
+            warn(
+              `Duplicate keys found during update:`,
+              JSON.stringify(nextChild.key),
+              `Make sure keys are unique.`
+            )
+          }
+          keyToNewIndexMap.set(nextChild.key, i)
+        }
+      }
+
+      // 5.2 loop through old children left to be patched and try to patch
+      // matching nodes & remove nodes that are no longer present
+      let j
+      let patched = 0
+      const toBePatched = e2 - s2 + 1
+      let moved = false
+      // used to track whether any node has moved
+      let maxNewIndexSoFar = 0
+      // works as Map<newIndex, oldIndex>
+      // Note that oldIndex is offset by +1
+      // and oldIndex = 0 is a special value indicating the new node has
+      // no corresponding old node.
+      // used for determining longest stable subsequence
+      const newIndexToOldIndexMap = new Array(toBePatched)
+      for (i = 0; i < toBePatched; i++) newIndexToOldIndexMap[i] = 0
+
+      for (i = s1; i <= e1; i++) {
+        const prevChild = c1[i]
+        if (patched >= toBePatched) {
+          // all new children have been patched so this can only be a removal
+          unmount(prevChild, parentComponent, parentSuspense, true)
+          continue
+        }
+        let newIndex
+        if (prevChild.key != null) {
+          newIndex = keyToNewIndexMap.get(prevChild.key)
+        } else {
+          // key-less node, try to locate a key-less node of the same type
+          for (j = s2; j <= e2; j++) {
+            if (
+              newIndexToOldIndexMap[j - s2] === 0 &&
+              isSameVNodeType(prevChild, c2[j] as VNode)
+            ) {
+              newIndex = j
+              break
+            }
+          }
+        }
+        if (newIndex === undefined) {
+          unmount(prevChild, parentComponent, parentSuspense, true)
+        } else {
+          newIndexToOldIndexMap[newIndex - s2] = i + 1
+          if (newIndex >= maxNewIndexSoFar) {
+            maxNewIndexSoFar = newIndex
+          } else {
+            moved = true
+          }
+          patch(
+            prevChild,
+            c2[newIndex] as VNode,
+            container,
+            null,
+            parentComponent,
+            parentSuspense,
+            isSVG,
+            slotScopeIds,
+            optimized
+          )
+          patched++
+        }
+      }
+
+      // 5.3 move and mount
+      // generate longest stable subsequence only when nodes have moved
+      const increasingNewIndexSequence = moved
+        ? getSequence(newIndexToOldIndexMap)
+        : EMPTY_ARR
+      j = increasingNewIndexSequence.length - 1
+      // looping backwards so that we can use last patched node as anchor
+      for (i = toBePatched - 1; i >= 0; i--) {
+        const nextIndex = s2 + i
+        const nextChild = c2[nextIndex] as VNode
+        const anchor =
+          nextIndex + 1 < l2 ? (c2[nextIndex + 1] as VNode).el : parentAnchor
+        if (newIndexToOldIndexMap[i] === 0) {
+          // mount new
+          patch(
+            null,
+            nextChild,
+            container,
+            anchor,
+            parentComponent,
+            parentSuspense,
+            isSVG,
+            slotScopeIds,
+            optimized
+          )
+        } else if (moved) {
+          // move if:
+          // There is no stable subsequence (e.g. a reverse)
+          // OR current node is not among the stable sequence
+          if (j < 0 || i !== increasingNewIndexSequence[j]) {
+            move(nextChild, container, anchor, MoveType.REORDER)
+          } else {
+            j--
+          }
+        }
+      }
+    }
+  }
+```
+ ::: 
+- [vue3.0 diff算法详解](https://blog.csdn.net/zl_Alien/article/details/106595459)
+
+- [Vue 3.0 diff 算法及原理](https://mp.weixin.qq.com/s/fUnKx_Cts8nCaM7n31kKVw)
+
+- [React、Vue2、Vue3的三种Diff算法](https://juejin.cn/post/6919376064833667080)
+
+在 Vue3 中将采用另外一种核心 Diff 算法，它借鉴于 `ivi` 和 `inferno`。
+
+该算法其中有两个理念。第一个是**相同的前置与后置元素的预处理**；第二个则是**最长递增子序列**，此思想与React的diff类似又不尽相同。
+
+patchChildren的过程中，存在 `patchUnkeyedChildren`和`patchKeyedChildren`
+
+##### patchUnkeyedChildren
+
+1. 比较新老children的length获取最小值 然后对于公共部分，进行从新patch工作。
+2. 如果老节点数量大于新的节点数量 ，移除多出来的节点。
+3. 如果新的节点数量大于老节点的数量，从新 mountChildren新增的节点。
+
+##### patchKeyedChildren
+1. 第一步从头开始向尾diff，从头对比找到有相同的节点 `patch` ，发现不同，立即跳出
+2. 第二步从尾开始往前diff，如果第一步没有`patch完`，立即，从后往前开始`patch`，如果发现不同立即跳出循环
+4. 如果新的节点大于老的节点数(i > e1) ，对于剩下的节点全部以新的vnode处理（这种情况说明已经patch完相同的vnode）
+5. 如果老的节点大于新的节点的情况(i > e2) ，对于超出的节点全部卸载（这种情况说明已经patch完相同的vnode）
+6. 情况只剩下新老节点都还有剩余，没有patch完相同的vnode -- `unknown sequence`不确定序列
+   1. 遍历所有`新节点`把索引和对应的key,存入map `keyToNewIndexMap`中，2.0是建立的老节点的mapKey
+   2. 更加之前的算出新节点还需要patch的个数，`toBePatched`，声明`newIndexToOldIndexMap` 用来存放`新节点索引`和`老节点索引的数组`。newIndexToOldIndexMap 数组的`index`是`新vnode`的索引 ， `value`是`老vnode`的索引。(新旧节点的对应关系)
+   3. **遍历老的Vnode**
+   4. 如果`patched >= toBePatched`（即新节点已经处理完了），卸载老节点
+   5. 如果，老节点的key如果在新节点中存在 ，通过key找到对应的`index`，否则则是遍历新节点，比较isSame，总之就是想复用节点，并把老节点的index放在`newIndexToOldIndexMap`中，通过寻找最长增长子序列来做到最小移动
+
+核心步骤：
+  
+第一步： 通过老节点的key找到对应新节点的index:开始遍历老的节点，判断有没有key， 如果存在key通过新节点的keyToNewIndexMap找到与新节点index,如果不存在key那么会遍历剩下来的新节点试图找到对应index。
+
+第二步：如果存在index证明有对应的老节点，那么直接复用老节点进行patch，没有找到与老节点对应的新节点，删除当前老节点。
+
+第三步：newIndexToOldIndexMap找到对应新老节点关系。
+
+patch了一遍，把所有的老vnode都patch了一遍。
+   
+**为什么要找最长增长子序列**，因为得到的`newIndexToOldIndexMap`数组表示的是新节点在老的节点的index，在这个数组中依次排放，所以，老节点是增序排的，就不需要移动
+   
+![](./image/vue3diff.png)
+   
+双端比较时的优化：
+
+- 判断是否有节点需要移动，将需要移动的节点加入 source 数组中。
+- 根据 source 数组计算出一个最长递增子序列（计算出最小的移动）。
+- 移动 Dom 操作。
 
 #### [Vue.js的computed和watch是如何工作的](https://juejin.cn/post/6844903667884097543)
 
