@@ -3,7 +3,8 @@ title: Summary
 ---
 
 #### [webpack 中那些最易混淆的 5 个知识点](https://juejin.cn/post/6844904007362674701)
-
+#### [webpack5 Module federation](http://www.alloyteam.com/2020/04/14338/)
+Module federation: 允许运行时动态决定代码的引入和加载。
 ### [Webpack4打包机制原理解析](https://mp.weixin.qq.com/s?__biz=MzI0MzIyMDM5Ng==&mid=2649826040&idx=1&sn=d00485f9421520699740404f8ecf3302&chksm=f175e83bc602612d32a2568bfb74f4a9f762b058e9ba39d976c355ae916c27bca73c9fa3d65a&mpshare=1&scene=24&srcid=02066BpnifF3iTrMe5n3rtCi&sharer_sharetime=1612548111719&sharer_shareid=1958dfa2b35b63c7a7463d11712f39df#rd)
 
 ### [Webpack面试题](https://juejin.cn/post/6844904094281236487)

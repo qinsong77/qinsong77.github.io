@@ -1,12 +1,25 @@
 module.exports = {
 	port: '8091',
-	plugins: ['@vuepress/back-to-top'],
+	plugins: [
+		'@vuepress/back-to-top',
+		'@vuepress/pwa',
+		{
+			serviceWorker: true,
+			updatePopup: true // 本选项开启了一个用于刷新内容的弹窗。这个弹窗将会在站点有内容更新时显示出来，并提供了一个 refresh 按钮，允许用户立即刷新内容。
+		}
+	],
 	// theme: 'reco',
 	title: 'Sysuke\' NoteBook',
 	description: 'person NoteBook power by VuePress & GitHub Page',
 	// 注入到当前页面的 HTML <head> 中的标签
 	head: [
 		['link', { rel: 'icon', href: '/favicon.ico' }], // 增加一个自定义的 favicon(网页标签的图标)
+		['link', { rel: 'manifest', href: '/manifest.json' }],
+		['meta', { name: 'theme-color', content: '#3eaf7c' }],
+		['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
+		['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }],
+		['meta', { name: 'msapplication-TileColor', content: '#333' }],
+		['link', { rel: 'apple-touch-icon', href: '/icons/128.ico' }],
 	],
 	base: '/',
 	// dest: '',

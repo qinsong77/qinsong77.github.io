@@ -2729,7 +2729,9 @@ patch了一遍，把所有的老vnode都patch了一遍。
 **为什么要找最长增长子序列**，因为得到的`newIndexToOldIndexMap`数组表示的是新节点在老的节点的index，在这个数组中依次排放，所以，老节点是增序排的，就不需要移动
    
 ![](./image/vue3diff.png)
-   
+
+![](./image/key_use.png)
+
 双端比较时的优化：
 
 - 判断是否有节点需要移动，将需要移动的节点加入 source 数组中。
