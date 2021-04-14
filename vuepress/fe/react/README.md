@@ -1248,7 +1248,13 @@ Diff算法的整体逻辑会经历两轮遍历：
 const existingChildren = mapRemainingChildren(returnFiber, oldFiber);
 ```
  接下来遍历剩余的`newChildren`，通过`newChildren[i].key`就能在`existingChildren`中找到`key`相同的`oldFiber`。
- 
+
+1. `lastPlacedIndex`代表老节点在第一轮遍历完的index，如果第一轮遍历中都不能复用，则是0
+2. 开始遍历没有遍历的新节点，并在map中找到那个老节点。如果没有找到则直接新建fiber节点。找到`oldIndex`
+3. 如果`oldIndex > lastPlacedIndex`，则代表节点位置不变，并且赋值`lastPlacedIndex = oldIndex`
+4. 如果`oldIndex < lastPlacedIndex`，着代表**节点要向右移动**，但`lastPlacedIndex`值不变。
+
+
 Demo1
 ```
 // 之前
