@@ -190,6 +190,10 @@ bind和capture-bind的含义分别代表事件的冒泡阶段和捕获阶段
 
 2，当短时间内（5s）连续收到两次以上系统内存告警，会进行小程序的销毁。
 
+### 同层渲染
+
+- [](https://developers.weixin.qq.com/community/develop/article/doc/000c4e433707c072c1793e56f5c813)
+
 ### 性能优化
 
 主要的优化策略可以归纳为三点：

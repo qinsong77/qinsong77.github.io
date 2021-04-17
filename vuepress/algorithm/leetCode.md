@@ -94,6 +94,7 @@ title: LeetCode
     - [求平方根](#求平方根)
     - [寻找旋转排序数组中的最小值](#寻找旋转排序数组中的最小值)
     - [搜索旋转排序数组](#搜索旋转排序数组)
+    - [在排序数组中查找元素的第一个和最后一个位置](#在排序数组中查找元素的第一个和最后一个位置)
 - [双指针](#双指针)
     - [盛最多水的容器](#盛最多水的容器)
     - [接雨水](#接雨水)
@@ -3414,6 +3415,40 @@ var maxArea = function(height) {
 };
 ```
 
+#### [在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
+```javascript
+/**
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number[]}
+ */
+var searchRange = function(nums, target) {
+    let l = 0
+    let r = nums.length -1
+    let findIndex = -1
+    while(l <= r) {
+        const mid = Math.floor((l + r)/2)
+        if(nums[mid] === target) {
+            findIndex = mid
+        } if(nums[mid] > target) {
+            r = mid -1
+        } else {
+            l = mid + 1
+        }
+    }
+    const res = [findIndex, findIndex]
+    if(findIndex === -1) return res
+    l = findIndex
+    r = findIndex
+    while(l> 0 && nums[l-1] === target) {
+        res[0] = --l
+    }
+     while(r < nums.length - 1 && nums[r+1] === target) {
+        res[1] = ++r
+    }
+    return res
+};
+```
 #### [接雨水](https://leetcode-cn.com/problems/trapping-rain-water/)
 ```javascript
 /**

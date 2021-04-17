@@ -382,6 +382,7 @@ Object.isExtensible(empty) === false
 
 
 #### Object.create()方法创建一个新对象，使用现有的对象来提供新创建的对象的[`__proto__`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
+这是一个**浅拷贝**方法
 ```javascript
 // 创建一个原型为null的空对象
 var pureObj  = Object.create(null)
