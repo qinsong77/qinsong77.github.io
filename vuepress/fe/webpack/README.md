@@ -79,6 +79,8 @@ Babel的架构
 
 [Babel7](https://juejin.cn/post/6844904008679686152)
 
+[深入理解Babel原理及其使用](https://www.jianshu.com/p/e9b94b2d52e2)
+
 [深入浅出 Babel](https://juejin.cn/post/6844903956905197576)
 
 ![](./image/babel_process.png)
@@ -94,6 +96,30 @@ Babel的架构
 #### transform
 
 AST 遍历和转换会使用**访问者模式**。访问者会以`深度优先`的顺序, 或者说`递归`地对 AST 进行遍历, `@babel/traverse`，实现了访问者模式，对 AST 进行遍历，**转换插件**会通过它获取感兴趣的AST节点，对节点继续操作
+
+![](./image/babe_tool_package.png)
+#### polyfill和runtime的区别
+
+`polyfil`l是会污染原来的全局环境的（因为新的原生对象、API这些都直接由polyfill引入到全局环境）。这样就很容易会发生冲突。对于库library来说，是供外部使用的，但外部的环境并不在library的可控范围。所以runtime就是解决这个问题的，避免全局污染。
+
+babel-plugin-transform-runtime插件依赖babel-runtime，babel-runtime是真正提供runtime环境的包；也就是说transform-runtime插件是把js代码中使用到的新原生对象和静态方法转换成对runtime实现包的引用，举个例子如下：
+
+```javascript
+// 输入的ES6代码
+var sym = Symbol();
+// 通过transform-runtime转换后的ES5+runtime代码 
+var _symbol = require("babel-runtime/core-js/symbol");
+var sym = (0, _symbol.default)();
+```
+原本代码中使用的ES6新原生对象Symbol被transform-runtimec插件转换成了babel-runtime的实现，既保持了Symbol的功能，同时又没有像polyfill那样污染全局环境（因为最终生成的代码中，并没有对Symbol的引用）。
+
+#### transform-runtime插件的功能
+1. 把代码中的使用到的ES6引入的新原生对象和静态方法用babel-runtime/core-js导出的对象和方法替代
+2. 当使用generators或async函数时，用babel-runtime/regenerator导出的函数取代（类似polyfill分成regenerator和core-js两个部分）
+3. 把Babel生成的辅助函数改为用babel-runtime/helpers导出的函数来替代（babel默认会在每个文件顶部放置所需要的辅助函数，如果文件多的话，这些辅助函数就在每个文件中都重复了，通过引用babel-runtime/helpers就可以统一起来，减少代码体积）
+
+上述三点就是transform-runtime插件所做的事情，由此也可见，babel-runtime就是一个提供了regenerator、core-js和helpers的运行时库。
+建议不要直接使用babel-runtime，因为transform-runtime依赖babel-runtime，大部分情况下都可以用transform-runtime达成目的。
 
 ## core-js
 
@@ -125,9 +151,9 @@ AST 遍历和转换会使用**访问者模式**。访问者会以`深度优先`�
 以前我们实现API的时候，会引入整个polyfill，其实polyfill只是包括了以下两个包
 
 - `core-js`
-- `regenerator-runtime`
+- `regenerator-runtime`: Standalone runtime for Regenerator-compiled generator and async functions.即`generator`和`async`的polyfill包
 
-`core-js@3`升级之后弃用了`@babel/polyfill`，以下是等价实现
+`core-js@3`升级之后弃用了`@babel/polyfill`，以下是等价实现。polyfill是一个针对ES2015+环境的shim，实现上来说`babel-polyfill`包只是简单的把`core-js`和`regenerator runtime`包装了下。
 
 ```javascript
 // babel.config.js

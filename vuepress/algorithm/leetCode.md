@@ -35,6 +35,7 @@ title: LeetCode
   - [字符串的排列](#字符串的排列)
   - [编辑距离](#编辑距离)
 - [4.二叉树](#_4-二叉树)
+   - [路径总和](#路径总和)
    - [二叉树的层序遍历](#二叉树的层序遍历)
    - [二叉树的序列化与反序列化](#二叉树的序列化与反序列化)
    - [验证二叉树的前序序列化](#验证二叉树的前序序列化)
@@ -80,7 +81,9 @@ title: LeetCode
    - [合并两个有序数组](#合并两个有序数组)
    - [全排列](#全排列)
    - [最长湍流子数组](#最长湍流子数组)
+   - [数组中的第K个最大元素](#数组中的第k个最大元素)
    - [最小K个数](#最小k个数)
+   - [长度最小的子数组](#长度最小的子数组)
    - [寻找旋转排序数组中的最小值](#寻找旋转排序数组中的最小值)
    - [最长递增子序列](#最长递增子序列)
 - [9.二维数组](#_9-二维数组)
@@ -1282,7 +1285,44 @@ const inorderTraversal = (root) => {
   return res;
 };
 ```
+#### [路径总和](https://leetcode-cn.com/problems/path-sum/submissions/)
 
+递归： 深度优先遍历
+```javascript
+var hasPathSum = function(root, targetSum) {
+    if(root === null) return false
+    if(root.left === null && root.right === null && root.val === targetSum) return true
+    return hasPathSum(root.left, targetSum - root.val) || hasPathSum(root.right, targetSum - root.val)
+};
+```
+广度优先遍历: 父节点的值是`argetSu
+m - root.val`
+```javascript
+var hasPathSum = function(root, targetSum) {
+    if(root === null) return false
+    let stack = [root]
+    root.val = targetSum - root.val
+    while(stack.length) {
+        const nextNodes = []
+        for(let i = 0; i < stack.length; i++) {
+            let node = stack[i]
+            if(node.left === null && node.right === null && node.val === 0) {
+                return true
+            }
+            if(node.left) {
+                node.left.val = node.val - node.left.val
+                nextNodes.push(node.left)
+            }
+            if(node.right) {
+                node.right.val = node.val - node.right.val
+                nextNodes.push(node.right)
+            }
+        }
+        stack = nextNodes
+    }
+    return false
+};
+```
 #### [二叉树的层序遍历](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/)
 bfs
 ```javascript
@@ -2941,6 +2981,24 @@ var maxTurbulenceSize = function(arr) {
     return max
 };
 ```
+#### [数组中的第K个最大元素](https://leetcode-cn.com/problems/kth-largest-element-in-an-array/)
+暴力循环
+```javascript
+var findKthLargest = function(nums, k) {
+    for(let i = 0; i < nums.length; i++) {
+        let temp = i
+        for(let j = i + 1; j < nums.length; j++) {
+            if(nums[j] > nums[temp]) {
+                temp = j
+            }
+        }
+        if(i === k - 1) return nums[temp]
+        if(temp !== i) {
+            nums[temp] = nums[i] // 只需要把小的数放到没有排序的那边
+        } 
+    }
+};
+```
 
 #### [最小K个数](https://leetcode-cn.com/problems/smallest-k-lcci/)
 
@@ -2973,7 +3031,48 @@ function GetLeastNumbers_Solution(input, k)
     return res.sort((a, b) => a -b)
 }
 ```
-
+#### [长度最小的子数组](https://leetcode-cn.com/problems/minimum-size-subarray-sum/)
+暴力
+```javascript
+var minSubArrayLen = function(target, nums) {
+    let n = nums.length;
+    if (n == 0) {
+        return 0;
+    }
+    let ans = Infinity;
+    for (let i = 0; i < n; i++) {
+        let sum = 0;
+        for (let j = i; j < n; j++) {
+            sum += nums[j];
+            if (sum >= target) {
+                ans = Math.min(ans, j - i + 1);
+                break;
+            }
+        }
+    }
+    return ans == Infinity ? 0 : ans;
+};
+```
+滑动窗口
+```javascript
+var minSubArrayLen = function(target, nums) {
+    let n = nums.length
+    if (n === 0) return 0
+    let start = 0, end = 0, sum = 0, res = Number.MAX_SAFE_INTEGER
+    while(end < n) {
+        sum = sum + nums[end]
+        while((sum - nums[start]) >= target) {
+            sum = sum - nums[start]
+            start++
+        }
+        if(sum >= target) {
+            res = Math.min(res, end - start + 1)
+        }
+        end++
+    }
+    return res === Number.MAX_SAFE_INTEGER ? 0 : res
+};
+```
 ### 9.二维数组
 #### [N x N二维数组翻转90度](https://leetcode-cn.com/problems/rotate-image)
 ```
