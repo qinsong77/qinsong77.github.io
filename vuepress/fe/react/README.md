@@ -44,6 +44,7 @@ title: React
 - [真实DOM操作和Virtual Dom](#真实dom操作和virtual-dom)
 - [Diff算法](#diff算法)
 - [React懒加载](#react懒加载)
+- [原理](#原理)
 
 ## 概述
 
@@ -1597,3 +1598,26 @@ class Suspense extends React.Component {
   }
 }
 ```
+![](./image/react_all.png)
+
+#### 原理
+
+useState 和 useReducer 都是关于状态值的提取和更新，从本质上来说没有区别，从实现上，可以说 useState 是 useReducer 的一个简化版，其背后用的都是同一套逻辑。
+
+React Hooks 保存状态的位置其实与类组件的一致：
+- 两者的状态值都被挂载在组件实例对象`FiberNode`的`memoizedState`属性中。
+- 两者保存状态值的**数据结构完全不同**；类组件是直接把 `state` 属性中挂载的这个开发者自定义的对象给保存到memoizedState属性中；而 `React Hooks` 是用**链表**来保存状态的，`memoizedState`属性保存的实际上是这个链表的**头指针**。
+链表的节点:
+```flow js
+// react-reconciler/src/ReactFiberHooks.js
+export type Hook = {
+  memoizedState: any, // 最新的状态值
+  baseState: any, // 初始状态值，如`useState(0)`，则初始值为0
+  baseUpdate: Update<any, any> | null,
+  queue: UpdateQueue<any, any> | null, // 临时保存对状态值的操作，更准确来说是一个链表数据结构中的一个指针
+  next: Hook | null,  // 指向下一个链表节点
+};
+```
+hooks分为`mount阶段`和`update阶段`
+
+在mount阶段，每当调用Hooks方法，比如`useState`，`mountState`就会调用`mountWorkInProgressHook `来创建一个Hook节点，并把它添加到`Hooks`链表上

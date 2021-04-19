@@ -6,6 +6,201 @@ title: React Around
 
 - [8k字 | Redux/react-redux/redux中间件设计实现剖析](https://juejin.cn/post/6844904036013965325)
 - [一文吃透react-redux源码](https://juejin.cn/post/6937491452838559781)
+ ::: details 实现
+```typescript jsx
+ // reducer.js 纯函数，计算出新的store
+ const initialState = {
+     count: 0
+ }
+ 
+ export function reducer(state = initialState, action) {
+     switch (action.type) {
+         case 'add':
+             return {
+                 ...state,
+                 count: state.count + 1
+             }
+         case 'subtract':
+             return {
+                 ...state,
+                 count: state.count - 1
+             }
+         default:
+             return initialState
+     }
+ }
+
+type Actions = {
+    type: string,
+    payload?: any
+}
+
+export const createStore = (reducer: (state: any, action: Actions) => any, heightener?: (any) => any) => {
+    // heightener是一个高阶函数,用于增强createStore
+    //如果存在heightener,则执行增强后的createStore
+    if(heightener) {
+        return heightener(createStore)(reducer)
+    }
+    let currentState = {} // 公共状态
+    const observers = []
+    function getState() { // getter
+        return currentState
+    }
+    
+    function dispatch(action: Actions) { // setter
+        currentState = reducer(currentState, action)
+        observers.forEach(fn => fn())
+    }
+    
+    function subscribe(fn) { // 发布订阅
+        observers.push(fn)
+    }
+    dispatch({ type: '@@REDUX_INIT' })  //初始化store数据
+    return {
+        getState,
+        dispatch,
+        subscribe
+    }
+}
+
+const logger = store => next => action => {
+    console.log('logger1')
+    let result = next(action)
+    return result
+}
+const thunk = store => next => action => {
+    console.log('thunk')
+    const { dispatch, getState } = store
+    return typeof action === 'function' ? action(store.dispatch) : next(action)
+}
+
+const logger2 = store => next => action => {
+    console.log('log2')
+    let result = next(action)
+    return result
+}
+// 组合函数
+function compose(...fns) {
+    if(fns.length === 0) return arg => arg
+    if(fns.length === 0) return fns[0]
+    return fns.reduce((res, cur) => (...args) => res((cur(...args))))
+}
+const applyMiddleware = (...middlewares) => createStore => reducer => {
+    const store = createStore(reducer)
+    let { getState, dispatch } = store
+    const params = {
+        getState,
+        dispatch: action => dispatch(action)
+    }
+    const middlewareArr = middlewares.map(middleware => middleware(params))
+    dispatch = compose(...middlewareArr)(dispatch)
+    return {
+        ...store,
+        dispatch
+    }
+}
+const store = createStore(reducer, applyMiddleware(logger, thunk, logger2))
+
+export default function () {
+    return (
+        <Provider store={store}>
+            <TestApp title='this is title props'/>
+        </Provider>
+    )
+}
+// Provider.tsx
+import React from 'react'
+export const ReduxContext = React.createContext(null)
+export function Provider(props) {
+    return (
+        <ReduxContext.Provider value={props.store}>
+            { props.children }
+        </ReduxContext.Provider>
+    )
+}
+
+// connect.tsx
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import { ReduxContext } from '@src/store/redux/Provider'
+
+export function connect(mapStateToProps, mapDispatchToProps) {
+    return function (Component) {
+        return function Connect(props) {
+            const store = useContext(ReduxContext)
+            console.log(store)
+            const [state, setState ] = useState(store.getState())
+            useEffect(()=> {
+                console.log('useEffect running')
+                store.subscribe(() => {
+                    // 根据mapStateToProps把state挂到this.props上
+                    setState(mapStateToProps(store.getState()))
+                })
+            }, [])
+            return (
+                <Component
+                    { ...props }
+                    { ...state }
+                    //{ ...mapStateToProps(store.getState()) }
+                    // 根据mapDispatchToProps把dispatch(action)挂到this.props上
+                    { ...mapDispatchToProps(store.dispatch) }
+                />
+            )
+        }
+    }
+    
+}
+
+// 容器组件示例
+const addCountAction = {
+    type: 'add'
+}
+
+const mapStateToProps = state => {
+    return {
+        count: state.count
+    }
+}
+
+function addCountActionAsync(dispatch) {
+    setTimeout(() => {
+        dispatch({ type: 'add' })
+    }, 1000)
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        addCount: () => {
+            dispatch(addCountAction)
+        },
+        addCountAsync: () => {
+            setTimeout(() => {
+                dispatch(addCountActionAsync)
+            }, 1000)
+        }
+    }
+}
+
+function App(props) {
+    return (
+        <div>
+            <p>{ props.title }</p>
+            <p>count: { props.count }</p>
+            <Divider/>
+            <button onClick={() => props.addCount()}>add</button>
+            <Divider/>
+            <button onClick={() => props.addCountAsync()}>addCountAsync</button>
+        </div>
+    )
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App)
+```
+react-redux可以将react组件分为，`展示组件`和`容器组件`，容器组件的数据来源可以来自`redux`，修改视图可以使用dispatch向redux派发action，
+使用`connect`高阶组件完成`connect(mapStateToProps, mapDispatchToProps)(App)`，通过`mapStateToProps`函数，可以对全局状态进行过滤，而展示型组件不直接从`global state`获取数据，其数据来源于父组件。
+
+本质上是利于了React的`Context Api`，可以跨组件通信，而`connect`就是获取`context`的值，通过props传给组件。而react-redux实现了`发布订阅模式`，在dispatch的时候，可以触发回调函数
+的执行，所以只需要将更新react视图的方法添加到`observers`即可。
+ ::: 
 
 ### immutable.js
 

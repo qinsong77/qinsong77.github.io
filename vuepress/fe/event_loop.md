@@ -528,7 +528,45 @@ new Promise((resolve, reject) => {
 其实整个script 是个宏任务，运行这个时，肯定会一口气执行完，而上面的`promise 1`中的`then`微任务回调，也是一口气执行完，响应的加入微任务、宏任务队列。微任务总是先清空，
 所以都是先打印`Promise`
 
+```javascript
+var promise = new Promise((resolve, reject) => {
+    console.log(1)
+})
+promise.then(console.log(2))
+console.log(3)
+// 1
+// 2
+// 3
+```
+1. .then 或者 .catch 的参数期望是函数，传入非函数则会发生值透传（ value => value ）
+2. 开始 new Promise ，执行构造函数同步代码，输出 1
+3. 然后 then() 的参数是一个 console.log(2)  （注意：并不是一个函数），是立即执行的，输出 2
+4. 执行同步代码，输出 3
 
+
+promise.then传入不是函数时
+```javascript
+var date = new Date()
+console.log(1, new Date() - date)
+setTimeout(() => {
+  console.log(2, new Date() - date)
+}, 500)
+
+Promise.resolve().then(console.log(3, new Date() - date))
+  .then(res => console.log(4, res))
+
+while (new Date() - date < 1000) {}
+
+console.log(5, new Date() - date)
+/**
+1 0
+3 1  -- 这里时间不一定
+5 1000
+4 undefined
+2 1000
+**/
+```
+ `Promise.resolve().then` , `.then` 的参数不是函数，发生值透传（ `value => value` ） ，输出 3 1
 ```html
 <!DOCTYPE html>
 <html lang="en">

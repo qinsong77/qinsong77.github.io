@@ -394,6 +394,14 @@ findGreater100([1, 2, 101, 300, 2, 122]); // [101, 300, 122]
 ### 组合函数的实现
 
 ```javascript
+function compose(...fns) {
+    if(fns.length === 0) return arg => arg
+    if(fns.length === 0) return fns[0]
+    return fns.reduce((res, cur) => (...args) => res((cur(...args))))
+}
+```
+
+```javascript
 function compose(...funcs) {
   return function (x) {
     return funcs.reduce(function (arg, fn) {

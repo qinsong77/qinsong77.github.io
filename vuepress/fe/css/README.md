@@ -472,7 +472,7 @@ transition 和animation支持的属性， [CSS animated properties](https://deve
 
 ### [css样式管理方案](https://juejin.cn/post/6844903971857907720)
 
-1. 命名空间 + BEM规范[BEM](https://www.bemcss.com/)（`即模块名 + 元素名 + 修饰器名`。）
+1. 命名空间 + BEM规范[BEM](https://www.bemcss.com/)（block-name__element-name--modifier-name`即模块名 + 元素名 + 修饰器名`。）
 ```
 .componentA {
     &__title {

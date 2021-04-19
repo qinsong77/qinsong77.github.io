@@ -1,6 +1,14 @@
 ---
 title: 动态规划
 ---
+### 目录
+- [斐波那契数列](#斐波那契数列)
+- [打家劫舍](#打家劫舍)
+- [凑零钱问题](#凑零钱问题)
+- [爬楼梯](#爬楼梯)
+- [单词拆分](#单词拆分)
+
+
 动态规划问题的一般形式就是求最值。求解动态规划的核心问题是**穷举**。因为要求最值，肯定要把所有可行的答案穷举出来，然后在其中找最值。
 
 动态规划的穷举有点特别，因为这类问题存在**「重叠子问题」**，如果暴力穷举的话效率会极其低下，所以需要「备忘录」或者「DP table」来优化穷举过程，避免不必要的计算。
@@ -71,6 +79,28 @@ var fib = function(N){
 
 	return curr
 }
+```
+
+#### [打家劫舍](https://leetcode-cn.com/problems/house-robber/)
+
+当位于i时，只能选择不偷或者偷，偷的话就是 `nums[i] + dp[i - 2]`，不偷则是前一步的最大值，`dp[i-1]`
+
+dp 方程 `dp[i] = max(dp[i-2]+nums[i], dp[i-1])`
+```javascript
+var rob = function(nums) {
+    if(nums.length === 0) return 0
+    if(nums.length === 1) return nums[0]
+    if(nums.length === 2) return Math.max(nums[0], nums[1])
+    let prev1 = nums[0]
+    let prev2 = Math.max(nums[0], nums[1])
+    let curr = 0
+    for(let i = 2; i < nums.length; i++) {
+        curr = Math.max(prev2, nums[i] + prev1)
+        prev1 = prev2
+        prev2 = curr
+    }
+    return curr
+};
 ```
 
 ### [凑零钱问题](https://leetcode-cn.com/problems/coin-change/)
