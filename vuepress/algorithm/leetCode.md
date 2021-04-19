@@ -776,7 +776,7 @@ var lengthOfLongestSubstring = function(s) {
     let res = 1
     let left = 0
     for(let i = 1; i< s.length; i++) {
-        let findIndex = s.slice(left, i).indexOf(s[i])
+        let findIndex = s.slice(left, i).indexOf(s[i]) // 在left-i中找是否有重复的s[i]
         if(findIndex > -1) {
             left = left + findIndex + 1
         }
@@ -784,6 +784,17 @@ var lengthOfLongestSubstring = function(s) {
     }
     return res
 };
+var lengthOfLongestSubstring = function(s) {
+    let map = new Map(), max = 0, left = 0
+    for(let i = 0; i < s.length; i++) {
+        if(map.has(s[i])) {
+            left = Math.max(map.get(s[i]) + 1, left)
+        }
+        max = Math.max(max, i - left + 1)
+        map.set(s[i], i)
+    }
+    return max
+}
 ```
 
 

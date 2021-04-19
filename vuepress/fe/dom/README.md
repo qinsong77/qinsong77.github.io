@@ -1,8 +1,9 @@
 ---
 title: Dom
 ---
-
-[「查缺补漏」高频考点浏览器面试题](https://juejin.cn/post/6854573215830933512)
+- [Chrome 浏览器架构](https://xie.infoq.cn/article/5d36d123bfd1c56688e125ad3)
+- [浏览器的工作原理：新式网络浏览器幕后揭秘](https://www.html5rocks.com/zh/tutorials/internals/howbrowserswork/)
+- [「查缺补漏」高频考点浏览器面试题](https://juejin.cn/post/6854573215830933512)
 
 - [操作dom的Api](#操作dom的api)
 - [输入url到页面展示发生了什么](#输入url到页面展示发生了什么)

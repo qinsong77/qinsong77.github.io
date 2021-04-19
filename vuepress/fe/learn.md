@@ -1219,6 +1219,69 @@ g.next(true) // { value: 0, done: false }
 ```
 Generator 函数也不能跟new命令一起用，会报错。
 
+#### [原理](http://www.alloyteam.com/2016/02/generators-in-depth/)
+
+首先，**生成器不是线程**。Javascript 执行引擎仍然是一个基于事件循环的单线程环境，当生成器运行的时候，
+它会在叫做 `caller` 的同一个线程中运行。执行的顺序是有序、确定的，并且**永远不会产生并发**。不同于系统的线程，生成器只会在其内部用到 `yield` 的时候才会被挂起。
+
+实现有两个关键点，一是要保存函数的上下文信息，二是实现一个完善的迭代方法，使得多个 yield 表达式按序执行，从而实现生成器的特性。、
+
+借助babel插件`@babel/plugin-transform-regenerator`转成es5:
+
+ ::: details 点击查看代码
+ ```javascript
+function* example() {
+  yield 1;
+  yield 2;
+  yield 3;
+}
+var iter=example();
+iter.next();
+```
+```javascript
+"use strict";
+
+var _marked = /*#__PURE__*/regeneratorRuntime.mark(example);
+
+function example() {
+  return regeneratorRuntime.wrap(function example$(_context) {
+    while (1) switch (_context.prev = _context.next) {
+      case 0:
+        _context.next = 2;
+        return 1;
+
+      case 2:
+        _context.next = 4;
+        return 2;
+
+      case 4:
+        _context.next = 6;
+        return 3;
+
+      case 6:
+      case "end":
+        return _context.stop();
+    }
+  }, _marked);
+}
+
+var iter = example();
+iter.next();
+```
+ :::
+ switch case 之外，迭代器函数 example 被 regeneratorRuntime.mark 包装，返回一个被 regeneratorRuntime.wrap 包装的迭代器对象。
+ ```javascript
+runtime.mark = function(genFun) {
+  if (Object.setPrototypeOf) {
+    Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
+  } else {
+    genFun.__proto__ = GeneratorFunctionPrototype;
+  }
+  genFun.prototype = Object.create(Gp);
+  return genFun;
+};
+```
+
 ### async、await
 
 ```javascript

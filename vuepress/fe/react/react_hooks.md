@@ -26,7 +26,7 @@ title: React Hooks
 - [useMemo](#usememo)
 - [useCallback](#usecallback)
 - [优化总结](#优化总结)
-
+- [原理](#原理)
 
 ## 一、什么是 Hooks
 **有状态的函数式组件。**
@@ -1131,3 +1131,93 @@ React 的性能优化方向主要是两个：**一个是减少重新 render 的�
 减少不必要的渲染，可以使用`use.memo`和`useCallback`，或者之前的`shouldComponentUpdate`和`pureComponent`
 
 **`useMemo` 做计算结果缓存**
+#### 原理
+- [前端面试必考题：React Hooks 原理剖析](https://juejin.cn/post/6844904205371588615)
+- [React Hooks源码解析](https://juejin.cn/post/6844904080758800392)
+- [一文吃透react-hooks原理](https://juejin.cn/post/6944863057000529933)
+useState 和 useReducer 都是关于状态值的提取和更新，从本质上来说没有区别，从实现上，可以说 useState 是 useReducer 的一个简化版，其背后用的都是同一套逻辑。
+
+React Hooks 保存状态的位置其实与类组件的一致：
+- 两者的状态值都被挂载在组件实例对象`FiberNode`的`memoizedState`属性中。
+- 两者保存状态值的**数据结构完全不同**；类组件是直接把 `state` 属性中挂载的这个开发者自定义的对象给保存到memoizedState属性中；而 `React Hooks` 是用**链表**来保存状态的，`memoizedState`属性保存的实际上是这个链表的**头指针**。
+链表的节点:
+```flow js
+// react-reconciler/src/ReactFiberHooks.js
+export type Hook = {
+  memoizedState: any, // 最新的状态值
+  baseState: any, // 初始状态值，如`useState(0)`，则初始值为0
+  baseUpdate: Update<any, any> | null,
+  queue: UpdateQueue<any, any> | null, // 临时保存对状态值的操作，更准确来说是一个链表数据结构中的一个指针
+  next: Hook | null,  // 指向下一个链表节点
+};
+```
+hooks分为`mount阶段`和`update阶段`
+
+在mount阶段，每当调用Hooks方法，比如`useState`，`mountState`就会调用`mountWorkInProgressHook `来创建一个Hook节点，并把它添加到`Hooks`链表上
+
+useState和useReducer都是使用了一个`queue链表`来存放每一次的更新。以便后面的`update阶段`可以返回最新的状态。每次调用`dispatchAction`方法(useState,useReducer第二个参数返回的修改state的函数）的时候，就会形成一个新的update对象，添加到queue链表上，
+而且这个是一个**循环链表**。`dispatchAction`方法的实现：
+ ::: details 实现
+```javascript
+// react-reconciler/src/ReactFiberHooks.js
+// 去除特殊情况和与fiber相关的逻辑
+function dispatchAction(fiber,queue,action,) {
+    const update = {
+      action,
+      next: null,
+    };
+    // 将update对象添加到循环链表中
+    const last = queue.last;
+    if (last === null) {
+      // 链表为空，将当前更新作为第一个，并保持循环
+      update.next = update;
+    } else {
+      const first = last.next;
+      if (first !== null) {
+        // 在最新的update对象后面插入新的update对象
+        update.next = first;
+      }
+      last.next = update;
+    }
+    // 将表头保持在最新的update对象上
+    queue.last = update;
+   // 进行调度工作
+    scheduleWork();
+}
+```
+ ::: 
+
+#### useEffect
+
+useEffect 的保存方式与 `useState / useReducer` 类似，也是以链表的形式挂载在`FiberNode.updateQueue`中。
+
+mount 阶段：**mountEffect**
+
+1. 根据函数组件函数体中依次调用的 `useEffect` 语句，构建成一个链表并挂载在`FiberNode.updateQueue`中，链表节点的数据结构为：
+```flow js
+ const effect: Effect = {
+    tag, // 用来标识依赖项有没有变动
+    create, // 用户使用useEffect传入的函数体
+    destroy, // 上述函数体执行后生成的用来清除副作用的函数
+    deps, // 依赖项列表
+    next: (null: any),
+};
+```
+2. 组件完成渲染后，遍历链表执行。
+
+
+update 阶段：**updateEffect**
+
+1. 同样在依次调用 `useEffect` 语句时，判断此时传入的依赖列表，与链表节点`Effect.deps`中保存的是否一致（基本数据类型的值是否相同；对象的引用是否相同），如果一致，则在`Effect.tag`标记上`NoHookEffect`。
+
+**执行阶段**
+
+在每次组件渲染完成后，就会进入 useEffect 的执行阶段：`function commitHookEffectList()`：
+
+1. 遍历链表
+2. 如果遇到`Effect.tag`被标记上`NoHookEffect`的节点则跳过。
+3. 如果`Effect.destroy为`函数类型，则需要执行该清除副作用的函数（至于这`Effect.destroy`是从哪里来的，下面马上说到）
+4. 执行`Effect.create`，并将执行结果保存到`Effect.destroy`（如果开发者没有配置return，那得到的自然是undefined了，也就是说，开发者认为对于当前 `useEffect` 代码段，不存在需要清除的副作用）；注意由于闭包的缘故，
+`Effect.destroy`实际上可以访问到本次`Effect.create`函数作用域内的变量。
+
+**是先清除上一轮的副作用，然后再执行本轮的 effect 的。**

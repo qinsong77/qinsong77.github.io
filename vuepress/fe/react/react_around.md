@@ -238,6 +238,7 @@ react-redux可以将react组件分为，`展示组件`和`容器组件`，容器
 3. [styled-jsx](https://github.com/vercel/styled-jsx)
 
 ### react如何实现keep-alive
+- [react缓存页面](https://juejin.cn/post/6922340460136513549)
 - [React 中的状态自动保存](https://juejin.cn/post/6844903942522929160)
 
 #### 什么是状态保存？
@@ -271,6 +272,9 @@ react-redux可以将react组件分为，`展示组件`和`容器组件`，容器
 3. 基于 `<Route>` 组件现有行为做拓展，可参考[react-router-cache-route](https://github.com/CJY0208/react-router-cache-route/blob/master/README_CN.md)
 
 4. [react-activation](https://github.com/CJY0208/react-activation)
+
+由于 React 会卸载掉处于固有组件层级内的组件，所以需要将 `<KeepAlive>` 中的组件，也就是其 children 属性抽取出来，渲染到一个不会被卸载的组件` <Keeper> `内，再使用 DOM 操作将 `<Keeper> `内的真实内容移入对应 `<KeepAlive>`
+
 
 - [简单实现](https://blog.csdn.net/yehuozhili/article/details/107435885)
 

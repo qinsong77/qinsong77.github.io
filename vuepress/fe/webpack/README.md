@@ -833,6 +833,19 @@ return __webpack_require__(__webpack_require__.s = "./src/main.js");
 
 ````
 
+### require.context是什么
+一个webpack的api，通过执行`require.context`函数获取一个特定的上下文，主要用来实现自动化导入模块，在前端工程中，如果遇到从一个文件夹引入很多模块的情况，
+可以使用这个api，它会遍历文件夹中的指定文件，然后自动导入，使得不需要每次显式的调用`import`导入模块。比如在Vue中使用`require.context`函数遍历modules文件夹的所有文件一次性导入到index.js中
+
+> 语法: `require.context(directory, useSubdirectories = false, regExp = /^.//);`
+require.context函数接受三个参数
+ 
+1. directory {String} -读取文件的路径
+ 
+2. useSubdirectories {Boolean} -是否遍历文件的子目录
+ 
+3. regExp {RegExp} -匹配文件的正则
+
 ### [SourceMap](https://mp.weixin.qq.com/s/87VqGBaT9aF1B1Tokr4CKQ)
 
 sourceMap可以帮我们直接定位到编译前代码的特定位置。
