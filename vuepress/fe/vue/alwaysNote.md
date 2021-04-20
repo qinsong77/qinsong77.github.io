@@ -47,6 +47,7 @@ title: 常用笔记vue
 - 使用 Chrome Performance 查找性能瓶颈
 
 ### [大文件上传和断点续传](https://juejin.im/post/6844904046436843527)
+- [大文件下载](https://segmentfault.com/a/1190000024542207)
 
 ### 长列表优化
 

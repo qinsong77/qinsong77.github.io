@@ -772,6 +772,27 @@ var partition = function(s) {
 左右指针控制滑动窗口，i相当于右指针
 ```javascript
 var lengthOfLongestSubstring = function(s) {
+    let length = s.length
+    if(length <= 1) return length
+    let right = 0
+    let res = ''
+    for(let left = 1; left < s.length; left++) {
+        let ch = s[left]
+        let newRight = right
+        while(newRight <= left - 1) {
+            if(s[newRight] === ch) {
+                right = newRight + 1
+                break;
+            }
+            newRight++
+        }
+        res = Math.max(res, left - right + 1)
+    }
+    return res
+};
+```
+```javascript
+var lengthOfLongestSubstring = function(s) {
     if(!s) return 0
     let res = 1
     let left = 0
@@ -2902,19 +2923,20 @@ var merge = function(A, m, B, n) {
 ```
 把 A 和 B 中的所有元素，从大到小依次放入 A 中
 ```javascript
-var merge = function(A, m, B, n) {
-    let index = m + n - 1, i = m - 1, j = n -1
-    while(i > -1 || j > -1) {
-        let a = i > -1 ? A[i] : -Infinity
-        let b = j > -1 ? B[j] : -Infinity
-        if(a > b) {
-            A[index] = a
-            i--
+var merge = function(nums1, m, nums2, n) {
+    let count = m + n
+    while(m > 0 || n > 0) {
+        if(n === 0) break
+        let a = m === 0 ? -Infinity : nums1[m- 1]
+        let b = nums2[n - 1]
+        if(b>= a) {
+            nums1[count - 1] = b
+            n--
         } else {
-            A[index] = b
-            j--
+            nums1[count - 1] = a
+            m--
         }
-        index--
+        count--
     }
 };
 ```

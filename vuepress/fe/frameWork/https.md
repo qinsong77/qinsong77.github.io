@@ -29,6 +29,8 @@ HTTPS 全称为超文本传输安全协议（HyperText Transfer Protocol Secure�
 - `数据一致性(Data integrity)`: 具有校验机制，一旦被篡改，通信双方会立刻发现。
 - `身份认证(Authentication)`: 配备身份证书，防止身份被冒充。
 
+TLS/SSL 的功能实现主要依赖于三类基本算法：`散列函数` 、`对称加密`和`非对称加密`，**其利用非对称加密实现身份认证和密钥协商，对称加密算法采用协商的密钥对数据加密，基于散列函数验证信息的完整性**。
+
 `TLS(Transport Layer Security)` 是 `SSL(Secure Socket Layer)` 的后续版本，它们是用于在互联网两台计算机之间用于`身份验证`和`加密`的一种协议。
 举一个 TLS 例子来看一下 TLS 的结构
 
@@ -169,6 +171,8 @@ CA认证机构生成数字证书：
 ![https流程图3](./https/https_process.png)
 
 ![https流程图4](./https/https_process2.png)
+
+**先是TCP的三次握手，然后是TLS的三次握手**
 
 - 1、客户端发起请求，同时将客户端支持的**TLS 协议版本号**、**加密规则**、**一个随机数（Client random）**，发送给服务器。
 - 2、服务器上有安装好的认证证书（将服务器的公钥，通过权威机构 CA 认证后，生成的证书）。

@@ -102,6 +102,31 @@ var rob = function(nums) {
     return curr
 };
 ```
+#### [打家劫舍2](https://leetcode-cn.com/problems/house-robber-ii/)
+条件只是变成所有的房屋都 **围成一圈** ， 即第一间房间和最后一间不能同时偷。
+
+就是把环拆成两个队列，一个是从`0到n-1`，另一个是从`1到n`，然后返回`两个结果最大的`。
+```javascript
+var rob = function(nums) {
+    const length = nums.length
+    if(length === 1) return nums[0]
+    if(length === 2) return Math.max(nums[0], nums[1])
+    if(length === 3) return Math.max(...nums)
+    return Math.max(robNotCircle(nums.slice(0, length -1)), robNotCircle(nums.slice(1)))
+};
+
+function robNotCircle(nums) {
+    let prev1 = nums[0]
+    let prev2 = Math.max(nums[0], nums[1])
+    let curr = 0
+    for(let i = 2; i < nums.length; i++) {
+        curr = Math.max(prev2, prev1 + nums[i])
+        prev1 = prev2
+        prev2 = curr
+    }
+    return curr
+}
+```
 
 ### [凑零钱问题](https://leetcode-cn.com/problems/coin-change/)
 

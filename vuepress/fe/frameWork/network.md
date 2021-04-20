@@ -50,7 +50,7 @@ title: 网络相关
 
 
 
-## OSI
+## [OSI](https://zhuanlan.zhihu.com/p/32059190)
 OSI-Open Systems Interconncection，网络分层
 从上到下分别是：
 1. 应用层(Application)
@@ -66,6 +66,8 @@ OSI-Open Systems Interconncection，网络分层
 6. 数据链路层(Data Link) -- 交换机
 
 7. 物理层(Physical) -- 网卡、集线器（Hub）
+
+![](./http/osi_model_tcp_ip_model.png)
 # UDP
 
 ## 面向报文
@@ -503,6 +505,10 @@ HTTP 状态码为 3 位数，被归为 5 类：
 * 401 unauthorized，表示发送的请求需要有通过 HTTP 认证的认证信息
 * 403 forbidden，表示对请求资源的访问被服务器拒绝，服务器已经得到请求，但是拒绝执行，比如没权限、法律禁止等。
 * 404 not found，表示在服务器上没有找到请求的资源
+* 405 Method Not Allowed，服务器禁止使用该方法，客户端可以通过options方法来查看服务器允许的访问方法，如下
+```
+Access-Control-Allow-Methods →GET,HEAD,PUT,PATCH,POST,DELETE
+```
 
 **5XX 服务器错误**
 
@@ -658,6 +664,12 @@ HTTP 2.0 中所有加强性能的核心点在于此。在之前的 HTTP 版本�
 ## DNS
 
 DNS 的作用就是通过域名查询到具体的 IP。
+
+![](./http/dnsfind.png)
+
+一般向本地DNS服务器发送请求是**递归查询**的，本地 DNS 服务器向其他域名服务器请求的过程是**迭代查询**的过程
+
+![](./http/dnsfind2.png)
 
 因为 IP 存在数字和英文的组合（IPv6），很不利于人类记忆，所以就出现了域名。你可以把域名看成是某个 IP 的别名，DNS 就是去查询这个别名的真正名称是什么。
 
