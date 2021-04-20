@@ -9672,7 +9672,7 @@
 		// this is technically browser-specific, but at least for now browsers are
 		// the only target envs that have right/middle clicks.
 		//点击正常化。并点击。中间，因为它们实际上不会开火
-		//这在技术上是特定于浏览器的，但至少现在浏览器是
+		//这在技术上是特定于浏览器的，但至少现代浏览器是
 		//唯一有右/中点击的目标环境。
 		if (name === 'click') {//判断是否是点击事件
 			if (modifiers.right) { //判断是否是鼠标右击

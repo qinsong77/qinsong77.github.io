@@ -396,8 +396,8 @@ findGreater100([1, 2, 101, 300, 2, 122]); // [101, 300, 122]
 ```javascript
 function compose(...fns) {
     if(fns.length === 0) return arg => arg
-    if(fns.length === 0) return fns[0]
-    return fns.reduce((res, cur) => (...args) => res((cur(...args))))
+    if(fns.length === 1) return fns[0]
+    return fns.reduceRight((res, cur) => (...args) => res((cur(...args))))
 }
 ```
 
@@ -736,6 +736,7 @@ class EventEmitter {
 	}
 	// 向事件队列添加事件，相当于订阅
 	// prepend为true表示向事件队列头部添加事件
+    // node 中 emitter.on() 的别名。
 	addListener(type, listener, prepend = false) {
 		const events = this._events.get(type)
 		if(Array.isArray(events) && events === this._maxListeners) return false
@@ -756,8 +757,8 @@ class EventEmitter {
 	// 向事件队列添加事件，只执行一次
 	once(type, listener) {
 		const only = (...args) => {
-			listener.apply(this, args)
 			this.removeListener(type, listener)
+            listener.apply(this, args)
 		}
 		only.origin = listener
 		this.addListener(type, only)

@@ -374,7 +374,7 @@ HTTP 响应是由状态行、消息报头、响应正文组成。其中状态行
 ### Last-Modified/If-Modified-Since 策略
 
 - Last-Modified：标示这个响应资源的最后修改时间。Web 服务器在响应请求时，告诉浏览器资源的最后修改时间。
-- If-Modified-Since：当资源过期时(使用 Cache-Control 标识的 max-age)，发现资源具有 Last-Modified 声明，则再次向 web 服务器请求时带上头 If-Modified-Since，表示请求时间。web 服务器收到请求后发现有头 If-Modified- Since 则与被请求资源的最后修改时间进行比对。若最后修改时间较新，说明资源又被改动过，则响应整片资源内容(写在响应消息包体内)，HTTP 200;若最后修改时间较旧，说明资源无新修改，则响应 HTTP 304（无需包体，节省流量），告知浏览器继续使用所保存的 cache。
+- If-Modified-Since：当资源过期时(使用 Cache-Control 标识的 max-age)，发现资源具有 Last-Modified 声明，则再次向 web 服务器请求时带上头 If-Modified-Since，表示请求时间。web 服务器收到请求后发现有头 If-Modified- Since 则与被请求资源的最后修改时间进行比对。若最后修改时间较新，说明资源又被改动过，则响应整片资源内容(写在响应消息包体内)，HTTP 200；若最后修改时间较旧，说明资源无新修改，则响应 HTTP 304（无需包体，节省流量），告知浏览器继续使用所保存的 cache。
 
 http 缓存策略图：
 

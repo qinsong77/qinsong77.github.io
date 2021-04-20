@@ -82,7 +82,7 @@ const logger2 = store => next => action => {
 // 组合函数
 function compose(...fns) {
     if(fns.length === 0) return arg => arg
-    if(fns.length === 0) return fns[0]
+    if(fns.length === 1) return fns[0]
     return fns.reduce((res, cur) => (...args) => res((cur(...args))))
 }
 const applyMiddleware = (...middlewares) => createStore => reducer => {

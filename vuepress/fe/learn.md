@@ -1075,7 +1075,12 @@ for (let x of obj) {
 ```
 
 
+### JavaScript的异步方式
 - [异步I/O及异步编程](https://sanyuan0704.top/my_blog/blogs/javascript/js-async/001.html)
+1. 回调方式 --- 嵌套地狱
+2. promise --- then写法代码冗余，语义不清楚
+3. 协程Generator---异步任务的容器，同步的写法，但是需要生成generator，等写法，也比较冗余
+4. async await
 
 ### promise
 
@@ -1137,7 +1142,9 @@ new Promise((resolve, reject) => {
 - `Promise.allSettled()`: 方法接受一组 Promise 实例作为参数，包装成一个新的 Promise 实例。只有等到所有这些参数实例都返回结果，不管是fulfilled还是rejected，包装实例才会结束。该方法返回的新的 Promise 实例，一旦结束，状态总是fulfilled，不会变成rejected。状态变成fulfilled后，Promise 的监听函数接收到的参数是一个数组，每个成员对应一个传入Promise.allSettled()的 Promise 实例。
 
 ### generator
+Generator 函数是协程在 ES6 的实现，最大特点就是可以交出函数的执行权（即暂停执行）。
 
+整个 Generator 函数就是一个封装的异步任务，或者说是异步任务的容器。异步操作需要暂停的地方，都用 `yield` 语句注明。
 #### generator函数的执行上下文环境
 
 ```javascript
@@ -1218,6 +1225,87 @@ g.next() // { value: 1, done: false }
 g.next(true) // { value: 0, done: false }
 ```
 Generator 函数也不能跟new命令一起用，会报错。
+#### Generator 和 异步
+##### thunk 版本
+
+thunk及是`偏函数`，核心逻辑是接收一定的参数，生产出定制化的函数，然后使用定制化的函数去完成功能。`readFileThunk`就是一个thunk函数。
+
+```javascript
+const readFileThunk = (filename) => {
+  return (callback) => {
+    fs.readFile(filename, callback);
+  }
+}
+const gen = function* () {
+  const data1 = yield readFileThunk('001.txt')
+  console.log(data1.toString())
+  const data2 = yield readFileThunk('002.txt')
+  console.log(data2.toString)
+}
+let g = gen();
+// 第一步: 由于进场是暂停的，我们调用next，让它开始执行。
+// next返回值中有一个value值，这个value是yield后面的结果，放在这里也就是是thunk函数生成的定制化函数，里面需要传一个回调函数作为参数
+g.next().value((err, data1) => {
+  // 第二步: 拿到上一次得到的结果，调用next, 将结果作为参数传入，程序继续执行。
+  // 同理，value传入回调
+  g.next(data1).value((err, data2) => {
+    g.next(data2);
+  })
+})
+```
+
+#### Promise 版本
+
+```javascript
+const readFilePromise = (filename) => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(filename, (err, data) => {
+      if(err) {
+        reject(err);
+      }else {
+        resolve(data);
+      }
+    })
+  }).then(res => res);
+}
+const gen = function* () {
+  const data1 = yield readFilePromise('001.txt')
+  console.log(data1.toString())
+  const data2 = yield readFilePromise('002.txt')
+  console.log(data2.toString)
+}
+let g = gen();
+function getGenPromise(gen, data) { 
+  return gen.next(data).value;
+}
+getGenPromise(g).then(data1 => {
+  return getGenPromise(g, data1);
+}).then(data2 => {
+  return getGenPromise(g, data2)
+})
+```
+再次封装
+```javascript
+function run(g) {
+  const next = (data) => {
+    let res = g.next();
+    if(res.done) return;
+    res.value.then(data => {
+      next(data);
+    })
+  }
+  next();
+}
+```
+
+#### 采用 co 库
+```javascript
+const co = require('co');
+let g = gen();
+co(g).then(res =>{
+  console.log(res);
+})
+```
 
 #### [原理](http://www.alloyteam.com/2016/02/generators-in-depth/)
 

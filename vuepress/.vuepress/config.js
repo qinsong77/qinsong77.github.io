@@ -145,6 +145,7 @@ module.exports = {
 					children: [
 						['webpack/', 'Summary'],
 						'webpack/webpack5',
+						'webpack/buildAndModuleFederation',
 						'webpack/vite2',
 					]
 				},
