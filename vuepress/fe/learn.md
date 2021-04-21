@@ -132,11 +132,11 @@ for (let i = 0; i < 3; i++) {
 ```
 
 #### `var`,`const` `let` 区别
-- 1. var声明的变量会挂载在`window`上，而let和const声明的变量不会：
-- 2. var声明变量存在变量提升，let和const不存在变量提升
-- 3. let和const声明形成块作用域
-- 4. 同一作用域下let和const不能声明同名变量，而var可以
-- 5. 暂存死区
+1. var声明的变量会挂载在`window`上，而let和const声明的变量不会：
+2. var声明变量存在变量提升，let和const不存在变量提升
+3. let和const声明形成块作用域
+4. 同一作用域下let和const不能声明同名变量，而var可以
+5. 暂存死区
 ```javascript
 var a = 100;
 
@@ -148,11 +148,11 @@ if(1){
 }
 ```
 - const
-    - 1、一旦声明必须赋值,不能使用null占位。
+    - 1、一旦声明必须赋值，不能使用null占位。
     - 2、声明后不能再修改
     - 3、如果声明的是复合类型数据，可以修改其属性
     
-变量提升和函数声明覆盖
+**变量提升和函数声明覆盖**
 
 函数声明的执行优先级会比变量声明的优先级更高一点， 而且同名的函数会覆盖函数与变量，但是同名的变量并不会覆盖函数。但是在上下文的执行阶段，同名的函数会被变量重新赋值。
 ```javascript
@@ -200,7 +200,7 @@ var fn = function() {
 
 #### instanceof 运算符用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上
 语法
-> object instanceof constructor
+> object instanceof constructor 即 `Object.__proto__ === fun.prototype`
 
 #### 使用Object.prototype.hasOwnProperty.call(obj, key) 比用obj.hasOwnProperty安全，因为非对象不会报错。
 
@@ -242,7 +242,7 @@ Object.defineProperty(Object, 'is', {
 
 - [你不知道的 WeakMap](https://juejin.cn/post/6844904169417998349)
 
-- Map的键值可以是原始数据类型和引用类型，WeakMap的键是**弱引用对象**，而值可以是任意。键在没有其他引用和该键引用同一对象，这个对象将会被垃圾回收（相应的key则变成无效的）
+- Map的键值可以是原始数据类型和引用类型，WeakMap的**键**是**弱引用对象**，而值可以是任意。键在没有其他引用和该键引用同一对象，这个对象将会被垃圾回收（相应的key则变成无效的）
 - Map可以迭代遍历键，WeakMap不可迭代遍历键
 - Set 和 Map 的`forEach(callbackFn,  thisArg)`：用于对集合成员执行`callbackFn`操作，如果提供了 `thisArg` 参数，回调中的`this`会是这个参数，没有返回值
 
@@ -269,8 +269,6 @@ tom = null; // 覆盖引用
 ```
 
 而Map没有这种机制，因为可能存在这种情况
-
-forEach中第二个参数指向。
 ```javascript
 let me = null
 let friend = {
@@ -280,7 +278,7 @@ me = friend
 
 friend = null // 对象不会被回收，因为还存在着me引用着对象
 ```
-
+forEach中第二个参数指向。
 ```javascript
 const reporter = {
   report: function(key, value) {
@@ -299,18 +297,21 @@ map.forEach(function(value, key, map) {
 // Key: des, Value: JS
 ```
 
-Set
+**Set**
 - 成员唯一、无序且不重复
 - `[value,  value]`，键值与键名是一致的（或者说只有键值，没有键名）
 - 可以遍历，方法有：`add`、`delete`、`has`
-WeakSet
+
+**WeakSet**
 - 成员都是对象
 - 成员都是弱引用，可以被垃圾回收机制回收，可以用来保存DOM节点，不容易造成内存泄漏
 - 不能遍历，方法有`add`、`delete`、`has`
-Map
+
+**Map**
 - 本质上是键值对的集合，类似集合
 - 可以遍历，方法很多可以跟各种数据格式转换
-WeakMap
+
+**WeakMap**
 - 只接受对象作为键名（null除外），不接受其他类型的值作为键名
 - 键名是弱引用，键值可以是任意的，键名所指向的对象可以被垃圾回收，此时键名是无效的
 - 不能遍历，方法有get、set、has、delete
@@ -397,10 +398,6 @@ pureObj其实是个原子（原子是JavaScript中的对象的最小单元，它
 - [使用设计模式封装代码](https://juejin.cn/post/6844904165836062734)
 
 ### [前端模块化](https://juejin.im/post/6844903744518389768)
-
-[文章1](https://juejin.im/post/6844903576309858318)
-
-[文章2](https://blog.csdn.net/leelxp/article/details/108101442)
 
  #### [ES6 模块与 CommonJS 模块的差异](https://es6.ruanyifeng.com/#docs/module-loader#ES6-%E6%A8%A1%E5%9D%97%E4%B8%8E-CommonJS-%E6%A8%A1%E5%9D%97%E7%9A%84%E5%B7%AE%E5%BC%82)
  - CommonJS 模块输出的是一个值的拷贝(浅拷贝)，ES6 模块输出的是值的引用。
