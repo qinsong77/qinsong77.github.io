@@ -36,7 +36,7 @@ title: Dom
 - [websocket](https://juejin.cn/post/6854573221241421838)
 - [MutationObserver](#MutationObserver)
 - [浏览器每一帧都需要完成哪些工作](#浏览器每一帧都需要完成哪些工作)
-- [图片知识](#图片知识)
+- [如何选择图片格式](如何选择图片格式)
   
 ----
 
@@ -1052,5 +1052,7 @@ attributes是属于property的一个子集，它保存了HTML标签上定义属�
 - 布局
 - 绘制
 - 如果这六个步骤中，任意一个步骤所占用的时间过长，总时间超过 16ms 了之后，用户也许就能看到卡顿。
+#### 如何选择图片格式
+- [图片知识](https://mp.weixin.qq.com/s?__biz=MzI1ODk2Mjk0Nw==&mid=2247484351&idx=1&sn=e88a658e93cd5e3fa4abd035714d2fa4&chksm=ea0160d3dd76e9c56df658fab1466d41751b90e05bd6a27b972ebf5f5d7204d11c6cd4d8a089&scene=21#wechat_redirect)
 
-#### [图片知识](https://mp.weixin.qq.com/s?__biz=MzI1ODk2Mjk0Nw==&mid=2247484351&idx=1&sn=e88a658e93cd5e3fa4abd035714d2fa4&chksm=ea0160d3dd76e9c56df658fab1466d41751b90e05bd6a27b972ebf5f5d7204d11c6cd4d8a089&scene=21#wechat_redirect)
+![](./image/howtochosePic.png)

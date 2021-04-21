@@ -681,9 +681,9 @@ var longestPalindrome = function(s) {
     let dp = Array.from(new Array(n),() => new Array(n).fill(0));
     for(let i = n-1;i >= 0;i--){
         for(let j = i;j < n;j++){
-            dp[i][j] = s[i] == s[j] && (j - i < 2 || dp[i+1][j-1]);
-            if(dp[i][j] && j - i +1 > res.length){
-                res = s.substring(i,j+1);
+            dp[i][j] = s[i] === s[j] && (j - i < 2 || dp[i+1][j-1]);
+            if(dp[i][j] && j - i + 1 > res.length){
+                res = s.substring(i,j + 1);
             }
         }
     }
@@ -1327,8 +1327,7 @@ var hasPathSum = function(root, targetSum) {
     return hasPathSum(root.left, targetSum - root.val) || hasPathSum(root.right, targetSum - root.val)
 };
 ```
-广度优先遍历: 父节点的值是`argetSu
-m - root.val`
+广度优先遍历: 父节点的值是`targetSum - root.val`
 ```javascript
 var hasPathSum = function(root, targetSum) {
     if(root === null) return false

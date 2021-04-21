@@ -2,6 +2,34 @@
 title: 学习笔记
 ---
 
+- [内置类型及存储](#内置类型)
+- [var, let, const](#var-const-let-区别)
+- [object-is-方法](#object-is-方法)
+- [Set, Map, WeakMap, WeakSet](#内置类型)
+- [内置类型及存储](#set-map-weakmap-weakset)
+- [Object.freeze](#object-freeze-和object-seal)
+- [九种常用的设计模式](#九种常用的设计模式)
+- [前端模块化](#前端模块化)
+- [javascript number类型](#javascript-number类型)
+    - [tofixed](#tofixed)
+- [位运算](#位运算)
+- [函数的argument](#函数的argument)
+- [尾递归优化](#尾递归优化)
+- [闭包](#闭包)
+- [数组](#数组)
+    - [foreach与async](#foreach-与async)
+- [for-in和for-of](#for-in-和for-of)
+- [Iterator 接口与 Generator 函数](#iterator-接口与-generator-函数)
+- [javascript的异步方式](#javascript的异步方式)
+- [promise](#promise)
+- [generator](#generator)
+- [async、await](##async、await)
+- [JSON](#json)
+- [垃圾回收](#垃圾回收)
+
+
+
+
 ### 语言中所有的底层存储方式是是什么。
 
 **数据结构的底层存储方式只有两种：数组（顺序存储）和链表（链式存储）。**
@@ -402,6 +430,9 @@ pureObj其实是个原子（原子是JavaScript中的对象的最小单元，它
  #### [ES6 模块与 CommonJS 模块的差异](https://es6.ruanyifeng.com/#docs/module-loader#ES6-%E6%A8%A1%E5%9D%97%E4%B8%8E-CommonJS-%E6%A8%A1%E5%9D%97%E7%9A%84%E5%B7%AE%E5%BC%82)
  - CommonJS 模块输出的是一个值的拷贝(浅拷贝)，ES6 模块输出的是值的引用。
  - CommonJS 模块是运行时加载，ES6 模块是编译时输出接口。
+ - CommonJs 是单个值导出，ES6 Module可以导出多个
+ - CommonJs 是动态语法可以写在判断里，ES6 Module 静态语法只能写在顶层
+ - CommonJs 的 this 是当前模块，ES6 Module的 this 是 undefined
  - CommonJS 模块的require()是同步加载模块，ES6 模块的import命令是异步加载，有一个独立的模块依赖的解析阶段。
  - CommonJS 模块处理循环加载的方法是返回的是当前已经执行的部分的值，而不是代码全部执行后的值，两者可能会有差异。因为CommonJS 输入的是被输出值的拷贝，不是引用，只会在第一次加载时运行一次，以后再加载，就返回第一次运行的结果，除非手动清除系统缓存。
  - ES6 处理“循环加载”与 CommonJS 有本质的不同。ES6 模块是动态引用，如果使用import从一个模块加载变量（即`import foo from 'foo'`），那些变量不会被缓存，而是成为一个指向被加载模块的引用，需要开发者自己保证，真正取值的时候能够取到值。
@@ -480,7 +511,8 @@ IEEE 754 规定了包括：单精度（32位）、双精度（64位）、延伸�
 - 只需要展示的话，可以 toFixed 或者 toPrecision 选择自己需要的精度，然后再 parseFloat 转成浮点数。需要注意的是，这两个方法均不是四舍五入法，而是上面提过的 IEEE754舍入标准，舍入至最接近的值，如果有 2 个值一样接近，则取偶数值。
 - 如需对数据进行运算，那么一种常用的方法就是，把小数转成整数再进行运算，只要运算过程涉及到的数字不大于 MAX_SAFE_INTEGER ，得到的结果就是“精确”的。
 - 使用`Number.EPSILON `
-##### toFixed
+#### toFixed
+- [为什么(2.55).toFixed(1)等于2.5？](https://www.cnblogs.com/zhangycun/p/7880580.html)
 toFixed有四舍五入，部分场景会出bug
 ```javascript
 1.54.toFixed(1) // '1.5'
@@ -792,7 +824,7 @@ let dp = Array.from(new Array(n+1),() => new Array(m+1).fill(0));
 Array.fill()的参数是对象时，要写成箭头函数，不然引用是一个。
 ```javascript
 const length = 100
-const arr = Array.from(new Array(length)).fill(() => [])
+const arr = Array.from(new Array(length))fill((() => [])())
 ```
 
 #### reduce
@@ -1138,6 +1170,41 @@ new Promise((resolve, reject) => {
 - `Promise.race() `: 只要p1、p2、p3之中有一个实例率先改变状态，p的状态就跟着改变。那个率先改变的 Promise 实例的返回值，就传递给p的回调函数。
 - `Promise.allSettled()`: 方法接受一组 Promise 实例作为参数，包装成一个新的 Promise 实例。只有等到所有这些参数实例都返回结果，不管是fulfilled还是rejected，包装实例才会结束。该方法返回的新的 Promise 实例，一旦结束，状态总是fulfilled，不会变成rejected。状态变成fulfilled后，Promise 的监听函数接收到的参数是一个数组，每个成员对应一个传入Promise.allSettled()的 Promise 实例。
 
+**红绿灯问题**
+
+题目：红灯三秒亮一次，绿灯一秒亮一次，黄灯2秒亮一次；如何让三个灯不断交替重复亮灯？（用 Promise 实现）
+
+三个亮灯函数已经存在：
+```javascript
+function red(){
+    console.log('red');
+}
+function green(){
+    console.log('green');
+}
+function yellow(){
+    console.log('yellow');
+}
+```
+  ::: details 点击查看代码
+```javascript
+function createTask(cb, time) {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            cb()
+            resolve()
+        }, time)
+    })
+}
+
+function loopTask() {
+    return createTask(red, 3000)
+        .then(() => createTask(green, 1000))
+        .then(() => createTask(yellow, 2000))
+        .then(() => loopTask())
+}
+```
+  ::: 
 ### generator
 Generator 函数是协程在 ES6 的实现，最大特点就是可以交出函数的执行权（即暂停执行）。
 
