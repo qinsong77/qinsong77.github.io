@@ -442,7 +442,7 @@ pureObj其实是个原子（原子是JavaScript中的对象的最小单元，它
 ### JavaScript Number类型
  文章[JavaScript 深入之浮点数精度](https://github.com/mqyqingfeng/Blog/issues/155)
 
-在 JavaScript 里面，数字均为双精度浮点类型（double-precision 64-bit binary format IEEE 754），即一个介于±2−1023和±2+1024之间的数字，或约为±10−308到±10+308，数字精度为53位。整数数值仅在±(253 - 1)的范围内可以表示准确。
+在 JavaScript 里面，数字均为双精度浮点类型（double-precision 64-bit binary format IEEE 754），即一个介于±2^−1023和±2^+1024之间的数字，或约为±10^−308到±10^+308，数字精度为53位。整数数值仅在±(253 - 1)的范围内可以表示准确。
 
 除了能够表示浮点数，数字类型也还能表示三种符号值: +Infinity（正无穷）、-Infinity（负无穷）和 NaN (not-a-number，非数字)
 
@@ -824,7 +824,7 @@ let dp = Array.from(new Array(n+1),() => new Array(m+1).fill(0));
 Array.fill()的参数是对象时，要写成箭头函数，不然引用是一个。
 ```javascript
 const length = 100
-const arr = Array.from(new Array(length))fill((() => [])())
+const arr = Array.from(new Array(length)).fill((() => [])())
 ```
 
 #### reduce
@@ -1514,6 +1514,7 @@ console.log(b);
 ## [垃圾回收](https://zh.javascript.info/garbage-collection)
 - [V8 引擎如何进行垃圾内存的回收](https://sanyuan0704.top/my_blog/blogs/javascript/js-v8/002.html#v8-%E5%86%85%E5%AD%98%E9%99%90%E5%88%B6)
 - [V8垃圾回收机制](https://blog.csdn.net/qq_17175013/article/details/103759055)
+
 64位系统下，V8最多只能分配1.4G, 在 32 位系统中，最多只能分配0.7G。
 
 为什么只能分配那么少：
