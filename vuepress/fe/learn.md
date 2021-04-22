@@ -1372,6 +1372,7 @@ co(g).then(res =>{
 ```
 
 #### [原理](http://www.alloyteam.com/2016/02/generators-in-depth/)
+- [ES6 系列之 Babel 将 Generator 编译成了什么样子](https://github.com/mqyqingfeng/Blog/issues/102)
 
 首先，**生成器不是线程**。Javascript 执行引擎仍然是一个基于事件循环的单线程环境，当生成器运行的时候，
 它会在叫做 `caller` 的同一个线程中运行。执行的顺序是有序、确定的，并且**永远不会产生并发**。不同于系统的线程，生成器只会在其内部用到 `yield` 的时候才会被挂起。

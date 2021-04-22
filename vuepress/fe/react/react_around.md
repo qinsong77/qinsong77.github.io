@@ -6,6 +6,7 @@ title: React Around
 
 - [8k字 | Redux/react-redux/redux中间件设计实现剖析](https://juejin.cn/post/6844904036013965325)
 - [一文吃透react-redux源码](https://juejin.cn/post/6937491452838559781)
+- [Dva 源码解析](https://dvajs.com/guide/source-code-explore.html#dva-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90)
  ::: details 实现
 ```typescript jsx
  // reducer.js 纯函数，计算出新的store
