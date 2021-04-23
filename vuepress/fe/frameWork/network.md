@@ -69,7 +69,9 @@ OSI-Open Systems Interconncection，网络分层
 
 ![](./http/osi_model_tcp_ip_model.png)
 # UDP
+UDP，User Datagram Protocol，一种无连接的传输层协议，提供面向事务的简单不可靠信息传送服务
 
+[UDP协议的详细解析](https://blog.csdn.net/aa1928992772/article/details/85240358)
 ## 面向报文
 
 UDP 是一个面向报文（报文可以理解为一段段的数据）的协议。意思就是 UDP 只是报文的搬运工，不会对报文进行任何拆分和拼接操作。
@@ -102,6 +104,10 @@ UDP 是一个面向报文（报文可以理解为一段段的数据）的协议�
 UDP 不止支持一对一的传输方式，同样支持一对多，多对多，多对一的方式，也就是说 UDP 提供了单播，多播，广播的功能。
 
 # TCP
+
+- [TCP 的那些事儿](https://coolshell.cn/articles/11564.html)
+
+传输控制协议（TCP，Transmission Control Protocol）是一种**面向连接的**、**可靠的**、基于字节流的传输层通信协议。
 
 ## 头部
 
