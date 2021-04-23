@@ -63,6 +63,9 @@ Module federation: 允许运行时动态决定代码的引入和加载。
 
 
 ### Monorepo
+
+Monorepo 的全称是 monolithic repository，即单体式仓库，与之对应的是 Multirepo(multiple repository)，这里的“单”和“多”是指每个仓库中所管理的模块数量。
+
 Monorepo就是把**多个项目放在一个仓库里面**，相对立的是传统的 `MultiRepo` 模式，即每个项目对应一个单独的仓库来分散管理。
 
 Monorepo解决了：
