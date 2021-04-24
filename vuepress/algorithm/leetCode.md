@@ -75,6 +75,9 @@ title: LeetCode
    - [乘积最大子数组](#乘积最大子数组)
    - [编辑距离](#编辑距离)
    - [买卖股票的最佳时机](#买卖股票的最佳时机)
+   - [跳跃游戏](#跳跃游戏)
+   - [爬楼梯](#爬楼梯)
+   - [单词拆分](#单词拆分)
 - [8.数组](#_8-数组)
    - [连续子数组的最大和](#连续子数组的最大和)
    - [乘积最大子数组](#乘积最大子数组)
@@ -1282,7 +1285,7 @@ var permutation = function(str) {
 ```
 
 ### 4.二叉树
-做二叉树的问题，关键是把题目的要求细化，搞清楚根节点应该做什么，然后剩下的事情抛给前/中/后序的遍历框架就行了。
+做二叉树的问题，关键是把题目的要求细化，搞清楚根节点应该做什么，然后剩下的事情抛给前/中/后序的遍历框架就行了。比如对于一般的构造二叉树的题目，是要想怎么构造出根节点。所以应该是前序遍历。
 ```javascript
 /* 二叉树遍历框架 */
 function traverse(root) {
@@ -2825,6 +2828,67 @@ var maxProfit = function(prices) {
         }
     }
     return ans
+};
+```
+### [跳跃游戏](https://leetcode-cn.com/problems/jump-game/)
+动态规划，状态转移方程，下一步是不是能到达，要看上一步的包含上一个节点的最大跳跃步数
+```javascript
+/**
+ * @param {number[]} nums
+ * @return {boolean}
+ */
+var canJump = function(nums) {
+    let res = true
+    let prevMax = 1
+    for(let i = 0;i < nums.length;i++) {
+        if(prevMax > 0) {
+            prevMax = Math.max(nums[i], prevMax - 1)
+        } else return false
+    }
+
+    return res
+};
+```
+### [爬楼梯](https://leetcode-cn.com/problems/climbing-stairs/)
+动态规划思路： 要考虑第爬到第n阶楼梯时候可能是一步，也可能是两步。 
+1. 计算爬上n-1阶楼梯的方法数量。因为再爬1阶就到第n阶 
+2. 计算爬上n-2阶楼梯体方法数量。因为再爬2阶就到第n阶 那么f(n)=f(n-1)+f(n-2);
+```javascript
+/**
+ * @param {number} n
+ * @return {number}
+ */
+var climbStairs = function(n) {
+    if(n === 1) return 1
+    if(n === 2) return 2
+    let a = 1, b = 2
+    for(let i = 3; i <= n; i++) {
+        let temp = a + b
+        a = b
+        b = temp
+    }
+    return b
+};
+```
+### [单词拆分](https://leetcode-cn.com/problems/word-break/)
+```javascript
+var wordBreak = function(s, wordDict) {
+    const { length } = s
+    const dp = new Array(length + 1).fill(false)
+    const set = new Set(wordDict)
+    dp[0] = true
+    for(let i = 1; i <= length; i++) {
+        for(let j = i - 1; j >= 0; j--) {
+            if (dp[i] === true) break;
+            if (dp[j] === false) continue;
+            const suffix = s.slice(j,i)
+            if(set.has(suffix ) && dp[j]) {
+                dp[i] = true
+                break
+            }
+        }
+    }
+    return dp[length]
 };
 ```
 ## 8.数组

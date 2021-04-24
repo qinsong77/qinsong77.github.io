@@ -502,3 +502,37 @@ class Queue {
 	}
 }
 ```
+**红绿灯问题**
+
+题目：红灯三秒亮一次，绿灯一秒亮一次，黄灯2秒亮一次；如何让三个灯不断交替重复亮灯？（用 Promise 实现）
+
+三个亮灯函数已经存在：
+```javascript
+function red(){
+    console.log('red');
+}
+function green(){
+    console.log('green');
+}
+function yellow(){
+    console.log('yellow');
+}
+```
+  ::: details 点击查看代码
+```javascript
+function createTask(cb, time) {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            cb()
+            resolve()
+        }, time)
+    })
+}
+
+function loopTask() {
+    return createTask(red, 3000)
+        .then(() => createTask(green, 1000))
+        .then(() => createTask(yellow, 2000))
+        .then(() => loopTask())
+}
+```

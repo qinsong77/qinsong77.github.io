@@ -723,6 +723,16 @@ Tree Shaking: 顾名思义，把代码比作一棵树，把树上已经烂掉的
 
 Tree Shaking 是 ES2015 模块定义中的一个功能。它的核心点在于，在不运行模块的情况下静态地分析模块，使得 Webpack 发现哪些部分的代码正在使用，而哪些代码没有被使用。
 
+其实tree-shaking的消除原理是依赖于ES6的模块特性。
+
+ES6 module 特点：
+
+1. 只能作为模块顶层的语句出现
+2. import 的模块名只能是字符串常量
+3. import binding 是 immutable的
+
+**ES6模块依赖关系是确定的，和运行时的状态无关，可以进行可靠的静态分析**,
+
 ### [模块加载](https://zhuanlan.zhihu.com/p/243485307)
 ### [Webpack 模块打包原理](https://juejin.cn/post/6844903802382860296)
 webpack根据`webpack.config.js`中的入口文件，在入口文件里识别模块依赖，不管这里的模块依赖是用`CommonJS`写的，还是`ES6 Module`规范写的，webpack会自动进行分析，并通过转换、编译代码，打包成最终的文件。最终文件中的模块实现是基于webpack自己实现的`webpack_require`（es5代码），所以打包后的文件可以跑在浏览器上。

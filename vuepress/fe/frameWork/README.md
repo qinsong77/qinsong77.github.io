@@ -2,6 +2,12 @@
 title: 框架汇总
 ---
 
+## SOLID原则
+
+面向对象编程的五个基本原则
+
+![](./image/SOLID.png)
+
 ## MVC和MVVM
 MVC = Model + View + Controller
 
