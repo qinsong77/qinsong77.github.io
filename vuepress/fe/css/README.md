@@ -60,6 +60,13 @@ color 计算值作为边框色。具有类似特性的 CSS 属性还有 outline�
 inner 的实际内容高度为60px，未设置box-sizing为border-box，padding-top百分比取父元素宽的20%为40px,内容高度为60px。box-sizing为border-box时内容高度是20px。
 ![](./imgs/inherit.png)
 
+
+#### javascript如何设置获取盒模型对应的宽和高
+
+1. `dom.style.width/height` 只能取到行内样式的宽和高，style标签中和link外链的样式取不到。
+2. `dom.currentStyle.width/height` 取到的是最终渲染后的宽和高，只有IE支持此属性。
+3. `window.getComputedStyle(dom).width/height` 同（2）但是多浏览器支持，IE9以上支持。返回的带单位的字符串`60px`。
+4. `dom.getBoundingClientRect().width/height` 也是得到渲染后的宽和高，大多浏览器支持。IE9以上支持，除此外还可以取到相对于视窗的上下左右的距离
 ### 优先级
 
 定义CSS样式时，经常出现两个或更多选择器应用在同一元素上，此时，
