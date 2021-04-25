@@ -89,6 +89,7 @@ title: LeetCode
    - [长度最小的子数组](#长度最小的子数组)
    - [寻找旋转排序数组中的最小值](#寻找旋转排序数组中的最小值)
    - [最长递增子序列](#最长递增子序列)
+   - [合并区间](#合并区间)
 - [9.二维数组](#_9-二维数组)
     - [二维数组翻转90度](#n-x-n二维数组翻转90度)
     - [二维数组中的查找](#二维数组中的查找)
@@ -3169,6 +3170,31 @@ var minSubArrayLen = function(target, nums) {
     return res === Number.MAX_SAFE_INTEGER ? 0 : res
 };
 ```
+#### [合并区间](https://leetcode-cn.com/problems/merge-intervals/)
+![](./image/merge-intervals.png)
+```javascript
+/**
+ * @param {number[][]} intervals
+ * @return {number[][]}
+ */
+var merge = function(intervals) {
+    const res = []
+    intervals.sort((a, b) => a[0] - b[0])
+    let prev = intervals[0]
+    for(let i = 1; i < intervals.length; i++) {
+        let curr = intervals[i]
+        if(prev[1] >= curr[0]) { // 有重合
+            prev[1] = Math.max(curr[1], prev[1])
+        } else {
+            res.push(prev) // 不重合，prev推入res数组 
+            prev = curr
+        }
+    }
+    res.push(prev)
+    return res
+};
+```
+
 ### 9.二维数组
 #### [N x N二维数组翻转90度](https://leetcode-cn.com/problems/rotate-image)
 ```
