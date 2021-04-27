@@ -539,6 +539,36 @@ const countSubstrings = (s) => {
 ```
 ## 3.字符串
 
+### [比较版本号](https://leetcode-cn.com/problems/compare-version-numbers/)
+```javascript
+/**
+ * @param {string} version1
+ * @param {string} version2
+ * @return {number}
+ */
+var compareVersion = function(version1, version2) {
+    let v1 = version1.split('.')
+    let v2 = version2.split('.')
+    let judge = false
+    if(v2.length > v1.length) {
+        temp = v1
+        v1 = v2
+        v2 = temp
+        judge = true
+    }
+    for(let i = 0; i < v1.length; i++) {
+        let s1 = v1[i]
+        let s2 = v2[i]
+        s2 = s2 === undefined ? 0 : parseInt(s2) // parseInt(0001) = 1 parseInt(undefined) = NaN
+        s1 = parseInt(s1)
+        if(s1 === s2) continue
+        else if(s1 > s2) return judge ? -1 : 1
+        else return judge ? 1: -1
+    }
+    return 0
+};
+```
+
 #### [有效的括号](https://leetcode-cn.com/problems/valid-parentheses/) 
 使用栈
 ```javascript
@@ -3179,7 +3209,7 @@ var minSubArrayLen = function(target, nums) {
  */
 var merge = function(intervals) {
     const res = []
-    intervals.sort((a, b) => a[0] - b[0])
+    intervals.sort((a, b) => a[0] - b[0]) // 先排序
     let prev = intervals[0]
     for(let i = 1; i < intervals.length; i++) {
         let curr = intervals[i]

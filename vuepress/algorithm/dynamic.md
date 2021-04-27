@@ -7,6 +7,7 @@ title: 动态规划
 - [凑零钱问题](#凑零钱问题)
 - [爬楼梯](#爬楼梯)
 - [单词拆分](#单词拆分)
+- [0-1背包](#单词拆分)
 
 
 动态规划问题的一般形式就是求最值。求解动态规划的核心问题是**穷举**。因为要求最值，肯定要把所有可行的答案穷举出来，然后在其中找最值。
@@ -254,4 +255,33 @@ var wordBreak = function(s, wordDict) {
     }
     return dp[length]
 };
+```
+### [0-1 背包问题](https://mp.weixin.qq.com/s?__biz=MzAxODQxMDM0Mw==&mid=2247485064&idx=1&sn=550705eb67f5e71487c8b218382919d6&chksm=9bd7f880aca071962a5a17d0f85d979d6f0c5a5ce32c84b8fee88e36d451f9ccb3bb47b88f78&scene=21#wechat_redirect)
+
+给你一个可装载重量为W的背包和N个物品，每个物品有重量和价值两个属性。其中第i个物品的重量为`wt[i]`，价值为`val[i]`，现在让你用这个背包装物品，最多能装的价值是多少？
+
+举个简单的例子，输入如下：
+```javascript
+N = 3, W = 4
+wt = [2, 1, 3]
+val = [4, 2, 3]
+```
+算法返回 6，选择前两件物品装进背包，总重量 3 小于`W`，可以获得最大价值 6。
+```javascript
+function knapsack (W, N, wt, val) {
+  const dp = Array.from(new Array(N + 1), () => new Array(W + 1).fill(0))
+  for (let i = 1; i <= N; i++) {
+    for (let w = 1; w <= W; w++) {
+      if (w - wt[i - 1] < 0) {
+        // 当前背包容量装不下，只能选择不装入背包
+        dp[i][w] = dp[i - 1][w]
+      } else {
+        // 装入或者不装入背包，择优
+        dp[i][w] = Math.max(dp[i - 1][w - wt[i - 1]] + val[i - 1],
+          dp[i - 1][w])
+      }
+    }
+  }
+  return dp[N][W]
+}
 ```
