@@ -30,7 +30,7 @@ title: Summary of CSS
 实际大小：盒模型实际大小由内容区域、内边距、边框三部分组成，css设置`width`和`height`是对盒子内容区域设置的。
 
 `box-sizing`属性：
-- W3C标准盒模型（content-box）: 一个块的总宽度= width + padding(左右) + border(左右);
+- W3C标准盒模型（content-box）: width 和 height 指的是**内容区域的宽度和高度**。增加内边距、边框和外边距不会影响内容区域的尺寸，但是会增加元素框的总尺寸。一个块的总宽度= width + padding(左右) + border(左右);
 - IE（怪异）盒模型（border-box：border、padding 的设置不会影响元素的宽高，那么css给盒子设置的`width`和`height`属性就等于盒模型的实际大小（包括内容区域、内边距、边框）;
 ![](./imgs/content_box.png)
 ![](./imgs/box-sizing.png)
@@ -57,9 +57,9 @@ color 计算值作为边框色。具有类似特性的 CSS 属性还有 outline�
 </style>
 <div class="outer"><div class="inner"></div></div>
 ```
-inner 的实际内容高度为60px，未设置box-sizing为border-box，padding-top百分比取父元素宽的20%为40px,内容高度为60px。box-sizing为border-box时内容高度是20px。
-![](./imgs/inherit.png)
+inner 的实际内容高度为60px，未设置box-sizing为border-box，padding-top百分比取父元素宽的20%为40px，内容高度为60px。box-sizing为border-box时内容高度是20px。
 
+![](./imgs/inherit.png)
 
 #### javascript如何设置获取盒模型对应的宽和高
 
@@ -169,7 +169,7 @@ absolute 定位使元素的位置与文档流无关，因此不占据空间。ab
 伪类和伪元素的根本区别在于：它们是否创造了新的元素
 
 伪类，指可以通过元素选择器，就可以实现的效果，如`first-child`，`active`, `:checked`，`:disabled`， `:nth-child()`等。 而伪元素，是指需要通过创元素，才可以实现的效果，如`first-letter`,`before`，`after`等。
-具体元素跟写法，可参考：<https://blog.csdn.net/qq_27674439/article/details/90608220>
+具体元素跟写法，可参考：[伪元素和伪类的区别总结](https://blog.csdn.net/qq_27674439/article/details/90608220)
 
 #### 行内元素，设置margin 
 行内元素设置 margin 会有位置的改变吗: 左右 margin 会变，上下 margin 不会变。
@@ -193,7 +193,7 @@ padding-top / padding-bottom 虽然不影响结果，但实际上生效了。
 
 ##### 可替换元素
 
-- 浏览器根据元素的标签和属性，来决定元素的具体显示内容,例如浏览器会根据 `<img>`标签的src属性的值来读取图片信息并显示出来，而如果查看(X)HTML代码，则看不到图片的实际内容；又例如根据 `<input>` 标签的type属性来决定是显示输入框，还是单选按钮等
+- 浏览器根据元素的标签和属性，来决定元素的具体显示内容，例如浏览器会根据 `<img>`标签的src属性的值来读取图片信息并显示出来，而如果查看(X)HTML代码，则看不到图片的实际内容；又例如根据 `<input>` 标签的type属性来决定是显示输入框，还是单选按钮等
 - (X)HTML中的` <img>、<input>、<textarea>、<select>、<object> `都是替换元素。这些元素往往没有实际的内容，即是一个空元素
 如：`<img src="tigger.jpg"/>`、`<input type="submit" name="Submit" value="提交"/>`
 - **可替换元素的性质同设置了display:inline-block的元素一致**
@@ -249,13 +249,13 @@ px像素（Pixel）。相对长度单位。像素px是相对于显示器屏幕�
 - 继承：
 
   - display: none 和 opacity: 0 ：是非继承属性，子孙节点消失由于元素从渲染树消失造成，通过修改子孙节点属性无法显示。
-  = visibility: hidden ：是继承属性，子孙节点消失由于继承了 hidden ，通过设置 visibility: visible; 可以让子孙节点显式。
+  - visibility: hidden ：是继承属性，子孙节点消失由于继承了 hidden ，通过设置 visibility: visible; 可以让子孙节点显式。
 
 - 性能：
 
   - `display: none` : 修改元素会造成文档**回流**,读屏器不会读取 display: none 元素内容，性能消耗较大 
-  - `visibility: hidden` : 修改元素只会造成本元素的**重绘**,性能消耗较少
-  - 读屏器读取`visibility: hidden` 元素内容 opacity: 0 ：修改元素会造成重绘，性能消耗较少
+  - `visibility: hidden` : 修改元素只会造成本元素的**重绘**，性能消耗较少
+  - 元素内容 opacity: 0 ：提升为合成层，不会触发重绘，性能较高；
 
 - 联系：它们都能让元素不可见
 
@@ -296,7 +296,7 @@ top、left和css中的理解很相似，right是指元素右边界距窗口最�
 - scrollWidth	当元素设置了 overflow:scroll 样式属性时，元素的总宽度，也称滚动宽度。在默认状态下，如果该属性值大于 clientWidth 属性值，则元素会显示滚动条，以便能够翻阅被隐藏的区域
 - scrollHeight	当元素设置了 overflow:scroll 样式属性时，元素的总高度，也称滚动高度。在默认状态下，如果该属性值大于 clientWidth 属性值，则元素会显示滚动条，以便能够翻阅被隐藏的区域
 - scrollTop: 代表在有滚动条时，滚动条向下滚动的距离也就是元素顶部被遮住部分的高度。在没有滚动条时scrollTop==0恒成立。单位px，可读可设置。
-- offsetTop: 当前元素顶部距离最近父元素顶部的距离,和有没有滚动条没有关系。单位px，只读元素。
+- offsetTop: 当前元素顶部距离最近父元素顶部的距离，和有没有滚动条没有关系。单位px，只读元素。
 
 [文章](https://juejin.cn/post/6844904133921619982)
 
@@ -322,6 +322,7 @@ top、left和css中的理解很相似，right是指元素右边界距窗口最�
     overflow: hidden;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
 }
 .mulLineTruncate {
   position: relative;
@@ -341,8 +342,7 @@ top、left和css中的理解很相似，right是指元素右边界距窗口最�
 - display: -webkit-box（和 1 结合使用，将对象作为弹性伸缩盒子模型显示 ）
 - overflow: hidden（文本溢出限定的宽度就隐藏内容）
 - -webkit-box-orient: vertical（和 1 结合使用 ，设置或检索伸缩盒对象的子元素的排列方式 ）
-
-text-overflow: ellipsis（多行文本的情况下，用省略号“…”隐藏溢出范围的文本)
+- text-overflow: ellipsis（多行文本的情况下，用省略号“…”隐藏溢出范围的文本)
 ### 移动端如何处理点击穿透
 
 点击穿透的原因：
@@ -492,7 +492,7 @@ transition 和animation支持的属性， [CSS animated properties](https://deve
 ```
 该方案适用于组件库的编写。
 
-2. CSS in JS
+2. CSS in JS： `styled-components`
 3. CSS Modules
 
 原理：利用 webpack 等构建工具自动将类名转换成局部。 详细配置:
