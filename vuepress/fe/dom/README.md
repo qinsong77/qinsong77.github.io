@@ -37,7 +37,8 @@ title: Dom
 - [websocket](https://juejin.cn/post/6854573221241421838)
 - [MutationObserver](#MutationObserver)
 - [浏览器每一帧都需要完成哪些工作](#浏览器每一帧都需要完成哪些工作)
-- [如何选择图片格式](如何选择图片格式)
+- [如何选择图片格式](#如何选择图片格式)
+- [前端跨页面通信](#前端跨页面通信)
   
 ----
 
@@ -148,7 +149,7 @@ list.appendChild(fragment);
 #### 节点修改API
 - `appendChild`: `parent.appendChild(child);`
 - `insertBefore`: `parentNode.insertBefore(newNode, refNode);` 在指定的已有子节点之前插入新的子节点。
-- `removeChild`: removeChild用于删除指定的子节点并返回子节点,`var deletedChild = parent.removeChild(node);  `
+- `removeChild`: removeChild用于删除指定的子节点并返回子节点，`var deletedChild = parent.removeChild(node);  `
 - `replaceChild`: 用于将一个节点替换另一个节点, `parent.replaceChild(newChild, oldChild);`
 - [`insertAdjacentHTML`](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/insertAdjacentHTML)
 
@@ -332,7 +333,7 @@ passive 的意思是“顺从的”，表示它不会对事件的默认行为说
 
 `Event` 接口的只读属性 [`currentTarget`](https://developer.mozilla.org/zh-CN/docs/Web/API/Event/currentTarget)表示的，**标识是当事件沿着 `DOM` 触发时事件的当前目标。它总是指向事件绑定的元素，而 `Event.target` 则是事件触发的元素。**
 
-如下例子，`e.target`指向的是事件触发的元素，点击的第一个li,所以`e.target`指向的是第一个li,而`e.currentTarget`指向事件绑定的元素，事件绑定的是ul，所以指向的Ul
+如下例子，`e.target`指向的是事件触发的元素，点击的第一个li,所以`e.target`指向的是第一个li，而`e.currentTarget`指向事件绑定的元素，事件绑定的是ul，所以指向的ul
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -772,7 +773,7 @@ console.log('script end')
 ```
 以上代码虽然 `setTimeout` 写在 `Promise` 之前，但是因为 `Promise `属于微任务而 `setTimeout` 属于宏任务，所以会有以上的打印。
 
-微任务包括 `process.nextTick` ，`promise` ，`Object.observe` ，`MutationObserver`
+微任务包括 `process.nextTick` ，`promise` ，`MutationObserver`
 
 宏任务包括 `script` ， `setTimeout` ，`setInterval` ，`setImmediate` ，`I/O` ，`UI rendering`
 
@@ -1058,3 +1059,10 @@ attributes是属于property的一个子集，它保存了HTML标签上定义属�
 - [图片知识](https://mp.weixin.qq.com/s?__biz=MzI1ODk2Mjk0Nw==&mid=2247484351&idx=1&sn=e88a658e93cd5e3fa4abd035714d2fa4&chksm=ea0160d3dd76e9c56df658fab1466d41751b90e05bd6a27b972ebf5f5d7204d11c6cd4d8a089&scene=21#wechat_redirect)
 
 ![](./image/howtochosePic.png)
+
+### [前端跨页面通信](https://segmentfault.com/a/1190000018731597)
+一、同源页面间的跨页面通信
+- BroadCast Channel
+- Service Worker
+- LocalStorage
+- Shared Worker
