@@ -458,7 +458,7 @@ export default function App() {
     return <div style={{ fontSize: '100px' }}>{count}</div>
 }
 ```
-错误示例，初始显示0，一秒后永远都会显示1，同样的代码用 class 组件来实现，就不会有这个问题，面 class 组件和函数组件的代码的差异在于，class 组件中的 this.state 是可变的！每一次的更新都是对 state 对象的一个更新，一次又一次的 setInterval 中引用的都会是新 state 中的值。
+错误示例，初始显示0，一秒后永远都会显示1，同样的代码用 class 组件来实现，就不会有这个问题， class 组件和函数组件的代码的差异在于，class 组件中的 this.state 是可变的！每一次的更新都是对 state 对象的一个更新，一次又一次的 setInterval 中引用的都会是新 state 中的值。
 然而在函数组件中情况就不一样了。函数组件由于每次更新都会经历重新调用的过程，useEffect(callback) 中的回调函数都是全新的，这样其中引用到的 state 值将只跟当次渲染绑定。
 
 ```jsx harmony

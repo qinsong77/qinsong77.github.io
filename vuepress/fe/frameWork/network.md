@@ -67,7 +67,7 @@ OSI-Open Systems Interconncection，网络分层
 
 7. 物理层(Physical) -- 网卡、集线器（Hub）
 
-![](./http/osi_model_tcp_ip_model.png)
+![](./http/osi_model_tcp_ip_model1.png)
 # UDP
 UDP，User Datagram Protocol，一种无连接的传输层协议，提供面向事务的简单不可靠信息传送服务
 

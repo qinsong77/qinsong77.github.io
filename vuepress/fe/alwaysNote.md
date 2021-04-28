@@ -127,7 +127,7 @@ export default function deepClone (obj) {
   return o
 }
 ```
-## throttle
+## debounce
 ```javascript
 // 这个是用来获取当前时间戳的
 function now() {
@@ -179,7 +179,7 @@ function debounce (func, wait = 50, immediate = true) {
 }
 ```
 
-## debounce
+## throttle
 ```javascript
 /**
  * underscore 节流函数，返回函数连续调用时，func 执行频率限定为 次 / wait

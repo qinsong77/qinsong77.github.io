@@ -1,43 +1,50 @@
-new Promise((resolve) => {
-	setTimeout(() => {
-		resolve(1);
-	}, 500);
-})
-	.then((res) => {
-		console.log(res);
-		return new Promise((resolve) => {
-			setTimeout(() => {
-				resolve(2);
-			}, 500);
-		});
+Promise.prototype.all = function (prs) {
+	return new Promise((resolve, reject) => {
+		if(Array.isArray(prs)) {
+			reject(new TypeError('should be an array'))
+		}
+		let result = []
+		let count = 0
+		for(let i = 0; i < prs.length;i++) {
+			Promise.resolve(prs[i])
+				.then(res => {
+					result[i] = res
+					count++
+					if(count === prs.length) resolve(result)
+				})
+				.catch(e => {
+					reject(e)
+				})
+		}
 	})
-	.then(console.log);
+}
 
-
-function Promise(executor) {
-	this.value = null
-	this.state = 'pending'
-	this.cb = []
-	this.errorCb = []
-	const resolve = (value) => {
-		this.state = 'fuiled'
-		this.value = value
-		this.cb.forEach(fn => fn(value))
-	}
-	const reject = reason => {
-		this.state = 'rejected'
-		this.value = reason
-		this.errorCb.forEach(fn => fn(reason))
-	}
-	try {
-		executor(resolve, reject)
-	} catch (e) {
-		reject(e)
+function debounce(fn, wait) {
+	let timer = null
+	return function (...args) {
+		if(timer) clearTimeout(timer)
+		timer = setTimeout(() => {
+			fn.apply(this, args)
+		}, wait)
 	}
 }
 
-Promise.prototype.then = function (onFuiled, onReject) {
-	return new Promise((resolve, reject) => {
-		this.cb.push()
-	})
+function throttle(fn, wait) {
+	let timer = null
+	let prev = 0
+	return function (...args) {
+		const now = + Date.now()
+		if(timer) clearTimeout(timer)
+		const remain = wait - (now - prev)
+		if(remain <= 0) {
+			fn.apply(this, args)
+			prev = now
+		} else {
+			timer = setTimeout(() => {
+				fn.apply(this, args)
+				prev = now
+				timer = null
+			}, remain)
+		}
+	}
 }
