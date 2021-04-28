@@ -928,6 +928,24 @@ process.nextTick(() => {
 
 > Service workers 本质上充当Web应用程序与浏览器之间的代理服务器，也可以在网络可用时作为浏览器和网络间的代理。它们旨在（除其他之外）使得能够创建有效的离线体验，拦截网络请求并基于网络是否可用以及更新的资源是否驻留在服务器上来采取适当的动作。他们还允许访问推送通知和后台同步API。
 
+
+它和 Web Worker 相比，有相同的点，也有不同的地方。
+
+相同：
+
+1. Service Worker 工作在 worker context 中，是**没有访问 DOM 的权限的**，所以无法在 Service Worker 中获取 DOM 节点，也无法在其中操作 DOM 元素；
+2. 可以通过 `postMessage` 接口把数据传递给其他 JS 文件；
+3. Service Worker 中运行的代码**不会被阻塞**，也不会阻塞其他页面的 JS 文件中的代码；
+
+Service Worker 只能被使用在 https
+
+
+- [谨慎处理 Service Worker 的更新](https://zhuanlan.zhihu.com/p/51118741)
+
+#### 生命周期
+
+![](./image/serviceWorkLifeCircle.png)
+
 目前该技术通常用来做缓存文件，提高首屏速度，可以试着来实现这个功能。
 
 ```js

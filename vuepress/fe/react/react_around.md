@@ -233,10 +233,17 @@ react-redux可以将react组件分为，`展示组件`和`容器组件`，容器
 类似Vue的`scoped`，可以解决CSS变量名冲突
 
 2. css in js
+- [styled-components](https://github.com/styled-components/styled-components)
 
-[styled-components](https://github.com/styled-components/styled-components)
+写在js里，灵活，支持模板字符串，props传参，很好的实现了作用域隔离。
+但没有很难使用预处理器变量；另外代码冗余代码体积变大
 
-3. [styled-jsx](https://github.com/vercel/styled-jsx)
+1、样式写在 js 文件里，降低 js 对 css 文件的依赖。
+2、样式可以使用变量，更加灵活。
+3、使用方便，不需要配置 webpack、开箱即用。
+4、SSR 类框架处理 CSS Modules 变量相当棘手，所以使用 styled-components 作方案
+
+- [styled-jsx](https://github.com/vercel/styled-jsx)
 
 ### react如何实现keep-alive
 - [react缓存页面](https://juejin.cn/post/6922340460136513549)
