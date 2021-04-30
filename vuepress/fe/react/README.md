@@ -37,6 +37,7 @@ title: React
     - [React16.3.0之后的生命周期](#react16-3-0之后的生命周期)
 - [受控与非受控组件](#受控与非受控组件)
 - [setState](#setstate)
+- [react合成事件](#react合成事件)
 - [React.PureComponent与React.memo()](#react-purecomponent与react-memo)
 - [React组件到底什么时候render](#react组件到底什么时候render)
 - [高阶组件](#高阶组件)
@@ -614,6 +615,18 @@ class NameForm extends React.Component {
 - setState 只在合成事件和钩子函数中是“异步”的，在原生事件和setTimeout 中都是同步的。
 - setState 的“异步”并不是说内部由异步代码实现，其实本身执行的过程和代码都是同步的，只是合成事件和钩子函数的调用顺序在更新之前，导致在合成事件和钩子函数中没法立马拿到更新后的值，形成了所谓的“异步”，当然可以通过第二个参数 setState(partialState, callback) 中的callback拿到更新后的结果。
 - setState 的批量更新优化也是建立在“异步”（合成事件、钩子函数）之上的，在原生事件和setTimeout 中不会批量更新，在“异步”中如果对同一个值进行多次setState，setState的批量更新策略会对其进行覆盖，取最后一次的执行，如果是同时setState多个不同的值，在更新时会对其进行合并批量更新。
+
+### react合成事件
+- [一文吃透react事件系统原理](https://juejin.cn/post/6955837254250004511)
+首先，React Jsx中写的事件，经过`babel`转换成`React.createElement`形式，放在了props参数`onClick`中，最终转成fiber对象放在了`memoizedProps` 和 `pendingProps`。
+真实的dom上的click事件被单独处理，已经被react底层替换成空函数。
+
+合成事件是指在react中，绑定的事件onClick等，并不是原生事件，而是由原生事件合成的React事件，比如 click事件合成为onClick事件。比如blur , change , input , keydown , keyup等 , 合成为onChange。绑定在document上统一管理的。
+
+一方面，将事件绑定在document统一管理，防止很多事件直接绑定在原生的dom元素上。造成一些不可控的情况
+
+另一方面， React 想实现一个全浏览器的框架， 为了实现这种目标就需要提供全浏览器一致性的事件系统，以此抹平不同浏览器的差异。
+
 
 ### React.PureComponent与React.memo()
 

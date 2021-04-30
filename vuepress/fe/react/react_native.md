@@ -1,7 +1,7 @@
 ---
 title: React Native
 ---
-
+- [ReactNative原理-启动流程](https://juejin.cn/post/6844904184500715527)
 - [React Native 原理与实践](https://zhuanlan.zhihu.com/p/343519887)
 ![](./image/react_native1.png)
 

@@ -8,6 +8,7 @@ title: 动态规划
 - [爬楼梯](#爬楼梯)
 - [单词拆分](#单词拆分)
 - [0-1背包](#单词拆分)
+  - [0-1背包问题的变体-分割等和子集](#分割等和子集)
 
 
 动态规划问题的一般形式就是求最值。求解动态规划的核心问题是**穷举**。因为要求最值，肯定要把所有可行的答案穷举出来，然后在其中找最值。
@@ -284,4 +285,34 @@ function knapsack (W, N, wt, val) {
   }
   return dp[N][W]
 }
+```
+#### [分割等和子集](https://leetcode-cn.com/problems/partition-equal-subset-sum/)
+[题解](https://mp.weixin.qq.com/s?__biz=MzAxODQxMDM0Mw==&mid=2247485103&idx=1&sn=8a9752e18ed528e5c18d973dcd134260&chksm=9bd7f8a7aca071b14c736a30ef7b23b80914c676414b01f8269808ef28da48eb13e90a432fff&scene=21#wechat_redirect)
+```javascript
+/**
+ * @param {number[]} nums
+ * @return {boolean}
+ */
+var canPartition = function(nums) {
+    let sum = nums.reduce((prev, curr) => prev + curr, 0)
+    // 和为奇数时，不可能划分成两个和相等的集合
+    if (sum % 2) return false
+    const n = nums.length
+    sum = sum/2
+    const dp = Array.from(new Array(n+1), () => new Array(sum+1).fill(false))
+    for(let i = 0; i <= n; i++) {
+        dp[i][0] = true
+    }
+
+    for(let i = 1; i <=n; i++) {
+        for(let j = 1; j <= sum;j++) {
+            if(j - nums[i-1] < 0) {
+                dp[i][j] = dp[i-1][j]
+            } else {
+                dp[i][j] = dp[i-1][j] || dp[i-1][j-nums[i-1]]
+            }
+        }
+    }
+    return dp[n][sum]
+};
 ```
