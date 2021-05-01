@@ -4,6 +4,7 @@ title: canvas
 - [canvas绘图不清晰的解决方案](#canvas绘图不清晰的解决方案)
 - [File、Blob、dataURL 和 canvas 的应用与转换](#file、blob、dataurl-和-canvas-的应用与转换)
 - [svg和canvas绘图的区别](#svg和canvas绘图的区别)
+- [小程序canvas绘制海报全流程](https://juejin.cn/post/6930404573043490830)
 
 ### canvas绘图不清晰的解决方案
 

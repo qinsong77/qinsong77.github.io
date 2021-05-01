@@ -2,7 +2,9 @@
 title: 打包原理和Module federation
 ---
 
-
+- [webpack5 Module federation](http://www.alloyteam.com/2020/04/14338/)
+- [Webpack 新功能 Module Federation 深入解析](https://blog.csdn.net/qq_29438877/article/details/105672029)
+- [Module Federation原理剖析](https://juejin.cn/post/6895324456668495880)
 ### chunk 和 module
 
 module：每一个源码 js 文件其实都可以看成一个 module
@@ -12,6 +14,14 @@ chunk：每一个打包落地的 js 文件其实都是一个 chunk，每个 chun
 默认的 chunk 数量实际上是由你的入口文件的 js 数量决定的，但是如果你配置动态加载或者提取公共包的话，也会生成新的 chunk。
 
 ### 打包代码解读
+
+总结：模块引入会被打包成`webpack_require`函数引入模块并返回该模块，而`webpack_require`的实现，即每次require的时候，先去缓存的 `installedModules` 这个缓存 map 里面看是否加载过了，如果没有加载过，那就从` modules` 这个所有模块的 map 里去加载。
+而整个bundle模块，就是个立即执行函数，`modules`就是函数的入参，具体值就是打包后的的所有 `module`。这种是一个chunk就是一个js文件，维护着自己局部的module,自己使用没有问题，对于动态引入的会生成一个新的 js 文件。
+
+首先，动态 import 的代码会变成就是外面套了一层 `webpck_require.e`，然后这是一个 promise，在 then 里面再去执行 `webpack_require`的代码。实际上 `webpck_require.e` 就是去加载 chunk 的 js 文件，具体就是动态创建script
+标签，脚本在完成时，resolve这个promise。
+
+另一个重点是加载的chunk代码也做了相应的改装，代码是向一个全局数组里面 push 了自己的模块 id 以及对应的 modules。而在主文件bundle里，劫持了这个数组的push方法，作用是把模块加到自己的modules中。
 
 demo
 ```javascript
@@ -141,3 +151,206 @@ for(var i = 0; i < jsonpArray.length; i++) webpackJsonpCallback(jsonpArray[i]);
 var parentJsonpFunction = oldJsonpFunction;
 ```
 劫持了 push 函数
+
+### Module federation
+Module federation allows a JavaScript application to dynamically run code from another bundle/build, on both client and server
+
+允许运行时动态决定代码的引入和加载。
+
+依赖前置，先去分析，然后生成配置文件，再去加载。
+
+通过一个全局变量去搭建桥梁。
+
+demo 
+```
+app1
+---index.js 入口文件
+---bootstrap.js 启动文件
+---App.js react组件
+ 
+app2
+---index.js 入口文件
+---bootstrap.js 启动文件
+---App.js react组件
+---Button.js react组件
+```
+这是文件结构，两个独立应用 app1 和 app2
+```javascript
+/** app1 **/
+/**
+* index.js
+**/
+import('./bootstrap');
+ 
+/**
+* bootstrap.js
+**/
+import('./bootstrap');
+import App from "./App";
+import React from "react";
+import ReactDOM from "react-dom";
+ 
+ReactDOM.render(<App />, document.getElementById("root"));
+ 
+/**
+* App.js
+**/
+import('./bootstrap');
+import React from "react";
+ 
+import RemoteButton from 'app2/Button';
+ 
+const App = () => (
+  <div>
+    <h1>Basic Host-Remote</h1>
+    <h2>App 1</h2>
+    <React.Suspense fallback="Loading Button">
+      <RemoteButton />
+    </React.Suspense>
+  </div>
+);
+ 
+export default App;
+```
+app2的代码不需要关注，但在app中，`import RemoteButton from 'app2/Button';`，引入了app2的代码。即跨应用复用代码
+
+####  Module federation 的配置
+```javascript
+/**
+ * app1/webpack.config.js
+ */
+{
+    plugins: [
+        new ModuleFederationPlugin({
+            name: "app1",
+            library: {
+                type: "var",
+                name: "app1"
+            },
+            remotes: {
+                app2: "app2"
+            },
+            shared: ["react", "react-dom"]
+        })
+    ]
+}
+```
+Module federation 的配置主要：
+1. 用了远程模块 app2，它叫 app2
+2. 用了共享模块，它叫 shared
+remotes 和 shared 还是有一点区别的。
+
+生成的 html 文件：
+```html
+<html>
+  <head>
+    <script src="app2/remoteEntry.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+  <script src="app1/app1.js"></script><script src="app1/main.js"></script></body>
+</html>
+```
+app1 打包生成的文件：
+```
+app1/index.html
+app1/app1.js
+app1/main.js
+app1/react.js
+app1/react-dom.js
+app1/src_bootstrap.js
+```
+最终页面表现以及加载的 js：
+
+![](./image/module_fun_html_load.png)
+
+从上往下加载的 js 时序其实是很有讲究的，后面将会是解密的关键：
+```
+app2/remoteEntry.js
+app1/app1.js
+app1/main.js
+app1/react.js
+app1/react-dom.js
+app2/src_button_js.js
+app1/src_bootstrap.js
+```
+这里最需要关注的其实还是每个文件从哪里加载，在不去分析原理之前，看文件加载我们至少有这些结论：
+
+1. remotes 的代码自己不打包，类似 external，例如 app2/button 就是加载 app2 打包的代码
+2. shared 的代码自己是有打包的
+
+### Module federation 的原理
+
+ webpack 的文件模块核心，即使升级 5，也没有发生变化
+ 
+ ![](./image/app1app2.png)
+ 
+app1 和 app2 还是有自己的 modules，所以实现的关键就是两个 modules 如何同步，或者说如何注入
+
+####  import 变成了什么
+```javascript
+// import源码
+import RemoteButton from 'app2/Button';
+ 
+// import打包代码 在app1/src_bootstrap.js里面
+/* harmony import */
+var app2_Button__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__( /*! app2/Button */ "?ad8d");
+/* harmony import */
+var app2_Button__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/ __webpack_require__.n(app2_Button__WEBPACK_IMPORTED_MODULE_1__);
+```
+这段并没有什么特别。
+
+注意看加载的 js 顺序：
+```javascript
+app2/remoteEntry.js
+app1/app1.js
+app1/main.js
+app1/react.js
+app1/react-dom.js
+app2/src_button_js.js // app2的button竟然先加载了，比我们的自己启动文件还前面
+app1/src_bootstrap.js
+```
+#### main.js 文件内容
+```javascript
+(() => { // webpackBootstrap
+    var __webpack_modules__ = ({})
+ 
+    var __webpack_module_cache__ = {};
+ 
+    function __webpack_require__(moduleId) {
+ 
+        if (__webpack_module_cache__[moduleId]) {
+            return __webpack_module_cache__[moduleId].exports;
+        }
+        var module = __webpack_module_cache__[moduleId] = {
+            exports: {}
+        };
+        __webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+        return module.exports;
+    }
+    __webpack_require__.m = __webpack_modules__;
+ 
+    __webpack_require__("./src/index.js");
+})()
+```
+webpack_modules 内部的实现:
+
+```javascript
+var __webpack_modules__ = ({
+ 
+    "./src/index.js": ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
+        __webpack_require__.e( /*! import() */ "src_bootstrap_js").then(__webpack_require__.bind(__webpack_require__, /*! ./bootstrap */ "./src/bootstrap.js"));
+    }),
+ 
+    "container-reference/app2": ((module) => {
+        "use strict";
+        module.exports = app2;
+    }),
+ 
+    "?8bfd": ((module, __unused_webpack_exports, __webpack_require__) => {
+        "use strict";
+        var external = __webpack_require__("container-reference/app2");
+        module.exports = external;
+    })
+});
+``` 

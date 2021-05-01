@@ -2,30 +2,38 @@
 title: Summary
 ---
 
+- [前端工程化](#前端工程化)
+- [Monorepo](#monorepo)
+- [Babel](#babel)
+- [postcss](#postcss)
+- [webpack工作流程](#简述webpack工作流程)
+- [打包过程](#打包过程)
+- [常用loader](#常用loader)
+- [常用plugin](#常用plugin)
+- [热更新](#热更新)
+- [3种hash](#_3种hash)
+- [Code Splitting](#code-splitting)
+- [项目中-你使用-webpack-做了哪些优化](#项目中-你使用-webpack-做了哪些优化)
+- [编写loader](#编写loader)
+- [编写插件](#编写插件)
+- [Tree Shaking](#tree-shaking)
+- [Webpack模块加载打包原理](#webpack模块打包原理)
+- [require.context是什么](#require-context是什么)
+- [SourceMap](#sourcemap)
+
+## 文章合集
 #### [webpack 中那些最易混淆的 5 个知识点](https://juejin.cn/post/6844904007362674701)
-#### [webpack5 Module federation](http://www.alloyteam.com/2020/04/14338/)
-Module federation: 允许运行时动态决定代码的引入和加载。
-### [Webpack4打包机制原理解析](https://mp.weixin.qq.com/s?__biz=MzI0MzIyMDM5Ng==&mid=2649826040&idx=1&sn=d00485f9421520699740404f8ecf3302&chksm=f175e83bc602612d32a2568bfb74f4a9f762b058e9ba39d976c355ae916c27bca73c9fa3d65a&mpshare=1&scene=24&srcid=02066BpnifF3iTrMe5n3rtCi&sharer_sharetime=1612548111719&sharer_shareid=1958dfa2b35b63c7a7463d11712f39df#rd)
-
-### [Webpack面试题](https://juejin.cn/post/6844904094281236487)
-### [从源码窥探Webpack4.x原理](https://juejin.cn/post/6844904046294204429)
-
-### [webpack小书](https://www.timsrc.com/article/2/webpack-book)
-
-### [Webpack揭秘](https://juejin.cn/post/6844903685407916039)
-
-### Webpack中publicPath详解
-> [文章](https://juejin.im/post/6844903601060446221)
->
-### [由浅入深配置webpack4](https://juejin.im/post/6859888538004783118)
-
-### [手写webpack核心原理](https://juejin.im/post/6854573217336541192)
-### [体积减少80%！释放webpack tree-shaking的真正潜力](https://juejin.cn/post/6844903769646317576)
-    
-
-### [Vite 原理分析](https://juejin.cn/post/6881078539756503047)
-
+#### [Webpack4打包机制原理解析](https://mp.weixin.qq.com/s/WXUW4bS4nT90uycodN0avw)
+#### [Webpack面试题](https://juejin.cn/post/6844904094281236487)
+#### [从源码窥探Webpack4.x原理](https://juejin.cn/post/6844904046294204429)
+#### [webpack小书](https://www.timsrc.com/article/2/webpack-book)
+#### [Webpack揭秘](https://juejin.cn/post/6844903685407916039)
+#### [由浅入深配置webpack4](https://juejin.im/post/6859888538004783118)
+#### [手写webpack核心原理](https://juejin.im/post/6854573217336541192)
+#### [体积减少80%！释放webpack tree-shaking的真正潜力](https://juejin.cn/post/6844903769646317576)
+#### [Vite 原理分析](https://juejin.cn/post/6881078539756503047)
 #### [前端 DSL 实践指南](https://zhuanlan.zhihu.com/p/107947462)
+
 
 ### 前端工程化
 
@@ -64,6 +72,10 @@ Module federation: 允许运行时动态决定代码的引入和加载。
 
 ### Monorepo
 
+总结作用
+1. 单仓库实现将各包统一收敛在packages中，在上层统一统筹管理各个package的依赖、构建、开发/调试、测试、版本、发布，提供更优雅的多包管理和协作方案。
+2. 用于单仓库多项目管理，组件页面复用，代码规范统一。
+
 Monorepo 的全称是 monolithic repository，即单体式仓库，与之对应的是 Multirepo(multiple repository)，这里的“单”和“多”是指每个仓库中所管理的模块数量。
 
 Monorepo就是把**多个项目放在一个仓库里面**，相对立的是传统的 `MultiRepo` 模式，即每个项目对应一个单独的仓库来分散管理。
@@ -82,6 +94,16 @@ Monorepo解决了：
 
 ![](./image/monorepovsMutirepo.png)
 
+#### lerna
+A tool for managing JavaScript projects with multiple packages.
+
+- 使用yarn workspaces单纯的处理依赖问题。
+- 用lerna来处理统筹管理package的问题。
+1. 自动解决packages之间的依赖关系
+2. 通过 git 检测文件改动，自动发布
+3. 根据 git 提交记录，自动生成 CHANGELOG
+
+- [彻底搞懂基于 Monorepo 的 lerna 模块](https://mp.weixin.qq.com/s/Qf65Pk0t1n0L1s7Fv-XZewhttps://mp.weixin.qq.com/s/Qf65Pk0t1n0L1s7Fv-XZew)
 
 ## Babel
 
@@ -207,6 +229,7 @@ not dead
 例如 `ElementUI` 中把 `import { Button } from 'element-ui'` 转成 `import Button from 'element-ui/lib/button'`
 
 可以先对比下 `AST` ：
+  ::: details 点击查看代码
 ```
 // import { Button } from 'element-ui'
 {
@@ -262,9 +285,11 @@ not dead
     "sourceType": "module"
 }
 ```
+  ::: 
 可以发现， `specifiers` 的 `type` 和 `source` 的 `value`、`raw` 不同。
 
 然后 `ElementUI` 官方文档中，`babel-plugin-component` 的配置如下：
+  ::: details 点击查看代码
 ```
 // 如果 plugins 名称的前缀为 'babel-plugin-'，你可以省略 'babel-plugin-' 部分
 {
@@ -312,9 +337,13 @@ const { result } = babel.transform(str, {
 
 console.log(result) // import Button from "element-ui/lib/Button";
 ```
+  ::: 
 
+## postcss
 
-## 简述 webpack 工作流程
+- [神奇的 postcss](https://mp.weixin.qq.com/s/TAKvKLXIG25gnuHSzt7Edg)
+
+## 简述webpack工作流程
 
 ### 概念
 
@@ -474,7 +503,7 @@ if(module && module.hot) {
 后续的部分（拿到增量更新之后如何处理？哪些状态该保留？哪些又需要更新？）由 `HotModulePlugin` 来完成，提供了相关 API 以供开发者针对自身场景进行处理，像 `react-hot-loader` 和 `vue-loader` 都是借助这些 API 实现 HMR。
 
 
-### 3 种 hash
+### 3种hash
 
 文件指纹是打包后输出的文件名的后缀，对应着 3 种 hash。
 
@@ -516,9 +545,9 @@ webpack 4 废弃了之前的不怎么好用的 `CommonsChunk`，取而代之的�
 - 动态加载 ：动态加载一些代码。
 
 #### SplitChunks
-
+- [理解webpack4.splitChunks](https://www.cnblogs.com/kwzm/p/10314438.html)
 默认配置
-
+  ::: details 点击查看代码
 ```javascript
 module.exports = {
   //...
@@ -547,6 +576,7 @@ module.exports = {
   }
 };
 ```
+  :::
 参数说明如下：
 
 - chunks：表示从哪些chunks里面抽取代码，除了三个可选字符串值 initial、async、all 之外，还可以通过函数来过滤所需的 chunks；
@@ -560,6 +590,7 @@ module.exports = {
 - cacheGroups: 缓存组。（这才是配置的关键）
 
 #### 配置css文件压缩成一个
+  ::: details 点击查看代码
 ```js
     config.optimization.splitChunks({
       cacheGroups: {
@@ -573,6 +604,8 @@ module.exports = {
           enforce: true
         }})
 ```
+  :::
+  
 #### cacheGroups
 
 它可以继承/覆盖上面 splitChunks 中所有的参数值，除此之外还额外提供了三个配置，分别为：test, priority 和 reuseExistingChunk。
@@ -580,7 +613,6 @@ module.exports = {
 - test: 表示要过滤 modules，默认为所有的 modules，可匹配模块路径或 chunk 名字，当匹配的是 chunk 名字的时候，其里面的所有 modules 都会选中；
 - priority：表示抽取权重，数字越大表示优先级越高。因为一个 module 可能会满足多个 cacheGroups 的条件，那么抽取到哪个就由权重最高的说了算；
 - reuseExistingChunk：表示是否使用已有的 chunk，如果为 true 则表示如果当前的 chunk 包含的模块已经被抽取出去了，那么将不会重新生成新的。
-### [理解webpack4.splitChunks](https://www.cnblogs.com/kwzm/p/10314438.html)
 
 ### optimization.splitChunks 中，chunks 的3个值：all、async、initial 的含义
 
@@ -623,6 +655,7 @@ chunks有三个选项：initial、async和all。它指示应该优先分离同�
 loader 其实就是一个 function，接收一个参数 source，就是当前的文件内容，然后稍加处理，就可以 return 出一个新的文件内容。
 
 example: 处理 .txt 文件，并且将任何实例中的 `[name]` 直接替换为 loader 选项中设置的 name。然后返回包含默认导出文本的 JavaScript 模块。
+  ::: details 点击查看代码
 ```js
 import { getOptions } from 'loader-utils';
 
@@ -646,6 +679,7 @@ module: {
       }]
     }
 ```
+  :::
 异步调用
 ```js
 module.exports = function (source) {
@@ -674,7 +708,7 @@ compilation 对象代表了一次资源版本构建。当运行 webpack 开发�
 - 指定一个触及到 webpack 本身的 事件钩子。
 - 操作 webpack 内部的实例特定数据。
 - 在实现功能后调用 webpack 提供的 callback。
-```typescript
+```javascript
 class FileListPlugin {
   apply(compiler) {
     // emit 是异步 hook，使用 tapAsync 触及它，还可以使用 tapPromise/tap(同步)
@@ -733,8 +767,8 @@ ES6 module 特点：
 
 **ES6模块依赖关系是确定的，和运行时的状态无关，可以进行可靠的静态分析**,
 
-### [模块加载](https://zhuanlan.zhihu.com/p/243485307)
-### [Webpack 模块打包原理](https://juejin.cn/post/6844903802382860296)
+### [Webpack模块打包原理](https://juejin.cn/post/6844903802382860296)
+- [模块加载](https://zhuanlan.zhihu.com/p/243485307)
 webpack根据`webpack.config.js`中的入口文件，在入口文件里识别模块依赖，不管这里的模块依赖是用`CommonJS`写的，还是`ES6 Module`规范写的，webpack会自动进行分析，并通过转换、编译代码，打包成最终的文件。最终文件中的模块实现是基于webpack自己实现的`webpack_require`（es5代码），所以打包后的文件可以跑在浏览器上。
 
 使用一个立即执行函数，实现了类似Common Js require和exports的特性，核心是`__webpack_require__`的实现，
@@ -750,7 +784,7 @@ webpack实现模块的异步加载有点像jsonp的流程。在主js文件中通
 
 源码中的`primose`使用非常精妙，主模块加载完成异步模块才resolve()
 
-
+  ::: details 点击查看代码
 ```js
 // 0.bundle.js
 
@@ -802,7 +836,7 @@ console.log(Add, Add(1, 2))
 
 build.js
 
-````js
+```js
 // modules是存放所有模块的数组，数组中每个元素存储{ 模块路径: 模块导出代码函数 }
 (function(modules) {
 // 模块缓存作用，已加载的模块可以不用再重新读取，提升性能
@@ -861,9 +895,8 @@ return __webpack_require__(__webpack_require__.s = "./src/main.js");
     console.log(_add__WEBPACK_IMPORTED_MODULE_0__["default"], Object(_add__WEBPACK_IMPORTED_MODULE_0__["default"])(1, 2))
   })
 });
-
-````
-
+```
+  :::
 ### require.context是什么
 一个webpack的api，通过执行`require.context`函数获取一个特定的上下文，主要用来实现自动化导入模块，在前端工程中，如果遇到从一个文件夹引入很多模块的情况，
 可以使用这个api，它会遍历文件夹中的指定文件，然后自动导入，使得不需要每次显式的调用`import`导入模块。比如在Vue中使用`require.context`函数遍历modules文件夹的所有文件一次性导入到index.js中

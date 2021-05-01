@@ -16,10 +16,8 @@ title: 安全
   - [加盐](#%E5%8A%A0%E7%9B%90)
   - [对称加密和非对称加密](#对称加密和非对称加密)
 
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-#### XSS(Cross Site Script)跨站脚本攻击 和 CSRF(Cross Site Request Forgery)跨站请求伪造
-> [介绍](https://juejin.im/post/6844904100945985543)
+- [想进大厂必须要知道的Web安全问题](https://juejin.im/post/6844904100945985543)
+- [你在项目中做过哪些安全防范措施？](https://mp.weixin.qq.com/s/s1doq884nreQPwbvqopL0g)
 ### XSS
 
 > **跨网站指令码**（英语：Cross-site scripting，通常简称为：XSS）是一种网站应用程式的安全漏洞攻击，是[代码注入](https://www.wikiwand.com/zh-hans/%E4%BB%A3%E7%A2%BC%E6%B3%A8%E5%85%A5)的一种。它允许恶意使用者将程式码注入到网页上，其他使用者在观看网页时就会受到影响。这类攻击通常包含了 HTML 以及使用者端脚本语言。

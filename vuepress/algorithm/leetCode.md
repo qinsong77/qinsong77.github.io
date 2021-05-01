@@ -2065,7 +2065,7 @@ var hasCycle = function(head) {
 };
 ```
 
-#### [链表中环的入口节点](#https://leetcode-cn.com/problems/linked-list-cycle-ii/)
+#### [链表中环的入口节点](https://leetcode-cn.com/problems/linked-list-cycle-ii/)
 
 ![](./image/link_list_circle2.png)
 快慢指针：慢指针每次走一步，快指针每次走2步，如果有环肯定相遇。
