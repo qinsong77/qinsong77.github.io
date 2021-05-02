@@ -17,6 +17,7 @@ title: LeetCode
   - [最长回文子串](#最长回文子串)
   - [分割回文串](#分割回文串)
   - [分割回文串2](#分割回文串2)
+  - [回文链表](#回文链表)
 - [3.字符串](#_3-字符串)
   - [有效的括号](#有效的括号)
   - [括号生成](#括号生成)
@@ -48,14 +49,17 @@ title: LeetCode
    - [二叉树的最近公共祖先](#二叉树的最近公共祖先)
    - [最大二叉树](#最大二叉树)
    - [寻找重复的子树](#寻找重复的子树)
+   - [二叉树的直径](#二叉树的直径)
    - [求二叉树中最大路径和](#求二叉树中最大路径和)
 - [5.二叉搜索树](#_5-二叉搜索树)
    - [二叉搜索树中第K小的元素](#二叉搜索树中第k小的元素)
    - [把二叉搜索树转换为累加树](#把二叉搜索树转换为累加树)
    - [恢复二叉搜索树](#恢复二叉搜索树)
    - [判断BST的合法性](#判断bst的合法性)
+   - [不同的二叉搜索树](#不同的二叉搜索树)
 - [6.链表](#_6-链表)
    - [反转链表](#反转链表)
+   - [回文链表](#回文链表)
    - [两个链表的第一个公共结点](#两个链表的第一个公共结点)
    - [环形链表](#环形链表)
    - [链表中环的入口节点](#链表中环的入口节点)
@@ -90,6 +94,7 @@ title: LeetCode
    - [寻找旋转排序数组中的最小值](#寻找旋转排序数组中的最小值)
    - [最长递增子序列](#最长递增子序列)
    - [合并区间](#合并区间)
+   - [和为K的子数组](#和为k的子数组)
 - [9.二维数组](#_9-二维数组)
     - [二维数组翻转90度](#n-x-n二维数组翻转90度)
     - [二维数组中的查找](#二维数组中的查找)
@@ -113,6 +118,7 @@ title: LeetCode
     - [基本计算器](#基本计算器)
     - [基本计算器2](#基本计算器2)
 - [电话号码的字母组合](#电话号码的字母组合)
+- [岛屿数量](#岛屿数量)
 
 获取26个字母
 ```javascript
@@ -535,8 +541,44 @@ const countSubstrings = (s) => {
   }
   return count;
 };
-
 ```
+
+#### [回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/)
+1. 使用快慢指针找到中间节点
+2. 从中间节点翻转链表
+3. 从头和翻转链表比较
+```javascript
+var isPalindrome = function(head) {
+    let slow = head
+    let fast = head
+    while(fast && fast.next) {
+        fast = fast.next.next
+        slow = slow.next
+    }
+    let anotherHead = reverseLink(slow)
+    if(!anotherHead) return false
+    while(anotherHead) {
+        if(anotherHead.val === head.val) {
+            anotherHead = anotherHead.next
+            head = head.next
+        }
+        else return false
+    }
+    return true
+};
+
+function reverseLink(head) {
+    let prev = null
+    while(head) {
+        let next = head.next
+        head.next = prev
+        prev = head
+        head = next
+    }
+    return prev
+}
+```
+
 ## 3.字符串
 
 ### [比较版本号](https://leetcode-cn.com/problems/compare-version-numbers/)
@@ -1796,6 +1838,24 @@ var findDuplicateSubtrees = function(root) {
 
 ```
 
+#### [二叉树的直径](https://leetcode-cn.com/problems/diameter-of-binary-tree/)
+
+```javascript
+var diameterOfBinaryTree = function(root) {
+    let res = 0
+
+    function help(node) {
+        if(node === null) return 0
+        let left = help(node.left)
+        let right = help(node.right)
+        res = Math.max(res, left + right + 1)
+        return Math.max(left, right) + 1
+    }
+    help(root)
+    return res - 1
+};
+```
+
 #### [求二叉树中最大路径和](https://leetcode-cn.com/problems/binary-tree-maximum-path-sum/)
 
 ```javascript
@@ -1999,6 +2059,35 @@ function isInBST(root, target) {
   if (root.val === target) return true
   if (root.val > target) return isInBST(root.left, target)
   if (root.val < target) return isInBST(root.right, target)
+}
+```
+
+#### [不同的二叉搜索树](https://leetcode-cn.com/problems/unique-binary-search-trees/)
+动态规划
+
+假设n个节点存在二叉排序树的个数是G(n)，令f(i)为以i为根的二叉搜索树的个数
+
+即有:`G(n) = f(1) + f(2) + f(3) + f(4) + ... + f(n)`
+
+n为根节点，当i为根节点时，其左子树节点个数为`[1,2,3,...,i-1]`，右子树节点个数为`[i+1,i+2,...n]`，所以当i为根节点时，其左子树节点个数为i-1个，右子树节点为n-i，即f(i) = G(i-1)*G(n-i),
+
+上面两式可得:`G(n) = G(0)*G(n-1)+G(1)*(n-2)+...+G(n-1)*G(0)`
+```javascript
+/**
+ * @param {number} n
+ * @return {number}
+ */
+var numTrees = function(n) {
+    const dp = new Array(n + 1).fill(0);
+    dp[0] = 1;
+    dp[1] = 1;
+
+    for (let i = 2; i <= n; ++i) {
+        for (let j = 1; j <= i; ++j) {
+            dp[i] += dp[j - 1] * dp[i - j];
+        }
+    }
+    return dp[n];
 }
 ```
 
@@ -2922,6 +3011,74 @@ var wordBreak = function(s, wordDict) {
     return dp[length]
 };
 ```
+
+### [目标和](https://leetcode-cn.com/problems/target-sum/)
+1. dfs，类似于二叉树的遍历
+```javascript
+var findTargetSumWays = function(nums, S) {
+    let count = 0
+
+    function dfs(i, sum) {
+        if(i === nums.length) {
+            if (sum === S) count++
+            return
+        }
+        dfs(i+1, sum + nums[i])
+        dfs(i+1, sum - nums[i])
+    }
+    dfs(0, 0)
+    return count
+};
+```
+2. 动态规划
+```javascript
+/**
+ * @param {number[]} nums
+ * @param {number} S
+ * @return {number}
+ */
+var findTargetSumWays = function (nums, S) {
+	// nums 长度不足以循环时
+  if (nums.length < 2) {
+    // 考虑正负值的情况
+    if (nums[0] !== S && -nums[0] !== S) {
+      return 0
+    } else {
+      return 1
+    }
+  }
+	// 获得nums的总和
+  const sum = nums.reduce((sum, cur) => sum + cur, 0)
+  // 因为是非负整数数组，如果全部加起来还要比目标小直接返回0
+  if (sum < Math.abs(S)) return 0
+	// 初始化 dp
+  let dp = Array.from({ length: nums.length }, () => new Array(sum * 2 + 1).fill(0))
+	// 初始化第一行，考虑 0 的情况
+  if (nums[0] === 0) {
+    dp[0][sum] = 2
+  } else {
+    dp[0][sum + nums[0]] = 1
+    dp[0][sum - nums[0]] = 1
+  }
+
+
+  for (let i = 1; i < nums.length; i++) {
+    for (let j = 0; j < sum * 2 + 1; j++) {
+      // 判断边界情况
+      const l = (j - nums[i] < 0) ? 0 : dp[i - 1][j - nums[i]]
+      const r = (j + nums[i] > sum * 2) ? 0 : dp[i - 1][j + nums[i]]
+			// 转移方程
+      dp[i][j] = l + r
+			// 如果已经到达了目标位置【最后一行的 S 值】，就可以返回了，可以少循环几次
+      if (i === nums.length - 1 && j === S + sum) {
+        return dp[i][j]
+      }
+    }
+  }
+};
+
+// 链接：https://leetcode-cn.com/problems/target-sum/solution/jing-dian-0-1bei-bao-by-rodrick278-7ohy/
+```
 ## 8.数组
 
 ### [连续子数组的最大和](https://leetcode-cn.com/problems/maximum-subarray/)
@@ -3225,6 +3382,31 @@ var merge = function(intervals) {
 };
 ```
 
+#### [和为K的子数组](https://leetcode-cn.com/problems/subarray-sum-equals-k/)
+```javascript
+var subarraySum = function(nums, k) {
+    // 暴力求解
+    // let res = 0
+    // for(let i = 0; i < nums.length; i++) {
+    //     let sum = 0
+    //     for(let j = i; j >= 0; j--) {
+    //         sum = sum + nums[j]
+    //         if(sum === k) res++
+    //     }
+    // }
+    // return res
+    let count = 0
+    let map = new Map() // 记录key是sum的出现了多少次
+    map.set(0, 1) // 和为0的连续子数组出现1次
+    let sum = 0
+    for(let i = 0; i < nums.length;i++) {
+        sum += nums[i]
+        if(map.has(sum-k)) count += map.get(sum-k) // 如果sum - k map里有，证明存在有多少个和为k的子数组
+        map.set(sum, map.has(sum)  ? map.get(sum) + 1 : 1)
+    }
+    return count
+};
+```
 ### 9.二维数组
 #### [N x N二维数组翻转90度](https://leetcode-cn.com/problems/rotate-image)
 ```
@@ -4137,5 +4319,42 @@ function swap (nums, i, j) {
     const temp = nums[i]
     nums[i] = nums[j]
     nums[j] = temp
+}
+```
+### [岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
+
+1. dfs
+
+重点是将节点重置为0，并把上下左右的是1的都重置为0
+```javascript
+/**
+ * @param {character[][]} grid
+ * @return {number}
+ */
+var numIslands = function(grid) {
+    let res = 0
+    let row = grid.length
+    let cloumn = grid[0].length
+    if(!row * cloumn) return 0
+    for(let i = 0; i < row; i++) {
+        for(let j = 0; j < cloumn; j++) {
+            if(grid[i][j] === '1') {
+                res++
+                dfs(grid, i, j)
+            }
+        }
+    }
+    return res
+};
+
+function dfs (grid, i, j) {
+    let row = grid.length
+    let cloumn = grid[0].length
+    grid[i][j] = '0'
+
+    if((i - 1) >= 0 && grid[i-1][j] === '1') dfs(grid, i-1, j)
+    if((i + 1) < row && grid[i + 1][j] === '1') dfs(grid, i + 1, j)
+    if((j - 1) >= 0 && grid[i][j - 1] === '1') dfs(grid, i, j - 1)
+    if((j + 1) < cloumn && grid[i][j + 1] === '1') dfs(grid, i, j + 1)
 }
 ```
