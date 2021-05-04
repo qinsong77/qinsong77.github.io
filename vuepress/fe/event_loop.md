@@ -202,15 +202,16 @@ GUI线程就是渲染页面的，他解析HTML和CSS，然后将他们构建成D
 9. The microtask queue is not a task queue.
 ### 宏任务包括：
 - script(整体代码)
-- setTimeout, setInterval, setImmediate,
+- setTimeout, setInterval, setImmediate(Node.js),
 - I/O
 - UI rendering
 - dispatch event事件派发
+- postMessage
 
 dispatch event主要用来描述事件触发之后的执行任务，比如用户点击一个按钮，触发的onClick回调函数。需要注意的是，事件的触发是同步的。　　
 ### 微任务包括：
     
-- process.nextTick
+- process.nextTick(Node.js)
 - Promise.then中的代码，及async函数中await后面的部分，await那一行是同步的
 - MutationObserver(html5新特性)
 

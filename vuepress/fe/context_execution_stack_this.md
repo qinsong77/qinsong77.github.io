@@ -368,9 +368,8 @@ console.log('Inside Global Execution Context');
 
 
 函数中的 this: 在一个函数的执行上下文中， `this` 由该函数的调用者提供，由调用函数的方式来决定其指向 。
-如果调用者被某一个对象所拥有，那么在调用该函数时 ， 内部的 `this` 指向该对象。 如果调用
-者**函数独立调用**，那么该函数内部的 `this` 则指向 `undefined`。 但是在非严格模式中， 当 this 指向
-`undefined` 时，它会自动指向全局对象 。
+如果调用者被某一个对象所拥有，那么在调用该函数时， 内部的 `this` 指向该对象。如果调用者**函数独立调用**，那么该函数内部的 `this` 则指向 `undefined`。但是在非严格模式中，当 this 指向
+`undefined` 时，它会自动指向全局对象。
 
 #### 改变 this 的指向的方法
 - 使用 ES6 的箭头函数
@@ -465,8 +464,8 @@ div.addEventListener('click',foo.click)
 输出`undefined`，在`addEventListener`中指向的是这个div元素，如果绑定事件是onClick，则是指向window
 #### 箭头函数
 
-- 箭头函数没有prototype；
-- 箭头函数是匿名函数,是不能作为构造函数的,不能使用new；
-- 箭头函数不绑定arguments,取而代之用rest参数(…rest)解决；
-- 箭头函数不能当做Generator函数,不能使用yield关键字；
-- 箭头函数会捕获其所在上下文的 this 值，作为自己的 this 值，任何方法都改变不了其指向，如call(), bind(), apply()，而普通函数的this指向调用它的那个对象。
+- 箭头函数没有`prototype`；
+- 箭头函数是匿名函数，是不能作为构造函数的，不能使用`new`；
+- 箭头函数不绑定`arguments`，取而代之用rest参数`(…rest)`解决；
+- 箭头函数不能当做`Generator`函数，不能使用`yield`关键字；
+- 箭头函数会捕获其所在上下文的 `this` 值，作为自己的 `this` 值，任何方法都改变不了其指向，如`call(),bind(),apply()`，而普通函数的this指向调用它的那个对象。

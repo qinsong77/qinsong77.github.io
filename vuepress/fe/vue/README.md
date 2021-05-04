@@ -18,11 +18,13 @@ title: Vue
 - [vue Diff](#vue-diff)
 - [Vue中key属性的作用](#vue中key属性的作用)
 - [updateChildren](#updatechildren)
+- [虚拟dom](#虚拟dom)
 - [数据改变到页面渲染的过程是怎么样的](#数据改变到页面渲染的过程是怎么样的)
 - [vue模板渲染-compile](#vue模板渲染-compile)
 - [spa路由](#spa-路由)
 - [打包懒加载](#打包懒加载)
-
+- [vue-loader原理分析](#vue-loader原理分析)
+- [Vue CLI是如何实现的](#vue-cli是如何实现的)
 ### 面试题
 - [「面试题」20+Vue面试题整理](https://juejin.cn/post/6844904084374290446)
 - [大厂高频Vue面试题（上）](https://juejin.cn/post/6844904138208182285)
@@ -915,6 +917,7 @@ function render () {
 `observe(data)`方法中`new Observer(value)`(value及data), new的时候这里也`new Dep()`，这个和`defineReactive$$1`中建的dep不一样，执行` def(value, '__ob__', this);`把`__ob__`定义成属性给这个对象和数组，
 而这个`__ob__`中的dep怎么添加watcher的？在`defineReactive$$1`调用`var childOb = !shallow && observe(val);`获取ob，然后在getter中
 ```javascript
+var childOb = !shallow && observe(val);
 get: function reactiveGetter () {
         var value = getter ? getter.call(obj) : val;
         if (Dep.target) {
@@ -1066,6 +1069,10 @@ get: function reactiveGetter () {
 :::
 
 ### 数组响应式变化原理
+事实上，`Object.defineProperty` 本身是可以监控到数组下标的变化的，只是在 Vue 的实现中，从性能 / 体验的性价比考虑，放弃了这个特性。
+数组就是个对象的封装，index就是key，如果劫持了get和set,调用`arr[0]`和`arr[0] = 1`是会触发getter和setter的。但是对于新push的值，类似于object之前没有定义key，是没有劫持到的。
+而且比如unshift方法，数组会依次读取并复制到下一位，所以会多次触发getter和setter
+
 > 使用`Object.create`复制Array的原型对象prototype得到arrayMethods, 遍历一个7个数组方法的数组，包括`push,pop,shift,unshift,splice,sort，reverse`
 >这些能改变数组的方法，使用函数劫持，再遍历使用`Object.defineProperty`重写复制的原型对象arrayMethods对应方法的value,即重写方法，使用Array.prototype
 >的原函数方法`apply`获取并返回结果，同时通过`var ob = this.__ ob__`获取Observer,调用`ob.dep.notify()`，通知更新；
@@ -1608,6 +1615,7 @@ data() {
 
 - [Vue的Computed原理](https://juejin.cn/post/6844904120290131982)
 - [手摸手带你理解Vue的Computed原理](https://juejin.cn/post/6844904199596015624)
+- [Vue.js的computed和watch是如何工作的](https://juejin.cn/post/6844903667884097543)
 
 在`initState`时`initComputed`和`initWatch`
 - 1.实例上定义` _computedWatchers` 对象，用于存储“计算属性Watcher”;
@@ -2151,7 +2159,6 @@ function patchVnode (
 6. updateDirectives
 
 **简单说就是性能损耗**
-### updateChildren
 
 2. 节点删除场景:可能导致错误删除
 ```vue
@@ -2188,6 +2195,7 @@ export default {
 };
 </script>
 ```
+### updateChildren
 
 过程可以概括为：`oldCh`和`newCh`各有两个头尾的变量`StartIdx`和`EndIdx`，它们的2个变量相互比较，一共有4种比较方式。如果4种比较都没匹配，如果设置了`key`，就会用`key`进行比较，在比较的过程中，变量会往中间靠，一旦`StartIdx>EndIdx`表明`oldCh`和`newCh`至少有一个已经遍历完了，就会结束比较。
 
@@ -2733,8 +2741,8 @@ patchChildren的过程中，存在 `patchUnkeyedChildren`和`patchKeyedChildren`
 5. 如果老的节点大于新的节点的情况(i > e2) ，对于超出的节点全部卸载（这种情况说明已经patch完相同的vnode）
 6. 情况只剩下新老节点都还有剩余，没有patch完相同的vnode -- `unknown sequence`不确定序列
    1. 遍历所有`新节点`把索引和对应的key,存入map `keyToNewIndexMap`中，2.0是建立的老节点的mapKey
-   2. 更加之前的算出新节点还需要patch的个数，`toBePatched`，声明`newIndexToOldIndexMap` 用来存放`新节点索引`和`老节点索引的数组`。newIndexToOldIndexMap 数组的`index`是`新vnode`的索引 ， `value`是`老vnode`的索引。(新旧节点的对应关系)
-   3. **遍历老的Vnode**
+   2. 根据之前的算出新节点还需要patch的个数，`toBePatched`，声明`newIndexToOldIndexMap` 用来存放`新节点索引`和`老节点索引的数组`。newIndexToOldIndexMap 数组的`index`是`新vnode`的索引 ， `value`是`老vnode`的索引。(新旧节点的对应关系)
+   3. **遍历老的Vnode**，这一步是`unmount`卸载不能复用的老节点，并且填充`newIndexToOldIndexMap`，接下来就是要处理新节点中新增的和复用的且要移动位置的。
    4. 如果`patched >= toBePatched`（即新节点已经处理完了），卸载老节点
    5. 如果，老节点的key如果在新节点中存在 ，通过key找到对应的`index`，否则则是遍历新节点，比较isSame，总之就是想复用节点，并把老节点的index放在`newIndexToOldIndexMap`中，通过寻找最长增长子序列来做到最小移动
 
@@ -2760,16 +2768,15 @@ patch了一遍，把所有的老vnode都patch了一遍。
 - 根据 source 数组计算出一个最长递增子序列（计算出最小的移动）。
 - 移动 Dom 操作。
 
-#### [Vue.js的computed和watch是如何工作的](https://juejin.cn/post/6844903667884097543)
+### 虚拟dom
+
+- [虚拟 DOM 到底是什么？(长文建议收藏)](https://mp.weixin.qq.com/s/oAlVmZ4Hbt2VhOwFEkNEhw)
+- [探索Virtual DOM的前世今生](https://zhuanlan.zhihu.com/p/35876032)
+- [Virtual DOM 认知误区](https://juejin.cn/post/6898526276529684493)
+- [面试官: 你对虚拟DOM原理的理解?](https://juejin.cn/post/6844903902429577229)
 
 #### [keep-alive原理](https://juejin.im/post/6862206197877964807)
-
-#### [虚拟 DOM 到底是什么？(长文建议收藏)](https://mp.weixin.qq.com/s/oAlVmZ4Hbt2VhOwFEkNEhw)
-#### [探索Virtual DOM的前世今生](https://zhuanlan.zhihu.com/p/35876032)
-#### [让虚拟DOM和DOM-diff不再成为你的绊脚石](https://juejin.cn/post/6844903806132568072)
-#### [面试官: 你对虚拟DOM原理的理解?](https://juejin.cn/post/6844903902429577229)
-#### [详解vue的diff算法](https://juejin.cn/post/6844903607913938951)
-
+- [手写 LRU 缓存策略，了解 Vue 的 keep-alive 实现](https://mp.weixin.qq.com/s/kT2F9ZPs6qt_9RCfkVY78Q)
 #### [Vue.extend](https://zhuanlan.zhihu.com/p/342643253)
 
 #### [实现双向绑定Proxy比defineProperty优劣如何](https://juejin.cn/post/6844903601416978439)
@@ -2898,10 +2905,10 @@ const routes = [{
 原理
  - 将需要进行懒加载的子模块打包成独立的文件（`children chunk`）；借助的是es6的`import`
  - 借助函数来实现延迟执行子模块的加载代码；
-
-#### [Vue CLI 是如何实现的](http://axuebin.com/articles/fe-solution/cli/vuecli.html)
-
+ 
 ### [vue-loader原理分析](https://mp.weixin.qq.com/s/Pvxr0A-aDoitL1UAokTSnQ)
+
+### [Vue CLI是如何实现的](http://axuebin.com/articles/fe-solution/cli/vuecli.html)
 
 ### Vue组件name属性总结
 

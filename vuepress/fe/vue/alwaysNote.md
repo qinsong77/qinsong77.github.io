@@ -156,7 +156,7 @@ export default {
   },
 
   computed: {
-    contentHeight ({ data, itemHeight }) { // 提取this中的值，固定值不用走依赖收集
+    contentHeight ({ data, itemHeight }) {
       return data.length * itemHeight + 'px'
     }
   },

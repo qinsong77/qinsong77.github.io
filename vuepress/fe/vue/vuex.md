@@ -31,7 +31,7 @@ Flux 的最大特点，就是数据的**单向流动**。
 
 ![](./image/flux-vs-redux.png)
 
-1. Redux 单一数据源：Flux 的数据源可以是多个, Flux可以有多个store,Redux只有一个
+1. Redux 单一数据源：Flux 的数据源可以是多个，Flux可以有多个store，Redux只有一个
 2. Redux的State 是只读的：Flux 的 State 可以随便改
 3. Redux使用纯函数来执行修改：Flux 执行修改的不一定是纯函数
 

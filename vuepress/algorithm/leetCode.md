@@ -51,6 +51,7 @@ title: LeetCode
    - [寻找重复的子树](#寻找重复的子树)
    - [二叉树的直径](#二叉树的直径)
    - [求二叉树中最大路径和](#求二叉树中最大路径和)
+   - [求根节点到叶节点数字之和](#求根节点到叶节点数字之和)
 - [5.二叉搜索树](#_5-二叉搜索树)
    - [二叉搜索树中第K小的元素](#二叉搜索树中第k小的元素)
    - [把二叉搜索树转换为累加树](#把二叉搜索树转换为累加树)
@@ -95,6 +96,7 @@ title: LeetCode
    - [最长递增子序列](#最长递增子序列)
    - [合并区间](#合并区间)
    - [和为K的子数组](#和为k的子数组)
+   - [统计「优美子数组」](#优美子数组)
 - [9.二维数组](#_9-二维数组)
     - [二维数组翻转90度](#n-x-n二维数组翻转90度)
     - [二维数组中的查找](#二维数组中的查找)
@@ -848,22 +850,22 @@ var partition = function(s) {
 左右指针控制滑动窗口，i相当于右指针
 ```javascript
 var lengthOfLongestSubstring = function(s) {
-    let length = s.length
-    if(length <= 1) return length
-    let right = 0
+    if (s.length <= 1) return s.length
+    let left = 0
     let res = ''
-    for(let left = 1; left < s.length; left++) {
-        let ch = s[left]
-        let newRight = right
-        while(newRight <= left - 1) {
-            if(s[newRight] === ch) {
-                right = newRight + 1
-                break;
+    for(let right = 1; right < s.length; right++) {
+        let newLeft = left
+        const char = s[right]
+        while(newLeft < right) {
+            if(s[newLeft] === char) {
+                left = newLeft + 1
+                break
             }
-            newRight++
+            newLeft++
         }
-        res = Math.max(res, left - right + 1)
+         res = Math.max(res, right - left + 1)
     }
+
     return res
 };
 ```
@@ -1039,6 +1041,37 @@ var addStrings = function(num1, num2) {
   ::: 
   
 #### [字符串相乘](https://leetcode-cn.com/problems/multiply-strings/)
+
+- 0乘以任何数 = 0
+- 两数相乘，乘积的长度一定 <= 两数长度之和
+- 被乘数的一位 与 乘数的每一位相乘，乘积不会超过 9 x 9 = 81，不超过两位
+- 每次只考虑两位，乘积 与 个位 相加
+  - 个位保留余数
+  -  十位保留取整，取整直接舍弃小数点，用0 |效率，高于parseInt
+- while循环，删除多余的0
+```javascript
+var multiply = function(num1, num2) {
+    if (num1 === '0' || num2 === '0') {
+        return '0'
+    }
+    let dp = new Array(num1.length + num2.length).fill(0)
+    for(let i = num1.length - 1; i >= 0; i--) {
+        for(let j = num2.length - 1; j >= 0; j--) {
+            let temp = num1[i] * num2[j] + dp[i + j + 1]
+            if(temp > 9) {
+                 dp[i + j] += parseInt(String(temp)[0])
+                 dp[i + j + 1] = parseInt(String(temp)[1])
+            } else {
+                dp[i + j + 1] = temp
+            }
+        }
+    }
+     while(dp[0] === 0) {
+        dp.shift()
+    }
+    return dp.join('')
+};
+```
 
 [题解](https://github.com/sisterAn/JavaScript-Algorithms/issues/105)
 
@@ -1870,6 +1903,72 @@ var maxPathSum = function(root) {
     }
     help(root)
     return res
+};
+```
+
+#### [求根节点到叶节点数字之和](https://leetcode-cn.com/problems/sum-root-to-leaf-numbers/)
+dfs
+```javascript
+var sumNumbers = function(root) {
+    let arr = []
+    function help(node, str) {
+        if(!node) return
+        str = str + node.val
+        if(node.left === null && node.right === null) {
+            if(str) arr.push(str)
+            return
+        }
+        help(node.left, str)
+        help(node.right, str)
+    }
+    help(root, '')
+    return arr.reduce((prev, curr) => parseInt(curr) + parseInt(prev), 0)
+};
+// 官方的
+const dfs = (root, prevSum) => {
+    if (root === null) {
+        return 0;
+    }
+    const sum = prevSum * 10 + root.val;
+    if (root.left == null && root.right == null) {
+        return sum;
+    } else {
+        return dfs(root.left, sum) + dfs(root.right, sum);
+    }
+}
+var sumNumbers = function(root) {
+    return dfs(root, 0);
+};
+```
+bfs
+```javascript
+var sumNumbers = function(root) {
+    if (root === null) {
+        return 0;
+    }
+    let sum = 0;
+    const nodeQueue = [];
+    const numQueue = [];
+    nodeQueue.push(root);
+    numQueue.push(root.val);
+    while (nodeQueue.length) {
+        const node = nodeQueue.shift();
+        const num = numQueue.shift();
+        const left = node.left, right = node.right;
+        if (left === null && right === null) {
+            sum += num;
+        } else {
+            if (left !== null) {
+                nodeQueue.push(left);
+                numQueue.push(num * 10 + left.val);
+            }
+            if (right !== null) {
+                nodeQueue.push(right);
+                numQueue.push(num * 10 + right.val);
+            }
+        }
+    }
+    return sum;
 };
 ```
 
@@ -3383,6 +3482,7 @@ var merge = function(intervals) {
 ```
 
 #### [和为K的子数组](https://leetcode-cn.com/problems/subarray-sum-equals-k/)
+ - [前缀和思想](https://leetcode-cn.com/problems/subarray-sum-equals-k/solution/de-liao-yi-wen-jiang-qian-zhui-he-an-pai-yhyf/)
 ```javascript
 var subarraySum = function(nums, k) {
     // 暴力求解
@@ -3397,7 +3497,7 @@ var subarraySum = function(nums, k) {
     // return res
     let count = 0
     let map = new Map() // 记录key是sum的出现了多少次
-    map.set(0, 1) // 和为0的连续子数组出现1次
+    map.set(0, 1) // 和为0的连续子数组出现1次`
     let sum = 0
     for(let i = 0; i < nums.length;i++) {
         sum += nums[i]
@@ -3407,6 +3507,28 @@ var subarraySum = function(nums, k) {
     return count
 };
 ```
+#### [优美子数组](https://leetcode-cn.com/problems/count-number-of-nice-subarrays/)
+前缀和
+```javascript
+var numberOfSubarrays = function(nums, k) {
+    let count = 0
+    const map = new Map()
+    let countSum = 0
+    map.set(0, 1)
+    for(let i = 0; i < nums.length; i++) {
+        if(nums[i] % 2 !== 0) { // 奇数
+            countSum++
+        }
+        map.set(countSum, map.has(countSum) ? map.get(countSum) + 1 : 1)
+        if(map.has(countSum - k)) {
+            count += map.get(countSum - k)
+        }
+    }
+    return count
+};
+```
+
+#### [连续的子数组和]()
 ### 9.二维数组
 #### [N x N二维数组翻转90度](https://leetcode-cn.com/problems/rotate-image)
 ```
