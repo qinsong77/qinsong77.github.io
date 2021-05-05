@@ -50,4 +50,4 @@ title: 组件库设计
 
 ### Element-ui
 - [Element-UI（2.11.1） 构建流程](https://juejin.cn/post/6844904003541663757)
-- [组件库的整体设计](https://mp.weixin.qq.com/s/nIPYXeqdoKZbFe9baZJVyw)
+- [Element-UI 技术揭秘- 组件库的整体设计](https://juejin.cn/post/6844903925632466951)

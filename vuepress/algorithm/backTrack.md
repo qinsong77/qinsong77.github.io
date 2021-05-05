@@ -7,6 +7,7 @@ title: 回溯算法
 - [N皇后](#n皇后)
 - [组合总和](#组合总和)
 - [单词搜索](#单词搜索)
+
 解决一个回溯问题，实际上就是**一个决策树的遍历过程**。只需要思考 3 个问题：
 
 1. **路径**：也就是已经做出的选择。
@@ -65,7 +66,24 @@ var permute = function(nums) {
 ```
 
 ### [子集](https://leetcode-cn.com/problems/subsets/)
-
+遇到一个数就把所有子集加上该数组成新的子集，遍历完毕即是所有子集
+```javascript
+var subsets = function(nums) {
+    const res = []
+    for(let i = 0; i < nums.length; i++) {
+        let temp = []
+        for(let j = 0; j < res.length; j++) {
+            let item = [...res[j]]
+            item.push(nums[i])
+            temp.push(item)
+        }
+        res.push(...temp)
+        res.push([nums[i]])
+    }
+    res.push([])
+    return res
+};
+```
 ```javascript
 const subsets = (nums) => {
   const res = [];

@@ -2,7 +2,7 @@
 title: Vue 3.0
 ---
 
-[Vue3 响应式原理](https://zhuanlan.zhihu.com/p/158743788)
+[Vue3 响应式原理](https://juejin.cn/post/6858899262596448270)
 
 
 ### [Vue3.0 性能优化及新特性深度解析](https://mp.weixin.qq.com/s/r90ABtYXcOwB7J_ILLYBpg)

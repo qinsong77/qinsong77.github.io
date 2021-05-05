@@ -23,7 +23,7 @@ title: 学习笔记
 - [javascript的异步方式](#javascript的异步方式)
 - [promise](#promise)
 - [generator](#generator)
-- [async、await](##async、await)
+- [async await](#async-await)
 - [JSON](#json)
 - [垃圾回收](#垃圾回收)
 
@@ -1435,7 +1435,18 @@ runtime.mark = function(genFun) {
 };
 ```
 
-### async、await
+### async await
+generator function 即能支持同步行为，也能支持异步行为。
+
+async function 只支持异步行为。
+
+await 关键字总是串行，所以在并行的情况下promsie更合适，当然也可以`await Promise.all[]`
+
+async await更强语义化和标准化，async/await 语法可以视为多个 callback 函数组合的语法糖，可以简化我们编写的异步代码的复杂性。
+
+JS 的编译器需要处理大量的场景，要识别关键字，要准确的处理异步的 throw error 和同步的 throw error 的差异。要让 async/await 能跟普通函数协调的工作，能跟 generator function 协调的工作。
+
+不断新增的函数类型和语法，对编译器的迭代和优化提出了巨大挑战，也对 ECMAScript 语言新增特性带来了问题。所以能看到 async arrow function，却没有看到 generator arrow function，以及 async generator arrow function。
 
 ```javascript
 var a = 0

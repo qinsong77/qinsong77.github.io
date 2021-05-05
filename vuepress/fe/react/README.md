@@ -1236,7 +1236,7 @@ Diff算法的整体逻辑会经历两轮遍历：
 
   - `key`不同导致不可复用，立即跳出整个遍历，第一轮遍历结束。
 
-  -`key`相同`type`不同导致不可复用，会将`oldFiber`标记为`DELETION`，并继续遍历
+  - `key`相同`type`不同导致不可复用，会将`oldFiber`标记为`DELETION`，并继续遍历
 
 4. 如果`newChildren`遍历完（即`i === newChildren.length - 1`）或者`oldFiber`遍历完（即`oldFiber.sibling === null`），跳出遍历，第一轮遍历结束。
 
@@ -1256,7 +1256,7 @@ Diff算法的整体逻辑会经历两轮遍历：
   
   需要使用key。
   
-  为了快速的找到`key`对应的`oldFiber`，将所有还未处理的`oldFibe`r存入以`key`为`key`，`oldFiber`为`value`的`Map`中。
+  为了快速的找到`key`对应的`oldFiber`，将所有还未处理的`oldFiber`存入以`key`为`key`，`oldFiber`为`value`的`Map`中。
 ```javascript
 const existingChildren = mapRemainingChildren(returnFiber, oldFiber);
 ```

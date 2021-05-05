@@ -192,7 +192,50 @@ bind和capture-bind的含义分别代表事件的冒泡阶段和捕获阶段
 
 ### 同层渲染
 
-- [](https://developers.weixin.qq.com/community/develop/article/doc/000c4e433707c072c1793e56f5c813)
+- [小程序同层渲染原理剖析](https://developers.weixin.qq.com/community/develop/article/doc/000c4e433707c072c1793e56f5c813)
+
+指通过一定的技术手段把原生组件直接渲染到 WebView 层级上，此时「原生组件层」已经不存在，原生组件此时已被直接挂载到 WebView 节点上。
+
+几乎可以像使用非原生组件一样去使用「同层渲染」的原生组件，比如使用 view、image 覆盖原生组件、使用 `z-index` 指定原生组件的层级、把原生组件放置在 `scroll-view`、`swiper`、`movable-view` 等容器内，通过 `WXSS` 设置原生组件的样式等等。
+
+小程序的同层渲染在 iOS 和 Android 平台下的实现不同
+
+#### ios
+
+小程序在 iOS 端使用 `WKWebView` 进行渲染的，WKWebView 在内部采用的是分层的方式进行渲染，它会将 WebKit 内核生成的 `Compositing Layer`（合成层）渲染成 iOS 上的一个 WKCompositingView，这是一个客户端原生的 View
+
+内核一般会将多个 DOM 节点渲染到一个 Compositing Layer 上，因此合成层与 DOM 节点之间不存在一对一的映射关系。
+
+当把一个 DOM 节点的 CSS 属性设置为 `overflow: scroll` （低版本需同时设置 `-webkit-overflow-scrolling: touch`）之后，WKWebView 会为其生成一个 WKChildScrollView，与 DOM 节点存在映射关系，这是一个原生的 UIScrollView 的子类，也就是说 WebView 里的滚动实际上是由真正的原生滚动组件来承载的
+
+小程序 iOS 端的「同层渲染」也正是基于 WKChildScrollView 实现的，原生组件在 attached 之后会直接挂载到预先创建好的 WKChildScrollView 容器下，大致的流程如下：
+
+1. 创建一个 DOM 节点并设置其 CSS 属性为 overflow: scroll 且 -webkit-overflow-scrolling: touch；
+2. 通知客户端查找到该 DOM 节点对应的原生 WKChildScrollView 组件；
+3. 将原生组件挂载到该 WKChildScrollView 节点上作为其子 View。
+通过上述流程，小程序的原生组件就被插入到 WKChildScrollView 了，也即是在 步骤1 创建的那个 DOM 节点对应的原生 ScrollView 的子节点。此时，修改这个 DOM 节点的样式属性同样也会应用到原生组件上。因此，「同层渲染」的原生组件与普通的内置组件表现并无二致。
+
+![](./image/miniprogram/sameLayerIos.png)
+
+#### Android 端
+小程序在 Android 端采用 chromium 作为 WebView 渲染层，与 iOS 不同的是，Android 端的 WebView 是单独进行渲染而不会在客户端生成类似 iOS 那样的 Compositing View (合成层)，经渲染后的 WebView 是一个完整的视图，因此需要采用其他的方案来实现「同层渲染」。
+
+chromium 支持 WebPlugin 机制，WebPlugin 是浏览器内核的一个插件机制，主要用来解析和描述embed 标签。Android 端的同层渲染就是基于 `embed` 标签结合 chromium 内核扩展来实现的。
+
+Android 端「同层渲染」的大致流程如下:
+
+1. WebView 侧创建一个 embed DOM 节点并指定组件类型；
+2. chromium 内核会创建一个 WebPlugin 实例，并生成一个 RenderLayer；
+3. Android 客户端初始化一个对应的原生组件；
+4. Android 客户端将原生组件的画面绘制到步骤2创建的 RenderLayer 所绑定的 SurfaceTexture 上；
+5. 通知 chromium 内核渲染该 RenderLayer；
+6. chromium 渲染该 embed 节点并上屏。
+
+![](./image/miniprogram/sameLayerAndroid.png)
+
+这种方式可以用于 map、video、canvas、camera 等原生组件的渲染，对于 input 和 textarea，采用的方案是直接对 chromium 的组件进行扩展，来支持一些 WebView 本身不具备的能力。
+
+对比 iOS 端的实现，Android 端的「同层渲染」真正将原生组件视图加到了 WebView 的渲染流程中且 embed 节点是真正的 DOM 节点，理论上可以将任意 WXSS 属性作用在该节点上。Android 端相对来说是更加彻底的「同层渲染」，但相应的重构成本也会更高一些。
 
 ### 性能优化
 
