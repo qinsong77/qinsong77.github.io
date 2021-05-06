@@ -542,10 +542,47 @@ event 包含的关键信息：
 - localstorage.setItem(key, value) 只有当后一次设置的 value 不同的时候才会触发该事件，相同的话也没有必要触发了；
 
 ### 浏览器页面渲染机制
+- [浏览器是如何运作的？](https://www.bilibili.com/video/BV1x54y1B7RE)
 - [【Web动画】CSS3 3D 行星运转 && 浏览器渲染原理](https://www.cnblogs.com/coco1s/p/5439619.html)
 > [介绍](https://juejin.im/post/6844903815758479374)
 
 #### [浏览器的渲染原理](https://mp.weixin.qq.com/s?__biz=MzIxMjE5MTE1Nw==&mid=2653218120&idx=1&sn=bb06f680de8cbbadcd8df92ff68d14fc&chksm=8c999792bbee1e8454c7a858353f5de69ed0261ee23183eaab1a161a5c5e748b8cb5e4b4a417&mpshare=1&scene=23&srcid=1229XZoiB6bnwfUCq9pyC20r&sharer_sharetime=1609233596674&sharer_shareid=1958dfa2b35b63c7a7463d11712f39df#rd)
+
+
+浏览器是个多进程结构，
+1. 浏览器进程:控制除标签页外的用户界面，包括地址，书签，后退，前进按钮等，以及负责与浏览器其他进程负责协调工作2.
+2. 缓存进程
+3. 网络进程  发起网络请求
+4. 渲染器进程    渲染Tab  有可能会为每个标签页是一个渲染进程
+5. GPU进程  渲染
+6. 插件进程    内置插件
+
+下面说下渲染进程的过程
+1. 浏览器通过网络请求后获取html数据，通过tcp传给渲染器进程
+2. DOM - 主线程将html解析构造DOM树
+3. style - 样式计算
+4. layoutTree - dom+style 根据dom树和样式生成layoutTree
+5. paint -绘制  通过遍历 Layout Tree生成绘制顺序表
+6. laryer - 布局  然后根据主进程将layoutTree 和绘制信息表传给合成器线程
+7. 合成器线程  - 将得到的信息分图层分成更小的图块
+8. 栅格线程    -    将更小的图块进行栅格化raster，返还给合成器线程draw quads图块信息  存储在GPU中
+9. frame 合成器将栅格线程返回的图块合成帧交给浏览器进程
+10. 浏览器进程  收到一帧的图像后传给GPU进行渲染
+
+重排：
+当改变dom的属性时，会重新进行样式计算，会重新布局和绘制
+
+重绘：
+
+当改变颜色时，只会发生样式计算和绘制(layer)
+
+requestAnimationFrame()
+会将主线程的任务分散到每一帧的间隔，从而不影响动画的流程
+Fiber
+react利用浏览器的空闲时间做优化
+Transform
+会直接运行合成器线程，所以不会感染主线程的渲染
+在移动端使用3d转换可以优化性能（如果设备有3d加速引擎 GPU 可以提高性能 , 2d转换是无法调用GPU，2G是靠的CPU）
 
 ![](./image/Browser_principle.png)
 

@@ -25,4 +25,5 @@ git commit -m 'deploy'
 # 如果发布到 https://<USERNAME>.github.io  USERNAME=你的用户名
 git push -f git@github.com:qinsong77/qinsong77.github.io.git master
 
-cd -
+# cd -
+echo "Finish!"

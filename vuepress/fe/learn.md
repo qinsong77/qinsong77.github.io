@@ -675,6 +675,7 @@ function fibImpl(a, b, n){
  
 [变量作用域，闭包](https://zh.javascript.info/closure)
 
+- [JavaScript 的静态作用域链与“动态”闭包链](https://juejin.cn/post/6957913856488243237)
 从词法作用域讲解闭包：
  - [深入理解闭包之前置知识→作用域与词法作用域](https://juejin.cn/post/6844903606311714824)
  - [闭包详解](https://juejin.cn/post/6844903612879994887)

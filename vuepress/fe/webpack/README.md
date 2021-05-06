@@ -741,6 +741,8 @@ module.exports = FileListPlugin;
 ```
 ### [Tree Shaking](https://webpack.docschina.org/guides/tree-shaking)
 
+Tree shaking 是一种通过清除多余代码方式来优化项目打包体积的技术，专业术语叫 Dead code elimination
+
 必须使用 ES2015 模块语法。是基于esm 静态分析来的，而`require()`语法的 `CommonJS` 模块规范。这些模块是 `dynamic` 动态加载的，这意味着可以根据代码中的条件导入新模块。
 ```js
 var myDynamicModule;
