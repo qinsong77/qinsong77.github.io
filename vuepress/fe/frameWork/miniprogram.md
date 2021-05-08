@@ -32,6 +32,19 @@ title: 小程序
 
 而 `evaluateJavascript` 的执行会受很多方面的影响，数据到达视图层并不是实时的。所以我们的`setData`函数将数据从逻辑层发送到视图层，是**异步的**。
 
+#### [组件系统](https://developers.weixin.qq.com/ebook?action=get_post_info&token=935589521&volumn=1&lang=zh_CN&book=miniprogram&docid=0000aac998c9b09b00863377251c0a)
+最终的呈现形式，是 WebView + 原生组件，Hybrid 方式。
+
+Exparser组件框架+原生组件
+
+Exparser的组件模型与WebComponents标准中的ShadowDOM高度相似。Exparser会维护整个页面的节点树相关信息，包括节点的属性、事件绑定等，相当于一个简化版的Shadow DOM实现。Exparser的主要特点包括以下几点：
+
+1. 基于Shadow DOM模型：模型上与WebComponents的ShadowDOM高度相似，但不依赖浏览器的原生支持，也没有其他依赖库；实现时，还针对性地增加了其他API以支持小程序组件编程。
+2. 可在纯JS环境中运行：这意味着逻辑层也具有一定的组件树组织能力。
+3. 高效轻量：性能表现好，在组件实例极多的环境下表现尤其优异，同时代码尺寸也较小。
+
+小程序中，所有节点树相关的操作都依赖于Exparser，包括WXML到页面最终节点树的构建、createSelectorQuery调用和自定义组件特性等。
+
 #### wxss
 
 小程序编译后，`rpx`会做一次px换算。换算是以375个物理像素为基准，也就是在一个宽度为375物理像素的屏幕下，`1rpx = 1px`。
