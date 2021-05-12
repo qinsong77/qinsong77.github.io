@@ -97,6 +97,7 @@ title: LeetCode
    - [合并区间](#合并区间)
    - [和为K的子数组](#和为k的子数组)
    - [统计「优美子数组」](#优美子数组)
+   - [最短无序连续子数组](#最短无序连续子数组)
 - [9.二维数组](#_9-二维数组)
     - [二维数组翻转90度](#n-x-n二维数组翻转90度)
     - [二维数组中的查找](#二维数组中的查找)
@@ -2150,6 +2151,29 @@ function isValidBST(root) {
 }
 ```
 
+中序遍历
+```javascript
+var isValidBST = function(root) {
+    let stack = [];
+    let inorder = -Infinity;
+
+    while (stack.length || root !== null) {
+        while (root !== null) {
+            stack.push(root);
+            root = root.left;
+        }
+        root = stack.pop();
+        // 如果中序遍历得到的节点的值小于等于前一个 inorder，说明不是二叉搜索树
+        if (root.val <= inorder) {
+            return false;
+        }
+        inorder = root.val;
+        root = root.right;
+    }
+    return true;
+};
+```
+
 #### 在BST中搜索一个数
 
 ```javascript
@@ -3628,6 +3652,42 @@ var numberOfSubarrays = function(nums, k) {
 ```
 
 #### [连续的子数组和]()
+
+#### [最短无序连续子数组](https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/)
+
+```javascript
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var findUnsortedSubarray = function(nums) {
+    let min = Infinity, max = -Infinity
+    let flag = false
+    for(let i = 1; i < nums.length; i++) {
+        if(nums[i] < nums[i - 1]) flag = true
+        if(flag) {
+            min = Math.min(min, nums[i])
+        }
+    }
+    flag = false
+    for(let j = nums.length - 2; j >= 0; j--) {
+        if (nums[j] > nums[j + 1]) flag = true
+        if(flag) {
+            max = Math.max(max, nums[j])
+        }
+    }
+    let l, r;
+    for (l = 0; l < nums.length; l++) {
+        if (min < nums[l]) break;
+    }
+    for (r = nums.length - 1; r >= 0; r--) {
+        if (max > nums[r]) break;
+    }
+
+    return r - l < 0 ? 0 : r - l + 1;
+};
+```
+
 ### 9.二维数组
 #### [N x N二维数组翻转90度](https://leetcode-cn.com/problems/rotate-image)
 ```

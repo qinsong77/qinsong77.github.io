@@ -1,6 +1,10 @@
 ---
 title: Summary of interview
 ---
+
+项目描述遵从STAR法则，即Situation（情景）、Task（任务）、Action（行动）和Result（结果）
+
+
 ### 面经
 #### [2021 千字大厂面经 & 个人成长经验分享](https://juejin.cn/post/6922290178836922381)
 #### [蚂蚁、字节、滴滴面试经历总结](https://juejin.im/post/6844904161830502407)
