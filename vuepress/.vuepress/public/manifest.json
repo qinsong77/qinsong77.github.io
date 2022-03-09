@@ -3,8 +3,8 @@
   "short_name": "Sysuke",
   "icons": [
     {
-      "src": "/icons",
-      "sizes": "64x64 32x32 24x24 16x16",
+      "src": "/icons/64",
+      "sizes": "64x64",
       "type": "image/x-icon"
     },
     {

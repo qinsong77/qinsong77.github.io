@@ -21,7 +21,9 @@
   "homepage": "https://github.com/qinsong77/qinsong77.github.io#readme",
   "devDependencies": {
     "@vuepress/plugin-back-to-top": "^2.0.0-beta.36",
+    "@vuepress/plugin-medium-zoom": "^2.0.0-beta.36",
     "@vuepress/plugin-pwa": "^2.0.0-beta.36",
+    "@vuepress/plugin-pwa-popup": "^2.0.0-beta.36",
     "@vuepress/plugin-search": "^2.0.0-beta.36",
     "promises-aplus-tests": "^2.1.2",
     "vuepress": "^2.0.0-beta.36"

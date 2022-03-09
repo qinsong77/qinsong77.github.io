@@ -37,4 +37,9 @@ html {
 :root {
   scroll-behavior: smooth;
   --content-width: 960px;
+  @media (max-width: 959px) {
+    .back-to-top {
+      display: block;
+    }
+  }
 }

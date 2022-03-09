@@ -7,7 +7,7 @@ export default defineUserConfig<DefaultThemeOptions>({
 	// 注入到当前页面的 HTML <head> 中的标签
 	head: [
 		['link', { rel: 'icon', href: '/favicon.ico' }], // 增加一个自定义的 favicon(网页标签的图标)
-		['link', { rel: 'manifest', href: '/manifest.json' }],
+		['link', { rel: 'manifest', href: '/manifest.webmanifest' }],
 		['meta', { name: 'theme-color', content: '#3eaf7c' }],
 		['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
 		['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }],
@@ -22,18 +22,31 @@ export default defineUserConfig<DefaultThemeOptions>({
 		['@vuepress/search', {
 			searchMaxSuggestions: 10
 		}],
-		// '@vuepress/back-to-top',
+		'@vuepress/back-to-top',
 		[
 			'@vuepress/pwa',
-			// todo 配置报错，暂且去除
-			// {
-			// 	serviceWorker: true,
-			// 	updatePopup: {
-      //     message: "有更新哦！",
-			// 		buttonText: "refresh"
-			// 	}
-			// }
+			{
+				skipWaiting: true,
+			}
 		],
+		[
+			'@vuepress/plugin-pwa-popup',
+			{
+				locales: {
+					'/': {
+						message: "有更新哦！",
+						buttonText: "refresh"
+					},
+					'/zh/': {
+						message: "有更新哦！",
+						buttonText: "refresh"
+					},
+				},
+			},
+		],
+		[
+			'@vuepress/medium-zoom'
+		]
 		// '@vuepress/pwa',
 		// {
 		// 	skipWaiting: true // 本选项开启了一个用于刷新内容的弹窗。这个弹窗将会在站点有内容更新时显示出来，并提供了一个 refresh 按钮，允许用户立即刷新内容。
