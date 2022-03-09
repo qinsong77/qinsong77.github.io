@@ -122,7 +122,7 @@ JS执行栈和渲染线程是相互阻塞的，保证了浏览器构建UI不混�
 事件循环的每一轮称为一个tick。
 
 
-![](./image/event_loppp.png)
+![](../image/event_loppp.png)
 
 ## 1.执行栈与事件队列
 
@@ -134,7 +134,7 @@ JS执行栈和渲染线程是相互阻塞的，保证了浏览器构建UI不混�
 
 下面这个图片非常直观的展示了这个过程，其中的global就是初次运行脚本时向执行栈中加入的代码：
 
-![](./image/execution.gif)
+![](../image/execution.gif)
 
 从图片可知，一个方法执行会向执行栈中加入这个方法的执行环境，在这个执行环境中还可以调用其他方法，甚至是自己，其结果不过是在执行栈中再添加一个执行环境。这个过程可以是无限进行下去的，除非发生了栈溢出，即超过了所能使用内存的最大值。
 
@@ -144,15 +144,15 @@ js引擎遇到一个异步事件后并不会一直等待其返回结果，而是
 
 这里还有一张图来展示这个过程：
 
-![](./image/event_loop2.png)
+![](../image/event_loop2.png)
 
 图中的`stack`表示我们所说的`执行栈`，web apis则是代表一些异步事件，而callback queue即事件队列。
 
-![](./image/event_loop7.png)
+![](../image/event_loop7.png)
 
 ### 浏览器的进程
 
-![](./image/chromium_thread.png)
+![](../image/chromium_thread.png)
 
 上图只是一个概括分类，意思是Chrome有这几类的进程和线程，并不是每种只有一个，比如渲染进程就有多个，每个选项卡都有自己的渲染进程。有时候我们使用Chrome会遇到某个选项卡崩溃或者没有响应的情况，这个选项卡对应的渲染进程可能就崩溃了，但是其他选项卡并没有用这个渲染进程，他们有自己的渲染进程，所以其他选项卡并不会受影响。这也是Chrome单个页面崩溃并不会导致浏览器崩溃的原因，而不是像老IE那样，一个页面卡了导致整个浏览器都卡。
 
@@ -172,7 +172,7 @@ GUI线程就是渲染页面的，他解析HTML和CSS，然后将他们构建成D
 
 ### 事件循环的流程大致如下
 
-![](./image/event_loop3.png)
+![](../image/event_loop3.png)
 
 ----
 - 执行一个宏任务（执行栈中没有就从事件队列中获取）
@@ -251,7 +251,7 @@ dispatch event主要用来描述事件触发之后的执行任务，比如用户
 
 [官网介绍](https://nodejs.org/zh-cn/docs/guides/event-loop-timers-and-nexttick/)
 
-![](./image/node_event_loop.png)
+![](../image/node_event_loop.png)
 
 #### 阶段概述
 

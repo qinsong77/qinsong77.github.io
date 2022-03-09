@@ -373,7 +373,7 @@ class Child extends Parent {}
 console.log(Parent.func()) // 0
 console.log(Child.func()) // 0
 ```
-![](./image/es6_extend.png)
+![](../image/es6_extend.png)
 
 #### super
 1. super作为函数调用时，代表父类的构造函数。ES6 要求，子类的构造函数必须执行一次super函数。只能在`constructor`中第一行调用.

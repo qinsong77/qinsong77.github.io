@@ -1,5 +1,5 @@
 ---
-title: Summary of node
+title: Summary
 ---
 
 ### Nest.js

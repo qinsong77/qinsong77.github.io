@@ -217,7 +217,7 @@ app2的代码不需要关注，但在app中，`import RemoteButton from 'app2/Bu
 ####  Module federation 的配置
 ```javascript
 /**
- * app1/webpack.config.js
+ * app1/webpack.config.ts
  */
 {
     plugins: [

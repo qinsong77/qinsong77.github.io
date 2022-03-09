@@ -713,7 +713,7 @@ module.exports = CdnAdaptorPlugin
 ```
  ::: 
 
-#### 主应用vue.config.js
+#### 主应用vue.config.ts
  ::: details 点击查看代码
 ```javascript
 const path = require('path');
@@ -851,7 +851,7 @@ module.exports = {
 ```
  ::: 
  
-##### 子应用vue.config.js
+##### 子应用vue.config.ts
 
 ```
 VUE_APP_ROUTER_BASE_URL=/ops/stateManage

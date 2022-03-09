@@ -31,6 +31,10 @@ html {
   background: rgba(255, 0, 0, 0.4);
 }
  */
-.go-to-top {
-  display: block!important;
+//.go-to-top {
+//  display: block!important;
+//}
+:root {
+  scroll-behavior: smooth;
+  --content-width: 960px;
 }

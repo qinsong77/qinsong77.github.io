@@ -47,6 +47,7 @@ title: LeetCode
    - [填充每个节点的下一个右侧节点指针](#填充每个节点的下一个右侧节点指针)
    - [二叉树展开为链表](#二叉树展开为链表)
    - [二叉树的最近公共祖先](#二叉树的最近公共祖先)
+   - [二叉树的最大深度](#二叉树的最大深度)
    - [最大二叉树](#最大二叉树)
    - [寻找重复的子树](#寻找重复的子树)
    - [二叉树的直径](#二叉树的直径)
@@ -239,7 +240,7 @@ var threeSum = function(nums) {
 
 解题思路： 先数组排序，排序完后遍历数组，以 `nums[i]` 作为第一个数 first ，以 `nums[i+1]` 作为第二个数 second ，将 `nums[nums.length - 1]` 作为第三个数 last ，判断三数之和是否为 0 ，
 
-- <0 ，则 second 往后移动一位（nums 是增序排列），继续判断
+- `<0` ，则 second 往后移动一位（nums 是增序排列），继续判断
 - `>0` ，则 last 往前移动一位（nums 是增序排列），继续判断
 - ===0 ，则进入结果数组中，并且 second 往后移动一位， last 往前移动一位，继续判断下一个元组
 - 直至 second >= last 结束循环，此时， `nums[i]` 作为第一个数的所有满足条件的元组都已写入结果数组中了，继续遍历数组，直至 i === nums.length - 2 (后面需要有 second 、 last )
@@ -1814,6 +1815,39 @@ function lowestCommonAncestor( root ,  o1 ,  o2 ) {
 }
 ```
 
+#### [二叉树的最大深度](https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/)
+```js
+// bfs
+const maxDepth = (root) => {
+  if (root == null) return 0;
+  const queue = [root];
+  let depth = 1;
+  while (queue.length) {
+    // 当前层的节点个数
+    const levelSize = queue.length;
+    // 逐个让当前层的节点出列
+    for (let i = 0; i < levelSize; i++) {
+      // 当前出列的节点
+      const cur = queue.shift();
+      // 左右子节点入列
+      if (cur.left) queue.push(cur.left);
+      if (cur.right) queue.push(cur.right);
+    }
+    // 当前层所有节点已经出列，如果队列不为空，说明有下一层节点，depth+1
+    if (queue.length) depth++;
+  }
+  return depth;
+};
+
+// 动态规划思路 - DFS
+var maxDepth = function(root) {
+  if (root === null) return 0
+  const leftMax = maxDepth(root.left)
+  const rightMax = maxDepth(root.right)
+  // 根据左右子树的最大深度推出原二叉树的最大深度
+  return 1 + Math.max(leftMax, rightMax)
+};
+```
 #### [最大二叉树](https://leetcode-cn.com/problems/maximum-binary-tree/)
 
 ```javascript
@@ -2001,21 +2035,21 @@ function traverse(root:TreeNode) {
 给定一个二叉搜索树，编写一个函数 kthSmallest 来查找其中第 k 个最小的元素。
 ```javascript
 var kthSmallest = function(root, k) {
-    let count = 0
-    let res = 0
-    function help(node, k) {
-        if (node === null) return
-        help(node.left, k)
-        count++
-        if(count === k) {
-            res = node.val
-            return
-        }
-        help(node.right, k)
+  let res = null
+  let rank = 0
+  function treverse(node) {
+    if (node === null) return
+    treverse(node.left)
+    rank++
+    if (rank === k) {
+      res = node.val
+      return
     }
-    help(root, k)
-    return res
-};
+    treverse(node.right)
+  }
+  treverse(root)
+  return res
+}
 ```
 迭代
 ```javascript

@@ -33,6 +33,9 @@ webpack打包原理
 
 **Webpack 的热更新会以当前修改的文件为入口重新 build 打包，所有涉及到的依赖也都会被重新加载一次。**
 
+## vite
+基于`esbuild`与`Rollup`，依靠浏览器自身ESM编译功能， 实现极致开发体验的新一代构建工具
+
 ### vite特点
 
 1. 快速的冷启动
@@ -98,3 +101,6 @@ Vite 提供了一套原生 ESM 的 `HMR API`。 具有 HMR 功能的框架可以
 1. 在 Vite 中，HMR 是在原生 ESM 上执行的。当编辑一个文件时，Vite 只需要精确地使已编辑的模块与其最近的 HMR 边界之间的链失效（大多数时候只需要模块本身），使 HMR 更新始终快速，无论应用的大小。
 
 2. Vite 同时利用 HTTP 头来加速整个页面的重新加载（再次让浏览器为我们做更多事情）：源码模块的请求会根据 304 Not Modified 进行协商缓存，而依赖模块请求则会通过 Cache-Control: max-age=31536000,immutable 进行强缓存，因此一旦被缓存它们将不需要再次请求。
+
+
+- [Vite（原理源码解析）](https://mp.weixin.qq.com/s/oroQSMSPxtSEfnjuxu2pew)

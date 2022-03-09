@@ -173,7 +173,7 @@ module.exports = function xhrAdapter(config) {
 可以对 Cookie 设置 `SameSite` 属性。该属性设置 Cookie 不随着跨域请求发送，该属性可以很大程度减少 CSRF 的攻击，但是该属性目前并不是所有浏览器都兼容。
 `SameSite`可以设置为三个值，`Strict`、`Lax`和`None`。
 
-1. 在`Strict`模式下，浏览器完全禁止第三方请求携带`Cookie`。比如请求`sanyuan.com`网站只能在`sanyuan.com`域名当中请求才能携带 Cookie，在其他网站请求都不能。
+1. 在`Strict`模式下，浏览器完全禁止第三方请求携带`Cookie`。比如请求`sysuke.com`网站只能在`sysuke.com`域名当中请求才能携带 Cookie，在其他网站请求都不能。
 2. 在`Lax`模式，就宽松一点了，但是只能在 `get 方法提交表单`或者`a 标签发送 get 请求`的情况下可以携带 Cookie，其他情况均不能。
 3. 在`None`模式下，Cookie将在所有上下文中发送，即允许跨域发送。
 
@@ -188,8 +188,6 @@ module.exports = function xhrAdapter(config) {
 服务器下发一个随机 Token（算法不能复杂），每次发起请求时将 Token 携带上，服务器验证 Token 是否有效。
 
 ### 密码安全
-
-密码安全虽然大多是后端的事情，但是作为一名优秀的前端程序员也需要熟悉这方面的知识。
 
 #### [加盐](https://www.cnblogs.com/apolloren/p/11985083.html)
 

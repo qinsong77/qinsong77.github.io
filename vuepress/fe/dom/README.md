@@ -1,5 +1,5 @@
 ---
-title: Dom
+title: Summary
 ---
 - [Chrome 浏览器架构](https://xie.infoq.cn/article/5d36d123bfd1c56688e125ad3)
 - [Chrome 浏览器引擎 Blink & V8](https://xie.infoq.cn/article/9cf7bd9dfca63acb2e4aaabf8)
@@ -449,7 +449,7 @@ mc.addEventListener('message', event => {
 
 
 ### 浏览器缓存
-> [介绍](https://sanyuan0704.top/my_blog/blogs/perform/001.html)
+> [介绍](https://sanyuan0704.top/blogs/perform/001.html)
 
 ### [web储存方案](https://juejin.im/post/6844904192549584903)
 
@@ -474,6 +474,15 @@ cookie，localStorage，sessionStorage，indexDB
 | http-only |            不能通过 JS 访问 Cookie，减少 XSS 攻击            |
 |  secure   |               只能在协议为 HTTPS 的请求中携带                |
 | same-site |    规定浏览器不能在跨域请求中携带 Cookie，减少 CSRF 攻击     |
+
+#### LocalStorage与SessionStorage的区别
+LocalStorage和SessionStorage之间的主要区别在于浏览器窗口和选项卡之间的数据共享方式不同。
+
+LocalStorage可跨浏览器窗口和选项卡间共享。就是说如果在多个选项卡和窗口中打开了一个应用程序，而一旦在其中一个选项卡或窗口中更新了LocalStorage，则在所有其他选项卡和窗口中都会看到更新后的LocalStorage数据。
+
+但是，SessionStorage数据独立于其他选项卡和窗口。如果同时打开了两个选项卡，其中一个更新了SessionStorage，则在其他选项卡和窗口中不会反映出来。举个例子：假设用户想要通过两个浏览器选项卡预订两个酒店房间。由于这是单独的会话数据，因此使用SessionStorage是酒店预订应用程序的理想选择。
+
+- [LocalStorage与SessionStorage详解](https://www.cnblogs.com/powertoolsteam/p/webstorage.html)
 
 #### [sessionStorage](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/sessionStorage)
 
@@ -544,9 +553,7 @@ event 包含的关键信息：
 ### 浏览器页面渲染机制
 - [浏览器是如何运作的？](https://www.bilibili.com/video/BV1x54y1B7RE)
 - [【Web动画】CSS3 3D 行星运转 && 浏览器渲染原理](https://www.cnblogs.com/coco1s/p/5439619.html)
-> [介绍](https://juejin.im/post/6844903815758479374)
-
-#### [浏览器的渲染原理](https://mp.weixin.qq.com/s?__biz=MzIxMjE5MTE1Nw==&mid=2653218120&idx=1&sn=bb06f680de8cbbadcd8df92ff68d14fc&chksm=8c999792bbee1e8454c7a858353f5de69ed0261ee23183eaab1a161a5c5e748b8cb5e4b4a417&mpshare=1&scene=23&srcid=1229XZoiB6bnwfUCq9pyC20r&sharer_sharetime=1609233596674&sharer_shareid=1958dfa2b35b63c7a7463d11712f39df#rd)
+- [你不知道的浏览器页面渲染机制](https://juejin.im/post/6844903815758479374)
 
 
 浏览器是个多进程结构，
@@ -749,7 +756,7 @@ aDiv.style.height = newHeight + 'px'; // Write
 chrome 勾选下面 `show FPS meter` 显示页面的 FPS 信息，以及 GPU 的使用率
 
 1. 使用 will-change 提高页面滚动、动画等渲染性能
-```css
+```
 will-change: auto
 will-change: scroll-position
 will-change: contents

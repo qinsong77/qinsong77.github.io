@@ -199,7 +199,7 @@ var sym = (0, _symbol.default)();
 `core-js@3`升级之后弃用了`@babel/polyfill`，以下是等价实现。polyfill是一个针对ES2015+环境的shim，实现上来说`babel-polyfill`包只是简单的把`core-js`和`regenerator runtime`包装了下。
 
 ```javascript
-// babel.config.js
+// babel.config.ts
 presets: [
   ["@babel/preset-env", {
     useBuiltIns: "entry", // or "usage"
@@ -385,7 +385,7 @@ Webpack 会为每个生成的 `Chunk` 取一个名称，`Chunk` 的名称和 `En
 
 - （1）初始化参数
 
-解析 Webpack 配置参数，合并 `Shell` 传入和 `webpack.config.js` 文件配置的参数，形成最后的配置结果。
+解析 Webpack 配置参数，合并 `Shell` 传入和 `webpack.config.ts` 文件配置的参数，形成最后的配置结果。
 
 - （2）开始编译
 
@@ -393,7 +393,7 @@ Webpack 会为每个生成的 `Chunk` 取一个名称，`Chunk` 的名称和 `En
 
 - （3）确定入口
 
-从配置文件（ `webpack.config.js` ）中指定的 `entry` 入口，开始解析文件构建 `AST` 语法树，找出依赖，递归下去。
+从配置文件（ `webpack.config.ts` ）中指定的 `entry` 入口，开始解析文件构建 `AST` 语法树，找出依赖，递归下去。
 
  - （4）编译模块
 
@@ -472,11 +472,11 @@ webpack的运行流程是一个串行的过程，从启动到结束会依次执�
 #### [轻松理解webpack热更新原理](https://mp.weixin.qq.com/s/2L9Y0pdwTTmd8U2kXHFlPA)
 #### [了不起的 Webpack HMR 学习指南（含源码分析）](https://mp.weixin.qq.com/s?__biz=MjM5MDc4MzgxNA==&mid=2458455505&idx=1&sn=b6d5258393b5c41b77cdc78299e94697&chksm=b1c22df886b5a4eed560aa9aa95bc27d473d58ebabb501ec98c282bdbc8308e9951cea59a060&scene=178&cur_album_id=1556921519803596802#rd)
 
-在 Webpack 的 webpack.config.js 中：
+在 Webpack 的 webpack.config.ts 中：
 1. 配置 devServer 的 hot 为 true
 2. 在 plugins 中增加 new webpack.HotModuleReplacementPlugin()
 ```javascript
-// webpack.config.js
+// webpack.config.ts
 const webpack = require('webpack');
 module.exports = {
   //....
@@ -814,7 +814,7 @@ ES6 module 特点：
 
 ### [Webpack模块打包原理](https://juejin.cn/post/6844903802382860296)
 - [模块加载](https://zhuanlan.zhihu.com/p/243485307)
-webpack根据`webpack.config.js`中的入口文件，在入口文件里识别模块依赖，不管这里的模块依赖是用`CommonJS`写的，还是`ES6 Module`规范写的，webpack会自动进行分析，并通过转换、编译代码，打包成最终的文件。最终文件中的模块实现是基于webpack自己实现的`webpack_require`（es5代码），所以打包后的文件可以跑在浏览器上。
+webpack根据`webpack.config.ts`中的入口文件，在入口文件里识别模块依赖，不管这里的模块依赖是用`CommonJS`写的，还是`ES6 Module`规范写的，webpack会自动进行分析，并通过转换、编译代码，打包成最终的文件。最终文件中的模块实现是基于webpack自己实现的`webpack_require`（es5代码），所以打包后的文件可以跑在浏览器上。
 
 使用一个立即执行函数，实现了类似Common Js require和exports的特性，核心是`__webpack_require__`的实现，
 创建模块缓存`installedModules `，从入口文件执行require。
@@ -851,7 +851,7 @@ webpack实现模块的异步加载有点像jsonp的流程。在主js文件中通
 
 ```
 ```js
-// webpack.config.js
+// webpack.config.ts
 const path = require('path');
 
 module.exports = {

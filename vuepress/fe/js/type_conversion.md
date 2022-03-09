@@ -48,7 +48,7 @@ JS 的类型转换一共分两种：显示类型转换 和 隐式类型转换。
 - 转换为数字
 - 转换为字符串
 ### 转换关系图
-![An image](./image/type_conversion.png)
+![An image](../image/type_conversion.png)
 
 #### 显式转换
 - 转化为 Number 类型：Number() / parseFloat() / parseInt()
@@ -76,7 +76,7 @@ JS 的类型转换一共分两种：显示类型转换 和 隐式类型转换。
 - 一元 +  运算符, 一元 -  运算符
 - 加法运算符
 - ==规则
-![An image](./image/bl_8_convert.png)
+![An image](../image/bl_8_convert.png)
 ==规则
 - 如果存在NaN，一律返回false
 - 再看有没有布尔，有布尔就将布尔转换为数字
@@ -107,7 +107,7 @@ null == 1   false
 
 转换步骤如下图所示。
 
-![An image](./image/obj_to_string.png)
+![An image](../image/obj_to_string.png)
 
 举例如下
 
@@ -176,4 +176,4 @@ var obj = {
 Number(obj)  // Uncaught TypeError: Cannot convert object to primitive value
 ```
 Object.create(null) 创建的对象没有 valueOf 和 toString 方法，因此转换时会报错。
-![An image](./image/null_obj_to_number.png)
+![An image](../image/null_obj_to_number.png)

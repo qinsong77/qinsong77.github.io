@@ -25,6 +25,7 @@ title: 手写实现
 - [手写EventHub（发布-订阅）](#手写eventhub-发布-订阅)
 - [单例模式](#单例模式)
 - [proxy实现响应式](#proxy实现响应式)
+- [数组map实现](#数组map实现)
 - [数组reduce实现](#数组reduce实现)
 - [数组splice实现](https://mp.weixin.qq.com/s/wJhr1BufXNnfmCwCjLuaMw)
 - [数组去重](#数组去重)
@@ -43,7 +44,7 @@ title: 手写实现
 ### Object.create的实现
 Object.create原本的行为：
 
-![An image](./image/achieve/object_create.png)
+![An image](../image/achieve/object_create.png)
 
 
 [Object.create](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create)这个 polyfill 涵盖了主要的应用场景，它创建一个已经选择了原型的新对象，但没有把第二个参数考虑在内。
@@ -75,17 +76,19 @@ const obj = Object.create(null, {foo: {
 ```
 
 ### [instanceOf](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/instanceof)
-> instanceof 运算符用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上。
->实际上，实例对象上的__proto__就是指向构造函数的prototype
-语法： result = variable instanceof constructor
+> instanceof 运算符用于检测构造函数的 `prototype` 属性是否出现在某个实例对象的原型链上。
+>实际上，实例对象上的`__proto__`就是指向构造函数的`prototype`
+
+语法： `result = variable instanceof constructor`
+
 思路：
 
 步骤1：先取得当前类的原型，当前实例对象的原型链
 
 步骤2：一直循环（执行原型链的查找机制）
- - 取得当前实例对象原型链的原型链（proto = `proto.__proto__`，沿着原型链一直向上查找）
- - 如果当前实例的原型链__proto__上找到了当前类的原型prototype，则返回 true
- - 如果一直找到`Object.prototype.__proto__`=== null，Object的基类(null)上面都没找到，则返回 false
+ - 取得当前实例对象原型链的原型链（`proto = proto.__proto__`，沿着原型链一直向上查找）
+ - 如果当前实例的原型链`__proto__`上找到了当前类的原型`prototype`，则返回 `true`
+ - 如果一直找到`Object.prototype.__proto__=== null`，Object的基类(`null`)上面都没找到，则返回 `false`
 ```javascript
 function _instanceOf(instanceObject, classFunc) {
     if (typeof instanceObject !== 'object' || instanceObject === null) return false
@@ -159,7 +162,7 @@ function _instanceOf(instanceObject, classFunc) {
 - 4.处理参数，传入第一个参数后的其余参数
 - 5.调用函数后即删除该Symbol属性
 ```javascript
-Function.prototype.mayCall = function(context, ...args) {
+Function.prototype.myCall = function(context, ...args) {
     if (this === Function.prototype) {
       return undefined // 用于防止 Function.prototype.myCall() 直接调用
     }
@@ -275,7 +278,7 @@ Function.prototype.myBind = function (context) {
 
 所谓寄生组合式继承，即通过借用构造函数来继承属性，通过原型链的形式来继承方法。
 
-只调用了一次父类构造函数，效率更高。避免在子类.prototype上面创建不必要的、多余的属性，与其同时，原型链还能保持不变。
+只调用了一次父类构造函数，效率更高。避免在`子类.prototype`上面创建不必要的、多余的属性，与其同时，原型链还能保持不变。
 
 ```javascript
 function Parent(name) {
@@ -635,7 +638,7 @@ function deepClone2(data) {
 
 #### 发布-订阅模式与观察者模式的区别
 
-![](./image/achieve/sub_observer_pubulisher.png)
+![](../image/achieve/sub_observer_pubulisher.png)
 
 - 观察者模式: 观察者（Observer）直接订阅（Subscribe）主题（Subject），而当主题被激活的时候，会触发（Fire Event）观察者里的事件。
 - 发布订阅模式: 订阅者（Subscriber）把自己想订阅的事件注册（Subscribe）到调度中心（Event Channel），当发布者（Publisher）发布该事件（Publish Event）到调度中心，也就是该事件触发时，由调度中心统一调度（Fire Event）订阅者注册到调度中心的处理代码。
@@ -647,7 +650,7 @@ function deepClone2(data) {
 
 观察者模式，它定义了一种 一对多 的关系，让多个观察者对象同时监听某一个主题对象，这个主题对象的状态发生变化时就会通知所有的观察者对象，使得它们能够自动更新自己。在观察者模式中有两个主要角色：Subject（主题）和 Observer（观察者）。
 
-![](./image/achieve/observe-model.png)
+![](../image/achieve/observe-model.png)
 ```javascript
 class Observer {
 	constructor(name) {
@@ -740,7 +743,7 @@ class EventEmitter {
 	addListener(type, listener, prepend = false) {
 		const events = this._events.get(type)
 		if(Array.isArray(events) && events === this._maxListeners) return false
-		if(!this._events.has(type)) this._events.set(type, [listener])
+		if(!this._events.has(type)) this._events.set(type, [])
 		else if(prepend) events.unshift(listener)
 		else events.push(listener)
 		return true
@@ -887,6 +890,24 @@ var b = Singleton.getInstance('Tom')
 
 console.log(a === b)
 ```
+```ts
+class Singleton {
+  private static singleton: Singleton;
+  private constructor() {
+  }
+  public static getInstance(): Singleton {
+    if (!Singleton.singleton) {
+      Singleton.singleton = new Singleton();
+    }
+    return Singleton.singleton;
+  }
+}
+
+let instance1 = Singleton.getInstance();
+let instance2 = Singleton.getInstance();
+
+console.log(instance1 === instance2); // true
+```
 使用闭包实现
 ```javascript
 function Singleton(name) {
@@ -953,8 +974,8 @@ const logedObj = new Proxy(obj, {
 	};
 	const handler = {
 		get (target, key, receiver) {
-			return Reflect.set(target, key, value,receiver)
-    },
+            return Reflect.get(target, p, receiver);
+        },
 		// 监控data中text属性的变化
 		set (target, prop, value, receiver) {
 			if (prop === 'text') {
@@ -977,6 +998,66 @@ const logedObj = new Proxy(obj, {
 	// 初始化值
 	myText.text = data.text;
 </script>
+```
+### 数组map实现
+
+依照 [ecma262](https://tc39.es/ecma262/#sec-array.prototype.map) 草案，实现的map的规范如下:
+
+![](../image/achieve/map.jpeg)
+
+```js
+Array.prototype.map = function(callbackFn, thisArg) {
+  // 处理数组类型异常
+  if (this === null || this === undefined) {
+    throw new TypeError("Cannot read property 'map' of null or undefined");
+  }
+  // 处理回调类型异常
+  if (Object.prototype.toString.call(callbackfn) != "[object Function]") {
+    throw new TypeError(callbackfn + ' is not a function')
+  }
+  // 草案中提到要先转换为对象
+  let O = Object(this);
+  let T = thisArg;
+
+  
+  let len = O.length >>> 0;
+  let A = new Array(len);
+  for(let k = 0; k < len; k++) {
+    // 还记得原型链那一节提到的 in 吗？in 表示在原型链查找
+    // 如果用 hasOwnProperty 是有问题的，它只能找私有属性
+    if (k in O) {
+      let kValue = O[k];
+      // 依次传入this, 当前项，当前索引，整个数组
+      let mappedValue = callbackfn.call(T, KValue, k, O);
+      A[k] = mappedValue;
+    }
+  }
+  return A;
+}
+```
+length >>> 0, 字面意思是指"右移 0 位"，但实际上是把前面的空位用0填充，这里的作用是保证len为数字且为整数。
+
+
+V8源码
+
+```js
+function ArrayMap(f, receiver) {
+  CHECK_OBJECT_COERCIBLE(this, "Array.prototype.map");
+
+  // Pull out the length so that modifications to the length in the
+  // loop will not affect the looping and side effects are visible.
+  var array = TO_OBJECT(this);
+  var length = TO_LENGTH(array.length);
+  if (!IS_CALLABLE(f)) throw %make_type_error(kCalledNonCallable, f);
+  var result = ArraySpeciesCreate(array, length);
+  for (var i = 0; i < length; i++) {
+    if (i in array) {
+      var element = array[i];
+      %CreateDataProperty(result, i, %_Call(f, receiver, element, i, array));
+    }
+  }
+  return result;
+}
 ```
 
 ### 数组reduce实现
@@ -1015,7 +1096,84 @@ function unique(arr) {
 const arr2 = [1, 1, 'true', 'true', true, true, 15, 15, false, false, undefined, undefined, null, null, NaN, NaN, 'NaN', 0, 0, 'a', 'a', {}, {}]
 console.log(unique(arr2))
 ```
+![](../image/achieve/reduce.jpeg)
 
+```js
+Array.prototype.reduce  = function(callbackfn, initialValue) {
+  // 异常处理，和 map 一样
+  // 处理数组类型异常
+  if (this === null || this === undefined) {
+    throw new TypeError("Cannot read property 'reduce' of null or undefined");
+  }
+  // 处理回调类型异常
+  if (Object.prototype.toString.call(callbackfn) != "[object Function]") {
+    throw new TypeError(callbackfn + ' is not a function')
+  }
+  let O = Object(this);
+  let len = O.length >>> 0;
+  let k = 0;
+  let accumulator = initialValue;
+  if (accumulator === undefined) {
+    for(; k < len ; k++) {
+      // 查找原型链
+      if (k in O) {
+        accumulator = O[k];
+        k++;
+        break;
+      }
+    }
+    // 循环结束还没退出，就表示数组全为空
+    throw new Error('Each element of the array is empty');
+  }
+  for(;k < len; k++) {
+    if (k in O) {
+      // 注意，核心！
+      accumulator = callbackfn.call(undefined, accumulator, O[k], O);
+    }
+  }
+  return accumulator;
+}
+```
+
+V8源码
+
+```js
+function ArrayReduce(callback, current) {
+  CHECK_OBJECT_COERCIBLE(this, "Array.prototype.reduce");
+
+  // Pull out the length so that modifications to the length in the
+  // loop will not affect the looping and side effects are visible.
+  var array = TO_OBJECT(this);
+  var length = TO_LENGTH(array.length);
+  return InnerArrayReduce(callback, current, array, length,
+                          arguments.length);
+}
+
+function InnerArrayReduce(callback, current, array, length, argumentsLength) {
+  if (!IS_CALLABLE(callback)) {
+    throw %make_type_error(kCalledNonCallable, callback);
+  }
+
+  var i = 0;
+  find_initial: if (argumentsLength < 2) {
+    for (; i < length; i++) {
+      if (i in array) {
+        current = array[i++];
+        break find_initial;
+      }
+    }
+    throw %make_type_error(kReduceNoInitial);
+  }
+
+  for (; i < length; i++) {
+    if (i in array) {
+      var element = array[i];
+      current = callback(current, element, i, array);
+    }
+  }
+  return current;
+}
+```
 ### 数组去重
  - 1、使用set
 ```javascript

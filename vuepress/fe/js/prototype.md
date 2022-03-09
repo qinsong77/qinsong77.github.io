@@ -11,12 +11,15 @@ title: 原型、原型链、继承
 
 **`__proto__` 读音: dunder proto**
 
-#### 示1（每个对象都有的隐式原型属性，指向了创建该对象的构造函数的原型。__proto__可以通过Object.getPrototypeOf()获取）
+#### 示1
+每个对象都有的隐式原型属性，指向了创建该对象的构造函数的原型。`__proto__`可以通过`Object.getPrototypeOf()`获取
 ```javascript
 const obj = { a: 123 }
 obj.__proto__ === Object.prototype // true
 
-function Person(name) { this.name = name }
+function Person(name) { 
+  this.name = name 
+}
 const Tom = new Person('tom')
 Tom.__proto__ === Person.prototype // true
 Object.getPrototypeOf(Tom) === Person.prototype // true
@@ -38,9 +41,11 @@ Function.prototype.__proto__ === Object.prototype
 - 拥有`__proto__`、`prototype`属性（指向原型对象）
 - 包括Function、Object、Array、Date、String、自定义函数
 - 特例： `Function.prototype`(是原型对象，却是函数对象)
-- 箭头函数没有`prototype`；箭头函数是匿名函数，是不能作为构造函数的，不能使用`new`；箭头函数不绑定`arguments`，取而代之用rest参数`(…rest)`解决；
-  箭头函数不能当做Generator函数,不能使用yield关键字；
-  箭头函数会捕获其所在上下文的 `this` 值，作为自己的 this 值，任何方法都改变不了其指向，如`call()`, `bind()`, `apply()`，而普通函数的this指向调用它的那个对象。
+- 箭头函数没有`prototype`；
+    - 箭头函数是匿名函数，是不能作为构造函数的，不能使用`new`；
+    - 箭头函数不绑定`arguments`，取而代之用rest参数`(...rest)`解决；
+    - 箭头函数不能当做`Generator`函数,不能使用`yield`关键字；
+    - 箭头函数会捕获其所在上下文的 `this` 值，作为自己的 this 值，任何方法都改变不了其指向，如`call()`, `bind()`, `apply()`，而普通函数的this指向调用它的那个对象。
 
 ```javascript
 //函数对象  
@@ -73,7 +78,7 @@ console.log(typeof Function.prototype.prototype) //undefined 函数对象却没�
 ```
 
 原型对象、构造函数、实例对象之间的关系
-![An image](./image/prototype/prototype_instance.png)
+![An image](../image/prototype/prototype_instance.png)
 
 ```javascript
 function Dog(){};  
@@ -92,7 +97,7 @@ console.log(dog1.name); // 小黄 来自原型
 console.log(dog2.name); // 小黑 来自实例
 ```
 示图
-![An image](./image/prototype/instance.jpg)
+![An image](../image/prototype/instance.jpg)
 
 ```javascript
 dog1.__proto__ === Dog.prototype  // true
@@ -121,7 +126,7 @@ Object.getPrototypeOf(dog1) === Dog.prototype   //推荐
 如果让原型对象等于另一个类型的实例，此时的原型对象将包含一个指向另一个原型的指针(`__proto__`)，另一个原型也包含着一个指向另一个构造函数的指针(constructor)。假如另一个原型又是另一个类型的实例……这就构成了实例与原型的链条。
 
 原型链基本思路（图解）：
-![An image](./image/prototype/yuanxinlian.png)
+![An image](../image/prototype/yuanxinlian.png)
 举例说明：
 ```javascript
 function Animal(){  
@@ -147,8 +152,10 @@ Dog.prototype.__proto__ === Animal.prototype
 Animal.prototype.__proto__ === Object.prototype  
 Object.prototype.__proto__ === null  
 ```
-![An image](./image/prototype/proto_prototype.jpg)
-instanceof 检测的是原型
+![An image](../image/prototype/proto_prototype.jpg)
+
+`instanceof` 检测的是原型
+
 ```javascript
 [] instanceof Array; // true
 const obj = {}
@@ -163,15 +170,15 @@ new Date() instanceof Object;// true
 new Person() instanceof Object;// true
 ```
 instanceof 能够判断出 `[]._proto_` 指向 `Array.prototype`，而 `Array.prototype._proto_` 又指向了`Object.prototype`，最终 `Object.prototype._proto_` 指向了`null`，标志着原型链的结束。因此，[]、Array、Object 就在内部形成了一条原型链：
-![An image](./image/prototype/instanceof.png)
+![An image](../image/prototype/instanceof.png)
 
 ### Function 和 Object
 - function Object()也是个函数，所以我们可以认为Object()是通过 new Function() 出来的，所以Object()此时是实例对象，实例对象上面一定有__proto__属性，所以`Object.__proto__` === `Function.prototype`
 - function Function()同样也是函数，我们也可以认为他是通过 new Function() 出来的，所以Function()此时是实例对象，实例对象上面一定有__proto__属性，所以`Function.__proto__`=== `Function.prototype`
 - 我们说过任何东西都是new Object()所出来的，所以Function() 也是new Object() 出来的，此时Function()是实例对象，实例对象上面一定有__proto__属性，但是Function的__proto__属性的连线已经连到了Function的显式原型对象，所以它通过上图的红线进行连接，
 `Function.__proto__.__proto__`=== `Object.prototype`是(true)，即`Function.prototype.__proto__ === Object.prototype`
-![An image](./image/prototype/Funcion_Object.png)
-![An image](./image/prototype/Fun_Obj.png)
+![An image](../image/prototype/Funcion_Object.png)
+![An image](../image/prototype/Fun_Obj.png)
 
 ### 类的 prototype 属性和__proto__属性
 大多数浏览器的 ES5 实现之中，每一个对象都有`__proto__`属性，指向对应的构造函数的`prototype`属性。`Class` 作为构造函数的语法糖，同时有`prototype`属性和`__proto__`属性，因此同时存在两条继承链。

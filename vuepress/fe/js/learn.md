@@ -440,7 +440,9 @@ pureObj其实是个原子（原子是JavaScript中的对象的最小单元，它
 
    [深入 CommonJs 与  ES6 Module](https://segmentfault.com/a/1190000017878394)
 ### JavaScript Number类型
- 文章[JavaScript 深入之浮点数精度](https://github.com/mqyqingfeng/Blog/issues/155)
+- 文章[JavaScript 深入之浮点数精度](https://github.com/mqyqingfeng/Blog/issues/155)
+
+- [浮点数](https://zhuanlan.zhihu.com/p/339949186)
 
 在 JavaScript 里面，数字均为双精度浮点类型（double-precision 64-bit binary format IEEE 754），即一个介于±2^−1023和±2^+1024之间的数字，或约为±10^−308到±10^+308，数字精度为53位。整数数值仅在±(253 - 1)的范围内可以表示准确。
 
@@ -450,11 +452,11 @@ pureObj其实是个原子（原子是JavaScript中的对象的最小单元，它
 IEEE 754 规定了包括：单精度（32位）、双精度（64位）、延伸单精度（43比特以上，很少使用）与延伸双精度（79比特以上，通常以80位实现）。而 JavaScript 使用的是双精度。
 
 一个浮点数(value)可以这样表示：
-![An image](./image/number/1.png)
+![An image](../image/number/1.png)
 也就是浮点数的实际值，等于符号位（sign bit）乘以指数偏移值(exponent bias)再乘以分数值(fraction)。
 
  64 位双精度浮点型具体的字节分配：
-![An image](./image/number/2.png)
+![An image](../image/number/2.png)
 
 从上图中可以看到，从高到低，64位被分成3段，分别是:
  1. 符号位（sign），只占 1 位，0 表示+，1 表示-。
@@ -463,21 +465,21 @@ IEEE 754 规定了包括：单精度（32位）、双精度（64位）、延伸�
  
  指数位有 11 位，取值范围是 0 到 2047。当指数位 e=0 或者 e=2017 时，根据有效数字位 f 是否为 0 ，具有不同的特殊含义，具体见下表：
  
- ![An image](./image/number/4.png)
+ ![An image](../image/number/4.png)
 
 对于常用的 normal number, 为了方便表示指数为负数的情况，所以，指数位数值大小做了一个 -1023 的偏移量。对于一个非 0 数字而言，,它的二进制的科学计数法里的第一位有效数字固定是 1。这样，一个双精度浮点型数字的值就是
 
- ![An image](./image/number/5.png)
+ ![An image](../image/number/5.png)
  
 对于 subnormal number,它可以用来表示更加接近于 0 的数，它特殊的地方是有效数字位的前面补充的是 0 而不是 1，且指数为偏移量是 -1022，所以值是：
 
- ![An image](./image/number/6.png)
+ ![An image](../image/number/6.png)
  
-  ![An image](./image/number/7.png)
+  ![An image](../image/number/7.png)
 
 双精度浮点数(double)转化为十进制的公式：
 
-![An image](./image/number/3.png)
+![An image](../image/number/3.png)
 
 其中，b 为二进制小数的第 52 - i 位的值。e 需减去取值范围的中位数 1023。特别的，当 e 等于 0 且小数位均为 0 时，表示 0，当 e 全为 1 且小数位均为 0 时，表示无穷，如果 e 全为 1 且小数位不均为 0 ，那么这不是一个数（NaN）。
 
@@ -490,7 +492,7 @@ IEEE 754 规定了包括：单精度（32位）、双精度（64位）、延伸�
 用科学计数法表示：`1.100110011001100110011001100110011001100110011001101 x 2^-4`，指数为 -4，因此 e 等于 1019，
 转成 11 位二进制数 `01111111011`；尾数为 `1001100110011001100110011001100110011001100110011010`，末尾补齐 0 至 52 位数；正负号标志 s 显然是 0。最终 0.1 在内存中长这样 `0011111110111001100110011001100110011001100110011001100110011010`，图形化显示为：
 
-![An image](./image/number/8.png)
+![An image](../image/number/8.png)
 
 小数位其实是 1001 无限循环，根据 IEEE754 的舍入标准 进行了舍入，导致结果会比 0.1 大那么一点点，之所以使用的时候没感觉出来，是因为打印结果的时候舍入了小数点后第 18 位的值。Number 对象里有 toPrecision 方法来指定精度
 
@@ -505,7 +507,7 @@ IEEE 754 规定了包括：单精度（32位）、双精度（64位）、延伸�
 // https://juejin.im/post/6844903747345235982
 // https://juejin.im/post/6844903859962249229
 ```
-![An image](./image/number/9.png)
+![An image](../image/number/9.png)
 
 #### 解决方法
 - 只需要展示的话，可以 toFixed 或者 toPrecision 选择自己需要的精度，然后再 parseFloat 转成浮点数。需要注意的是，这两个方法均不是四舍五入法，而是上面提过的 IEEE754舍入标准，舍入至最接近的值，如果有 2 个值一样接近，则取偶数值。
@@ -971,7 +973,7 @@ index:C value:bar-C
 ```
 在ECMAScript规范中定义了 「数字属性应该按照索引值⼤⼩升序排列，字符 串属性根据创建时的顺序升序排列。」在这⾥我们把对象中的数字属性称为 「排序属性」，在V8中被称为 elements，字符串属性就被称为 「常规属性」， 在V8中被称为 properties。在V8内部，为了有效地提升存储和访问这两种属性的性能，分别使⽤了两个 线性数据结构来分别保存排序 属性和常规属性，具体结构如下图所⽰：
 
-![](./image/v8_obj_save.png)
+![](../image/v8_obj_save.png)
 在elements对象中，会按照顺序存放排序属性，properties属性则指向了properties对 象，在properties对象中，会按照创建时的顺序保存了常规属性。
 
 **总结一句: for in 循环特别适合遍历对象。**
@@ -1106,7 +1108,7 @@ for (let x of obj) {
 
 
 ### JavaScript的异步方式
-- [异步I/O及异步编程](https://sanyuan0704.top/my_blog/blogs/javascript/js-async/001.html)
+- [异步I/O及异步编程](https://sanyuan0704.top/blogs/javascript/js-async/001.html)
 1. 回调方式 --- 嵌套地狱
 2. promise --- then写法代码冗余，语义不清楚
 3. 协程Generator---异步任务的容器，同步的写法，但是需要生成generator，等写法，也比较冗余
@@ -1224,7 +1226,7 @@ const result2 = gen.next();
 const result3 = gen.next();
 ```
 下面这种图简单说明了执行过程：
-![](./image/generator/generator1.png)
+![](../image/generator/generator1.png)
 
 ```javascript
 function* myGenerator(msg) {
@@ -1238,24 +1240,24 @@ const result2 = gen.next();
 ```
 在调用生成器函数myGenerator之前，执行上下文如下：
 
-![](./image/generator/generator2.png)
+![](../image/generator/generator2.png)
 
 当执行`const gen = myGenerator("hello")`时，生成器进入挂起开始状态，执行上下文如下：
-![](./image/generator/generator3.png)
+![](../image/generator/generator3.png)
 
 和普通的函数不同，当函数执行完成后，它当执行上下文从执行栈中弹出后，不会立即被销毁。因为此时gen还保留着对它的引用，可以看成类似闭包的现象。闭包中为了保证闭包创建时的变量都可以使用，需要对创建它对环境保存一个引用。而生成器除了保持环境引用外，还需要保证可以恢复执行，所以需要保存当时函数的执行上下文。
 
 当执行完`const gen = myGenerator("hello")`后，执行上下文如下：
 
-![](./image/generator/generator4.png)
+![](../image/generator/generator4.png)
 
 当执行`const result1 = gen.next()`时，这时会激活myGenerator的执行上下文，并推入执行栈中，执行上下文如下：
 
-![](./image/generator/generator5.png)
+![](../image/generator/generator5.png)
 
 当`const result1 = gen.next()`执行完成后，从栈中推出执行上下文，如下：
 
-![](./image/generator/generator6.png)
+![](../image/generator/generator6.png)
 
 最后，当执行`const result2 = gen.next()` 时，又会进入上下文的入栈出栈流程。此时遇到`return`后，生成器进入完成状态。
 
@@ -1572,4 +1574,4 @@ V8 把堆内存分成了两部分进行处理——`新生代内存和老生代�
 
 由于JS的单线程机制，V8 在进行垃圾回收的时候，不可避免地会阻塞业务逻辑的执行，倘若老生代的垃圾回收任务很重，那么耗时会非常可怕，严重影响应用的性能。那这个时候为了避免这样问题，V8 采取了增量标记的方案，即将一口气完成的标记任务分为很多小的部分完成，每做完一个小的部分就"歇"一下，就js应用逻辑执行一会儿，然后再执行下面的部分，如果循环，直到标记阶段完成才进入内存碎片的整理上面来。其实这个过程跟React Fiber的思路有点像。
 
-#### [定时器setTimeout源码深入](https://mp.weixin.qq.com/s/YW7ckqa0gu_CPfNGtS-9Pw)
+#### [定时器setTimeout源码深入](http://www.alloyteam.com/2021/03/15389/)

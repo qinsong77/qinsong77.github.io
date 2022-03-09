@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<p id="paragraph"></p>
+<input type="text" id="input">
+<script>
+    const paragraph = document.getElementById('paragraph')
+    const input = document.getElementById('input')
+    const data = {
+      text: 'inital val'
+    }
+    const proxyData = new Proxy(data, {
+      get(target, p, receiver) {
+        return Reflect.get(target, p, receiver)
+      },
+      set(target, p, value, receiver) {
+        if (p === 'text') {
+          target[p] = value;
+          paragraph.innerText = value;
+          input.value = value
+          return true
+        }
+        return Reflect.set(target, p, value, receiver)
+      }
+    })
+    input.addEventListener('input', (e) => {
+      proxyData["text"] = e.target.value
+    })
+    proxyData.text = data.text
+</script>
+</body>
+</html>

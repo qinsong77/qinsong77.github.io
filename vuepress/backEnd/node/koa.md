@@ -49,7 +49,7 @@ Express使用callback捕获异常，深层次的异常捕获不了；
 
 ## 四十行代码实现一个koa
 
-![](./image/koa.jpg)
+![](../image/koa.jpg)
 
 这是一个拥有 koa 几乎所有核心功能最简化的示例：
 
@@ -86,7 +86,7 @@ app.listen(3000)
 + Context: 服务器框架基本数据结构的封装，用以 http 请求解析及响应
 + Middleware: 中间件，也是洋葱模型的核心机制
 
-![](./image/koa-module.jpg)
+![](../image/koa-module.jpg)
 
 我们开始逐步实现这三个模块：
 
@@ -278,7 +278,7 @@ class Application {
 
 ### 完成 compose 函数的封装
 
-![](./image/yangcong.png)
+![](../image/yangcong.png)
 
 koa 的洋葱模型指出每一个中间件都像是洋葱的每一层，当从洋葱中心穿过时，每层都会一进一出穿过两次，且最先穿入的一层最后穿出。
 

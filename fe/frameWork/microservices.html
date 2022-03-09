@@ -13,7 +13,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="msapplication-TileColor" content="#333">
-    
+
     <link rel="preload" href="/assets/css/0.styles.db1e44bc.css" as="style"><link rel="preload" href="/assets/js/app.2cca574e.js" as="script"><link rel="preload" href="/assets/js/2.d100e21f.js" as="script"><link rel="preload" href="/assets/js/17.fe5767c8.js" as="script"><link rel="prefetch" href="/assets/js/10.cdf93699.js"><link rel="prefetch" href="/assets/js/11.dbe1c030.js"><link rel="prefetch" href="/assets/js/12.7f0b20b1.js"><link rel="prefetch" href="/assets/js/13.75bdf169.js"><link rel="prefetch" href="/assets/js/14.ebe0f5c6.js"><link rel="prefetch" href="/assets/js/15.725f6af2.js"><link rel="prefetch" href="/assets/js/16.7714dfa8.js"><link rel="prefetch" href="/assets/js/18.87e23ca7.js"><link rel="prefetch" href="/assets/js/19.97f49df3.js"><link rel="prefetch" href="/assets/js/20.feccba30.js"><link rel="prefetch" href="/assets/js/21.49513988.js"><link rel="prefetch" href="/assets/js/22.d0d4ae78.js"><link rel="prefetch" href="/assets/js/23.b5d8ecb2.js"><link rel="prefetch" href="/assets/js/24.2a0c78bb.js"><link rel="prefetch" href="/assets/js/25.b5b3d0d4.js"><link rel="prefetch" href="/assets/js/26.2d899539.js"><link rel="prefetch" href="/assets/js/27.a6bf5267.js"><link rel="prefetch" href="/assets/js/28.5764433f.js"><link rel="prefetch" href="/assets/js/29.48225922.js"><link rel="prefetch" href="/assets/js/3.23324764.js"><link rel="prefetch" href="/assets/js/30.fd414c30.js"><link rel="prefetch" href="/assets/js/31.32c6f2bc.js"><link rel="prefetch" href="/assets/js/32.eb3b8820.js"><link rel="prefetch" href="/assets/js/33.3fe91251.js"><link rel="prefetch" href="/assets/js/34.53c53ea6.js"><link rel="prefetch" href="/assets/js/35.832bb59f.js"><link rel="prefetch" href="/assets/js/36.d5bad367.js"><link rel="prefetch" href="/assets/js/37.ed3258ac.js"><link rel="prefetch" href="/assets/js/38.1552f626.js"><link rel="prefetch" href="/assets/js/39.2e50a4da.js"><link rel="prefetch" href="/assets/js/4.2edfbd14.js"><link rel="prefetch" href="/assets/js/40.26481723.js"><link rel="prefetch" href="/assets/js/41.ed28f45a.js"><link rel="prefetch" href="/assets/js/42.70f5aa67.js"><link rel="prefetch" href="/assets/js/43.1118c597.js"><link rel="prefetch" href="/assets/js/44.a794610e.js"><link rel="prefetch" href="/assets/js/45.c1c5e707.js"><link rel="prefetch" href="/assets/js/46.e3c01c64.js"><link rel="prefetch" href="/assets/js/47.003dc2ae.js"><link rel="prefetch" href="/assets/js/48.9456b1a7.js"><link rel="prefetch" href="/assets/js/49.74adaac6.js"><link rel="prefetch" href="/assets/js/5.20987b53.js"><link rel="prefetch" href="/assets/js/50.925f49ac.js"><link rel="prefetch" href="/assets/js/51.2d453963.js"><link rel="prefetch" href="/assets/js/52.96c3ccab.js"><link rel="prefetch" href="/assets/js/53.a7de374f.js"><link rel="prefetch" href="/assets/js/54.63528cd5.js"><link rel="prefetch" href="/assets/js/55.aebac7cf.js"><link rel="prefetch" href="/assets/js/56.5ad7d6df.js"><link rel="prefetch" href="/assets/js/57.a799a76a.js"><link rel="prefetch" href="/assets/js/58.eadff3a5.js"><link rel="prefetch" href="/assets/js/59.07270d81.js"><link rel="prefetch" href="/assets/js/6.87c3c76c.js"><link rel="prefetch" href="/assets/js/60.6cd70b60.js"><link rel="prefetch" href="/assets/js/61.dd505f63.js"><link rel="prefetch" href="/assets/js/62.048faab5.js"><link rel="prefetch" href="/assets/js/63.ef8fd8a6.js"><link rel="prefetch" href="/assets/js/64.065854e5.js"><link rel="prefetch" href="/assets/js/65.3a45ae45.js"><link rel="prefetch" href="/assets/js/66.21bb2001.js"><link rel="prefetch" href="/assets/js/67.81931b7b.js"><link rel="prefetch" href="/assets/js/68.bdb7f5bc.js"><link rel="prefetch" href="/assets/js/69.d6a6572e.js"><link rel="prefetch" href="/assets/js/7.9e996369.js"><link rel="prefetch" href="/assets/js/70.c2bc2eda.js"><link rel="prefetch" href="/assets/js/71.6c211e28.js"><link rel="prefetch" href="/assets/js/72.978efef6.js"><link rel="prefetch" href="/assets/js/73.949814cd.js"><link rel="prefetch" href="/assets/js/8.dd40b3f3.js"><link rel="prefetch" href="/assets/js/9.9eac94ce.js">
     <link rel="stylesheet" href="/assets/css/0.styles.db1e44bc.css">
   </head>
@@ -60,29 +60,29 @@
       <span class="token comment">// 如果window对象上没有这个属性，那么就在状态池中记录状态的新增；</span>
       <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>rawWindow<span class="token punctuation">.</span><span class="token function">hasOwnProperty</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
         addedPropsMapInSandbox<span class="token punctuation">.</span><span class="token keyword">set</span><span class="token punctuation">(</span>p<span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
- 
+
         <span class="token comment">// 如果当前 window 对象存在该属性，并且状态池中没有该对象，那么证明改属性是运行时期间更新的值，记录在状态池中用于最后window对象的还原</span>
       <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>modifiedPropsOriginalValueMapInSandbox<span class="token punctuation">.</span><span class="token function">has</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
         <span class="token keyword">const</span> originalValue <span class="token operator">=</span> <span class="token punctuation">(</span>rawWindow <span class="token keyword">as</span> <span class="token builtin">any</span><span class="token punctuation">)</span><span class="token punctuation">[</span>p<span class="token punctuation">]</span><span class="token punctuation">;</span>
         modifiedPropsOriginalValueMapInSandbox<span class="token punctuation">.</span><span class="token keyword">set</span><span class="token punctuation">(</span>p<span class="token punctuation">,</span> originalValue<span class="token punctuation">)</span><span class="token punctuation">;</span>
       <span class="token punctuation">}</span>
- 
+
       <span class="token comment">// 记录全局对象修改值，用于后面子应用激活时还原子应用</span>
       currentUpdatedPropsValueMap<span class="token punctuation">.</span><span class="token keyword">set</span><span class="token punctuation">(</span>p<span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
       <span class="token punctuation">(</span>rawWindow <span class="token keyword">as</span> <span class="token builtin">any</span><span class="token punctuation">)</span><span class="token punctuation">[</span>p<span class="token punctuation">]</span> <span class="token operator">=</span> value<span class="token punctuation">;</span>
- 
+
       <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
- 
+
     <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
- 
+
   <span class="token keyword">get</span><span class="token punctuation">(</span>_<span class="token operator">:</span> Window<span class="token punctuation">,</span> p<span class="token operator">:</span> PropertyKey<span class="token punctuation">)</span><span class="token operator">:</span> <span class="token builtin">any</span> <span class="token punctuation">{</span>
     <span class="token comment">// iframe的window上下文</span>
     <span class="token keyword">if</span> <span class="token punctuation">(</span>p <span class="token operator">===</span> <span class="token string">&quot;top&quot;</span> <span class="token operator">||</span> p <span class="token operator">===</span> <span class="token string">&quot;window&quot;</span> <span class="token operator">||</span> p <span class="token operator">===</span> <span class="token string">&quot;self&quot;</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
       <span class="token keyword">return</span> proxy<span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
- 
+
     <span class="token keyword">const</span> value <span class="token operator">=</span> <span class="token punctuation">(</span>rawWindow <span class="token keyword">as</span> <span class="token builtin">any</span><span class="token punctuation">)</span><span class="token punctuation">[</span>p<span class="token punctuation">]</span><span class="token punctuation">;</span>
     <span class="token keyword">return</span> <span class="token function">getTargetValue</span><span class="token punctuation">(</span>rawWindow<span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
@@ -93,17 +93,17 @@
     <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>sandboxRunning<span class="token punctuation">)</span> <span class="token punctuation">{</span>
       <span class="token keyword">this</span><span class="token punctuation">.</span>currentUpdatedPropsValueMap<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span>v<span class="token punctuation">,</span> p<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token function">setWindowProp</span><span class="token punctuation">(</span>p<span class="token punctuation">,</span> v<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
- 
+
     <span class="token keyword">this</span><span class="token punctuation">.</span>sandboxRunning <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
- 
+
   <span class="token comment">// 子应用沙箱卸载</span>
   <span class="token function">inactive</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token comment">// 还原运行时期间修改的全局变量</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>modifiedPropsOriginalValueMapInSandbox<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span>v<span class="token punctuation">,</span> p<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token function">setWindowProp</span><span class="token punctuation">(</span>p<span class="token punctuation">,</span> v<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token comment">// 删除运行时期间新增的全局变量</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>addedPropsMapInSandbox<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span>_<span class="token punctuation">,</span> p<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token function">setWindowProp</span><span class="token punctuation">(</span>p<span class="token punctuation">,</span> <span class="token keyword">undefined</span><span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
- 
+
     <span class="token keyword">this</span><span class="token punctuation">.</span>sandboxRunning <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 </code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br></div></div><div class="language-typescript line-numbers-mode"><pre class="language-typescript"><code><span class="token comment">// 子应用脚本文件的执行过程：</span>
@@ -119,7 +119,7 @@
   <span class="token comment">// 在has和check的场景下，map有着更好的性能</span>
   <span class="token keyword">const</span> propertiesWithGetter <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Map<span class="token operator">&lt;</span>PropertyKey<span class="token punctuation">,</span> <span class="token builtin">boolean</span><span class="token operator">&gt;</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token keyword">const</span> fakeWindow <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span> <span class="token keyword">as</span> FakeWindow<span class="token punctuation">;</span>
- 
+
   <span class="token comment">// 从window对象拷贝不可配置的属性</span>
   <span class="token comment">// 举个例子：window、document、location这些都是挂在Window上的属性，他们都是不可配置的</span>
   <span class="token comment">// 拷贝出来到fakeWindow上，就间接避免了子应用直接操作全局对象上的这些属性方法</span>
@@ -137,10 +137,10 @@
           descriptor<span class="token punctuation">,</span>
           <span class="token string">&quot;get&quot;</span>
         <span class="token punctuation">)</span><span class="token punctuation">;</span>
- 
+
         <span class="token comment">// 为有getter的属性设置查询索引</span>
         <span class="token keyword">if</span> <span class="token punctuation">(</span>hasGetter<span class="token punctuation">)</span> propertiesWithGetter<span class="token punctuation">.</span><span class="token keyword">set</span><span class="token punctuation">(</span>p<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
- 
+
         <span class="token comment">// freeze the descriptor to avoid being modified by zone.js</span>
         <span class="token comment">// zone.js will overwrite Object.defineProperty</span>
         <span class="token comment">// const rawObjectDefineProperty = Object.defineProperty;</span>
@@ -148,7 +148,7 @@
         <span class="token function">rawObjectDefineProperty</span><span class="token punctuation">(</span>fakeWindow<span class="token punctuation">,</span> p<span class="token punctuation">,</span> Object<span class="token punctuation">.</span><span class="token function">freeze</span><span class="token punctuation">(</span>descriptor<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
       <span class="token punctuation">}</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
- 
+
   <span class="token keyword">return</span> <span class="token punctuation">{</span>
     fakeWindow<span class="token punctuation">,</span>
     propertiesWithGetter<span class="token punctuation">,</span>
@@ -336,7 +336,7 @@
 </code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br></div></div><p><code>__webpack_require__</code></p> <p><code>__webpack_require__.p = the bundle public path</code></p> <div class="language-javascript line-numbers-mode"><pre class="language-javascript"><code>
   <span class="token comment">// The require `function`</span>
  <span class="token keyword">function</span> <span class="token function">__webpack_require__</span><span class="token punctuation">(</span><span class="token parameter">moduleId</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
- 
+
  	<span class="token comment">// 检测是否存在缓存</span>
  	<span class="token keyword">if</span><span class="token punctuation">(</span>installedModules<span class="token punctuation">[</span>moduleId<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
  		<span class="token keyword">return</span> installedModules<span class="token punctuation">[</span>moduleId<span class="token punctuation">]</span><span class="token punctuation">.</span>exports<span class="token punctuation">;</span>
@@ -347,58 +347,58 @@
  		l<span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>    <span class="token comment">// 是否加载</span>
  		exports<span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
  	<span class="token punctuation">}</span><span class="token punctuation">;</span>
- 
+
  	<span class="token comment">// call的方式加载模块 this转交，参数转交，对应其打包构建好的每个模块的参数结构。</span>
  	modules<span class="token punctuation">[</span>moduleId<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>module<span class="token punctuation">.</span>exports<span class="token punctuation">,</span> module<span class="token punctuation">,</span> module<span class="token punctuation">.</span>exports<span class="token punctuation">,</span> __webpack_require__<span class="token punctuation">)</span><span class="token punctuation">;</span>
- 
+
  	<span class="token comment">// 表示已加载</span>
  	module<span class="token punctuation">.</span>l <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
- 
+
  	<span class="token comment">// 返回模块的exports </span>
  	<span class="token keyword">return</span> module<span class="token punctuation">.</span>exports<span class="token punctuation">;</span>
 
 </code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br></div></div><p>以下是__webpack_require__各属性以及对应能力，会经常出现在加载模块的语法中</p> <div class="language- line-numbers-mode"><pre class="language-text"><code>
 // 入口模块的ID
 __webpack_require__.s = the module id of the entry point
- 
+
 //模块缓存对象 {} id:{ exports /id/loaded}
 __webpack_require__.c = the module cache
- 
+
 // 所有构建生成的模块 []
 __webpack_require__.m = the module functions
- 
+
 // 公共路径，为所有资源指定一个基础路径
 __webpack_require__.p = the bundle public path
-// 
+//
 __webpack_require__.i = the identity function used for harmony imports
- 
-// 异步模块加载函数，如果没有再缓存模块中 则用jsonscriptsrc 加载  
+
+// 异步模块加载函数，如果没有再缓存模块中 则用jsonscriptsrc 加载
 __webpack_require__.e = the chunk ensure function
- 
+
 // 设定getter 辅助函数而已
 __webpack_require__.d = the exported property define getter function
- 
+
 // 辅助函数而已 Object.prototype.hasOwnProperty.call
 __webpack_require__.o = Object.prototype.hasOwnProperty.call
- 
+
 // 给exports设定attr __esModule
 __webpack_require__.r = define compatibility on export
- 
+
 // 用于取值，伪造namespace
 __webpack_require__.t = create a fake namespace object
- 
+
 // 用于兼容性取值（esmodule 取default， 非esmodule 直接返回module)
 __webpack_require__.n = compatibility get default export
- 
+
 // hash
 __webpack_require__.h = the webpack hash
- 
-// 
+
+//
 __webpack_require__.w = an object containing all installed WebAssembly.Instance export objects keyed by module id
- 
+
 // 异步加载失败处理函数 辅助函数而已
 __webpack_require__.oe = the uncaught error handler for the webpack runtime
- 
+
 // 表明脚本需要安全加载 CSP策略
 __webpack_require__.nc = the script nonce
 
@@ -531,7 +531,7 @@ gulp<span class="token punctuation">.</span><span class="token function">task</s
 <span class="token punctuation">}</span>
 
 module<span class="token punctuation">.</span>exports <span class="token operator">=</span> CdnAdaptorPlugin
-</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br><span class="line-number">26</span><br></div></div></details> <h4 id="主应用vue-config-js"><a href="#主应用vue-config-js" class="header-anchor">#</a> 主应用vue.config.js</h4> <details class="custom-block details"><summary>点击查看代码</summary> <div class="language-javascript line-numbers-mode"><pre class="language-javascript"><code><span class="token keyword">const</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'path'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br><span class="line-number">26</span><br></div></div></details> <h4 id="主应用vue-config-js"><a href="#主应用vue-config-js" class="header-anchor">#</a> 主应用vue.config.ts</h4> <details class="custom-block details"><summary>点击查看代码</summary> <div class="language-javascript line-numbers-mode"><pre class="language-javascript"><code><span class="token keyword">const</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'path'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token keyword">const</span> Copy <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'copy-webpack-plugin'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token keyword">const</span> HtmlWebpackExternalsPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'html-webpack-externals-plugin'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
@@ -663,7 +663,7 @@ module<span class="token punctuation">.</span>exports <span class="token operato
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br><span class="line-number">26</span><br><span class="line-number">27</span><br><span class="line-number">28</span><br><span class="line-number">29</span><br><span class="line-number">30</span><br><span class="line-number">31</span><br><span class="line-number">32</span><br><span class="line-number">33</span><br><span class="line-number">34</span><br><span class="line-number">35</span><br><span class="line-number">36</span><br><span class="line-number">37</span><br><span class="line-number">38</span><br><span class="line-number">39</span><br><span class="line-number">40</span><br><span class="line-number">41</span><br><span class="line-number">42</span><br><span class="line-number">43</span><br><span class="line-number">44</span><br><span class="line-number">45</span><br><span class="line-number">46</span><br><span class="line-number">47</span><br><span class="line-number">48</span><br><span class="line-number">49</span><br><span class="line-number">50</span><br><span class="line-number">51</span><br><span class="line-number">52</span><br><span class="line-number">53</span><br><span class="line-number">54</span><br><span class="line-number">55</span><br><span class="line-number">56</span><br><span class="line-number">57</span><br><span class="line-number">58</span><br><span class="line-number">59</span><br><span class="line-number">60</span><br><span class="line-number">61</span><br><span class="line-number">62</span><br><span class="line-number">63</span><br><span class="line-number">64</span><br><span class="line-number">65</span><br><span class="line-number">66</span><br><span class="line-number">67</span><br><span class="line-number">68</span><br><span class="line-number">69</span><br><span class="line-number">70</span><br><span class="line-number">71</span><br><span class="line-number">72</span><br><span class="line-number">73</span><br><span class="line-number">74</span><br><span class="line-number">75</span><br><span class="line-number">76</span><br><span class="line-number">77</span><br><span class="line-number">78</span><br><span class="line-number">79</span><br><span class="line-number">80</span><br><span class="line-number">81</span><br><span class="line-number">82</span><br><span class="line-number">83</span><br><span class="line-number">84</span><br><span class="line-number">85</span><br><span class="line-number">86</span><br><span class="line-number">87</span><br><span class="line-number">88</span><br><span class="line-number">89</span><br><span class="line-number">90</span><br><span class="line-number">91</span><br><span class="line-number">92</span><br><span class="line-number">93</span><br><span class="line-number">94</span><br><span class="line-number">95</span><br><span class="line-number">96</span><br><span class="line-number">97</span><br><span class="line-number">98</span><br><span class="line-number">99</span><br><span class="line-number">100</span><br><span class="line-number">101</span><br><span class="line-number">102</span><br><span class="line-number">103</span><br><span class="line-number">104</span><br><span class="line-number">105</span><br><span class="line-number">106</span><br><span class="line-number">107</span><br><span class="line-number">108</span><br><span class="line-number">109</span><br><span class="line-number">110</span><br><span class="line-number">111</span><br><span class="line-number">112</span><br><span class="line-number">113</span><br><span class="line-number">114</span><br><span class="line-number">115</span><br><span class="line-number">116</span><br><span class="line-number">117</span><br><span class="line-number">118</span><br><span class="line-number">119</span><br><span class="line-number">120</span><br><span class="line-number">121</span><br><span class="line-number">122</span><br><span class="line-number">123</span><br><span class="line-number">124</span><br><span class="line-number">125</span><br><span class="line-number">126</span><br><span class="line-number">127</span><br><span class="line-number">128</span><br><span class="line-number">129</span><br><span class="line-number">130</span><br><span class="line-number">131</span><br><span class="line-number">132</span><br></div></div></details> <h5 id="子应用vue-config-js"><a href="#子应用vue-config-js" class="header-anchor">#</a> 子应用vue.config.js</h5> <div class="language- line-numbers-mode"><pre class="language-text"><code>VUE_APP_ROUTER_BASE_URL=/ops/stateManage
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br><span class="line-number">26</span><br><span class="line-number">27</span><br><span class="line-number">28</span><br><span class="line-number">29</span><br><span class="line-number">30</span><br><span class="line-number">31</span><br><span class="line-number">32</span><br><span class="line-number">33</span><br><span class="line-number">34</span><br><span class="line-number">35</span><br><span class="line-number">36</span><br><span class="line-number">37</span><br><span class="line-number">38</span><br><span class="line-number">39</span><br><span class="line-number">40</span><br><span class="line-number">41</span><br><span class="line-number">42</span><br><span class="line-number">43</span><br><span class="line-number">44</span><br><span class="line-number">45</span><br><span class="line-number">46</span><br><span class="line-number">47</span><br><span class="line-number">48</span><br><span class="line-number">49</span><br><span class="line-number">50</span><br><span class="line-number">51</span><br><span class="line-number">52</span><br><span class="line-number">53</span><br><span class="line-number">54</span><br><span class="line-number">55</span><br><span class="line-number">56</span><br><span class="line-number">57</span><br><span class="line-number">58</span><br><span class="line-number">59</span><br><span class="line-number">60</span><br><span class="line-number">61</span><br><span class="line-number">62</span><br><span class="line-number">63</span><br><span class="line-number">64</span><br><span class="line-number">65</span><br><span class="line-number">66</span><br><span class="line-number">67</span><br><span class="line-number">68</span><br><span class="line-number">69</span><br><span class="line-number">70</span><br><span class="line-number">71</span><br><span class="line-number">72</span><br><span class="line-number">73</span><br><span class="line-number">74</span><br><span class="line-number">75</span><br><span class="line-number">76</span><br><span class="line-number">77</span><br><span class="line-number">78</span><br><span class="line-number">79</span><br><span class="line-number">80</span><br><span class="line-number">81</span><br><span class="line-number">82</span><br><span class="line-number">83</span><br><span class="line-number">84</span><br><span class="line-number">85</span><br><span class="line-number">86</span><br><span class="line-number">87</span><br><span class="line-number">88</span><br><span class="line-number">89</span><br><span class="line-number">90</span><br><span class="line-number">91</span><br><span class="line-number">92</span><br><span class="line-number">93</span><br><span class="line-number">94</span><br><span class="line-number">95</span><br><span class="line-number">96</span><br><span class="line-number">97</span><br><span class="line-number">98</span><br><span class="line-number">99</span><br><span class="line-number">100</span><br><span class="line-number">101</span><br><span class="line-number">102</span><br><span class="line-number">103</span><br><span class="line-number">104</span><br><span class="line-number">105</span><br><span class="line-number">106</span><br><span class="line-number">107</span><br><span class="line-number">108</span><br><span class="line-number">109</span><br><span class="line-number">110</span><br><span class="line-number">111</span><br><span class="line-number">112</span><br><span class="line-number">113</span><br><span class="line-number">114</span><br><span class="line-number">115</span><br><span class="line-number">116</span><br><span class="line-number">117</span><br><span class="line-number">118</span><br><span class="line-number">119</span><br><span class="line-number">120</span><br><span class="line-number">121</span><br><span class="line-number">122</span><br><span class="line-number">123</span><br><span class="line-number">124</span><br><span class="line-number">125</span><br><span class="line-number">126</span><br><span class="line-number">127</span><br><span class="line-number">128</span><br><span class="line-number">129</span><br><span class="line-number">130</span><br><span class="line-number">131</span><br><span class="line-number">132</span><br></div></div></details> <h5 id="子应用vue-config-js"><a href="#子应用vue-config-js" class="header-anchor">#</a> 子应用vue.config.ts</h5> <div class="language- line-numbers-mode"><pre class="language-text"><code>VUE_APP_ROUTER_BASE_URL=/ops/stateManage
 VUE_APP_API_BASE_URL=/ops/api/ram/api/v1
 FONT_BASE_URL=/ops/subapp/stateManage
 PUBLIC_PATH=/ops/subapp/stateManage

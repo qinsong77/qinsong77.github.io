@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 
+## 2.0 废弃 使用 https://vuepress.vuejs.org/zh/guide/deploy.html#github-pages
 # 确保脚本抛出遇到的错误
 set -e
 

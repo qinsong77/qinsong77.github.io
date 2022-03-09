@@ -1,5 +1,5 @@
 ---
-title: Summary of CSS
+title: Summary
 ---
 
 文章汇总
