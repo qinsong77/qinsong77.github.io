@@ -9,7 +9,7 @@ jobs:
         uses: actions/checkout@master
 
       - name: vuepress-deploy
-        uses: qinsong77/qinsong77.github.io@master
+        uses: jenkey2011/vuepress-deploy@master
         env:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           TARGET_REPO: qinsong77/qinsong77.github.io
