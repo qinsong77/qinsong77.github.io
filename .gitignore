@@ -30,6 +30,7 @@ typings/
 .eslintcache
 .node_repl_history
 
-# VuePress temp directory
+# VuePress directory
 .temp
 .cache
+/vuepress/.vuepress/dist/

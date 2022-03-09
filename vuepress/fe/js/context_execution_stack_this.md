@@ -340,7 +340,7 @@ console.log('Inside Global Execution Context');
 
 ```
 
-![An image](./image/execution_stack.png)
+![An image](../image/execution_stack.png)
 
 上述代码的执行上下文栈。
 

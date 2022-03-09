@@ -25,10 +25,14 @@ export default defineUserConfig<DefaultThemeOptions>({
 		// '@vuepress/back-to-top',
 		[
 			'@vuepress/pwa',
-			{
-				serviceWorker: true,
-				updatePopup: true
-			}
+			// todo 配置报错，暂且去除
+			// {
+			// 	serviceWorker: true,
+			// 	updatePopup: {
+      //     message: "有更新哦！",
+			// 		buttonText: "refresh"
+			// 	}
+			// }
 		],
 		// '@vuepress/pwa',
 		// {
@@ -145,7 +149,7 @@ export default defineUserConfig<DefaultThemeOptions>({
 			'/fe/': [
 				{
 					text: 'JavaScript',
-					collapsible: true,
+					// collapsible: true,
 					children: [
 						{
 							text: 'LearnAndNoteList',
@@ -164,7 +168,7 @@ export default defineUserConfig<DefaultThemeOptions>({
 				},
 				{
 					text: 'Vue',   // 必要的
-					collapsible: true,
+					// collapsible: true,
 					children: [
 						{
 							text: '原理',
@@ -221,7 +225,7 @@ export default defineUserConfig<DefaultThemeOptions>({
 				},
 				{
 					text: 'frameWork',   // 必要的
-					collapsible: true,
+					// collapsible: true,
 					children: [
 						'/fe/frameWork',
 						'/fe/frameWork/microservices',
