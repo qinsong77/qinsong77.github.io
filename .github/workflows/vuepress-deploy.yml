@@ -15,5 +15,5 @@ jobs:
           TARGET_REPO: username/repo
           TARGET_BRANCH: master
           BUILD_SCRIPT: yarn && yarn build
-          BUILD_DIR: docs/.vuepress/dist
+          BUILD_DIR: vuepress/.vuepress/dist
           CNAME: https://www.sysuke.com
