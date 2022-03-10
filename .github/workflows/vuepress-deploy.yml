@@ -1,18 +1,25 @@
 # https://v2.vuepress.vuejs.org/zh/guide/deployment.html#github-pages
-name: Build and Deploy
+name: docs
 
 on:
-  # 手动触发部署
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**/__tests__/**'
+      - '**/TEST/**'
+      - '**/TEST2/**'
   workflow_dispatch:
+
 jobs:
-  build-and-deploy:
+  docs:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
-      with:
-        # “最近更新时间” 等 git 日志相关信息，需要拉取全部提交记录
-        fetch-depth: 0
+        with:
+          # “最近更新时间” 等 git 日志相关信息，需要拉取全部提交记录
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v1
