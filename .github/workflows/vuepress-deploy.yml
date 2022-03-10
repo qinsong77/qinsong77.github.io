@@ -1,5 +1,6 @@
-# https://github.com/jenkey2011/vuepress-deploy/blob/master/README.zh-CN.md
+# https://v2.vuepress.vuejs.org/zh/guide/deployment.html#github-pages
 name: Build and Deploy
+
 on:
   # 手动触发部署
   workflow_dispatch:
