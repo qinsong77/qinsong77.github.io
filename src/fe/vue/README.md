@@ -28,7 +28,6 @@ title: Vue
 ### 面试题
 - [Vue 面试题](https://mp.weixin.qq.com/s/ghVfca_f3bmQO6YvwLtP_A)
 - [大厂高频Vue面试题（上）](https://juejin.cn/post/6844904138208182285)
-- [30 道 Vue 面试题，内含详细讲解](https://juejin.cn/post/6844903918753808398)
 - [Vue 项目性能优化 — 实践指南（网上最全 / 详细）](https://juejin.cn/poxst/6844903913410314247)
 - [揭秘 Vue.js 九个性能优化技巧](https://juejin.cn/post/6922641008106668045) -- 面试应该能用得上
 ### [Vue.js 技术揭秘](https://ustbhuangyi.github.io/vue-analysis/)
@@ -41,7 +40,7 @@ title: Vue
 
  ![An image](./image/vue1.png)
 
-> vue采用数据劫持结合观察者模式的方式，通过Object.defineProperty()来劫持各个属性的setter，getter，在数据变动时通知订阅者(watcher)，触发相应的监听回调。
+> vue采用数据劫持结合观察者模式的方式，通过`Object.defineProperty()`来劫持各个属性的setter，getter，在数据变动时通知订阅者(watcher)，触发相应的监听回调。
 > 每个组件实例都对应一个 watcher 实例，它会在组件渲染的过程中把“接触”过的数据 property 记录为依赖。之后当依赖项的 setter 触发时，会通知 watcher，从而使它关联的组件重新渲染。
 Dep 对象用于依赖收集，它实现了一个观察者模式，完成了数据 Data 和渲染视图 Watcher 的订阅
 
