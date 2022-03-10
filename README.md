@@ -2,27 +2,6 @@
 :tada: :100:
 
 -----------
->my personal blog
+## 个人博客
 
-
-- JavaScript
-- DataStructure
-- Algorithm
-- CSS
-- Vue
-- React
-- Webpack
-- node.js、koa2
-- http、Nginx
-- ...
-
----Next---
-- [Typescript](https://ts.xcatliu.com/)
-- React in deep
-- Rx.js
-- 函数式编程
-- [Svelte.js](https://www.sveltejs.cn/)
-- [next.js](https://www.nextjs.cn/)
-- [nest.js](https://docs.nestjs.cn/7/introduction)
-- [GraphQL](https://graphql.cn/)
-- [WebRTC](https://webrtc.org.cn/)
+> 主要是前端知识盘点和面试复习整理，还有算法记录等。

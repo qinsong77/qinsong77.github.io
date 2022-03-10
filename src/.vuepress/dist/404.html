@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="generator" content="VuePress 2.0.0-beta.36">
+    <style>
+      :root {
+        --c-bg: #fff;
+      }
+      html.dark {
+        --c-bg: #22272e;
+      }
+      html, body {
+        background-color: var(--c-bg);
+      }
+    </style>
+    <script>
+      const userMode = localStorage.getItem('vuepress-color-scheme');
+			const systemDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+			if (userMode === 'dark' || (userMode !== 'light' && systemDarkMode)) {
+				document.documentElement.classList.toggle('dark', true);
+			}
+    </script>
+    <link rel="icon" href="/favicon.ico"><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#3eaf7c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="msapplication-TileColor" content="#333"><link rel="apple-touch-icon" href="/icons/128.ico"><title>Sysuke' NoteBook</title><meta name="description" content="personal frontend noteBook power by VuePress & GitHub Page">
+    <link rel="modulepreload" href="/assets/app.552fc8bd.js"><link rel="modulepreload" href="/assets/404.html.c8bd02e2.js"><link rel="modulepreload" href="/assets/404.html.64455432.js"><link rel="modulepreload" href="/assets/plugin-vue_export-helper.21dcd24c.js">
+    <link rel="stylesheet" href="/assets/style.d0e46110.css">
+  </head>
+  <body>
+    <div id="app"><!--[--><div class="theme-container"><div class="theme-default-content"><h1>404</h1><blockquote>That&#39;s a Four-Oh-Four.</blockquote><a href="/" class="">Take me home</a></div></div><!----><!----><!--]--></div>
+    <script type="module" src="/assets/app.552fc8bd.js" defer></script>
+  </body>
+</html>

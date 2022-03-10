@@ -1,12 +1,11 @@
 {
   "name": "qinsong77.github.io",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "blog",
   "main": "index.js",
   "scripts": {
-    "dev": "vuepress dev vuepress",
-    "build": "vuepress build vuepress",
-    "deploy": "bash deploy.sh",
+    "dev": "vuepress dev src",
+    "build": "vuepress build src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
