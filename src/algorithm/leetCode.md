@@ -35,30 +35,6 @@ title: LeetCode
   - [最小覆盖子串](#最小覆盖子串)
   - [字符串的排列](#字符串的排列)
   - [编辑距离](#编辑距离)
-- [4.二叉树](#_4-二叉树)
-   - [路径总和](#路径总和)
-   - [二叉树的层序遍历](#二叉树的层序遍历)
-   - [二叉树的序列化与反序列化](#二叉树的序列化与反序列化)
-   - [验证二叉树的前序序列化](#验证二叉树的前序序列化)
-   - [从前序与中序遍历序列构造二叉树](#从前序与中序遍历序列构造二叉树)
-   - [从中序与后序遍历序列构造二叉树](#从中序与后序遍历序列构造二叉树)
-   - [对称二叉树](#对称二叉树)
-   - [翻转二叉树](#翻转二叉树)
-   - [填充每个节点的下一个右侧节点指针](#填充每个节点的下一个右侧节点指针)
-   - [二叉树展开为链表](#二叉树展开为链表)
-   - [二叉树的最近公共祖先](#二叉树的最近公共祖先)
-   - [二叉树的最大深度](#二叉树的最大深度)
-   - [最大二叉树](#最大二叉树)
-   - [寻找重复的子树](#寻找重复的子树)
-   - [二叉树的直径](#二叉树的直径)
-   - [求二叉树中最大路径和](#求二叉树中最大路径和)
-   - [求根节点到叶节点数字之和](#求根节点到叶节点数字之和)
-- [5.二叉搜索树](#_5-二叉搜索树)
-   - [二叉搜索树中第K小的元素](#二叉搜索树中第k小的元素)
-   - [把二叉搜索树转换为累加树](#把二叉搜索树转换为累加树)
-   - [恢复二叉搜索树](#恢复二叉搜索树)
-   - [判断BST的合法性](#判断bst的合法性)
-   - [不同的二叉搜索树](#不同的二叉搜索树)
 - [6.链表](#_6-链表)
    - [反转链表](#反转链表)
    - [回文链表](#回文链表)
@@ -398,7 +374,7 @@ const search = (arr, count, sum) => {
 }
 ```
 
-#### 2.回文
+### 2.回文
 
 #### [回文数](https://leetcode-cn.com/problems/palindrome-number/)
 > 判断一个整数是否是回文数。回文数是指正序（从左向右）和倒序（从右向左）读都是一样的整数。
@@ -583,9 +559,9 @@ function reverseLink(head) {
 }
 ```
 
-## 3.字符串
+### 3.字符串
 
-### [比较版本号](https://leetcode-cn.com/problems/compare-version-numbers/)
+#### [比较版本号](https://leetcode-cn.com/problems/compare-version-numbers/)
 ```javascript
 /**
  * @param {string} version1
@@ -1910,17 +1886,17 @@ var findDuplicateSubtrees = function(root) {
 
 ```javascript
 var diameterOfBinaryTree = function(root) {
-    let res = 0
-
-    function help(node) {
-        if(node === null) return 0
-        let left = help(node.left)
-        let right = help(node.right)
-        res = Math.max(res, left + right + 1)
-        return Math.max(left, right) + 1
-    }
-    help(root)
-    return res - 1
+  let maxLength = 0;
+  function trverse(root) {
+    if (root === null) return 0;
+    const leftMax = trverse(root.left);
+    const rightMax = trverse(root.right);
+    const max = leftMax + rightMax;
+    maxLength = Math.max(maxLength, max);
+    return Math.max(leftMax, rightMax) + 1;
+  }
+  trverse(root);
+  return maxLength;
 };
 ```
 
@@ -2358,7 +2334,7 @@ var detectCycle = function(head) {
 };
 ```
 
-### [链表的中间结点](https://leetcode-cn.com/problems/middle-of-the-linked-list/)
+#### [链表的中间结点](https://leetcode-cn.com/problems/middle-of-the-linked-list/)
 快慢指针
 ```javascript
 var middleNode = function(head) {
@@ -2371,7 +2347,7 @@ var middleNode = function(head) {
     return slow
 };
 ```
-### [寻找链表的倒数第k个元素](https://leetcode-cn.com/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/)
+#### [寻找链表的倒数第k个元素](https://leetcode-cn.com/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/)
 快慢指针
 
 让快指针先走 k 步，然后快慢指针开始同速前进。这样当快指针走到链表末尾 null 时，慢指针所在的位置就是倒数第 k 个链表节点
@@ -2391,7 +2367,7 @@ var getKthFromEnd = function(head, k) {
 };
 ```
 
-### [k个一组翻转链表](https://leetcode-cn.com/problems/reverse-nodes-in-k-group)
+#### [k个一组翻转链表](https://leetcode-cn.com/problems/reverse-nodes-in-k-group)
 
 ````javascript
 /**
@@ -2469,51 +2445,30 @@ var sortList = function(head) {
 #### [合并有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
 mine
 ```javascript
-var mergeTwoLists = function(l1, l2) {
-    let root = null
-    let prev = null
-    while(l1 || l2) {
-        if(l1 && !l2) {
-            if(prev) {
-                prev.next = l1
-                prev = prev.next
+var mergeTwoLists = function(list1, list2) {
+    let pre = new ListNode(-Infinity);
+    const root = pre;
+    while(list1 || list2) {
+        if (list1 && list2) {
+            if (list1.val > list2.val) {
+                // 其实可以直接 pre.next = list2
+                pre.next = new ListNode(list2.val);
+                list2 = list2.next;
+                pre = pre.next;
             } else {
-                root = l1
-                prev = root
+                pre.next = new ListNode(list1.val);
+                list1 = list1.next;
+                pre = pre.next;
             }
-            break;
-        } else if(!l1 && l2) {
-            if(prev) {
-                prev.next = l2
-                prev = prev.next
-            } else {
-                root = l2
-                prev = root
-            }
-            break;
+        } else if (list1) {
+            pre.next = list1;
+            list1 = null;
         } else {
-            if(l1.val > l2.val) {
-                if(prev) {
-                    prev.next = new ListNode(l2.val)
-                    prev = prev.next
-                } else {
-                    root = new ListNode(l2.val)
-                    prev = root
-                }
-                l2 = l2.next
-            } else {
-                if(prev) {
-                    prev.next = new ListNode(l1.val)
-                    prev = prev.next
-                } else {
-                    root = new ListNode(l1.val)
-                    prev = root
-                }
-                l1 = l1.next
-            }
+            pre.next = list2;
+            list2 = null;
         }
     }
-    return root
+    return root.next;
 };
 ```
 递归
@@ -2773,9 +2728,9 @@ var deleteDuplicates = function(head) {
     return prevHead.next
 };
 ```
-## 7.动态规划
+### 7.动态规划
 
-### [凑零钱问题](https://leetcode-cn.com/problems/coin-change/)
+#### [凑零钱问题](https://leetcode-cn.com/problems/coin-change/)
 ```javascript
 var coinChange = function(coins, amount) {
     let dp = new Array(amount + 1).fill(Infinity)
@@ -2792,7 +2747,7 @@ var coinChange = function(coins, amount) {
 }
 ```
 
-### [最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
+#### [最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
 就是给定一个无序的数组，在这个数组中找出，递增并且最长的子数组
 1. dp表定义： `dp[i]` 表示以 `nums[i]` 结尾的「上升子序列」的长度, 这个定义中 `nums[i]` **必须被选取，且必须是这个子序列的最后一个元素**；
 2. 动态规划，状态转移方程`dp[i] = Max(dp[i],dp[j]+1)`
@@ -2934,7 +2889,7 @@ var lengthOfLIS = function(nums) {
 };
 ```
 
-### [编辑距离](https://leetcode-cn.com/problems/edit-distance/)
+#### [编辑距离](https://leetcode-cn.com/problems/edit-distance/)
 
 [思路](https://mp.weixin.qq.com/s/uWzSvWWI-bWAV3UANBtyOw)
 ```javascript
@@ -3107,7 +3062,7 @@ var maxProfit = function(prices) {
     return ans
 };
 ```
-### [跳跃游戏](https://leetcode-cn.com/problems/jump-game/)
+#### [跳跃游戏](https://leetcode-cn.com/problems/jump-game/)
 动态规划，状态转移方程，下一步是不是能到达，要看上一步的包含上一个节点的最大跳跃步数
 ```javascript
 /**
@@ -3126,7 +3081,7 @@ var canJump = function(nums) {
     return res
 };
 ```
-### [爬楼梯](https://leetcode-cn.com/problems/climbing-stairs/)
+#### [爬楼梯](https://leetcode-cn.com/problems/climbing-stairs/)
 动态规划思路： 要考虑第爬到第n阶楼梯时候可能是一步，也可能是两步。 
 1. 计算爬上n-1阶楼梯的方法数量。因为再爬1阶就到第n阶 
 2. 计算爬上n-2阶楼梯体方法数量。因为再爬2阶就到第n阶 那么f(n)=f(n-1)+f(n-2);
@@ -3147,7 +3102,7 @@ var climbStairs = function(n) {
     return b
 };
 ```
-### [单词拆分](https://leetcode-cn.com/problems/word-break/)
+#### [单词拆分](https://leetcode-cn.com/problems/word-break/)
 ```javascript
 var wordBreak = function(s, wordDict) {
     const { length } = s
@@ -3169,7 +3124,7 @@ var wordBreak = function(s, wordDict) {
 };
 ```
 
-### [目标和](https://leetcode-cn.com/problems/target-sum/)
+#### [目标和](https://leetcode-cn.com/problems/target-sum/)
 1. dfs，类似于二叉树的遍历
 ```javascript
 var findTargetSumWays = function(nums, S) {
@@ -3236,9 +3191,9 @@ var findTargetSumWays = function (nums, S) {
 
 // 链接：https://leetcode-cn.com/problems/target-sum/solution/jing-dian-0-1bei-bao-by-rodrick278-7ohy/
 ```
-## 8.数组
+### 8.数组
 
-### [连续子数组的最大和](https://leetcode-cn.com/problems/maximum-subarray/)
+#### [连续子数组的最大和](https://leetcode-cn.com/problems/maximum-subarray/)
 暴力求解：时间复杂度O(n^2),空间复杂度O(1)
 ```javascript
 /**
@@ -3277,7 +3232,7 @@ var maxSubArray = function(nums) {
 };
 ```
 
-### [乘积最大子数组](https://leetcode-cn.com/problems/maximum-product-subarray/)
+#### [乘积最大子数组](https://leetcode-cn.com/problems/maximum-product-subarray/)
 [题解](https://leetcode-cn.com/problems/maximum-product-subarray/solution/dong-tai-gui-hua-152-cheng-ji-zui-da-zi-shu-zu-by-/)
 ```javascript
 var maxProduct = function(nums) {
@@ -3295,7 +3250,7 @@ var maxProduct = function(nums) {
 };
 ```
 
-### [合并两个有序数组](https://leetcode-cn.com/problems/sorted-merge-lcci/)
+#### [合并两个有序数组](https://leetcode-cn.com/problems/sorted-merge-lcci/)
 mine: 插入后交换
 ```javascript
 /**
@@ -3348,7 +3303,7 @@ var merge = function(nums1, m, nums2, n) {
     }
 };
 ```
-### [全排列](https://leetcode-cn.com/problems/permutations/)
+#### [全排列](https://leetcode-cn.com/problems/permutations/)
 回溯算法
 ```javascript
 /**
@@ -3378,7 +3333,7 @@ var permute = function(nums) {
 };
 ```
 
-### [最长湍流子数组](https://leetcode-cn.com/problems/longest-turbulent-subarray/)
+#### [最长湍流子数组](https://leetcode-cn.com/problems/longest-turbulent-subarray/)
 
 ```javascript
 /**

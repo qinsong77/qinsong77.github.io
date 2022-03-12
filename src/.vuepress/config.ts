@@ -258,7 +258,13 @@ export default defineUserConfig<DefaultThemeOptions>({
 			],
 			'/algorithm/': [
 				'/algorithm/',
-				'/algorithm/binaryTree',
+				{
+					text: '二叉树',
+					children: [
+						'/algorithm/binaryTree/',
+						'/algorithm/binaryTree/leetcode',
+					]
+				},
 				'/algorithm/sort',
 				'/algorithm/leetCode',
 				'/algorithm/dynamic',

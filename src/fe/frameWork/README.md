@@ -119,8 +119,6 @@ ESLint 主要解决了两类问题,
 }
 ```
 
-### [彻底理解服务端渲染 - SSR原理](https://github.com/yacan8/blog/issues/30)
-
 ### Nginx
 
 - [巩固你的Nginx知识体系](https://juejin.cn/post/6870264679063617550)
