@@ -63,6 +63,7 @@ Render Props：
 - this 指向问题：父组件给子组件传递函数时，必须绑定 `this`，react 中的组件四种绑定 `this` 方法的区别
 - webpack编译后class的size要比function组件大，性能也没function好（Function Component编译后就是一个普通的function，function对js引擎是友好的）
 - Function Component是纯函数，利于组件复用和测试
+
 ## Hooks 优势
 
 - 能优化类组件的三大问题
@@ -75,9 +76,12 @@ Render Props：
 - 只能在函数内部的最外层调用 Hook，不要在循环、条件判断或者子函数中调用
 - 只能在 React 的函数组件中调用 Hook，不要在其他 JavaScript 函数中调用
 
+## hooks
 
-#### React Hooks能够让函数组件拥有内部状态的基本原理
+### React Hooks能够让函数组件拥有内部状态的基本原理
+
 利用闭包，记住了上一次的值，如下
+
 ```javascript
 const useState = function(){
 	let state = null
@@ -422,16 +426,16 @@ export default function AnimateDemo() {
 ```
 ```git
 before render
-effect: 60
+effect: 0
 setCounter --- 3s后
 before render
-clear: 60 -- 第二次渲染完成，执行上一次返回的clear函数
-effect: 61
+clear: 0 -- 第二次渲染完成，执行上一次返回的clear函数
+effect: 1
 before render
-clear: 61
-effect: 62
+clear: 1
+effect: 2
 before render
-clear: 62
+clear: 2
 ...
 clear: xx -- 组件销毁时
 ```
@@ -559,6 +563,49 @@ function useInterval(callback, delay) {
     return () => clearInterval(id);
   }, [delay]);
 }
+```
+
+#### useEffect中不能使用async function
+
+- [React useEffect 不支持 async function 你知道吗？](https://zhuanlan.zhihu.com/p/425129987)
+ahook的useAsyncEffect
+```ts
+import type { DependencyList } from 'react';
+import { useEffect } from 'react';
+
+function useAsyncEffect(
+  effect: () => AsyncGenerator<void, void, void> | Promise<void>,
+  deps: DependencyList,
+) {
+  function isGenerator(
+    val: AsyncGenerator<void, void, void> | Promise<void>,
+  ): val is AsyncGenerator<void, void, void> {
+    return typeof val[Symbol.asyncIterator] === 'function';
+  }
+  useEffect(() => {
+    const e = effect();
+    let cancelled = false;
+    async function execute() {
+      if (isGenerator(e)) {
+        while (true) {
+          const result = await e.next();
+          if (cancelled || result.done) {
+            break;
+          }
+        }
+      } else {
+        await e;
+      }
+    }
+    execute();
+    return () => {
+      cancelled = true;
+    };
+  }, deps);
+}
+
+export default useAsyncEffect;
+
 ```
 
 ### useLayoutEffect
@@ -946,7 +993,7 @@ export default function () {
 >但`useEffect`副作用函数是在dom渲染完执行，所以`return`的值是`undefined`,页面的`prevCounter`则没有显示值。
 >当`setCounter`时，函数重新运行，取到的是之前传入的`counter`,所以页面显示`counter`是1，`prevCounter`是0。
 
-#### useImperativeHandle
+### useImperativeHandle
 `useImperativeHandle`可以让我们在使用`ref`时自定义暴露给父组件的实例值。
 
 ```typescript jsx
@@ -1119,7 +1166,7 @@ function useCallback<T extends (...args: any[]) => any>(callback: T, deps: Depen
 
 ![](./image/usecallback.png)
 
-### 优化总结
+## 优化总结
 
 React 的性能优化方向主要是两个：**一个是减少重新 render 的次数(或者说减少不必要的渲染)**，**另一个是减少计算的量。**
 
@@ -1131,10 +1178,12 @@ React 的性能优化方向主要是两个：**一个是减少重新 render 的�
 减少不必要的渲染，可以使用`use.memo`和`useCallback`，或者之前的`shouldComponentUpdate`和`pureComponent`
 
 **`useMemo` 做计算结果缓存**
-#### 原理
+
+## 原理
 - [前端面试必考题：React Hooks 原理剖析](https://juejin.cn/post/6844904205371588615)
 - [React Hooks源码解析](https://juejin.cn/post/6844904080758800392)
 - [一文吃透react-hooks原理](https://juejin.cn/post/6944863057000529933)
+
 useState 和 useReducer 都是关于状态值的提取和更新，从本质上来说没有区别，从实现上，可以说 useState 是 useReducer 的一个简化版，其背后用的都是同一套逻辑。
 
 React Hooks 保存状态的位置其实与类组件的一致：

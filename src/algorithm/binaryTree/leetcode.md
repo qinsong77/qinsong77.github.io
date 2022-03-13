@@ -324,7 +324,7 @@ var isSymmetric = function(root) {
 ```
 
 #### [翻转二叉树](https://leetcode-cn.com/problems/invert-binary-tree/)
-![](./image/leetcode_tree/reverse_tree.png)
+![](./image/reverse_tree.png)
 ```javascript
 var invertTree = function(root) {
     if (root === null) return null
@@ -359,7 +359,7 @@ function connectTowNode(left, right) {
 
 #### [二叉树展开为链表](https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/)
 
-![](./image/leetcode_tree/tree1.png)
+![](./image/tree1.png)
 
 ```javascript
 /**

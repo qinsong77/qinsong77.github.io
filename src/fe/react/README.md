@@ -141,7 +141,7 @@ reconcile过程分为2个阶段（phase）：
 
 实际上是1-6的**工作循环**，7是出口，工作循环每次只做一件事，做完看要不要喘口气。工作循环结束时，`workInProgress tree`的根节点身上的effect list就是收集到的所有side effect（因为每做完一个都向上归并）
 
-所以，构建workInProgress tree的过程就是diff的过程，通过`requestIdleCallback`来调度执行一组任务，每完成一个任务后回来看看有没有插队的（更紧急的），每完成一组任务，把时间控制权交还给主线程，直到下一次requestIdleCallback回调再继续构建workInProgress tree
+所以，构建`workInProgress tree`的过程就是`diff`的过程，通过`requestIdleCallback`来调度执行一组任务，每完成一个任务后回来看看有没有插队的（更紧急的），每完成一组任务，把时间控制权交还给主线程，直到下一次`requestIdleCallback`回调再继续构建`workInProgress tree`。
 
 **commit具体过程如下：**
 
@@ -168,6 +168,39 @@ componentWillUnmount
 ```
 
 第1阶段的生命周期函数可能会被**多次调用**，默认以low优先级（后面介绍的6种优先级之一）执行，被高优先级任务打断的话，稍后重新执行
+
+**fiber tree与workInProgress tree**
+
+`双缓冲`技术（double buffering），就像[redux](http://www.ayqy.net/blog/redux%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/#articleHeader7)里的`nextListeners`，以`fiber tree`为主，workInProgress tree为辅
+
+双缓冲具体指的是workInProgress tree构造完毕，得到的就是新的fiber tree，然后喜新厌旧（把current指针指向workInProgress tree，丢掉旧的fiber tree）就好了
+
+这样做的好处：
+
+- 能够复用内部对象（fiber）
+
+- 节省内存分配、GC的时间开销
+
+每个fiber上都有个alternate属性，也指向一个fiber，创建workInProgress节点时优先取alternate，没有的话就创建一个：
+
+```js
+let workInProgress = current.alternate;
+if (workInProgress === null) {
+  //...这里很有意思
+  workInProgress.alternate = current;
+  current.alternate = workInProgress;
+} else {
+  // We already have an alternate.
+  // Reset the effect tag.
+  workInProgress.effectTag = NoEffect;
+
+  // The effect list is no longer valid.
+  workInProgress.nextEffect = null;
+  workInProgress.firstEffect = null;
+  workInProgress.lastEffect = null;
+}
+```
+如注释指出的，fiber与workInProgress互相持有引用，“喜新厌旧”之后，旧fiber就作为新fiber更新的预留空间，达到复用fiber实例的目的
 
 **优先级策略**
 
@@ -524,7 +557,7 @@ React应用的根节点通过current指针在不同Fiber树的rootFiber间切换
 - componentWillUnmount()
 
 由于 `reconciliation` 阶段是可中断的，一旦中断之后恢复的时候又会重新执行，所以很可能 `reconciliation` 阶段的生命周期方法会被多次调用，所以在 `reconciliation` 阶段的生命周期的方法是不稳定的，
-我想这也是 React 为什么要废弃 `componentWillMount` 和 `componentWillReceiveProps方`法而改为静态方法 `getDerivedStateFromProps` `的原因吧。
+我想这也是 React 为什么要废弃 `componentWillMount` 和 `componentWillReceiveProps`方法而改为静态方法 `getDerivedStateFromProps`的原因吧。
 
 [示意图](https://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/)
 
@@ -537,7 +570,7 @@ React应用的根节点通过current指针在不同Fiber树的rootFiber间切换
 ### 受控与非受控组件
 
 受控组件：在 HTML 中，表单元素（如`<input>、 <textarea>、<select>`)通常自己维护 state，并根据用户输入进行更新。
-即如Input的value绑定了state,而onChange时使用setState更新。
+即如Input的value绑定了state，而onChange时使用`setState`更新。
 
 也可以说是组件外部能控制组件内部的状态，则表示该组件为受控组件。
 
@@ -554,7 +587,7 @@ interface Props {
 	maxLength?: number
 }
 
-export default function App({value, maxLength}: Props) {
+export default function InputItem({value, maxLength}: Props) {
 	const [state, setState] = useState('')
 	useEffect(() => {
 		value && setState(value) // 这里能通过props控制state
@@ -612,12 +645,13 @@ class NameForm extends React.Component {
 
 ### [setState](https://zhuanlan.zhihu.com/p/39512941)
 
-- setState 只在合成事件和钩子函数中是“异步”的，在原生事件和setTimeout 中都是同步的。
+- setState 只在合成事件和钩子函数中是“异步”的，在原生事件和`setTimeout`中都是同步的。
 - setState 的“异步”并不是说内部由异步代码实现，其实本身执行的过程和代码都是同步的，只是合成事件和钩子函数的调用顺序在更新之前，导致在合成事件和钩子函数中没法立马拿到更新后的值，形成了所谓的“异步”，当然可以通过第二个参数 setState(partialState, callback) 中的callback拿到更新后的结果。
 - setState 的批量更新优化也是建立在“异步”（合成事件、钩子函数）之上的，在原生事件和setTimeout 中不会批量更新，在“异步”中如果对同一个值进行多次setState，setState的批量更新策略会对其进行覆盖，取最后一次的执行，如果是同时setState多个不同的值，在更新时会对其进行合并批量更新。
 
 ### react合成事件
 - [一文吃透react事件系统原理](https://juejin.cn/post/6955837254250004511)
+
 首先，React Jsx中写的事件，经过`babel`转换成`React.createElement`形式，放在了props参数`onClick`中，最终转成fiber对象放在了`memoizedProps` 和 `pendingProps`。
 真实的dom上的click事件被单独处理，已经被react底层替换成空函数。
 
@@ -1064,7 +1098,7 @@ class ChangeTheme extends React.Component {
 
 - [从 React 历史的长河里聊虚拟DOM及其价值](https://mp.weixin.qq.com/s/zCGQEpEGJYQWMMvZfyUYHg)
 
-react和vue等框架的出现使得前端的编程方式重**命令式**，即直接操纵 DOM，告诉浏览器该怎么干。这样的问题就是，大量的代码被用于操作 DOM 元素，且代码可读性差，可维护性低。
+react和vue等框架的出现使得前端的编程方式从**命令式**，即直接操纵 DOM，告诉浏览器该怎么干。这样的问题就是，大量的代码被用于操作 DOM 元素，且代码可读性差，可维护性低。
 变成了**声明式**，摒弃了直接操作 DOM 的细节，只关注数据的变动，DOM 操作由框架来完成，从而大幅度提升了代码的可读性和可维护性。
 
 而`diff`的出现，可以避免数据变动的导致整个页面的刷新，所以就有了 `Diff` 过程，将数据变动前后的 `DOM` 结构先进行比较，找出两者的不同处，然后再对不同之处进行更新渲染。
@@ -1140,7 +1174,7 @@ O(n^3)=> O(n) => 简单粗暴，所有的节点按层级比较，只会遍历一
 ```
 
 
-概念
+**概念**
 
 一个DOM节点在某一时刻最多会有4个节点和他相关。
 
