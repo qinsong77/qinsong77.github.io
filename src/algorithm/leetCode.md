@@ -821,9 +821,28 @@ var partition = function(s) {
 
 #### [最长不含重复字符的子字符串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/)
 
+
 滑动窗口解法，可以维护一个数组或下标
 
 ![](./leetcode_img/str1.png)
+
+
+```js
+var lengthOfLongestSubstring = function(s) {
+    let str = '';
+    let max = 0;
+    for (let i = 0; i < s.length; i++) {
+        const findIndex = str.indexOf(s[i]);
+        if(findIndex === -1) {
+            str = str + s[i];
+        } else {
+            str = str.slice(findIndex + 1) + s[i];
+        }
+         max = Math.max(max, str.length);
+    }
+    return max;
+};
+```
 
 左右指针控制滑动窗口，i相当于右指针
 ```javascript

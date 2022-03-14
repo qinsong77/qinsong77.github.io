@@ -5,9 +5,11 @@ title: 总结
 
 [React技术揭秘](https://react.iamkasong.com/)
 
+[React 运行时优化方案的演进](https://juejin.cn/post/7010539227284766751)
+
 [React 是如何工作的](https://mp.weixin.qq.com/s/ifLP36rFhYJsU2RCAi7OZQ)
 
-[图解React](http://www.7km.top/)
+[图解React](https://7kms.github.io/react-illustration-series/)
 
 [react+typescript](https://github.com/typescript-cheatsheets/react)
 
@@ -45,6 +47,7 @@ title: 总结
 - [真实DOM操作和Virtual Dom](#真实dom操作和virtual-dom)
 - [Diff算法](#diff算法)
 - [React懒加载](#react懒加载)
+- [React17/18新特性](#react17-18新特性)
 
 ## 概述
 
@@ -70,7 +73,7 @@ React15架构可以分为两层：
 - Reconciler（协调器）—— 负责找出变化的组件
 - Renderer（渲染器）—— 负责将变化的组件渲染到页面上
 
-#### Reconciler
+### Reconciler
 
 即便 React DOM 和 React Native 渲染器的区别很大，但也需要共享一些逻辑。特别是协调算法需要尽可能相似，这样可以让声明式渲染，自定义组件，state，生命周期方法和 refs 等特性，保持跨平台工作一致。
 
@@ -83,7 +86,7 @@ React15架构可以分为两层：
 - 通过对比找出本次更新中变化的虚拟DOM
 - 通知Renderer将变化的虚拟DOM渲染到页面上
 
-#### Renderer（渲染器）
+### Renderer（渲染器）
 由于React支持跨平台，所以不同平台有不同的`Renderer`。最熟悉的是负责在浏览器环境渲染的Renderer —— ReactDOM
 
 除此之外，还有：
@@ -224,7 +227,7 @@ if (workInProgress === null) {
 
 ### [React16的组件类型](https://zhuanlan.zhihu.com/p/55000793)
 
-### 函数式组件
+## 函数式组件
 
 函数式组件与普通的函数几乎完全一样。只不过函数执行完毕时，返回的是一个JSX结构。
 
@@ -295,7 +298,7 @@ class Greeting extends Component {}
 console.log(Greeting.prototype.isReactComponent); // ✅ Yes
 ```
 
-#### JSX简介
+## JSX简介
 
 [React 是如何创建 vdom 和 fiber tree](https://mp.weixin.qq.com/s?__biz=MzI3ODU4MzQ1MA==&mid=2247484766&idx=1&sn=a4f15894db4076c43a7859a5bc77542f&chksm=eb5584abdc220dbd222c5eeb239e0db1cff1385a89381da651476a7730f455f43c9c8d465478&mpshare=1&scene=23&srcid=0205epPsZMYOfNhALNtvAldy&sharer_sharetime=1612515049758&sharer_shareid=1958dfa2b35b63c7a7463d11712f39df#rd)
 
@@ -367,7 +370,7 @@ export function isValidElement(object) {
 ```
 可以看到，`$$typeof === REACT_ELEMENT_TYPE`的非null对象就是一个合法的`React Element`。换言之，在React中，所有JSX在运行时的返回结果（即`React.createElement()`的返回值）都是`React Element`。
 
-#### Fiber
+## Fiber
 Fiber是链表结构
 - child 指向当前节点的第一个子元素
 - return 指向当前节点的父元素
@@ -433,7 +436,7 @@ function FiberNode(
   this.alternate = null;
 }
 ```
-#### 双缓存Fiber树
+### 双缓存Fiber树
 
 在React中最多会同时存在两棵`Fiber`树。当前屏幕上显示内容对应的Fiber树称为`current Fiber`树，正在内存中构建的Fiber树称为`workInProgress Fiber`树。
 
@@ -567,7 +570,7 @@ React应用的根节点通过current指针在不同Fiber树的rootFiber间切换
 
 ![](./image/react-lifecircle2.png)
 
-### 受控与非受控组件
+## 受控与非受控组件
 
 受控组件：在 HTML 中，表单元素（如`<input>、 <textarea>、<select>`)通常自己维护 state，并根据用户输入进行更新。
 即如Input的value绑定了state，而onChange时使用`setState`更新。
@@ -643,13 +646,13 @@ class NameForm extends React.Component {
 ```
 
 
-### [setState](https://zhuanlan.zhihu.com/p/39512941)
+## [setState](https://zhuanlan.zhihu.com/p/39512941)
 
 - setState 只在合成事件和钩子函数中是“异步”的，在原生事件和`setTimeout`中都是同步的。
 - setState 的“异步”并不是说内部由异步代码实现，其实本身执行的过程和代码都是同步的，只是合成事件和钩子函数的调用顺序在更新之前，导致在合成事件和钩子函数中没法立马拿到更新后的值，形成了所谓的“异步”，当然可以通过第二个参数 setState(partialState, callback) 中的callback拿到更新后的结果。
 - setState 的批量更新优化也是建立在“异步”（合成事件、钩子函数）之上的，在原生事件和setTimeout 中不会批量更新，在“异步”中如果对同一个值进行多次setState，setState的批量更新策略会对其进行覆盖，取最后一次的执行，如果是同时setState多个不同的值，在更新时会对其进行合并批量更新。
 
-### react合成事件
+## react合成事件
 - [一文吃透react事件系统原理](https://juejin.cn/post/6955837254250004511)
 
 首先，React Jsx中写的事件，经过`babel`转换成`React.createElement`形式，放在了props参数`onClick`中，最终转成fiber对象放在了`memoizedProps` 和 `pendingProps`。
@@ -662,7 +665,7 @@ class NameForm extends React.Component {
 另一方面， React 想实现一个全浏览器的框架， 为了实现这种目标就需要提供全浏览器一致性的事件系统，以此抹平不同浏览器的差异。
 
 
-### React.PureComponent与React.memo()
+## React.PureComponent与React.memo()
 
 一个组件重新重新渲染，一般三种情况：
 
@@ -705,7 +708,7 @@ class Child extends React.PureComponent {
 }
 ```
 
-### React组件到底什么时候render
+## React组件到底什么时候render
 
 example：点击Parent组件的div，触发更新，Son组件会打印child render!么？
 ```jsx harmony
@@ -812,7 +815,8 @@ example的详细执行逻辑
 所以`Son`对应的`JSX`与上次更新时一致，`JSX`中保存的`props`也就一致，满足条件1。
 
 可以看到，`Son`满足`bailout`的所有条件，所以不会`render`。
-### 高阶组件
+
+## 高阶组件
 
 好文章-[React新特性Hooks使用教学，以及与高阶组件、renderProps模式的对比](https://blog.csdn.net/qq_40962320/article/details/87043581)
 
@@ -947,7 +951,7 @@ export default changeTheme('white')(countNumber(0)(Count)) // 链式调用
 ````
 
 
-#### render props
+## render props
 具有 `render prop` 的组件接受一个函数，该函数返回一个 React 元素并调用它而不是实现自己的渲染逻辑。
 
 其实就是`props`设置一个属性是函数，这个函数是个函数子组件，调用时把定义的组件的`state`，通过props传参给这个函数子组件，所以不一定没要取名为`render props`
@@ -1094,7 +1098,7 @@ class ChangeTheme extends React.Component {
 }
 ```
 
-### 真实DOM操作和Virtual Dom
+## 真实DOM操作和Virtual Dom
 
 - [从 React 历史的长河里聊虚拟DOM及其价值](https://mp.weixin.qq.com/s/zCGQEpEGJYQWMMvZfyUYHg)
 
@@ -1459,8 +1463,8 @@ oldIndex 2 < lastPlacedIndex 3
 利用scheduler（相当于`requestIdleCallback` API）调度任务，即拆分异步的一个一个得构建fiber节点。待构建完成，再同步遍历fiber树，`appendChild`添加dom
 
 
-### React懒加载
-#### 1.代码分割
+## React懒加载
+### 1.代码分割
 （1）为什么要进行代码分割？
 前端项目基本都采用打包技术，比如 `Webpack`，JS逻辑代码打包后会产生一个 `bundle.js` 文件，而随着引用的第三方库越来越多或业务逻辑代码越来越复杂，相应打包好的 `bundle.js` 文件体积就会越来越大，因为需要先请求加载资源之后，才会渲染页面，这就会严重影响到页面的首屏加载。
 
@@ -1470,7 +1474,7 @@ oldIndex 2 < lastPlacedIndex 3
 
 这里举一个平时开发中可能会遇到的场景，比如某个体积相对比较大的第三方库或插件（比如JS版的PDF预览库）只在单页应用（SPA）的某一个不是首页的页面使用了，这种情况就可以考虑代码分割，增加首屏的加载速度。
 
-#### 2.React的懒加载
+### 2.React的懒加载
 example：
 ```jsx harmony
 import React, { Suspense } from 'react';
@@ -1490,7 +1494,7 @@ function MyComponent() {
 
 如上代码中，通过 `import()`、`React.lazy` 和 `Suspense` 共同一起实现了 `React` 的懒加载，也就是常说了运行时动态加载，即 `OtherComponent` 组件文件被拆分打包为一个新的包（bundle）文件，并且只会在 OtherComponent 组件渲染时，才会被下载到本地。
 
-#### 3. import() 原理
+### 3. import() 原理
 
 import() 函数是由TS39提出的一种动态加载模块的规范实现，其返回是一个 promise。在浏览器宿主环境中一个`import()`的参考实现如下：
 ```js
@@ -1519,7 +1523,7 @@ function import(url) {
 ```
 当 Webpack 解析到该import()语法时，会自动进行代码分割。
 
-#### 4. React.lazy 原理
+### 4. React.lazy 原理
 ```flow js
 export function lazy<T, R>(ctor: () => Thenable<T, R>): LazyComponent<T> {
   let lazyType = {
@@ -1616,7 +1620,7 @@ export function readLazyComponentType<T>(lazyComponent: LazyComponent<T>): T {
 
 为什么要 throw 它？这就要涉及到 Suspense 的工作原理。
 
-#### 5. Suspense 原理
+### 5. Suspense 原理
 React 捕获到异常之后，会判断异常是不是一个 `thenable`，如果是则会找到 `SuspenseComponent` ，如果 `thenable` 处于 pending 状态，则会将其 children 都渲染成 fallback 的值，一旦 `thenable` 被 resolve 则 `SuspenseComponent` 的子组件会重新渲染一次。
 
 为了便于理解，我们也可以用 `componentDidCatch` 实现一个自己的 `Suspense` 组件，如下：
@@ -1647,3 +1651,23 @@ class Suspense extends React.Component {
 }
 ```
 ![](./image/react_all.png)
+
+
+## React17/18新特性
+
+### React17
+
+React17 是一个用以稳定CM的过渡版本。
+
+- 实现多版本共存: 事件委托从attach到document的代理，变成了事件 `attach` 到 React 渲染树的根 `DOM` 容器中
+- 新的优先级算法 - lanes
+
+### React 18
+
+- createRoot，默认开启了并发渲染，createBlockingRoot 函数创建的 blocking 模式
+- 批处理的优化
+- startTransition
+- useDeferredValue
+- SSR 下的懒加载支持
+
+![](./image/model.png)
