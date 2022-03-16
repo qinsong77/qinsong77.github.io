@@ -469,6 +469,7 @@ webpack的运行流程是一个串行的过程，从启动到结束会依次执�
 
 ### 热更新
 
+- [Webpack HMR 原理解析](https://zhuanlan.zhihu.com/p/30669007)
 #### [轻松理解webpack热更新原理](https://mp.weixin.qq.com/s/2L9Y0pdwTTmd8U2kXHFlPA)
 #### [了不起的 Webpack HMR 学习指南（含源码分析）](https://mp.weixin.qq.com/s?__biz=MjM5MDc4MzgxNA==&mid=2458455505&idx=1&sn=b6d5258393b5c41b77cdc78299e94697&chksm=b1c22df886b5a4eed560aa9aa95bc27d473d58ebabb501ec98c282bdbc8308e9951cea59a060&scene=178&cur_album_id=1556921519803596802#rd)
 

@@ -4,7 +4,7 @@ title: Summary
 
 文章汇总
 -----
-#### [104个 CSS 面试题](https://mp.weixin.qq.com/s/FXN__hiDx3S6aKPGeHXsJg)
+#### [104个 CSS 面试题](https://mp.weixin.qq.com/s?__biz=Mzg2OTY2MjgyNw==&mid=2247484449&idx=2&sn=0a36d89eb75fcf3bd09ff5db2996cfa1&source=41#wechat_redirect)
 #### [css晦涩难懂的点](https://juejin.cn/post/6888102016007176200)
 #### [Web开发者应该掌握的CSS tricks](https://lhammer.cn/You-need-to-know-css/#/zh-cn/)
 #### [前端DEMO以及基础的效果，CSS3简单的动画特效](http://codehtml.cn/front-end-demo/#/)
@@ -20,24 +20,24 @@ title: Summary
 - [px,em,rem](#em-rem)
 - [line-height:1.5和line-height:150%的区别](#line-height-1-5和line-height-150-的区别)
 - [比较 opacity: 0、visibility: hidden、display: none 优劣和适用场景](#比较-opacity-0、visibility-hidden、display-none-优劣和适用场景)
-- [CSS实现文本的单行和多行溢出省略效果](css实现文本的单行和多行溢出省略效果)
+- [CSS实现文本的单行和多行溢出省略效果](#css实现文本的单行和多行溢出省略效果)
 - [垂直居中和常见布局](#垂直居中和常见布局)
 - [css样式管理方案](#css样式管理方案)
 ### 盒模型
 
-组成：盒模型由内容区域、内边距、边框、外边距四部分组成。
+组成：盒模型由内容区域content、内边距padding、边框border、外边距margin四部分组成。
 
 实际大小：盒模型实际大小由内容区域、内边距、边框三部分组成，css设置`width`和`height`是对盒子内容区域设置的。
 
 `box-sizing`属性：
 - W3C标准盒模型（content-box）: width 和 height 指的是**内容区域的宽度和高度**。增加内边距、边框和外边距不会影响内容区域的尺寸，但是会增加元素框的总尺寸。一个块的总宽度= width + padding(左右) + border(左右);
-- IE（怪异）盒模型（border-box：border、padding 的设置不会影响元素的宽高，那么css给盒子设置的`width`和`height`属性就等于盒模型的实际大小（包括内容区域、内边距、边框）;
+- IE（怪异）盒模型（border-box）：border、padding 的设置不会影响元素的宽高，那么css给盒子设置的`width`和`height`属性就等于盒模型的实际大小（包括内容区域、内边距、边框）;
 ![](./imgs/content_box.png)
 ![](./imgs/box-sizing.png)
 
 `border-color` 默认颜色就是
 color 色值。具体来讲，就是当没有指定` border-color `颜色值的时候，会使用当前元素的
-color 计算值作为边框色。具有类似特性的 CSS 属性还有 outline、box-shadow 和 text-shadow 等。
+color 计算值作为边框色。具有类似特性的 CSS 属性还有 `outline`、`box-shadow` 和 `text-shadow `等。
 
 当`margin`和`padding`的值设置为百分比时，是指相对于最近的块级父元素width（非总宽度）的相应百分比的值，即使是margin-top、margin-bottom、padding-top、padding-bottom，设置为百分比时也是以最近块级父元素的width（非总宽度）为基准，而非height。
 
@@ -57,7 +57,7 @@ color 计算值作为边框色。具有类似特性的 CSS 属性还有 outline�
 </style>
 <div class="outer"><div class="inner"></div></div>
 ```
-inner 的实际内容高度为60px，未设置box-sizing为border-box，padding-top百分比取父元素宽的20%为40px，内容高度为60px。box-sizing为border-box时内容高度是20px。
+inner 的实际内容高度为60px，未设置`box-sizing`为`border-box`，`padding-top`百分比取父元素宽的20%为40px，内容高度为60px。box-sizing为border-box时内容高度是20px。
 
 ![](./imgs/inherit.png)
 
@@ -66,7 +66,7 @@ inner 的实际内容高度为60px，未设置box-sizing为border-box，padding-
 1. `dom.style.width/height` 只能取到行内样式的宽和高，style标签中和link外链的样式取不到。
 2. `dom.currentStyle.width/height` 取到的是最终渲染后的宽和高，只有IE支持此属性。
 3. `window.getComputedStyle(dom).width/height` 同（2）但是多浏览器支持，IE9以上支持。返回的带单位的字符串`60px`。
-4. `dom.getBoundingClientRect().width/height` 也是得到渲染后的宽和高，大多浏览器支持。IE9以上支持，除此外还可以取到相对于视窗的上下左右的距离
+4. `dom.getBoundingClientRect().width/height` 也是得到渲染后的宽和高，大多浏览器支持。IE9以上支持，除此外还可以取到相对于视窗的上下左右的距离。
 ### 优先级
 
 定义CSS样式时，经常出现两个或更多选择器应用在同一元素上，此时，
@@ -227,8 +227,8 @@ px像素（Pixel）。相对长度单位。像素px是相对于显示器屏幕�
 
 区别体现在子元素继承时，如下：
 
-- 父元素设置line-height:1.5会直接继承给子元素，子元素根据自己的font-size再去计算子元素自己的line-height。
-- 父元素设置line-height:150%是计算好了line-height值，然后把这个计算值给子元素继承，子元素继承拿到的就是最终的值了。此时子元素设置font-size就对其line-height无影响了。
+- 父元素设置`line-height:1.5`会直接继承给子元素，子元素根据自己的`font-size`再去计算子元素自己的`line-height`。
+- 父元素设置`line-height:150%`是计算好了`line-height`值，然后把这个计算值给子元素继承，子元素继承拿到的就是最终的值了。此时子元素设置font-size就对其line-height无影响了。
 
 比如父元素设置属性：font- size:14px;line-height:1.5,child设置font-size:26px;
 

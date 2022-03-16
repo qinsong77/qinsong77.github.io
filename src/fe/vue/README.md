@@ -2203,9 +2203,9 @@ export default {
   - oldEndVnode === newEndVnode =》 patchVnode
   - oldStartVnode === newEndVnode =》 pathVode 并且，oldStartVnode移动到右边，即把旧的开始节点插入到旧的结束节点后面。就是老 `VNode` 节点的头部与新 `VNode` 节点的尾部是同一节点的时候，将 `oldStartVnode.elm` 这个节点直接移动到 `oldEndVnode.elm` 这个节点的后面即可。然后 `oldStartIdx` 向后移动一位，`newEndIdx` 向前移动一位。
   - oldEndVnode === newStartVnode =》 pathVode 并且，oldEndVnode移动到左边，即把旧的结束节点插入到旧的开始节点前面。就是老 `VNode` 节点的尾部与新 `VNode` 节点的头部是同一节点的时候，将 `oldEndVnode.elm` 插入到 `oldStartVnode.elm` 前面。同样的，`oldEndIdx` 向前移动一位，`newStartIdx` 向后移动一位。
-  - 生成一个key与旧VNode的key对应的哈希表， 如果找不到key，则创建插入，找到的话如果是相同的节点，则patchNode并且插入，不是则创建插入
-- while结束时，如果是oldStartIdx > oldEndIdx，说明老节点已经遍历完了，新节点比老节点多，所以这时候多出来的新节点需要一个一个创建出来加入到真实DOM中。
-newStartIdx > newEndIdx，则说明新节点已经遍历完了，老节点多余新节点，这个时候需要将多余的老节点从真实DOM中移除
+  - 生成一个key与旧VNode的key对应的哈希表， 如果找不到key，则创建插入。如果找到了节点，同时它符合 `sameVnode`，则将这两个节点进行 `patchVnode`，将该位置的老节点赋值 `undefined`（之后如果还有新节点与该节点key相同可以检测出来提示已有重复的 key ），同时将 `newStartVnode.elm` 插入到 `oldStartVnode.elm` 的前面。同理，`newStartIdx` 往后移动一位。
+- while结束时，如果是`oldStartIdx > oldEndIdx`，说明老节点已经遍历完了，新节点比老节点多，所以这时候多出来的新节点需要一个一个创建出来加入到真实DOM中。
+`newStartIdx > newEndIdx`，则说明新节点已经遍历完了，老节点多余新节点，这个时候需要将多余的老节点从真实DOM中移除
 
  ::: details 点击查看代码
 ```javascript
