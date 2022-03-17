@@ -254,7 +254,16 @@ export default defineUserConfig<DefaultThemeOptions>({
 						'/fe/frameWork/test',
 						'/fe/frameWork/thought',
 					]
-				}
+				},
+				{
+					text: '微前端',   // 必要的
+					collapsible: false,
+					children: [
+						'/fe/MicroFrontends',
+						'/fe/MicroFrontends/qiankun',
+						'/fe/MicroFrontends/microapp',
+					]
+				},
 			],
 			'/algorithm/': [
 				'/algorithm/',

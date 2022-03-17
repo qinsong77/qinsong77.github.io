@@ -1527,8 +1527,9 @@ console.log(b);
 ```
 
 ## [垃圾回收](https://zh.javascript.info/garbage-collection)
-- [V8 引擎如何进行垃圾内存的回收](https://sanyuan0704.top/my_blog/blogs/javascript/js-v8/002.html#v8-%E5%86%85%E5%AD%98%E9%99%90%E5%88%B6)
+- [V8 引擎如何进行垃圾内存的回收](https://sanyuan0704.top/blogs/javascript/js-v8/002.html)
 - [V8垃圾回收机制](https://blog.csdn.net/qq_17175013/article/details/103759055)
+- [备战大厂，彻底搞懂垃圾回收机制底层原理](https://mp.weixin.qq.com/s/6jSE8DDuyZrESpn-fOlL5Q)
 
 64位系统下，V8最多只能分配1.4G, 在 32 位系统中，最多只能分配0.7G。
 
