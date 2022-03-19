@@ -22,17 +22,18 @@ title: Summary
 - [SourceMap](#sourcemap)
 
 ## 文章合集
-#### [webpack 中那些最易混淆的 5 个知识点](https://juejin.cn/post/6844904007362674701)
-#### [Webpack4打包机制原理解析](https://mp.weixin.qq.com/s/WXUW4bS4nT90uycodN0avw)
-#### [Webpack面试题](https://juejin.cn/post/6844904094281236487)
-#### [从源码窥探Webpack4.x原理](https://juejin.cn/post/6844904046294204429)
-#### [webpack小书](https://www.timsrc.com/article/2/webpack-book)
-#### [Webpack揭秘](https://juejin.cn/post/6844903685407916039)
-#### [由浅入深配置webpack4](https://juejin.im/post/6859888538004783118)
-#### [手写webpack核心原理](https://juejin.im/post/6854573217336541192)
-#### [体积减少80%！释放webpack tree-shaking的真正潜力](https://juejin.cn/post/6844903769646317576)
-#### [Vite 原理分析](https://juejin.cn/post/6881078539756503047)
-#### [前端 DSL 实践指南](https://zhuanlan.zhihu.com/p/107947462)
+- [webpack 5源码解析系列](https://juejin.cn/column/6978684601921175583)
+- [[万字总结] 一文吃透 Webpack 核心原理](https://juejin.cn/post/6949040393165996040)
+- [webpack 中那些最易混淆的 5 个知识点](https://juejin.cn/post/6844904007362674701)
+- [Webpack4打包机制原理解析](https://mp.weixin.qq.com/s/WXUW4bS4nT90uycodN0avw)
+- [Webpack面试题](https://juejin.cn/post/6844904094281236487)
+- [从源码窥探Webpack4.x原理](https://juejin.cn/post/6844904046294204429)
+- [webpack小书](https://www.timsrc.com/article/2/webpack-book)
+- [Webpack揭秘](https://juejin.cn/post/6844903685407916039)
+- [由浅入深配置webpack4](https://juejin.im/post/6859888538004783118)
+- [手写webpack核心原理](https://juejin.im/post/6854573217336541192)
+- [Vite 原理分析](https://juejin.cn/post/6881078539756503047)
+- [前端 DSL 实践指南](https://zhuanlan.zhihu.com/p/107947462)
 
 
 ### 前端工程化
@@ -785,7 +786,9 @@ module.exports = FileListPlugin;
 ```
 ### [Tree Shaking](https://webpack.docschina.org/guides/tree-shaking)
 
-Tree shaking 是一种通过清除多余代码方式来优化项目打包体积的技术，专业术语叫 Dead code elimination
+- [原理](https://juejin.cn/post/7002410645316436004)
+
+Tree shaking 是一种通过清除多余代码方式来优化项目打包体积的技术，专业术语叫 Dead code elimination。基于 `ES Module` 规范，它会在运行过程中静态分析模块之间的导入导出，确定 ESM 模块中哪些导出值未曾其它模块使用，并将其删除，以此实现打包产物的优化。
 
 必须使用 ES2015 模块语法。是基于esm 静态分析来的，而`require()`语法的 `CommonJS` 模块规范。这些模块是 `dynamic` 动态加载的，这意味着可以根据代码中的条件导入新模块。
 ```js
@@ -812,6 +815,14 @@ ES6 module 特点：
 3. import binding 是 immutable的
 
 **ES6模块依赖关系是确定的，和运行时的状态无关，可以进行可靠的静态分析**,
+
+Webpack 中，Tree-shaking 的实现一是先标记出模块导出值中哪些没有被用过，二是使用 `Terser`删掉这些没被用到的导出语句。标记过程大致可划分为三个步骤：
+
+- Make 阶段，收集模块导出变量并记录到模块依赖关系图 ModuleGraph 变量中
+- Seal 阶段，遍历 ModuleGraph 标记模块导出变量有没有被使用
+- 生成产物时，若变量没有被其它模块使用则删除对应的导出语句
+
+> 标记功能需要配置 `optimization.usedExports = true` 开启
 
 ### [Webpack模块打包原理](https://juejin.cn/post/6844903802382860296)
 - [模块加载](https://zhuanlan.zhihu.com/p/243485307)
