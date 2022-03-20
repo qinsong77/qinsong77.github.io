@@ -30,7 +30,7 @@ This release focus on the following:
 - Module Federation
 
 
-[webpack5总结](https://juejin.cn/post/6850037264962027534)
+[webpack5总结](https://juejin.cn/post/7023242274876162084)
 
 ### 持久化缓存
 

@@ -36,7 +36,7 @@ title: Summary
 - [前端 DSL 实践指南](https://zhuanlan.zhihu.com/p/107947462)
 
 
-### 前端工程化
+## 前端工程化
 
  - [手把手带你入门前端工程化——超详细教程](https://zhuanlan.zhihu.com/p/276458191)
  - [前端工程化](https://juejin.cn/post/6844904132512317453)
@@ -71,7 +71,7 @@ title: Summary
 从最早先的 grunt、gulp 等，再到目前的 webpack、parcel。这些自动化工具在自动化合并、构建、打包都能为我们节省很多工作。而这些只是前端自动化其中的一部分，前端自动化还包含了持续集成、自动化测试等方方面面。
 
 
-### Monorepo
+## Monorepo
 
 总结作用
 1. 单仓库实现将各包统一收敛在packages中，在上层统一统筹管理各个package的依赖、构建、开发/调试、测试、版本、发布，提供更优雅的多包管理和协作方案。
@@ -105,6 +105,16 @@ A tool for managing JavaScript projects with multiple packages.
 3. 根据 git 提交记录，自动生成 CHANGELOG
 
 - [彻底搞懂基于 Monorepo 的 lerna 模块](https://mp.weixin.qq.com/s/Qf65Pk0t1n0L1s7Fv-XZewhttps://mp.weixin.qq.com/s/Qf65Pk0t1n0L1s7Fv-XZew)
+
+#### [TurboRepo](https://turborepo.org/docs/getting-started)
+
+优势
+- 增量构建：缓存构建内容，并跳过已经计算过的内容，通过增量构建来提高构建速度
+- 内容hash：通过文件内容计算出来的hash来判断文件是否需要进行构建
+- 云缓存：可以和团队成员共享CI/CD的云构建缓存，来实现更快的构建
+- 并行执行：在不浪费空闲 CPU 的情况下，以最大并行数量来进行构建
+- 任务管道：通过定义任务之间的关系，让 Turborepo 优化构建的内容和时间
+- 约定式配置：通过约定来降低配置的复杂度，只需要几行简单的 JSON 就能完成配置
 
 ## Babel
 
@@ -144,7 +154,7 @@ AST 遍历和转换会使用**访问者模式**。访问者会以`深度优先`�
 ![](./image/babe_tool_package.png)
 #### polyfill和runtime的区别
 
-`polyfil`l是会污染原来的全局环境的（因为新的原生对象、API这些都直接由polyfill引入到全局环境）。这样就很容易会发生冲突。对于库library来说，是供外部使用的，但外部的环境并不在library的可控范围。所以runtime就是解决这个问题的，避免全局污染。
+`polyfill`是会污染原来的全局环境的（因为新的原生对象、API这些都直接由polyfill引入到全局环境）。这样就很容易会发生冲突。对于库library来说，是供外部使用的，但外部的环境并不在library的可控范围。所以runtime就是解决这个问题的，避免全局污染。
 
 babel-plugin-transform-runtime插件依赖babel-runtime，babel-runtime是真正提供runtime环境的包；也就是说transform-runtime插件是把js代码中使用到的新原生对象和静态方法转换成对runtime实现包的引用，举个例子如下：
 
@@ -341,7 +351,7 @@ console.log(result) // import Button from "element-ui/lib/Button";
   ::: 
 
 ## postcss
-
+对于`css`类似于`babel`对于js的功能。
 - [神奇的 postcss](https://mp.weixin.qq.com/s/TAKvKLXIG25gnuHSzt7Edg)
 
 ## 简述webpack工作流程
@@ -380,6 +390,13 @@ Webpack 会为每个生成的 `Chunk` 取一个名称，`Chunk` 的名称和 `En
  - 如果 `entry` 是一个 `string` 或 `array`，就只会生成一个 `Chunk`，这时 `Chunk `的名称是 `main`；
  - 如果 `entry` 是一个 `object`，就可能会出现多个 `Chunk`，这时 `Chunk `的名称是 `object` 键值对里键的名称。
 
+**bundle**: webpack 处理好 `chunk` 文件后，最后会输出 `bundle` 文件，这个 bundle 文件包含了经过加载和编译的最终源文件，所以它可以直接在浏览器中运行。
+
+一般来说一个 chunk 对应一个 bundle，比如上图中的 utils.js -> chunks 1 -> utils.bundle.js；但也有例外，比如说上图中，我就用 MiniCssExtractPlugin 从 chunks 0 中抽离出了 index.bundle.css 文件。
+
+> `module`，`chunk` 和 bundle 其实就是同一份逻辑代码在不同转换场景下的取了三个名字：
+
+> 直接写出来的是 `module`，webpack 处理时是 `chunk`，最后生成浏览器可以直接运行的 `bundle`。
 
 ### 构建过程
 关于 webpack 的工作流程，简单来说可以概括为以下几步：
@@ -434,9 +451,9 @@ webpack的运行流程是一个串行的过程，从启动到结束会依次执�
 
 在以上过程中， Webpack 会在特定的时间点广播特定的事件，插件在监听到感兴趣的事件后会执行特定的逻辑，井且插件可以调用 Webpack 提供的 API 改变 Webpack 的运行结果。其实以上7个步骤，可以简单归纳为初始化、编译、输出，三个过程，而这个过程其实就是前面说的基本模型的扩展。
 
-### 常用loader
+## 常用loader
 
-- file-loader：把文件输出到一个文件夹中，在代码中通过相对 URL 去引用输出的文件，当引入的文件是 `.png`、`.txt `等时，可以通过 `file-loader` 解析项目中的 `url `引入。根据配置将文件拷贝到相应的路径，并修改打包后文件的引入路径，让它指向正确的文件。;
+- file-loader：把文件输出到一个文件夹中，在代码中通过相对 URL 去引用输出的文件，当引入的文件是 `.png`、`.txt `等时，可以通过 `file-loader` 解析项目中的 `url `引入。根据配置将文件拷贝到相应的路径，并修改打包后文件的引入路径，让它指向正确的文件;
 
 - url-loader：`url-loader` 封装了 `file-loader` 且可以不依赖于 `file-loader` 单独使用，并且可以配置 `limit`。对小于 limit 大小的图片转换成 `Base64`，大于 limit 的时候使用 file-loader 里的方法。
 
@@ -456,7 +473,56 @@ webpack的运行流程是一个串行的过程，从启动到结束会依次执�
 
 - eslint-loader：通过 ESLint 检查 JavaScript 代码;
 
-### 常用plugin
+### [编写loader](https://v4.webpack.docschina.org/contribute/writing-a-loader/)
+
+编写 loader 时应该遵循以下准则
+- 简单易用: loaders 应该只做单一任务。这不仅使每个 loader 易维护，也可以在更多场景链式调用。
+- 使用链式传递: 利用 loader 可以链式调用的优势。写五个简单的 loader 实现五项任务，而不是一个 loader 实现五项任务。
+- 模块化的输出。保证输出模块化。loader 生成的模块与普通模块遵循相同的设计原则。
+- 确保无状态。确保 `loader` 在不同模块转换之间不保存状态。每次运行都应该独立于其他编译模块以及相同模块之前的编译结果。
+
+loader 其实就是一个 function，接收一个参数 source，就是当前的文件内容，然后稍加处理，就可以 return 出一个新的文件内容。
+
+example: 处理 .txt 文件，并且将任何实例中的 `[name]` 直接替换为 loader 选项中设置的 name。然后返回包含默认导出文本的 JavaScript 模块。
+::: details 点击查看代码
+```js
+import { getOptions } from 'loader-utils';
+
+export default function loader(source) {
+  const options = getOptions(this);
+
+  source = source.replace(/\[name\]/g, options.name);
+
+  return `export default ${ JSON.stringify(source) }`;
+}
+// 使用
+module: {
+      rules: [{
+        test: /\.txt$/,
+        use: {
+          loader: path.resolve(__dirname, '../config/loader.js'),
+          options: {
+            name: 'Alice'
+          }
+        }
+      }]
+    }
+```
+:::
+异步调用
+```js
+module.exports = function (source) {
+    const callback = this.async()
+
+    // 由于有 3 秒延迟，所以打包时需要 3+ 秒的时间
+    setTimeout(() => {
+        callback(null, `${source.replace(/;/g, '')}`)
+    }, 3000)
+}
+```
+异步 `loader` 需要调用 webpack 的 `async()` 生成一个` callback`，它的第一个参数是 error，这里可设为 null，第二个参数就是处理后的源码。当你异步处理完源码后，调用 callback 即可。
+
+## 常用plugin
 - HotModuleReplacementPlugin：webpack内置的模块热更新插件。Hot-Module-Replacement 的热更新是依赖于 webpack-dev-server，后者是在打包文件改变时更新打包文件或者 reload 刷新整个页面，HRM 是只更新修改的部分。
 - clean-webpack-plugin：打包前自动清理 dist 目录，防止文件残留。
 - terser-webpack-plugin： Webpack4.0 默认是使用 terser-webpack-plugin 这个压缩插件
@@ -468,11 +534,61 @@ webpack的运行流程是一个串行的过程，从启动到结束会依次执�
 - speed-measure-webpack-plugin: 打包速度分析，**HardSourceWebpackPlugin 和 speed-measure-webpack-plugin 不能一起使用**
 - [hard-source-webpack-plugin](https://github.com/mzgoddard/hard-source-webpack-plugin)（Webpack 4 的打包性能足够好的，dll继续维护的必要了, HardSourceWebpackPlugin is a plugin for webpack to provide an intermediate caching step for modules. In order to see results, you'll need to run webpack twice with this plugin: the first build will take the normal amount of time. The second build will be significantly faster.)
 
-### 热更新
+### [编写插件](https://v4.webpack.docschina.org/contribute/writing-a-plugin/)
+
+`Compiler` 和 `Compilation`
+
+在插件开发中最重要的两个资源就是 compiler 和 compilation 对象。理解它们的角色是扩展 webpack 引擎重要的第一步。
+compiler 对象代表了完整的 webpack 环境配置。这个对象在启动 webpack 时被一次性建立，并配置好所有可操作的设置，包括 options，loader 和 plugin。当在 webpack 环境中应用一个插件时，插件将收到此 compiler 对象的引用。可以使用它来访问 webpack 的主环境。
+
+`compilation` 对象代表了一次资源版本构建。当运行 webpack 开发环境中间件时，每当检测到一个文件变化，就会创建一个新的 compilation，从而生成一组新的编译资源。一个 compilation 对象表现了当前的模块资源、编译生成资源、变化的文件、以及被跟踪依赖的状态信息。compilation 对象也提供了很多关键时机的回调，以供插件做自定义处理时选择使用。
+
+一个插件由以下构成
+
+- 一个具名 JavaScript 函数。
+- 在它的原型上定义 apply 方法。
+- 指定一个触及到 webpack 本身的 事件钩子。
+- 操作 webpack 内部的实例特定数据。
+- 在实现功能后调用 webpack 提供的 callback。
+
+比如一个输出打包文件列表的插件
+```javascript
+class FileListPlugin {
+  apply(compiler) {
+    // emit 是异步 hook，使用 tapAsync 触及它，还可以使用 tapPromise/tap(同步)
+    compiler.hooks.emit.tapAsync('FileListPlugin', (compilation, callback) => {
+      // 在生成文件中，创建一个头部字符串：
+      var filelist = 'In this build:\n\n';
+
+      // 遍历所有编译过的资源文件，
+      // 对于每个文件名称，都添加一行内容。
+      for (var filename in compilation.assets) {
+        filelist += '- ' + filename + '\n';
+      }
+
+      // 将这个列表作为一个新的文件资源，插入到 webpack 构建中：
+      compilation.assets['filelist.md'] = {
+        source: function() {
+          return filelist;
+        },
+        size: function() {
+          return filelist.length;
+        }
+      };
+
+      callback();
+    });
+  }
+}
+
+module.exports = FileListPlugin;
+```
+
+## 热更新
 
 - [Webpack HMR 原理解析](https://zhuanlan.zhihu.com/p/30669007)
-#### [轻松理解webpack热更新原理](https://mp.weixin.qq.com/s/2L9Y0pdwTTmd8U2kXHFlPA)
-#### [了不起的 Webpack HMR 学习指南（含源码分析）](https://mp.weixin.qq.com/s?__biz=MjM5MDc4MzgxNA==&mid=2458455505&idx=1&sn=b6d5258393b5c41b77cdc78299e94697&chksm=b1c22df886b5a4eed560aa9aa95bc27d473d58ebabb501ec98c282bdbc8308e9951cea59a060&scene=178&cur_album_id=1556921519803596802#rd)
+- [轻松理解webpack热更新原理](https://mp.weixin.qq.com/s/2L9Y0pdwTTmd8U2kXHFlPA)
+- [了不起的 Webpack HMR 学习指南（含源码分析）](https://mp.weixin.qq.com/s?__biz=MjM5MDc4MzgxNA==&mid=2458455505&idx=1&sn=b6d5258393b5c41b77cdc78299e94697&chksm=b1c22df886b5a4eed560aa9aa95bc27d473d58ebabb501ec98c282bdbc8308e9951cea59a060&scene=178&cur_album_id=1556921519803596802#rd)
 
 在 Webpack 的 webpack.config.ts 中：
 1. 配置 devServer 的 hot 为 true
@@ -689,101 +805,6 @@ module.exports = {
 - [关于webpack性能调优](https://zhuanlan.zhihu.com/p/150731200)
 - [vue模块化按需编译，突破编译瓶颈](https://zhuanlan.zhihu.com/p/137120584)
 
-### [编写loader](https://v4.webpack.docschina.org/contribute/writing-a-loader/)
-
-编写 loader 时应该遵循以下准则
-- 简单易用: loaders 应该只做单一任务。这不仅使每个 loader 易维护，也可以在更多场景链式调用。
-- 使用链式传递: 利用 loader 可以链式调用的优势。写五个简单的 loader 实现五项任务，而不是一个 loader 实现五项任务。
-- 模块化的输出。保证输出模块化。loader 生成的模块与普通模块遵循相同的设计原则。
-- 确保无状态。确保 `loader` 在不同模块转换之间不保存状态。每次运行都应该独立于其他编译模块以及相同模块之前的编译结果。
-
-loader 其实就是一个 function，接收一个参数 source，就是当前的文件内容，然后稍加处理，就可以 return 出一个新的文件内容。
-
-example: 处理 .txt 文件，并且将任何实例中的 `[name]` 直接替换为 loader 选项中设置的 name。然后返回包含默认导出文本的 JavaScript 模块。
-  ::: details 点击查看代码
-```js
-import { getOptions } from 'loader-utils';
-
-export default function loader(source) {
-  const options = getOptions(this);
-
-  source = source.replace(/\[name\]/g, options.name);
-
-  return `export default ${ JSON.stringify(source) }`;
-}
-// 使用
-module: {
-      rules: [{
-        test: /\.txt$/,
-        use: {
-          loader: path.resolve(__dirname, '../config/loader.js'),
-          options: {
-            name: 'Alice'
-          }
-        }
-      }]
-    }
-```
-  :::
-异步调用
-```js
-module.exports = function (source) {
-    const callback = this.async()
-
-    // 由于有 3 秒延迟，所以打包时需要 3+ 秒的时间
-    setTimeout(() => {
-        callback(null, `${source.replace(/;/g, '')}`)
-    }, 3000)
-}
-```
-异步 `loader` 需要调用 webpack 的 `async()` 生成一个` callback`，它的第一个参数是 error，这里可设为 null，第二个参数就是处理后的源码。当你异步处理完源码后，调用 callback 即可。
-
-### [编写插件](https://v4.webpack.docschina.org/contribute/writing-a-plugin/)
-
-Compiler 和 Compilation
-
-在插件开发中最重要的两个资源就是 compiler 和 compilation 对象。理解它们的角色是扩展 webpack 引擎重要的第一步。
-compiler 对象代表了完整的 webpack 环境配置。这个对象在启动 webpack 时被一次性建立，并配置好所有可操作的设置，包括 options，loader 和 plugin。当在 webpack 环境中应用一个插件时，插件将收到此 compiler 对象的引用。可以使用它来访问 webpack 的主环境。
-compilation 对象代表了一次资源版本构建。当运行 webpack 开发环境中间件时，每当检测到一个文件变化，就会创建一个新的 compilation，从而生成一组新的编译资源。一个 compilation 对象表现了当前的模块资源、编译生成资源、变化的文件、以及被跟踪依赖的状态信息。compilation 对象也提供了很多关键时机的回调，以供插件做自定义处理时选择使用。
-
-一个插件由以下构成
-
-- 一个具名 JavaScript 函数。
-- 在它的原型上定义 apply 方法。
-- 指定一个触及到 webpack 本身的 事件钩子。
-- 操作 webpack 内部的实例特定数据。
-- 在实现功能后调用 webpack 提供的 callback。
-```javascript
-class FileListPlugin {
-  apply(compiler) {
-    // emit 是异步 hook，使用 tapAsync 触及它，还可以使用 tapPromise/tap(同步)
-    compiler.hooks.emit.tapAsync('FileListPlugin', (compilation, callback) => {
-      // 在生成文件中，创建一个头部字符串：
-      var filelist = 'In this build:\n\n';
-
-      // 遍历所有编译过的资源文件，
-      // 对于每个文件名称，都添加一行内容。
-      for (var filename in compilation.assets) {
-        filelist += '- ' + filename + '\n';
-      }
-
-      // 将这个列表作为一个新的文件资源，插入到 webpack 构建中：
-      compilation.assets['filelist.md'] = {
-        source: function() {
-          return filelist;
-        },
-        size: function() {
-          return filelist.length;
-        }
-      };
-
-      callback();
-    });
-  }
-}
-
-module.exports = FileListPlugin;
-```
 ### [Tree Shaking](https://webpack.docschina.org/guides/tree-shaking)
 
 - [原理](https://juejin.cn/post/7002410645316436004)
@@ -831,12 +852,12 @@ webpack根据`webpack.config.ts`中的入口文件，在入口文件里识别模
 使用一个立即执行函数，实现了类似Common Js require和exports的特性，核心是`__webpack_require__`的实现，
 创建模块缓存`installedModules `，从入口文件执行require。
 
-懒加载是动态创建jsonp的动态script标签，加载异步模块，加载完成`window["webpackJsonp"]` push模块，异步模块打包后的文件中保存着异步模块源代码，同时为了区分不同的异步模块，还保存着该异步模块对应的标识：chunkId。
+懒加载是动态创建`jsonp`的动态script标签，加载异步模块，加载完成`window["webpackJsonp"]` push模块，异步模块打包后的文件中保存着异步模块源代码，同时为了区分不同的异步模块，还保存着该异步模块对应的标识：chunkId。
 
 webpack实现模块的异步加载有点像jsonp的流程。在主js文件中通过在head中构建script标签方式，异步加载模块信息；再使用回调函数webpackJsonpCallback，把异步的模块源码同步到主文件中，所以后续操作异步模块可以像同步模块一样。
 
-1. 到异步模块时，使用__webpack_require__.e函数去把异步代码加载进来。该函数会在html的head中动态增加script标签，src指向指定的异步模块存放的文件。
-2. 加载的异步模块文件会执行webpackJsonpCallback函数，把异步模块加载到主文件中。
+1. 到异步模块时，使用`__webpack_require__.e`函数去把异步代码加载进来。该函数会在html的head中动态增加script标签，src指向指定的异步模块存放的文件；
+2. 加载的异步模块文件会执行webpackJsonpCallback函数，把异步模块加载到主文件中；
 3. 所以后续可以像同步模块一样,直接使用__webpack_require__("./src/async.js")加载异步模块。
 
 源码中的`primose`使用非常精妙，主模块加载完成异步模块才resolve()
