@@ -248,7 +248,7 @@ var wordBreak = function(s, wordDict) {
             if (dp[i] === true) break;
             if (dp[j] === false) continue;
             const suffix = s.slice(j,i)
-            if(set.has(suffix ) && dp[j]) {
+            if(set.has(suffix) && dp[j]) {
                 dp[i] = true
                 break
             }

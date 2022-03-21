@@ -1189,7 +1189,19 @@ get: function reactiveGetter () {
 ::: tip 总结描述
  事件循环是在执行执行完宏任务后（script是第一个宏任务），执行完所有的微任务，再执行GUI渲染，然后开启事件队列中的下一个宏任务。
  当执行this.xx = 'xx' 时，背后更新Dom的回调会加到callback数组中，当执行完脚本，会执行微任务队列，这时就会遍历callback运行所有的回调函数。
+
+nextTick中维护了一个callbacks队列，一个pending锁，一个timerFunc。
+
+- 这个timerFunc就是根据浏览器环境判断得出的一个能够产生微任务或降级为宏任务的api调用，比如promise.then。
+- callbacks队列的作用是收集当前正在执行的宏任务中所有的nextTick回调，等当前宏任务执行完之后好一次性for循环执行完。
+- 试想如果没有callback队列的话，每次调用nextTick都去创建一个timerFunc微任务（假设支持），那么也就不需要pending锁了。
+- 现在有了callbacks队列的情况下就只需要创建一个timerFunc微任务，那问题是什么时候创建该微任务呢？
+这里就要讲到pending了，在pending为false的时候表示第一次添加cb到callbacks中，这时候创建一个timerFunc微任务，并加锁。
+后面调用nextTick就只是往callbacks添加回调。
+等当前宏任务之后完之后，就会去执行timerFunc清空callbacks队列，并设置pending为false，一切归零
 :::
+  
+>  js 引擎线程和 GUI 渲染线程是互斥的，执行 js 引擎线程运行的时候，GUI 渲染线程是被挂起的。在执行 $nextTick 的时候，DOM 树已经被更新了，只是新的 DOM 还没有给被GUI 渲染，所以可以拿到 更新后的 DOM。
  
  ::: details 点击查看代码
 ```javascript

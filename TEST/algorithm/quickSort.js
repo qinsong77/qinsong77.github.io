@@ -4,7 +4,7 @@ function quickSort(arr){
 }
 
 function quick(arr, left, right){
-	if(left >= right) return
+	if(left >= right) return arr;
 	const target = arr[left]
 	let i = left
 	let j = right

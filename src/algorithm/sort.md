@@ -202,8 +202,11 @@ function shellSort(array) {
   子数组）重复之前的两个步骤，直至数组已完全排序。
 
 ```javascript
+function sort(arr){
+  return quick(arr, 0, arr.length - 1)
+}
 function quickSort(array, start, end) {
-	if (start >= end) return 
+	if (start >= end) return array;
 	const target = array[start];
 	let l = start;
 	let r = end;
