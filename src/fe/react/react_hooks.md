@@ -17,6 +17,9 @@ title: React Hooks
 - [React Hooks能够让函数组件拥有内部状态的基本原理](#react-hooks能够让函数组件拥有内部状态的基本原理)
 - [useState](#usestate)
 - [useEffect](#useeffect)
+  - [useEffect解决了哪些问题](#useeffect解决了哪些问题)
+  - [和setInterval](#和setinterval)
+  - [useEffect中不能使用async function](#useeffect中不能使用async-function)
 - [useLayoutEffect](#uselayouteffect)
 - [自定义Hooks](#自定义hooks)
 - [useReducer](#usereducer)
@@ -78,6 +81,7 @@ Render Props：
 
 ## hooks
 
+![](./image/hooks-process.png)
 ### React Hooks能够让函数组件拥有内部状态的基本原理
 
 利用闭包，记住了上一次的值，如下
@@ -305,7 +309,7 @@ export default function Counter2() {
 
 [源码解读](https://www.jianshu.com/p/a838d8c22089)
 
-#### useEffect 解决了哪些问题
+#### useEffect解决了哪些问题
 
 1. 函数组件没有生命周期。
 
@@ -443,7 +447,7 @@ clear: xx -- 组件销毁时
 组件重新渲染，打印render，渲染完成后执行上一次的clear，接着执行副作用函数，一直循环，直到销毁时执行clear函数。
 
 
-**和setInterval**
+#### 和setInterval
 
 [React Hooks 中的闭包问题](https://juejin.cn/post/6847902217031122951)
 
@@ -568,6 +572,7 @@ function useInterval(callback, delay) {
 #### useEffect中不能使用async function
 
 - [React useEffect 不支持 async function 你知道吗？](https://zhuanlan.zhihu.com/p/425129987)
+
 ahook的useAsyncEffect
 ```ts
 import type { DependencyList } from 'react';

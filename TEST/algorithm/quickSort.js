@@ -21,3 +21,12 @@ function quick(arr, left, right){
 }
 
 console.log(quickSort([12,21,4,411,3,10,8]))
+
+
+function delayPromise(time) {
+	return new Promise((resolve => {
+		setTimeout(() => {
+			resolve();
+		}, time);
+	}))
+}

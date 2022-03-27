@@ -363,7 +363,7 @@ console.log('Inside Global Execution Context');
 3. 应该明白为什么会存在变量提升，函数提升，而let const没有(在 ES6 中，词法环境组件和变量环境的一个不同就是前者被用来存储函数声明和变量（let 和 const）绑定，而后者只用来存储 var 变量绑定。)。
 4. ES3之前的变量对象与活动对象的概念在ES5之后由词法环境，变量环境来解释，两者概念不冲突，后者理解更为通俗易懂。
 
-### [this的指向](https://juejin.cn/post/6844904077818609678)
+### [this的指向](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/this)
 > 在 ES5 中，其实 this 的指向，始终坚持一个原理：this 永远指向最后调用它的那个对象。[文章](https://juejin.im/post/6844903496253177863)
 
 
