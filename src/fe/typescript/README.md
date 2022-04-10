@@ -30,7 +30,7 @@ interface Array<T> {
 - 1. 函数中使用泛型
 ```typescript
 // 声明一个泛型变量
-function identity<T> {}
+function identity<T>() {}
 
 // 在参数中使用泛型变量
 function identity<T>(arg: T) {}
@@ -260,9 +260,11 @@ let fun: Iyyy = () => {};
 ```ts
 class Greeter {
     static name:string = 'Greeter'
-    static log(){console.log(‘log')}
+    static log() {
+        console.log('log')
+    }
     greeting: string;
-    constructor(message: string) {
+    constructor (message: string) {
         this.greeting = message;
     }
     greet() {
@@ -787,12 +789,15 @@ if (isFish(pet)) {
 
 映射类型表示可以对某一个类型进行操作，产生出另一个符合我们要求的类型：
 
-- `ReadOnly<T>`，将 T 中的类型都变为只读。
-- `Partial<T>`，将 T 中的类型都变为可选。
-- `Exclude<T, U>`，从 T 中剔除可以赋值给 U 的类型。
-- `Extract<T, U>`，提取 T 中可以赋值给 U 的类型。
-- `NonNullable<T>`，从 T 中剔除 null 和 undefined。
-- `ReturnType<T>`，获取函数返回值类型。
+- `Partial<T>`，将 `T` 中的类型都变为可选；
+- `ReadOnly<T>`，将 `T` 中的类型都变为只读；
+- `Pick`, 抽取对象子集，挑选一组属性并组成一个新的类型；
+- `Record`，只作用于 obj 属性而不会引入新的属性；
+- `Exclude<T, U>`，从 `T` 中剔除可以赋值给 `U `的类型；
+- `Extract<T, U>`，提取 T 中可以赋值给 U 的类型；
+- `NonNullable<T>`，从 T 中剔除 null 和 undefined；
+- `Parameters<T>`，获取函数的参数类型，将每个参数类型放在一个元组中；
+- `ReturnType<T>`，获取函数返回值类型；
 - `InstanceType<T>`，获取构造函数类型的实例类型。
 
 我们也可以编写自定义的映射类型。
@@ -805,9 +810,140 @@ type PromiseCoordinate = ToPromise<NumberList>;
 // [Promise<number>, Promise<number>]
 ```
 
-## Typescript 总结
+##### Partial
+`Partial` 的实现用到了 `in` 和 `keyof`
+```ts
+/**
+ * Make all properties in T optional
+ */
+type Partial<T> = {
+    [P in keyof T]?: T[P]
+}
+```
+- `[P in keyof T]`遍历T上的所有属性
+- `?`:设置为属性为可选的
+- `T[P]`设置类型为原来的类型
 
-写了这么多，接下来说说我对 Typescript 的一些看法。
+##### Readonly
+```ts
+/**
+ * Make all properties in T readonly
+ */
+type Readonly<T> = {
+    readonly [P in keyof T]: T[P]
+}
+```
+
+##### Pick
+```ts
+/**
+ * From T, pick a set of properties whose keys are in the union K
+ */
+type Pick<T, K extends keyof T> = {
+    [P in K]: T[P]
+}
+```
+Pick映射类型有两个参数:
+- 第一个参数T，表示要抽取的目标对象
+- 第二个参数K，具有一个约束：K一定要来自T所有属性字面量的联合类型
+
+##### Record
+```ts
+/**
+ * Construct a type with a set of properties K of type T
+ */
+type Record<K extends keyof any, T> = {
+    [P in K]: T
+}
+```
+
+Record 映射类型有两个参数:
+- 第一个参数可以传入继承于 any 的任何值；
+- 第二个参数，作为新创建对象的值，被传入。
+
+##### ReturnType
+
+```ts
+// eg
+type T0 = ReturnType<() => string>  // string
+
+type T1 = ReturnType<(s: string) => void>  // void
+
+/**
+ * Obtain the return type of a function type
+ */
+type ReturnType<T extends (...args: any) => any> = T extends (...args: any) => infer R ? R : any
+```
+
+## TS 声明文件
+
+### `declare`
+
+当使用第三方库时，很多三方库不是用 TS 写的，我们需要引用它的声明文件，才能获得对应的代码补全、接口提示等功能。
+
+### `.d.ts`
+
+把声明语句放到一个单独的文件（`Vue.d.ts`）中，这就是声明文件，以 `.d.ts` 为后缀。
+
+```ts
+// src/Vue.d.ts
+
+interface VueOption {
+    el: string,
+    data: any
+}
+
+declare class Vue {
+    options: VueOption
+    constructor(options: VueOption)
+}
+```
+
+### 自己写声明文件
+
+比如以前写了一个请求小模块 `myFetch`，代码如下，
+
+```ts
+function myFetch(url, method, data) {
+    return fetch(url, {
+        body: data ? JSON.stringify(data) : '',
+        method
+    }).then(res => res.json())
+}
+
+myFetch.get = (url) => {
+    return myFetch(url, 'GET')
+}
+
+myFetch.post = (url, data) => {
+    return myFetch(url, 'POST', data)
+}
+
+export default myFetch
+```
+现在新项目用了 TS 了，要在新项目中继续用这个 myFetch，有两种选择：
+
+- 用 TS 重写 myFetch，新项目引重写的 myFetch
+- 直接引 myFetch ，给它写声明文件
+如果选择第二种方案，就可以这么做，
+```ts
+type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
+
+declare function myFetch<T = any>(url: string, method: HTTPMethod, data?: any): Promise<T>
+
+declare namespace myFetch { // 使用 namespace 来声明对象下的属性和方法
+    const get: <T = any>(url: string) => Promise<T> 
+    const post: <T = any>(url: string, data: any) => Promise<T>
+}
+```
+
+## Mark
+
+```ts
+// keyof any对应的类型为number | string | symbol，也就是可以做对象键(专业说法叫索引 index)的类型集合。
+type k1 = keyof any;
+```
+## Typescript 总结
 
 ### Typescript 优点
 
@@ -842,4 +978,5 @@ type PromiseCoordinate = ToPromise<NumberList>;
 ## 参考资料
 
 - [Typescript 官网](https://www.tslang.cn/)
+- [一份通俗易懂的 TS 教程，入门 + 实战](https://mp.weixin.qq.com/s/C3A-uNwAeqajB4NqwFIBPQ)
 - [深入理解 Typescript](https://jkchao.github.io/typescript-book-chinese/)

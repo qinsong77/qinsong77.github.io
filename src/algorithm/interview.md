@@ -55,6 +55,74 @@ String.prototype.myIndexOf = function(str){
 	return num
 }
 ```
+### promise的发布订阅
+
+题目
+```js
+class PubSub {
+  constructor() {
+    // TODO
+  }
+  on (event, fn)  {
+  }
+
+  onOnce (event)  {
+  }
+  emit (event, data) {
+  }
+}
+
+const pubsub = new PubSub()
+// 订阅
+pubsub.on('event', (data) => {
+  console.log('event:' + JSON.stringify(data));
+})
+// 发布
+pubsub.emit('event', { a: 1 });
+
+// 异步订阅
+const result = await pubsub.onOnce('event');
+```
+
+
+最重要的卡点就是`onOnce`是一个异步订阅，订阅之后要等该事件都执行完成才继续执行
+
+```js
+class PubSub {
+  constructor() {
+    this.cache = {}
+  }
+  on (event, fn)  {
+    if (!this.cache[event]) {
+      this.cache[event] = []
+    }
+    this.cache[event].push(fn);
+  }
+
+  onOnce (event)  {
+    return new Promise((resolve,reject) => {
+      this.on(event, () => resolve())
+    })
+  }
+  emit (event, data) {
+    const queue = this.cache[event];
+    if (Array.isArray(queue)) {
+      queue.forEach((task) => task(data))
+    }
+  }
+}
+
+const pubsub = new PubSub()
+// 订阅
+pubsub.on('event', (data) => {
+  console.log('event:' + JSON.stringify(data));
+})
+// 发布
+pubsub.emit('event', { a: 1 });
+
+// 异步订阅
+const result = await pubsub.onOnce('event');
+```
 
 ## 熙牛医疗笔试题
 

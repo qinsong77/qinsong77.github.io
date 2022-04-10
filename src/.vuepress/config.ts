@@ -13,6 +13,21 @@ export default defineUserConfig<DefaultThemeOptions>({
 		['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }],
 		['meta', { name: 'msapplication-TileColor', content: '#333' }],
 		['link', { rel: 'apple-touch-icon', href: '/icons/128.ico' }],
+		// 百度统计
+		[
+			'script', {},
+			`
+			<script>
+			var _hmt = _hmt || [];
+			(function() {
+				var hm = document.createElement("script");
+				hm.src = "https://hm.baidu.com/hm.js?b180689c6fba69ad8ef56c3e0034ce9f";
+				var s = document.getElementsByTagName("script")[0]; 
+				s.parentNode.insertBefore(hm, s);
+			})();
+			</script>
+			`
+		]
 	],
 	base: '/',
 	// dest: '',
@@ -75,6 +90,11 @@ export default defineUserConfig<DefaultThemeOptions>({
 						activeMatch: '^/fe/vue',
 					},
 					{
+						text: 'Typescript',
+						link: '/fe/typescript',
+						activeMatch: '^/fe/typescript',
+					},
+					{
 						text: 'React',
 						link: '/fe/react',
 						activeMatch: '^/fe/react',
@@ -98,6 +118,11 @@ export default defineUserConfig<DefaultThemeOptions>({
 						text: 'frameWork',
 						link: '/fe/frameWork',
 						activeMatch: '^/fe/frameWork',
+					},
+					{
+						text: '微前端',
+						link: '/fe/MicroFrontends',
+						activeMatch: '^/fe/MicroFrontends',
 					},
 				]
 			},
@@ -193,6 +218,17 @@ export default defineUserConfig<DefaultThemeOptions>({
 					]
 				},
 				{
+					text: 'Typescript',
+					collapsible: false,
+					children: [
+						{
+							text: 'summary',
+							link: '/fe/typescript/'
+						},
+						'/fe/typescript/typescript_with_react'
+					]
+				},
+				{
 					text: 'React',   // 必要的
 					collapsible: true,
 					children: [
@@ -200,6 +236,7 @@ export default defineUserConfig<DefaultThemeOptions>({
 						'/fe/react/react_hooks',
 						'/fe/react/react_around',
 						'/fe/react/react_native',
+						'/fe/react/next',
 						'/fe/react/typescript',
 						'/fe/react/build_mini_react'
 					]
