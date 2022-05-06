@@ -237,7 +237,6 @@ export default defineUserConfig<DefaultThemeOptions>({
 						'/fe/react/react_around',
 						'/fe/react/react_native',
 						'/fe/react/next',
-						'/fe/react/typescript',
 						'/fe/react/build_mini_react'
 					]
 				},

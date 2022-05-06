@@ -1085,6 +1085,8 @@ prefetch作用是告诉浏览器加载下一页面可能会用到的资源,加�
 2. as 属性不能忽略，如果忽略 as 属性，或者错误的 as 属性会使 preload 等同于 XHR 请求，浏览器不知道加载的是什么，因此会赋予此类资源非常低的加载优先级
 3. 对于字体文件，要带`crossorigin `属性，
 
+#### [modulepreload](https://html.spec.whatwg.org/multipage/links.html#link-type-modulepreload)
+
 #### 区分
 1. preload 是告诉浏览器页面必定需要的资源，浏览器一定会加载这些资源
 
