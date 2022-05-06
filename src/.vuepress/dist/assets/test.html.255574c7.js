@@ -1,1 +1,0 @@
-const e={key:"v-3350b9bf",path:"/fe/frameWork/test.html",title:"\u6D4B\u8BD5",lang:"en-US",frontmatter:{title:"\u6D4B\u8BD5"},excerpt:"",headers:[],git:{updatedTime:1619886466e3,contributors:[{name:"notend",email:"xyqinsong@163.com",commits:1},{name:"qinsong",email:"qinsong1@cmiot.chinamobile.com",commits:1}]},filePathRelative:"fe/frameWork/test.md"};export{e as data};
