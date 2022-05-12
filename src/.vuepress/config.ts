@@ -41,7 +41,7 @@ export default defineUserConfig({
       maxSuggestions: 10
     }),
     pwaPlugin({
-      serviceWorkerFilename: 'serviceWorkerFilename'
+      skipWaiting: true,
     }),
     pwaPopupPlugin({
       locales: {
