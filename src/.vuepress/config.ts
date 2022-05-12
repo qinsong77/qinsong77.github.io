@@ -115,6 +115,11 @@ export default defineUserConfig<DefaultThemeOptions>({
 						activeMatch: '^/fe/webpack',
 					},
 					{
+						text: '测试',
+						link: '/fe/test',
+						activeMatch: '^/fe/test',
+					},
+					{
 						text: 'frameWork',
 						link: '/fe/frameWork',
 						activeMatch: '^/fe/frameWork',
@@ -177,11 +182,11 @@ export default defineUserConfig<DefaultThemeOptions>({
 				text: 'Resume',
 				link: '/resume'
 			},
-			{
-				text: 'GitHub',
-				link: 'https://github.com/qinsong77',
-				target: '_blank'
-			}
+			// {
+			// 	text: 'GitHub',
+			// 	link: 'https://github.com/qinsong77',
+			// 	target: '_blank'
+			// }
 		],
 		sidebar: {
 			'/fe/': [
@@ -269,7 +274,18 @@ export default defineUserConfig<DefaultThemeOptions>({
 						'/fe/webpack',
 						'/fe/webpack/webpack5',
 						'/fe/webpack/buildAndModuleFederation',
+						'/fe/webpack/babel',
 						'/fe/webpack/vite2',
+					]
+				},
+				{
+					text: '测试',   // 必要的
+					// collapsible: true,
+					children: [
+						'/fe/test',
+						'/fe/test/guideAndConfigSetting',
+						'/fe/test/jest',
+						'/fe/test/rtl',
 					]
 				},
 				{

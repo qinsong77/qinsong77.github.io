@@ -22,3 +22,5 @@ findBy
 
 The findBy search variant is used for asynchronous elements which will be there eventually.
 
+
+另外，Babel 负责两件事：1）语法转换，由各种 transform 插件、helpers 完成；2）对于可 polyfill 的 API 的提供，由 corejs 实现。@babel/plugin-transform-runtime 插件可用于减少生成代码的量，以及对 corejs 提供的 API 与 runtime 提供的帮助函数（helpers）进行模块隔离。
