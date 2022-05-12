@@ -1,4 +1,4 @@
-import { DefaultThemeOptions, defineUserConfig, defaultTheme } from 'vuepress'
+import { defineUserConfig, defaultTheme } from 'vuepress'
 import { backToTopPlugin } from '@vuepress/plugin-back-to-top'
 import { searchPlugin } from '@vuepress/plugin-search'
 import { pwaPlugin } from '@vuepress/plugin-pwa'
