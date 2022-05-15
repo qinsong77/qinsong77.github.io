@@ -1,6 +1,5 @@
 <script setup>
 import ParentLayout from '@vuepress/theme-default/lib/client/layouts/Layout.vue'
-import '../iconfont'
 </script>
 
 <template>

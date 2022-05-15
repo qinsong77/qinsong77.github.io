@@ -33,4 +33,6 @@ typings/
 # VuePress directory
 .temp
 .cache
-/vuepress/.vuepress/dist/
+
+ dist
+/src/.vuepress/dist/

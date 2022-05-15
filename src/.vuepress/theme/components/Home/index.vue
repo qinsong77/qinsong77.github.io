@@ -37,7 +37,7 @@ onUnmounted(() => {
       </div>
     </section>
     <Blog />
-    <Icon v-for="item in icons" :key="item" :icon="item" />
+<!--    <Icon v-for="item in icons" :key="item" :icon="item" />-->
     <div class="previous-content">
       <Content />
     </div>
