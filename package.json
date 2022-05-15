@@ -19,14 +19,24 @@
   },
   "homepage": "https://github.com/qinsong77/qinsong77.github.io#readme",
   "devDependencies": {
+    "@vuepress/bundler-vite": "2.0.0-beta.43",
     "@vuepress/client": "2.0.0-beta.43",
     "@vuepress/plugin-back-to-top": "^2.0.0-beta.43",
     "@vuepress/plugin-medium-zoom": "^2.0.0-beta.43",
     "@vuepress/plugin-pwa": "^2.0.0-beta.43",
     "@vuepress/plugin-pwa-popup": "^2.0.0-beta.43",
     "@vuepress/plugin-search": "^2.0.0-beta.43",
+    "@vuepress/plugin-theme-data": "2.0.0-beta.45",
+    "@vuepress/theme-default": "^2.0.0-beta.43",
+    "@vuepress/utils": "^2.0.0-beta.43",
+    "autoprefixer": "^10.4.7",
+    "postcss": "^8.4.13",
+    "postcss-import": "^14.1.0",
     "promises-aplus-tests": "^2.1.2",
+    "tailwindcss": "^3.0.24",
     "vue": "^3.2.33",
-    "vuepress": "^2.0.0-beta.43"
+    "vue-router": "^4.0.15",
+    "vuepress": "^2.0.0-beta.43",
+    "vuepress-theme-reco": "^1.6.11"
   }
 }

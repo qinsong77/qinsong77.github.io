@@ -4,10 +4,29 @@ import { searchPlugin } from '@vuepress/plugin-search'
 import { pwaPlugin } from '@vuepress/plugin-pwa'
 import { pwaPopupPlugin } from '@vuepress/plugin-pwa-popup'
 import { mediumZoomPlugin } from '@vuepress/plugin-medium-zoom'
+// import { themeDataPlugin } from '@vuepress/plugin-theme-data'
+// import { tailwindcssPlugin } from './plugin/tailwindcssPlugin'
+import { localTheme } from './theme'
+import { viteBundler } from '@vuepress/bundler-vite'
+// @ts-ignore
+import tailwindConfig  from './theme/tailwindcss/tailwind.config';
 
 export default defineUserConfig({
+  bundler: viteBundler({
+    viteOptions: {
+      css: {
+        postcss: {
+          plugins: [
+            require('postcss-import'),
+            require('tailwindcss')(tailwindConfig),
+            require('autoprefixer'),
+          ]
+        }
+      }
+    }
+  }),
   port: 8091,
-  title: 'Sysuke\' NoteBook',
+  title: 'Sysuke\' World',
   description: 'personal frontend noteBook power by VuePress & GitHub Page',
   // 注入到当前页面的 HTML <head> 中的标签
   head: [
@@ -56,8 +75,9 @@ export default defineUserConfig({
       },
     }),
     mediumZoomPlugin(),
+    // themeDataPlugin({}),
   ],
-  theme: defaultTheme({
+  theme: localTheme({
     sidebarDepth: 0, // e'b将同时提取markdown中h2 和 h3 标题，显示在侧边栏上。
     lastUpdated: true, // 文档更新时间：每个文件git最后提交的时间
     displayAllHeaders: true, // 默认值：false
@@ -293,7 +313,6 @@ export default defineUserConfig({
             '/fe/frameWork/websocket',
             '/fe/frameWork/performance',
             '/fe/frameWork/component_library_design',
-            '/fe/frameWork/test',
             '/fe/frameWork/thought',
           ]
         },
@@ -358,7 +377,6 @@ export default defineUserConfig({
           ]
         }
       ]
-    }
-
+    },
   })
 })

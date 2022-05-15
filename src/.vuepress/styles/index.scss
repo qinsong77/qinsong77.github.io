@@ -1,3 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 html {
   //scroll-behavior: smooth;
 }
@@ -42,4 +45,9 @@ html {
       display: block;
     }
   }
+  --c-bg-navbar: rgb(255, 255, 255);
+}
+
+html.dark {
+  --c-bg-navbar: rgb(34, 39, 46);
 }
