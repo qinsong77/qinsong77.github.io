@@ -1,6 +1,9 @@
 ---
 title: Vue
 ---
+
+[[toc]]
+
 ## 目录
 
 - [核心响应式原理](#核心响应式原理)
@@ -31,11 +34,11 @@ title: Vue
 - [大厂高频Vue面试题（上）](https://juejin.cn/post/6844904138208182285)
 - [Vue 项目性能优化 — 实践指南（网上最全 / 详细）](https://juejin.cn/poxst/6844903913410314247)
 - [揭秘 Vue.js 九个性能优化技巧](https://juejin.cn/post/6922641008106668045) -- 面试应该能用得上
-### [Vue.js 技术揭秘](https://ustbhuangyi.github.io/vue-analysis/)
+#### [Vue.js 技术揭秘](https://ustbhuangyi.github.io/vue-analysis/)
 
-### [渲染器](http://hcysun.me/vue-design/zh/)
+#### [渲染器](http://hcysun.me/vue-design/zh/)
 
-### [Vue源码全解](https://juejin.im/post/6846687602679119885)
+#### [Vue源码全解](https://juejin.im/post/6846687602679119885)
 
 ### [核心响应式原理](https://cn.vuejs.org/v2/guide/reactivity.html)
 

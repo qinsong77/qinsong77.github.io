@@ -18,7 +18,7 @@ act(() => {
 由于react的更新是异步的，
 
 
-render() , userEvent , fireEvent 都已经被react包裹了
+render() , userEvent , fireEvent 都已经被`act`包裹了
 ```js
 // App.js
 import { useState } from "react";

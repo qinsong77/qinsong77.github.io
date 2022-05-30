@@ -8,9 +8,10 @@ export const localTheme = (options: DefaultThemeOptions): Theme => {
     extends: defaultTheme(options),
     layouts: {
       Layout: path.resolve(__dirname, 'layouts/Layout.vue'),
+      BlogLayout: path.resolve(__dirname, 'layouts/BlogLayout.vue'),
     },
     alias: {
-      '@theme/Home.vue': path.resolve(__dirname, './components/Home/index.vue')
+      '@theme/Home.vue': path.resolve(__dirname, './components/Home/index.vue'),
     },
     extendsBundlerOptions: (bundlerOptions, app) => {
       // console.log(bundlerOptions);

@@ -3,10 +3,12 @@ home: true
 banner:
     bg: /images/bg2.jpeg
     h1: Still Moving on
-    p: What the hell am I doing here?
+    p: I Sometimes wish I'd never been born at all.
 posts:
-    - { title: '测试简介与Vite如何配置Config', path: '/fe/test/guideAndConfigSetting.html', date: '2022/5/12 22:30:30', category: 'test', tag: 'test,jest,react' }
-    - { title: 'RTL', path: '/fe/test/RTL.html', date: '2022/5/12 22:30:30', category: 'test', tag: 'test,jest,react' }
+    - { title: '前端测试简介、React+Vite配置Jest', path: '/blog/test/guideAndConfigSetting.html', date: '2022/5/12 22:30:30', category: 'test', tag: 'test,jest,react' }
+    - { title: 'Jest', path: '/blog/test/jest.html', date: '2022/5/12 22:30:30', category: 'test', tag: 'test,jest,react' }
+    - { title: 'React Test library', path: '/blog/test/RTL.html', date: '2022/5/12 22:30:30', category: 'test', tag: 'test,jest,react' }
+    - { title: '实战篇', path: '/blog/test/Combat.html', date: '2022/5/12 22:30:30', category: 'test', tag: 'test,jest,react' }
 categories:
     - {label: 'test', length: 1 }
     - {label: 'react', length: 3 }

@@ -3,7 +3,7 @@
     <div class="title">
       <RouterLink :to="data.path">{{ data.title }}</RouterLink>
     </div>
-    <div class="abstract" v-html="data.abstract"></div>
+    <div class="abstract" v-html="data.abstract" v-if="!!data.abstract"></div>
     <div class="page-info">
       <Icon icon="icon-advertising" :text="author" size="small"/>
       <Icon icon="icon-time" :text="data.date" size="small"/>

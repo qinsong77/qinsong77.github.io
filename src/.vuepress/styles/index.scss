@@ -51,3 +51,10 @@ html {
 html.dark {
   --c-bg-navbar: rgb(34, 39, 46);
 }
+
+.table-of-contents {
+  position: fixed;
+  top: 80px;
+  right: 10px;
+  font-size: 12px;
+}
