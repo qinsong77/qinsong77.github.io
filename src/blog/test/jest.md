@@ -1,6 +1,9 @@
 ---
 title: Jest
 ---
+
+
+
 [Jest](https://jestjs.io) 是 Facebook 出品的一个 JavaScript 开源测试框架。相对其他测试框架，其一大特点就是就是内置了常用的测试工具，比如零配置、自带断言、测试覆盖率工具等功能，实现了开箱即用。
 
 单元测试还有其他比如Mocha、Ava等，但在React中选Jest就完事儿.
@@ -252,6 +255,64 @@ mock 第三方库
 https://www.benmvp.com/blog/using-jest-mock-functions-typescript/
 
 
+# Mock
+
+jest对象上有`fn`,`mock`,`spyOn`三个方法，在实际项目的单元测试中，`jest.fn()`常被用来进行某些有回调函数的测试；jest.mock()可以mock整个模块中的方法，当某个模块已经被单元测试100%覆盖时，使用jest.mock()去mock该模块，节约测试时间和测试的冗余度是十分必要；当需要测试某些必须被完整执行的方法时，常常需要使用jest.spyOn()。
+
+## jest.fn()
+jest.fn()是创建 Mock 函数最简单的方式，如果没有定义函数内部的实现，jest.fn() 会返回 undefined 作为返回值。
+
+```ts
+test('测试jest.fn()调用', () => {
+  const mockFn = jest.fn()
+  const result = mockFn(1, 2, 3)
+
+  // 断言mockFn的执行后返回undefined
+  expect(result).toBeUndefined()
+  // 断言mockFn被调用
+  expect(mockFn).toBeCalled()
+  // 断言mockFn被调用了一次
+  expect(mockFn).toBeCalledTimes(1)
+  // 断言mockFn传入的参数为1, 2, 3
+  expect(mockFn).toHaveBeenCalledWith(1, 2, 3)
+})
+
+```
+jest.fn()所创建的Mock函数还可以设置返回值，定义内部实现或返回Promise对象。
+
+```ts
+  test('测试jest.fn()返回固定值', () => {
+    const mockFn = jest.fn().mockReturnValue('default')
+    // 断言mockFn执行后返回值为default
+    expect(mockFn()).toBe('default')
+  })
+
+  test('测试jest.fn()内部实现', () => {
+    const mockFn = jest.fn((num1, num2) => {
+      return num1 * num2
+    })
+    // 断言mockFn执行后返回100
+    expect(mockFn(10, 10)).toBe(100)
+  })
+
+  test('测试jest.fn()返回Promise', async () => {
+    const mockFn = jest.fn().mockResolvedValue('default')
+    const result = await mockFn()
+    // 断言mockFn通过await关键字执行后返回值为default
+    expect(result).toBe('default')
+    // 断言mockFn调用后返回的是Promise对象 ❌
+    expect(Object.prototype.toString.call(mockFn())).toBe('[object Promise]')
+    // 上面这个实际上返回的是String对象，返回Promise对象的写法要怎么做呢？
+  })
+```
+
+## .mock属性
+
+所有的 mock 函数都有一个特殊的 .mock 属性，它保存了关于此函数`如何被调用`、调用时的`返回值`的信息。
+
+
+
+jest.spyOn()是jest.fn()的语法糖，它创建了一个和被spy的函数具有相同内部代码的mock函数。
 
 
 
