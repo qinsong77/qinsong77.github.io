@@ -68,18 +68,22 @@ export const Search: React.FC<
     value: string
     onChange: (e: React.ChangeEvent) => void
   }>
-> = ({ value, onChange, children }) => {
+  > = ({ value, onChange, children }) => {
   return (
     <div>
       <label htmlFor="search">{children}</label>
       <div>
         <label htmlFor="search">{children}</label>
-        <input id="search" type="text" value={value} onChange={onChange} />
+        <input
+          id="search"
+          type="text"
+          value={value}
+          onChange={onChange}
+        />
       </div>
     </div>
   )
 }
-
 ```
 test file
 ```tsx
@@ -94,7 +98,9 @@ describe('Search', () => {
     const onChange = jest.fn()
     // Arrange 编排
     render(
-      <Search value="" onChange={onChange}>
+      <Search
+        value=""
+        onChange={onChange}>
         Search:
       </Search>
     )
@@ -106,7 +112,6 @@ describe('Search', () => {
     expect(onChange).toHaveBeenCalledTimes(1)
   })
 })
-
 ```
 
 #### 常用API
@@ -154,7 +159,7 @@ const { queryByText, container, baseElement, debug, rerender, unmount } = render
 
 相当于给组件置成`unmount`,一般在`afterEach()`中执行，如果使用的`Jest`,不需要在`afterEach`中手动设置，框架已默认每次test结束后执行`cleanup`。
 
-* `Queries`
+* [`Queries`](https://testing-library.com/docs/queries/about/)
 
 
 | search type<br/>（单个元素） | search type<br/>（多个元素） | function<br/>（查询单个元素）                                                                                                  | 适用场景                        |
@@ -170,6 +175,21 @@ PlaceholderText: getByPlaceholderText: <input placeholder="Search" />
 AltText: getByAltText: <img alt="profile" />
 DisplayValue: getByDisplayValue: <input value="JavaScript" />
 TestId: getByTestId: <div data-testid='search'></div>
+```
+
+- _findBy_: findBy主要是查找最终会出现在dom中的异步元素，如果能确定一个元素不会出现在dom里，则使用queryBy，否则使用getBy
+- ` query*` API 只用于断言当前元素不能被找到(可以在找不到元素的情况下不会抛出异常（返回  null）。唯一的好处是可以用来判断这个元素是否没有被渲染到页面上。)
+  因为类似 `get*` 和 `find*` 相关的 API 在找不到元素时都会自动抛出异常 —— 这样你就可以看到渲染的内容以及为什么找不到元素的原因。然而，`query*` 只会返回 `null`，
+- 
+htlm如：`<h3>Hello <span>World</span></h3>`
+```js
+// Before
+screen.getByText(/hello world/i)
+// |>Error: TestingLibraryElementError: Unable to find an element with the text: /hello world/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+// In version 9
+screen.getByRole('heading', { name: /hello world/i })
+// |> HTMLHeadingElement
 ```
 
 * `fireEvent`
@@ -203,6 +223,16 @@ act(() => {
 ```
 waitFor(Promise)
 ```
+
+waitFor 的目的是可以让你等一些指定的事情发生。如果传了空的 callback，可能它在今天还能 Work，因为你只是想在 Event Loop 等一个 Tick 就好了。但这样你也会留下一个脆弱的测试用例，一旦改了某些异步逻辑它很可能就崩了。
+
+在 waitFor 里等待指定的断言，不要传空 callback
+
+waitFor 适用的情况是：在执行的操作和断言之间存在不确定的时间量。因此，callback 可在不确定的时间和频率（在间隔以及 DOM 变化时调用）被调用（或者检查错误）。所以这也意味着你的副作用可能会被多次调用！
+
+同时，这也意味着你不能在 waitFor 里面使用快照断言（SnapShot Assertion）。如果你想要用快照断言，首先要等待某些断言走完了，然后再拍快照。
+
+建议：把副作用放在 waitFor 回调的外面，回调里只能有断言
 
 *  `screen`
 
@@ -303,10 +333,13 @@ describe('App', () => {
 
 
 
-
-## Detail
     
 ### [act](https://reactjs.org/docs/testing-recipes.html#act)
+
+最常见的报错就是：`Warning: An update to Balances inside a test was not wrapped in act(...).`
+
+
+
 
 当写UI测试时，像`rendering`, `user events`, or `data fetching - promise`的任务都会被看作用户与View的交互，
 在断言前，`react-dom/test-utils`提供`act`方法确保所有这些动作都更新并且作用到dom上。
@@ -478,6 +511,48 @@ consider fireEvent being the low-level api, while userEvent sets a flow of actio
 
 You can see that depending of which element you are trying to click, userEvent will do a set of different actions (e.g. if it's a label or a checkbox).
 
+useEvent触发的事件行为更像用户在真实的浏览器触发的，比如`fireEvent.change()`只会触发一次change事件，`userEvent.type`也会触发一次change事件，但也会触发`keyDown, keyPress, keyUp events`.
+
+以这个例子为例：
+
+```tsx {18,22}
+describe('Search', () => {
+  test('calls the onChange callback handler', async () => {
+    const onChange = jest.fn()
+
+    render(
+      <Search
+        value=""
+        onChange={onChange}>
+        Search:
+      </Search>
+    )
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'JavaScript' },
+    })
+
+    // success
+    expect(onChange).toHaveBeenCalledTimes(1)
+
+    await userEvent.type(screen.getByRole('textbox'), 'JavaScript')
+    // success
+    expect(onChange).toHaveBeenCalledTimes(10)
+  })
+})
+```
+断言都pass了，但明显userEvent时，onchange执行10次更加符合真实的场景
+
+```js
+// ❌
+fireEvent.change(input, {target: {value: 'hello world'}})
+
+// ✅
+userEvent.type(input, 'hello world')
+```
+`@testing-library/user-event` 是在 `fireEvent` 基础上实现的，但它提供了一些更接近用户交互的方法。上面这个例子中，`fireEvent.change` 其实只触发了 `Input` 的一个 `Change `事件。但是 `type` 则可以对每个字符都会触发 `keyDown、keyPress 和 keyUp 一系列事件。这能更接近用户的真实交互场景。好处是可以很好地和你当前那些没有监听 Change 事件的库一起使用。
+
+我们现在还在进行` @testing-library/user-event `这个库的开发，来保证它能像它承诺的那样：能够触发用户在执行特定操作时会触发的所有相同事件。不过，现在它还没完全做到这一点，这也是为什么它还没有合入 @testing-library/dom （可能在未来的某个时候会合入）。但是，我对它有足够的信心，建议你多关注和使用它，而不是 fireEvent。
 ### 什么时候得用act
 
 ##### 当使用`jest.useFakeTimers()`时
@@ -488,8 +563,21 @@ https://www.benmvp.com/blog/using-jest-mock-functions-typescript/
 
 使用[eslint-plugin-testing-library](https://github.com/testing-library/eslint-plugin-testing-library) 去避免没有必要的act包裹
 
+不推荐用 waitFor 等待 find* 的查询结果
+```js
+// ❌
+const submitButton = await waitFor(() =>
+    screen.getByRole('button', {name: /submit/i}),
+)
+
+// ✅
+const submitButton = await screen.findByRole('button', {name: /submit/i})
+```
+
 - [When should I use act() in react-testing-library?](https://flyingsquirrel.medium.com/when-should-i-use-act-in-react-testing-library-d7dd22a3340e)
-- [](https://github.com/threepointone/react-act-examples/blob/master/sync.md)
+- [act](https://github.com/threepointone/react-act-examples/blob/master/sync.md)
 - [You Probably Don’t Need act() in Your React Tests](https://javascript.plainenglish.io/you-probably-dont-need-act-in-your-react-tests-2a0bcd2ad65c)
 - [React Testing Library Tutorial](https://www.robinwieruch.de/react-testing-library/)
----
+- [Making sure you're using the correct query](https://timdeschryver.dev/blog/making-sure-youre-using-the-correct-query)
+- [使用 `React Testing Library` 的 15 个常见错误](https://mp.weixin.qq.com/s/pgdcDNjDGPgNq76Zh_dZxg)
+- [testing-playground](https://testing-playground.com/)

@@ -379,7 +379,7 @@ pnpm i ts-jest -D
 ```json
 {
   "compilerOptions": {
-    "types": ["node", "jest"]
+   "types": ["node", "jest", "@testing-library/jest-dom"],
   }
 }
 ```
@@ -540,7 +540,13 @@ module.exports = {
 
 #### [eslint-plugin-jest](https://www.npmjs.com/package/eslint-plugin-jest)?
 
-解决eslint关于jest的报错，比如`ESLint: 'test' is not defined.(no-undef)`之类的，因为Jest的Api是全局不需要import的
+解决eslint关于jest的报错，比如`ESLint: 'test' is not defined.(no-undef)`之类的，因为Jest的Api是全局不需要`import`的。
+
+额外的还可以补全eslint的测试插件：
+```shell
+pnpm i eslint-plugin-jest-dom eslint-plugin-testing-library
+```
+如何配置可以参考安装后package的`README.md`文件
 
 #### setupFiles/setupFilesAfterEnv
 

@@ -9,4 +9,4 @@ title: 博客地址
 - [前端日志](https://mengsixing.github.io/)
 - [原生JS、 React、ReactNative和Webpack等入门与底层原理分析](https://github.com/YvetteLau/Blog)
 
-- [三元博客](https://sanyuan0704.top/my_blog/)
+- [三元博客](https://sanyuan0704.top/)
