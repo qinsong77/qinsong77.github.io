@@ -448,7 +448,9 @@ describe('each.ts 单元测试', () => {
 ```
 除了`test.each`外，还有`describe.each`，更多具体用法可以参考[test.each](https://jestjs.io/docs/api#testeachtablename-fn-timeout) 和`describe.each`
 
+#### `mockFunction` 的类型错误
 
+[Using Jest mock functions in TypeScript]https://www.benmvp.com/blog/using-jest-mock-functions-typescript/)
 
 ## Jest 架构
 
@@ -570,13 +572,6 @@ module.exports = {
 **@swc/jest：**
 
 ![@swc/jest](./images/performance/swc.png)
-
-
-
-
-### Using Jest mock functions in TypeScript
-
-https://www.benmvp.com/blog/using-jest-mock-functions-typescript/
 
 
 
