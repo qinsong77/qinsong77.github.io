@@ -10,7 +10,7 @@ layout: BlogLayout
 ### Vs Jest
 
 `RTL`并不是`Jest`的替代选择，两者不是二选一的关系，`Jest`是`Javascript`最流行的测试框架，`Jest`就是一个`test runner`，可以命令行式的跑所有的测试用例，并且
-提供测试suites、cases、断言的函数，还有`spies, mocks, stubs`等。而`RTL`，只是测试库中`Reac`t的一个分支其他的还有`Vue`、`Angular`等，测试库其他比如还有[`Enzyme`](https://github.com/enzymejs) 等。
+提供测试suites、cases、断言的函数，还有`spies, mocks, stubs`等。而`RTL`，只是testing library中为`React`定制的一个分支,其他的还有`Vue`、`Angular`等，测试库其他比如还有[`Enzyme`](https://github.com/enzymejs) 等。
 
 ### 安装
 
@@ -336,26 +336,11 @@ describe('App', () => {
     
 ### [act](https://reactjs.org/docs/testing-recipes.html#act)
 
-最常见的报错就是：`Warning: An update to Balances inside a test was not wrapped in act(...).`
+涉及`act`方法最常见的报错就是：`Warning: An update to Balances inside a test was not wrapped in act(...).`
 
-
-
-
-当写UI测试时，像`rendering`, `user events`, or `data fetching - promise`的任务都会被看作用户与View的交互，
-在断言前，`react-dom/test-utils`提供`act`方法确保所有这些动作都更新并且作用到dom上。
-`act()`接收一个函数作为第一个参数，并调用作用（apply）到Dom(jsdom)上，当`act()`函数被执行，可以使用断言，确保测试运行更贴近用户的真实体验。
-
-然而从`react-dom/test-utils`导入并使用是比较冗余的，可以从`testing-library/react`导入.
-
-```js
-test('Testing', () => {
-  act(() => {
-    /* Codes you want to apply to the DOM */
-    (e.g. ReactDOM.render(<Counter />, container);)
-  });
-  /* assume that the code is applied to the DOM */
-});
-```
+当写UI测试时，像`react dom render`, `user events`, or `data fetching - promise`的任务都会被看作用户与View的交互。
+`react-dom/test-utils`提供`act`方法，确保所有这些动作在断言前，都更新并且作用到dom上。
+`act()`接收一个函数作为第一个参数，并调用作用（apply）到Dom（jsdom）上，当`act()`函数被执行，可以使用断言，确保测试运行更贴近用户的真实体验。
 
 ```js
 act(() => {
@@ -363,8 +348,70 @@ act(() => {
 });
 // make assertions
 ```
+然而从`react-dom/test-utils`导入并使用是比较冗余的，可以从`testing-library/react`导入。
+```js
+import { act } from '@testing-library/react'
+test('Testing', () => {
+  act(() => {
+    /* Codes you want to apply to the DOM */
+    // eg:
+    ReactDOM.render(<Counter />, container);
+  });
+  /* assume that the code is applied to the DOM */
+});
+```
 
-由于react的更新是异步的，
+#### deep excavate
+
+比如这样一个简单的组件
+```ts
+import * as React from 'react'
+const ExampleOne: React.FC = () => {
+  const [ctr, setCtr] = React.useState(0)
+  React.useEffect(() => {
+    setCtr(1)
+  }, [])
+  return <div>{ctr}</div>
+}
+
+export default ExampleOne
+```
+测试
+```tsx
+import * as ReactDOM from 'react-dom'
+import ExampleOne from './ExampleOne'
+it('should render 1', () => {
+  const el = document.createElement('div')
+  ReactDOM.render(<ExampleOne />, el)
+  expect(el.innerHTML).toBe('1') // fail!
+})
+```
+报错如下：
+![](./images/act_error_1.png)
+
+
+在页面的正常变现是会显示为 "1"，但测试却显示的 "0"
+
+为什么这样子，就要涉及到React相关的原理知识，React并不是同步的渲染UI的，React会把任务切片，并形成一个任务队列，然后按优先级等执行。
+
+![](./images/act_error_why_1.png)
+
+使用`act`包裹后可以pass
+```tsx
+import * as ReactDOM from 'react-dom'
+import ExampleOne from './ExampleOne'
+import { act } from 'react-dom/test-utils'
+it('should render 1', () => {
+  const el = document.createElement('div')
+  // eslint-disable-next-line testing-library/no-unnecessary-act
+  act(() => {
+    ReactDOM.render(<ExampleOne />, el)
+  })
+  expect(el.textContent).toBe('1') // fail!
+})
+```
+![](./images/act_add_success1.png)
+
 
 RTL中的`render() `, `userEvent` , `fireEvent`都已经被`act`包裹了。
 
