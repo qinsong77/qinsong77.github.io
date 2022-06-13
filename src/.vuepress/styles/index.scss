@@ -39,13 +39,21 @@ html {
 //}
 :root {
   scroll-behavior: smooth;
-  --content-width: 960px;
   @media (max-width: 959px) {
     .back-to-top {
       display: block;
     }
   }
   --c-bg-navbar: rgb(255, 255, 255);
+  @media only screen and (min-width: 1400px)  {
+    --content-width: 960px;
+  }
+  @media only screen and (max-width: 1170px)  {
+    .table-of-contents {
+      position: static;
+      font-size: 13px;
+    }
+  }
 }
 
 html.dark {
