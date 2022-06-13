@@ -176,10 +176,11 @@ AltText: getByAltText: <img alt="profile" />
 DisplayValue: getByDisplayValue: <input value="JavaScript" />
 TestId: getByTestId: <div data-testid='search'></div>
 ```
-- `getBy*`: 只用于确定该元素存在的情况。
-- ` query*`: 只用于断言当前元素不能被找到(可以在找不到元素的情况下不会抛出异常（返回  null）。唯一的好处是可以用来判断这个元素是否没有被渲染到页面上）。
-  因为类似 `get*` 和 `find*` 相关的 API 在找不到元素时都会自动抛出异常 —— 这样你就可以看到渲染的内容以及为什么找不到元素的原因。然而，`query*` 只会返回 `null`，
-- - `findBy*`: `findBy`主要是查找最终会出现在`dom`中的异步元素，如果能确定一个元素不会出现在dom里，则使用`queryBy`，否则使用`getBy`。
+1. `getBy*`: 只用于确定该元素存在的情况。
+2. ` query*`: 只用于断言当前元素不能被找到(可以在找不到元素的情况下不会抛出异常（返回  null）。唯一的好处是可以用来判断这个元素是否没有被渲染到页面上）。
+    因为类似 `get*` 和 `find*` 相关的 API 在找不到元素时都会自动抛出异常 —— 这样你就可以看到渲染的内容以及为什么找不到元素的原因。然而，`query*` 只会返回 `null`，
+3.  `findBy*`: `findBy`主要是查找最终会出现在`dom`中的异步元素，如果能确定一个元素不会出现在dom里，则使用`queryBy`，否则使用`getBy`。
+
 
 * `fireEvent`
 
@@ -637,6 +638,7 @@ it('should render 1', () => {
 1. 当使用`jest.useFakeTimers()`时 
 2. 当使用测试自定义hooks时
 3. 当使用`useImperativeHandle`时
+
 可以在[这里](https://kentcdodds.com/blog/fix-the-not-wrapped-in-act-warning#other-use-cases-for-manually-calling-act)查看详细的case。
 
 
@@ -689,6 +691,204 @@ userEvent.type(input, 'hello world')
 ```
 
 ### 正确地查找元素
+
+查找元素是在写测试是一个最基本的操作，查找出的元素一般会用来使用`user-event`触发事件或者使用 Jest/jest-dom 来做断言判断。建议可以完整的看下[官方文档](https://testing-library.com/docs/queries/about) ，这部分写的很详细。这里做下内容提炼和注意点笔记。
+
+
+![](./images/query_summary.png)
+
+
+#### [优先级](https://testing-library.com/docs/queries/about#priority)
+
+**尽量使用无障碍的特效去查找**
+- getByRole
+- getByLabelText
+- getByText
+- getByDisplayValue
+
+**尽量使用语义话去查找** 
+- getByAltText
+- getByTitle
+
+使用**Test IDs**
+- getByTestId
+
+
+####  `getBy` vs `queryBy`
+
+`getBy`会返回**一个元素**或者一个错误，这个方法是很明确的，就是Dom中要么找的到，要么报错，唯一的毛病就是不能检查一个元素不应该在Dom中。
+```tsx
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+
+import TestQueryOne from './TestQueryOne';
+
+describe('App', () => {
+  test('renders TestQueryOne component', () => {
+    render(<TestQueryOne />);
+
+    screen.debug();
+
+    // fails
+    expect(screen.getByText(/Searches for JavaScript/)).toBeNull();
+  });
+});
+```
+
+如上，上面的测试会失败，因为`getBy` 找不到就会报错啊，所以这个时候，`queryBy`就改派上用场了。所以上面的断言换成这样就可以了。因为queryBy找不到不会报错而是返回`Null`
+```tsx
+expect(screen.queryByText(/Searches for JavaScript/)).toBeNull();
+```
+
+所以，到底使用`getBy` 还是 `queryBy`，只需要看你是不是需要断言一个元素不该存在于Dom上。
+
+#### `findBy`
+
+`findBy`就是用于异步查找咯，`findBy`会返回一个`Promise`，**这个`Promise`默认在1秒内没有找到这个元素或者找到了不止一个，就会`Reject`**。比如：
+::: details 点击查看代码
+```tsx
+import * as React from 'react'
+
+type User = {
+  id: string
+  name: string
+}
+
+function getUser(): Promise<User> {
+  return Promise.resolve({ id: '1', name: 'Robin' })
+}
+
+function SearchInput() {
+  const [search, setSearch] = React.useState<string>('')
+  const [user, setUser] = React.useState<null | User>(null)
+
+  React.useEffect(() => {
+    const loadUser = async () => {
+      const user = await getUser()
+      setUser(user)
+    }
+
+    loadUser()
+  }, [])
+
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setSearch(event.target.value)
+  }
+
+  return (
+    <div>
+      {user ? <p>Signed in as {user.name}</p> : null}
+
+      <Search
+        value={search}
+        onChange={handleChange}>
+        Search:
+      </Search>
+
+      <p>Searches for {search || '...'}</p>
+    </div>
+  )
+}
+
+type SearchInputProps = {
+  value: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  children: React.ReactNode
+}
+
+export function Search({ value, onChange, children }: SearchInputProps) {
+  return (
+    <div>
+      <label htmlFor="search">{children}</label>
+      <input
+        id="search"
+        type="text"
+        value={value}
+        onChange={onChange}
+      />
+    </div>
+  )
+}
+
+export default SearchInput
+
+```
+test file
+```tsx
+import SearchInput, { Search } from './index'
+import React from 'react'
+import { render, screen, fireEvent } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+
+describe('SearchInput', () => {
+  test('renders SearchInput component', async () => {
+    render(<SearchInput />)
+    
+    // succeeds
+    expect(screen.getByText(/Searches for/)).toBeInTheDocument()
+    expect(screen.queryByText(/Signed in as/)).not.toBeInTheDocument()
+    expect(await screen.findByText(/Signed in as Robin/i)).toBeInTheDocument()
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'JavaScript' },
+    })
+
+    expect(screen.getByText(/Searches for JavaScript/)).toBeInTheDocument()
+  })
+})
+
+describe('Search', () => {
+  test('calls the onChange callback handler', () => {
+    const onChange = jest.fn()
+
+    render(
+      <Search
+        value=""
+        onChange={onChange}>
+        Search:
+      </Search>
+    )
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'JavaScript' },
+    })
+
+    expect(onChange).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('Search', () => {
+  test('calls the onChange callback handler', async () => {
+    const onChange = jest.fn()
+
+    render(
+      <Search
+        value=""
+        onChange={onChange}>
+        Search:
+      </Search>
+    )
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'JavaScript' },
+    })
+
+    expect(onChange).toHaveBeenCalledTimes(1)
+
+    await userEvent.type(screen.getByRole('textbox'), 'JavaScript')
+
+    expect(onChange).toHaveBeenCalledTimes(10)
+  })
+})
+```
+:::
+
+#### 查找多个元素
+
+- getAllBy
+- queryAllBy
+-  findAllBy
+
 
 html如：`<h3>Hello <span>World</span></h3>`
 ```js

@@ -7,7 +7,7 @@ banner:
 posts:
     - { title: '前端测试简介、React+Vite配置Jest', path: '/blog/test/guideAndConfigSetting.html', date: '6/9/2022, 1:20:44 AM', category: 'test', tag: 'test,jest,react' }
     - { title: 'Jest', path: '/blog/test/jest.html', date: '2022/5/12 22:30:30', category: 'test', tag: 'test,jest,react' }
-    - { title: 'React Test library', path: '/blog/test/RTL.html', date: '2022/5/12 22:30:30', category: 'test', tag: 'test,jest,react' }
+    - { title: 'React Test library', path: '/blog/test/RTL.html', date: '6/13/2022, 1:20:44 AM', category: 'test', tag: 'test,jest,react' }
     - { title: '实战篇', path: '/blog/test/Combat.html', date: '2022/5/12 22:30:30', category: 'test', tag: 'test,jest,react' }
 categories:
     - {label: 'test', length: 1 }
