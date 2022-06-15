@@ -320,7 +320,7 @@ describe('App', () => {
 下面是一个稍微复杂一点的搜索input，使用了`useState, event handler, props`，是一个受控组件 (controlled component):
 
 // todo 
-    
+  
 ### [act](https://reactjs.org/docs/testing-recipes.html#act)
 
 当写UI测试时，像`react dom render`, `user events`, or `data fetching - promise`的任务都会被看作用户与View的交互。
@@ -701,7 +701,7 @@ userEvent.type(input, 'hello world')
 #### [优先级](https://testing-library.com/docs/queries/about#priority)
 
 **尽量使用无障碍的特效去查找**
-- getByRole
+- getByRole，[Roles](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/)
 - getByLabelText
 - getByText
 - getByDisplayValue
@@ -713,6 +713,7 @@ userEvent.type(input, 'hello world')
 使用**Test IDs**
 - getByTestId
 
+* 一般情况下，当你在想我该用那个query方法时，首选的都是`*ByRole`，其他的情况可以参考下面的[some case](#some-case)
 
 ####  `getBy` vs `queryBy`
 
@@ -767,7 +768,7 @@ function SearchInput() {
       const user = await getUser()
       setUser(user)
     }
-
+    // setTimeout(() => loadUser(), 1500)
     loadUser()
   }, [])
 
@@ -823,10 +824,11 @@ import userEvent from '@testing-library/user-event'
 describe('SearchInput', () => {
   test('renders SearchInput component', async () => {
     render(<SearchInput />)
-    
+  
     // succeeds
     expect(screen.getByText(/Searches for/)).toBeInTheDocument()
     expect(screen.queryByText(/Signed in as/)).not.toBeInTheDocument()
+    // 会error，如果是 setTimeout(() => loadUser(), 1500)
     expect(await screen.findByText(/Signed in as Robin/i)).toBeInTheDocument()
 
     fireEvent.change(screen.getByRole('textbox'), {
@@ -883,6 +885,8 @@ describe('Search', () => {
 ```
 :::
 
+如果把`loadUser()`替换为`setTimeout(() => loadUser(), 1500)`，`findByText`的case那里测试就会失败。
+
 #### 查找多个元素
 
 - getAllBy
@@ -890,17 +894,67 @@ describe('Search', () => {
 -  findAllBy
 
 
-html如：`<h3>Hello <span>World</span></h3>`
+#### some case
+
+##### `text is broken up by multiple elements`
+
+html如：`<h3>Hello <span>World</span></h3>`，h3 中的text被标签分割了。
 ```js
-// Before
+// Error: TestingLibraryElementError: Unable to find an element with the text: /hello world/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
 screen.getByText(/hello world/i)
-// |>Error: TestingLibraryElementError: Unable to find an element with the text: /hello world/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
 
-// In version 9
 screen.getByRole('heading', { name: /hello world/i })
-// |> HTMLHeadingElement
+// or more precisely for h3 tag
+screen.getByRole('heading', { name: /hello world/i, level: 3 })
 ```
+##### Finding multiple elements
+比如在一个组件中html如：
+```html
+<h3>Login now</h3>
+<button>Login</button>
+```
+如果这样去query，对于测试用例来说，是很脆弱的，轻易的改动就可能fail。
+```ts
+const logins = screen.getAllByText(/login/i)
+const loginButton = logins[1]
+```
+更好的写法是：
+```ts
+const loginButton = screen.getByText(/login/i, { selector: 'button' })
+// or
+const loginButton2 = screen.getByRole('button', { name: '/login/i' })
+```
+即使用的`options`参数去缩小范围。比如第一个case中用[`heading` 和`level`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/heading_role) 而不是 `h1`...`h6 `标签.
 
+##### 查找空元素
+比如图标这样的
+```html
+<style>
+    * default class for fonts-face with icons */
+    .icon { font-family: 'IconFontRoleImg' !important; }
+
+    /* specific class for icon */
+    .icon-star-bg:before { content: "\e982"; }
+</style>
+<p>
+    <span class="icon icon-star-bg"></span>
+</p>
+```
+其实，html结构应该为
+```html
+<p>
+    <span class="icon icon-star-bg" role="img" aria-label="Favorite"></span>
+</p>
+```
+这样就可以使用`getByRole('img', { name: /favorite/i })`。
+
+- [Semantically identifying a font icon with role="img"](https://www.w3.org/WAI/WCAG21/Techniques/aria/ARIA24)
+##### 查询没有`role`对应的
+
+`*ByRole`也不是银弹，有些场景也是不能用`*ByRole`的，比如查找一个没有role的元素，如密码输入input，可以从[官网](https://testing-library.com/docs/queries/about/#priority) 上找到其他对于的API，已可以利用这个
+网站：[testing-playground](https://testing-playground.com/) ，粘贴对于的Html结构，就看到该使用那个了。
+![](./images/testing-backgrpund.png)
+使用浏览器插件更加方便 [Chrome](https://chrome.google.com/webstore/detail/testing-playground/hejbmebodbijjdhflfknehhcgaklhano) or [Firefox](https://addons.mozilla.org/en-US/firefox/addon/testing-playground/) .
 ## reference
 - [React Testing Library Tutorial](https://www.robinwieruch.de/react-testing-library/)
 - [Making sure you're using the correct query](https://timdeschryver.dev/blog/making-sure-youre-using-the-correct-query)
@@ -908,4 +962,4 @@ screen.getByRole('heading', { name: /hello world/i })
 - [Act Deep Excavate](https://github.com/threepointone/react-act-examples/blob/master/sync.md)
 - [You Probably Don’t Need act() in Your React Tests](https://javascript.plainenglish.io/you-probably-dont-need-act-in-your-react-tests-2a0bcd2ad65c)
 - [When should I use act() in react-testing-library?](https://flyingsquirrel.medium.com/when-should-i-use-act-in-react-testing-library-d7dd22a3340e)
-- [testing-playground](https://testing-playground.com/)
+---

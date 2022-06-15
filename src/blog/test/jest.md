@@ -454,7 +454,7 @@ describe('each.ts 单元测试', () => {
 
 ## Jest 架构
 
-From[[Jest Architecture](https://www.youtube.com/watch?v=3YDiloj8_d0), Jest作者非常详细地讲述整个 `Jest` 执行流程.
+From[Jest Architecture](https://www.youtube.com/watch?v=3YDiloj8_d0), Jest作者非常详细地讲述整个 `Jest` 执行流程.
 
 ![](./images/performance/jest-architecture.png)
 
@@ -480,9 +480,9 @@ From[[Jest Architecture](https://www.youtube.com/watch?v=3YDiloj8_d0), Jest作�
 
 ### 多线程
 
-Jest 还有一个非常强大的功能，利用 Node.js 的 Worker 开启多个线程来执行测试用例。对于一些大型项目（几千个测试用例）来说，这能提升不少效率。
+Jest 还有一个非常强大的功能，利用 Node.js 的 `Worker` 开启多个线程来执行测试用例。对于一些大型项目（几千个测试用例）来说，这能提升不少效率。
 
-但线程不是越多越好，每开一个线程都需要额外的开销。如果不做任何配置，那么 Jest 默认最大的 Worker 数是 `CPU 数 - 1`。其中的 `1` 用于运行 `jest-cli`，
+但线程不是越多越好，每开一个线程都需要额外的开销。如果不做任何配置，那么 Jest 默认最大的 `Worker` 数是 `CPU 数 - 1`。其中的 `1` 用于运行 `jest-cli`，
 剩下的都拿来执行测试用例。由于之前一直没有对 `maxWorkers` 进行配置，所以默认会用最多的 Worker，执行这么几十个简单的测试会非常慢。
 
 通常来说，单个测试用例速度应该要做到非常快的，尽量不写一些耗时的操作，比如不要加 `setTimeout`，`n` 个 `for` 循环等。
@@ -576,3 +576,5 @@ module.exports = {
 
 
 - [Jest 实践指南](https://github.yanhaixiang.com/jest-tutorial/)
+- [从零开始实现一个 Jest 单元测试框架](https://github.com/wscats/jest-tutorial)
+- [手撕Jest弄清原理](https://juejin.cn/post/7080493139764461605)
