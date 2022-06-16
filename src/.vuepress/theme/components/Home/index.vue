@@ -45,6 +45,12 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss">
+.dark {
+  .banner-wrapper {
+    filter: invert(110%) hue-rotate(180deg);
+    opacity: .8;
+  }
+}
 .home-wrapper {
   .banner-wrapper {
     @apply w-screen h-screen-3/5 flex justify-center items-center overflow-hidden;

@@ -17,7 +17,7 @@ layout: BlogLayout
 同`Jest`一样，如果`create-react-app`创建的，`RTL`已内置好，但比如专门用于测试`hooks`的[`@testing-library/react-hooks`](https://react-hooks-testing-library.com/) 还是要自己添加安装。
 
 ```shell
-pnpm i @testing-library/react @testing-library/user-event @testing-library/react-hooks  @testing-library/jest-dom -D
+pnpm i @testing-library/react @testing-library/user-event @testing-library/jest-dom -D
 # 基于eslint和testing library的最佳实践去提示，避免一些常见的错误
 pnpm i eslint-plugin-testing-library -D
 ```
@@ -26,7 +26,7 @@ pnpm i eslint-plugin-testing-library -D
 - [`@testing-library/react`](https://testing-library.com/docs/react-testing-library/intro) : 在 `@testing-library/dom` 基础上，将 `React组件`渲染为 `DOM` 便于后边测试;
 - [`@testing-library/user-event`](https://testing-library.com/docs/user-event/intro/) : 提供了更加高级的浏览器交互模拟 – 即事件;
 - [`@testing-library/jest-dom`](https://github.com/testing-library/jest-dom) ：追加一系列辅助测试 DOM 的 `matchers` 匹配器，需要在每个 `react test`文件的顶部引用，否则类似 `expect(dom).toBeInTheDocument()` 这样的断言则没法用，可以在`setup`中统一导入。
-- [`@testing-library/react-hooks`](https://react-hooks-testing-library.com/): 专门用于测试hooks的库。
+- [`@testing-library/react-hooks`](https://react-hooks-testing-library.com/): 专门用于测试hooks的库。在` @testing-library/react@13.1.0` 以上的版本已经把 `renderHook` 内置到里面了，但这个版本需要和 `react@18` 一起使用。
 - [`eslint-plugin-testing-library`](https://github.com/testing-library/eslint-plugin-testing-library) : 基于`eslint`和`testing library`的最佳实践去做提示，避免一些常见的错误。
 
 ### Basic
@@ -956,6 +956,7 @@ const loginButton2 = screen.getByRole('button', { name: '/login/i' })
 ![](./images/testing-backgrpund.png)
 使用浏览器插件更加方便 [Chrome](https://chrome.google.com/webstore/detail/testing-playground/hejbmebodbijjdhflfknehhcgaklhano) or [Firefox](https://addons.mozilla.org/en-US/firefox/addon/testing-playground/) .
 ## reference
+- [React单元测试策略及落地](https://insights.thoughtworks.cn/react-strategies-for-unit-testing/)
 - [React Testing Library Tutorial](https://www.robinwieruch.de/react-testing-library/)
 - [Making sure you're using the correct query](https://timdeschryver.dev/blog/making-sure-youre-using-the-correct-query)
 - [使用 `React Testing Library` 的 15 个常见错误](https://mp.weixin.qq.com/s/pgdcDNjDGPgNq76Zh_dZxg)

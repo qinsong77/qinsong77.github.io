@@ -2,6 +2,29 @@
 title: demo
 ---
 
+### 简单 CSS 实现暗黑模式
+
+解释：
+
+1. invert 将所有色值反转，hue-rotate 将黑白以外的其它主色调再反转回来（防止页面主题色出现大的变化）；
+
+2. 网上的 invert 通常取值为 100%，但是这样反转得到的黑色往往太过黑，眼睛看起来有点累，因此我觉得 90% 是一个更合理的值；
+
+3. 将图片、视频等其它不需要被反转的元素再反转回来，并加一个透明度，让其不那么刺眼；
+4. 如果 html 反转 90%，则图片等元素需要反转 110%；
+
+```css
+@media (prefers-color-scheme: dark) {
+    html {
+        filter: invert(90%) hue-rotate(180deg);
+    }
+
+    img, video, svg, div[class*="language-"] {
+        filter: invert(110%) hue-rotate(180deg);
+        opacity: .8;
+    }
+}
+```
 
 ### css 实现圆形渐变进度条
 实现思路

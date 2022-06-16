@@ -189,10 +189,10 @@ export default defineUserConfig({
         text: 'Demo',
         link: '/demo'
       },
-      {
-        text: 'Resume',
-        link: '/resume'
-      },
+      // {
+      //   text: 'Resume',
+      //   link: '/resume'
+      // },
       // {
       // 	text: 'GitHub',
       // 	link: 'https://github.com/qinsong77',

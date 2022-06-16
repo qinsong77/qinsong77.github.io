@@ -2,15 +2,15 @@
 home: true
 banner:
     bg: /images/bg2.jpeg
-    h1: Still Moving on
-    p: I Sometimes wish I'd never been born at all.
+    h1: Life, Love, and Faith
+    p: I don't know how or why or when, I ended up being this position I'm in.
 posts:
-    - { title: '前端测试简介、React+Vite配置Jest', path: '/blog/test/guideAndConfigSetting.html', date: '6/9/2022, 1:20:44 AM', category: 'test', tag: 'test,jest,react' }
-    - { title: 'Jest', path: '/blog/test/jest.html', date: '2022/5/12 22:30:30', category: 'test', tag: 'test,jest,react' }
-    - { title: 'React Test library', path: '/blog/test/RTL.html', date: '6/13/2022, 1:20:44 AM', category: 'test', tag: 'test,jest,react' }
-    - { title: '实战篇', path: '/blog/test/Combat.html', date: '2022/5/12 22:30:30', category: 'test', tag: 'test,jest,react' }
+    - { title: '前端测试简介、React+Vite配置Jest', path: '/blog/test/guideAndConfigSetting.html', date: '6/9/2022, 1:20:44 AM', category: 'test', tag: 'test, jest, react' }
+    - { title: 'Jest', path: '/blog/test/jest.html', date: '6/13/2022, 1:20:44 AM', category: 'test', tag: 'test, jest' }
+    - { title: 'React Test library', path: '/blog/test/RTL.html', date: '6/16/2022, 12:16:07 AM', category: 'test', tag: 'test,jest,RTL,react' }
+    - { title: '实战篇', path: '/blog/test/Combat.html', date: '5/16/2022, 1:19:27 AM', category: 'test', tag: 'test,jest,RTL,react' }
 categories:
-    - {label: 'test', length: 1 }
+    - {label: 'test', length: 4 }
     - {label: 'react', length: 3 }
 tags:
     - test

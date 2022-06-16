@@ -6,7 +6,7 @@ layout: BlogLayout
 
 ## 引言
 
-在前端工程化越来越完善的今天，一个标准完整的项目，通常情况单元测试是非常必要的，前端工程化大致分为模块化、组件化、规范化和自动化，测试我会认为在自动化环节。测试在敏捷开发中也是不可或缺的部分，比如在结对编程中，可以一人写测试，一人写实现代码，敏捷开发讲究TDD，也是是重构环节的强力支持等。
+在前端工程化越来越完善的今天，一个标准完整的项目，通常情况单元测试是非常必要的，前端工程化大致分为模块化、组件化、规范化和自动化，测试我会认为在自动化环节。测试在敏捷开发中也是不可或缺的部分，比如在结对编程中，可以一人写测试，一人写实现代码，敏捷开发讲究TDD，也是重构环节的强力支持等。
 在这里就不多讲比如前端为什么需要测试，能带来什么收益等了，理论上测试是项目中必不可少的一环，然而在国内却很少写，特别是前端，国内互联网往往追求产品和业务的快速上线和迭代，测试不可避免的被压缩和牺牲。个人觉得是否能把前端测试落地到
 项目上，可能话语权根本不在前端开发，完全在于公司的开发文化、项目流程等。
 
@@ -16,7 +16,7 @@ layout: BlogLayout
 
 这就衍生出了单元测试（Unit Test）、集成测试（Integration Test）、UI测试（UI Test）、端到端(e2e)测试/功能测四种主要的测试方法，以及**TDD**与**BDD**的测试开发流程。
 
-前端测试主要分为4种：单元测试（Unit Test）、集成测试（Integration Test）、UI测试（UI Test）、端到端(e2e)测试/功能测试。
+> 前端测试主要分为4种：单元测试（Unit Test）、集成测试（Integration Test）、UI测试（UI Test）、端到端(e2e)测试/功能测试。
 
 ### 什么是单元测试
 
@@ -26,7 +26,42 @@ layout: BlogLayout
 
 通常情况下，在公共函数/组件中一定要有单元测试来保证代码能够正常工作。单元测试也应该是项目中数量最多、覆盖率最高的。
 
-能进行单元测试的函数/组件，一定是低耦合的，这也从一定程度上保证了我们的代码质量。
+能进行单元测试的函数/组件，一定是低耦合的，这也从一定程度上保证了我们的代码质量。`given-when-then`的结构，可以让你写出比较清晰的测试结构，既易于阅读，也易于编写。比如：
+
+```ts
+type TProduct = {
+ name: string
+ price: number
+}
+// production code
+const computeTotalAmount = (products: TProduct[]) => {
+ return products.reduce((total, product) => total + product.price, 0)
+}
+
+// testing code
+it('should return summed up total amount 1000 when there are three products priced 200, 300, 500', () => {
+ // given - 准备数据
+ const products = [
+  { name: 'nike', price: 200 },
+  { name: 'adidas', price: 300 },
+  { name: 'lining', price: 500 },
+ ]
+
+ // when - 调用被测函数
+ const result = computeTotalAmount(products)
+
+ // then - 断言结果
+ expect(result).toBe(1000)
+})
+```
+
+一个好的单元测试应该有以下特点：
+
+- 只关注输入输出，不关注内部实现
+- 只测一条分支
+- 表达力极强
+- 不包含逻辑
+- 运行速度快
 
 ### 集成测试
 
@@ -77,7 +112,7 @@ E2E（end to end）端到端测试是最直观可以理解的测试类型。在�
 
 真实的测试环境，更容易获得程序的信心。
 
-## 测试金字塔
+## 前端现代化测试模型
 
 首先，简单对以上集中测试方法简单总结一下：
 
@@ -85,17 +120,18 @@ E2E（end to end）端到端测试是最直观可以理解的测试类型。在�
 - 集成测试：从用户角度出发，对应用中多个模块组织到一起的正确性进行测试。
 - 快照测试：快照测试类似于“找不同”游戏，主要用于 UI 测试。
 - 端到端测试：端到端测试是从用户的角度编写的，基于真实浏览器环境测试用户执行它所期望的工作。
+ 
+前端测试中有两种模型, `金字塔模型`与`奖杯模型`。
 
-那到底该写哪种测试？都写，根据情况灵活分配。比较典型的就是： 金字塔模式
 
-![](./images/pyramid_model.webp)
+### 测试金字塔
 
-奖杯模型中自下而上分为静态测试、单元测试、集成测试、e2e 测试, 它们的职责大致如下：
+4种那到底该写哪种测试？都写，根据情况灵活分配。比较典型的就是： [金字塔模式](https://martinfowler.com/bliki/TestPyramid.html)
 
-- 静态测试：在编写代码逻辑阶段时进行报错提示。(代表库: ESLint、Flow、TypeScript)
-- 单元测试：在奖杯模型中, 单元测试的职责是对一些边界情况或者特定的算法进行测试。(代表库: Jest、Mocha)
-- 集成测试：模拟用户的行为进行测试，对网络请求、获取数据库的数据等依赖第三方环境的行为进行 Mock。（代表库: Jest、react-testing-library、Vue Testing Library 等）
-- e2e 测试：模拟用户在真实环境上操作行为（包括网络请求、获取数据库数据等）的测试。（代表库: Cypress）
+
+![](./images/pyramid_model2.png)
+
+金字塔模型自下而上分为单元测试、集成测试、UI 测试, 之所以是金字塔结构是因为单元测试的成本最低, 与之相对, UI 测试的成本最高。所以单元测试写的数量最多, UI 测试写的数量最少。同时需注意的是越是上层的测试, 其通过率给开发者带来的信心是越大的。
 
 **整个金字塔模型代表着越上层的测试集成度越高，执行速度越慢，越下层的测试隔离性越好，执行越快越轻量。**
 
@@ -111,15 +147,26 @@ E2E（end to end）端到端测试是最直观可以理解的测试类型。在�
 
 > E2E测试（End-to-end Test）：则是将整个应用放到真实的环境中运行，包括数据在内也是需要使用真实的。
 
-测试金字塔的顶层（UI测试）并非这里字面意义上的“UI测试”，这一点比较有误导性，对于现代前端应用，UI测试侧重产品的UI交互是否正确，模拟后端进行测试也可以，放在单元测试里去做也可以。
+测试金字塔的顶层（UI测试）并非这里字面意义上的"UI测试"，这一点比较有误导性，对于现代前端应用，UI测试侧重产品的UI交互是否正确，模拟后端进行测试也可以，放在单元测试里去做也可以。
 而E2E测试，是需要模拟用户真实场景的测试，检查整个系统是否以正确的方式运作。 所以广义上的“UI测试”（测试金字塔的UI Tests）可以认为是E2E测试。
 
-##### 什么场景适合
+### 奖杯模式
 
-- 需求稳定，不会频繁变更
-- UI界面稳定，变动少
-- 项目周期长
-- 大量的回归测试
+奖杯模型摘自 Kent C. Dodds 提出的 [The Testing Trophy](https://twitter.com/kentcdodds/status/960723172591992832?ref_src=twsrc%5Etfw%7Ctwcamp%5Etweetembed%7Ctwterm%5E960723172591992832&ref_url=https%3A%2F%2Fkentcdodds.com%2Fblog%2Fwrite-tests)，该模型是比较认可的前端现代化测试模型，模型示意图如下:
+
+![](./images/champ_model.jpeg)
+
+奖杯模型中自下而上分为静态测试、单元测试、集成测试、e2e 测试, 它们的职责大致如下：
+
+- 静态测试：在编写代码逻辑阶段时进行报错提示。(代表库: ESLint、Flow、TypeScript)
+- 单元测试：在奖杯模型中, 单元测试的职责是对一些边界情况或者特定的算法进行测试。(代表库: Jest、Mocha)
+- 集成测试：模拟用户的行为进行测试，对网络请求、获取数据库的数据等依赖第三方环境的行为进行 Mock。（代表库: Jest、react-testing-library、Vue Testing Library 等）
+- e2e 测试：模拟用户在真实环境上操作行为（包括网络请求、获取数据库数据等）的测试。（代表库: Cypress）
+
+
+越是上层的测试给开发者带来的自信是越大的, 与此同时, 越是下层的测试测试的效率是越高的。奖杯模型综合考虑了这两点因素, 可以看到其在集成测试中的占比是最高的。
+
+### 什么场景适合
 
 下面是针对不同的应用场景为了一些个人建议:
 
@@ -240,9 +287,14 @@ BDD实际上是模拟用户的行为，在业务代码完成后，用测试用�
 
 再结合BDD，使开发时更加关注业务代码，不必先写繁琐的测试用例。而且只要操作流程不会变，那测试用例也基本不用动，更加适合平时业务的开发。
 
-## React项目如何配置Jest和RTL(React Test Library)
+### 测试原则
+1. 从真实用户的行为流程去测试，往往比测函数本身，能给你带来更多的信心。
+2. 对于没有独立性和通用性的函数或对象，把它们视作实现的一部分，一般没有必要为它们去写单独的测试。不要拘泥于对“单元测试”的字面理解，不要被形式上的规律所束缚。
+3. 不要把测试覆盖率视为太过重要的指标，它的目的还是帮助提升代码的稳定。有的代码没有覆盖也没关系，有的代码值得你覆盖好多遍。毕竟，我们不是为了写测试而写测试。
 
-通过 [`create-react-app`](https://create-react-app.dev/) 创建的项目以及默认配置好`Jest`和`RTL`，开箱即用，能基本满足绝大多数需求，CRA涉及的依赖包有：
+## React项目如何配置Jest和RTL
+
+通过 [`create-react-app`](https://create-react-app.dev/) 创建的项目以及默认配置好`Jest`和`RTL`(React Test Library)，开箱即用，能基本满足绝大多数需求，CRA涉及的依赖包有：
 
 - `babel`，包括`babel-jest`, `@babel/core`, `@babel/preset-env`，使用babel肯定是为了转译，比如nodejs 采用的是 CommonJS 的模块化规范，使用 require 引入模块；而 import 是 ES6 的模块化规范关键字。为了能使用这些新特性，就需要使用 babel 把 ES6 转成 ES5 语法。
 - `jest`,`jest-resolve`,`jest-watch-typeahead`(jest watch的时候使用这个根据文件名或者测试名称去筛选)
@@ -782,6 +834,11 @@ export default {
 }
 ```
 
+## Reference
 - [jest](https://jestjs.io/docs/getting-started)
+- [write-tests](https://kentcdodds.com/blog/write-tests)
+- [深度解读 - TDD（测试驱动开发）](https://www.jianshu.com/p/62f16cd4fef3)
 - [前端单元测试](https://ths.js.org/2021/04/06/%E5%89%8D%E7%AB%AF%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/)
----
+- [React单元测试策略及落地](https://insights.thoughtworks.cn/react-strategies-for-unit-testing/)
+- [前端测试的反模式](https://insights.thoughtworks.cn/front-end-testing/)
+- [重构：干掉有坏味道的代码](https://www.cnblogs.com/xybaby/p/12894470.html)
