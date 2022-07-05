@@ -796,6 +796,27 @@ Jest 会在 `coverage` 目录下生成各种不同格式的覆盖率报告文件
 
 无论哪种格式，都很难直观地看懂。因此，Jest 也支持生成网页的测试报告，打开 `lcov-report/index.html` 就可以看到网页版的测试报告了.
 
+#### 测试报告细则
+如：
+![](./images/coverage_html.png)
+
+![](./images/coverage_with_I.png)
+在测试文件中：
+
+- `E`代表代码`else`分支没有cover ('E' stands for 'else path not taken', which means that for the marked if/else statement, the 'if' path has been tested but not the 'else'.)
+- `I`代表代码`if`分支没有cover ('I' stands for 'if path not taken', which is the opposite case: the 'if' hasn't been tested.)
+- 左侧每行的`xN`代表执行的次数(The xN in left column is the amount of times that line has been executed).
+- 没有执行的行**红色**高亮（Not executed lines, or pieces of code, will be highlighted in red）.
+
+It also provides some color codes -
+
+- Pink: statements not covered.（粉色声明没有cover）
+
+- Orange: functions not covered.（橘色function没有cover）
+
+- Yellow: branches not covered.（黄色分支没有cover）
+
+
 ### 报错
 
 1. ![](./images/jest-env-dom-error.png)
@@ -842,3 +863,4 @@ export default {
 - [React单元测试策略及落地](https://insights.thoughtworks.cn/react-strategies-for-unit-testing/)
 - [前端测试的反模式](https://insights.thoughtworks.cn/front-end-testing/)
 - [重构：干掉有坏味道的代码](https://www.cnblogs.com/xybaby/p/12894470.html)
+- [How to read Test Coverage report generated using Jest.](https://krishankantsinghal.medium.com/how-to-read-test-coverage-report-generated-using-jest-c2d1cb70da8b)
