@@ -9,6 +9,7 @@ posts:
     - { title: 'Jest', path: '/blog/test/jest.html', date: '6/13/2022, 1:20:44 AM', category: 'test', tag: 'test, jest' }
     - { title: 'React Test library', path: '/blog/test/RTL.html', date: '6/16/2022, 12:16:07 AM', category: 'test', tag: 'test,jest,RTL,react' }
     - { title: '实战篇', path: '/blog/test/Combat.html', date: '5/16/2022, 1:19:27 AM', category: 'test', tag: 'test,jest,RTL,react' }
+    - { title: 'MonoRepo by pnpm workspace + TurboRepo', path: '/blog/architecture/monorepoPnpmTurboRepo.html', date: '8/1/2022, 1:19:27 AM', category: 'monorepo', tag: 'monorepo,pnpm,turborepo' }
 categories:
     - {label: 'test', length: 4 }
     - {label: 'react', length: 3 }

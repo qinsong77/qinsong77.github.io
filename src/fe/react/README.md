@@ -15,39 +15,63 @@ title: 总结
 
 [2021年React学习路线图](https://mp.weixin.qq.com/s?__biz=MzUxMzcxMzE5Ng==&mid=2247505750&idx=2&sn=a31164ddf69f49e3761d2a6d660cf316&chksm=f9526215ce25eb031cbb1f8e0137b3fb3e30f6305fb183f028ab12419699695173b51c44b49d&scene=132#wechat_redirect)
 
-[Build your own React](https://pomb.us/build-your-own-react/)
-[Build your own React-中文](https://github.com/defpis/build-your-own-react)
+[Build your own React](https://pomb.us/build-your-own-react/) | [Build your own React-中文](https://github.com/defpis/build-your-own-react)
 
 [react-面试题](https://github.com/semlinker/reactjs-interview-questions)
 
-`npx create-react-app my-app --typescript` => `--typescript`被弃用，使用`--template typescript`
+-------
 
-# 目录
-- [概述](#概述)
-- [React15架构](#react15架构)
-    - [Reconciler](#reconciler)
-    - [Renderer](#renderer-渲染器)
-- [React16架构](#react16架构)
-- [React16的组件类型](#react16的组件类型)
-- [函数式组件](#函数式组件)
-- [JSX简介](#jsx简介)
-- [Fiber](#fiber)
-    - [双缓存Fiber树](#双缓存fiber树)
-    - [Fiber是如何工作的](#fiber是如何工作的)
-- [生命周期](#生命周期)
-    - [React16.3.0之前生命周期](#react16-3-0之前生命周期)
-    - [React16.3.0之后的生命周期](#react16-3-0之后的生命周期)
-- [受控与非受控组件](#受控与非受控组件)
-- [setState](#setstate)
-- [react合成事件](#react合成事件)
-- [React.PureComponent与React.memo()](#react-purecomponent与react-memo)
-- [React组件到底什么时候render](#react组件到底什么时候render)
-- [高阶组件](#高阶组件)
-- [render props](#render-props)
-- [真实DOM操作和Virtual Dom](#真实dom操作和virtual-dom)
-- [Diff算法](#diff算法)
-- [React懒加载](#react懒加载)
-- [React17/18新特性](#react17-18新特性)
+[[toc]]
+
+[//]: # (- [概述]&#40;#概述&#41;)
+
+[//]: # (- [React15架构]&#40;#react15架构&#41;)
+
+[//]: # (    - [Reconciler]&#40;#reconciler&#41;)
+
+[//]: # (    - [Renderer]&#40;#renderer-渲染器&#41;)
+
+[//]: # (- [React16架构]&#40;#react16架构&#41;)
+
+[//]: # (- [React16的组件类型]&#40;#react16的组件类型&#41;)
+
+[//]: # (- [函数式组件]&#40;#函数式组件&#41;)
+
+[//]: # (- [JSX简介]&#40;#jsx简介&#41;)
+
+[//]: # (- [Fiber]&#40;#fiber&#41;)
+
+[//]: # (    - [双缓存Fiber树]&#40;#双缓存fiber树&#41;)
+
+[//]: # (    - [Fiber是如何工作的]&#40;#fiber是如何工作的&#41;)
+
+[//]: # (- [生命周期]&#40;#生命周期&#41;)
+
+[//]: # (    - [React16.3.0之前生命周期]&#40;#react16-3-0之前生命周期&#41;)
+
+[//]: # (    - [React16.3.0之后的生命周期]&#40;#react16-3-0之后的生命周期&#41;)
+
+[//]: # (- [受控与非受控组件]&#40;#受控与非受控组件&#41;)
+
+[//]: # (- [setState]&#40;#setstate&#41;)
+
+[//]: # (- [react合成事件]&#40;#react合成事件&#41;)
+
+[//]: # (- [React.PureComponent与React.memo&#40;&#41;]&#40;#react-purecomponent与react-memo&#41;)
+
+[//]: # (- [React组件到底什么时候render]&#40;#react组件到底什么时候render&#41;)
+
+[//]: # (- [高阶组件]&#40;#高阶组件&#41;)
+
+[//]: # (- [render props]&#40;#render-props&#41;)
+
+[//]: # (- [真实DOM操作和Virtual Dom]&#40;#真实dom操作和virtual-dom&#41;)
+
+[//]: # (- [Diff算法]&#40;#diff算法&#41;)
+
+[//]: # (- [React懒加载]&#40;#react懒加载&#41;)
+
+[//]: # (- [React17/18新特性]&#40;#react17-18新特性&#41;)
 
 ## 概述
 
@@ -473,20 +497,20 @@ React应用的根节点通过current指针在不同Fiber树的rootFiber间切换
 
 ## [生命周期](https://zh-hans.reactjs.org/docs/react-component.html)
 
-## React16.3.0之前生命周期
+### React16.3.0之前生命周期
 
 [文章](https://juejin.cn/post/6844904021233238024)
 
 ![](./image/react-lifeCircle-old.png)
 
-### 创建期:
+#### 创建期:
 
 - constructor(props, context)
 - componentWillMount()
 - render()
 - componentDidMount()
 
-### 运行时:
+#### 运行时:
 
 #### props发生变化时
 
@@ -503,13 +527,13 @@ React应用的根节点通过current指针在不同Fiber树的rootFiber间切换
 - render
 - componentDidUpdate(prevProps, prevState, snapshot)
 
-### 卸载时
+#### 卸载时
 
 - componentWillUnmount()
 
-## React16.3.0之后的生命周期
+### React16.3.0之后的生命周期
 
-### 创建期:
+#### 创建期:
 
 - constructor(props, context)
 - static getDerivedStateFromProps(props, status)
@@ -524,7 +548,7 @@ React应用的根节点通过current指针在不同Fiber树的rootFiber间切换
 - componentDidMount()
 注意: `getDerivedStateFromProps`/`getSnapshotBeforeUpdate` 和 `componentWillMount`/`componentWillReceiveProps`/`componentWillUpdate` 如果同时存在，React会在控制台给出警告信息，且仅执行 getDerivedStateFromProps/getSnapshotBeforeUpdate 【React@16.7.0】
 
-### 运行时:
+#### 运行时:
 
 #### props发生变化时
 
@@ -653,6 +677,7 @@ class NameForm extends React.Component {
 - setState 的批量更新优化也是建立在“异步”（合成事件、钩子函数）之上的，在原生事件和setTimeout 中不会批量更新，在“异步”中如果对同一个值进行多次setState，setState的批量更新策略会对其进行覆盖，取最后一次的执行，如果是同时setState多个不同的值，在更新时会对其进行合并批量更新。
 
 ## react合成事件
+
 - [一文吃透react事件系统原理](https://juejin.cn/post/6955837254250004511)
 
 首先，React Jsx中写的事件，经过`babel`转换成`React.createElement`形式，放在了props参数`onClick`中，最终转成fiber对象放在了`memoizedProps` 和 `pendingProps`。
@@ -1671,3 +1696,7 @@ React17 是一个用以稳定CM的过渡版本。
 - SSR 下的懒加载支持
 
 ![](./image/model.png)
+
+## React fast refresh
+
+- [Fast Refresh原理剖析](http://www.ayqy.net/blog/fast-refresh-under-the-hood/)
