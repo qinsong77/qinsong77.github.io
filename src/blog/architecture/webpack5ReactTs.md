@@ -18,7 +18,7 @@ cd webpack5-react-template
 pnpm init
 ```
 
-![](./image/shoot1.png)
+![](./webpack5-images/shoot1.png)
 先稍微介绍下`package.json`中几个主要的字段如`dependencies`,`devDependencies`,`peerDependencies`,`scripts`的意思。
 
 - dependencies: 生产环境，项目运行的依赖（如：react,react-dom）
@@ -173,7 +173,7 @@ console.log(constant_1.default);
 
 看一下npm包中react的导出
 
-![](./image/shoot2.png)
+![](./webpack5-images/shoot2.png)
 
 可以看到通过npm方式引用react时默认是以`commonjs`方式导出的，结合上面ts默认编译的规则，`import React from 'react'` 会从 `exports.default` 上去拿代码，显然此时`default`属性不存在`commonjs`模块中，因此会导致打印`undefined`；而`import * as React from 'react'` 则会把React作为为一个对象，因此不会有问题。
 
@@ -854,10 +854,10 @@ const Button = React.lazy(
 );
 ```
 如果不设置runtimeChunk，默认是false，第一次打包：
-![](./image/noruntime-1.png)
+![](./webpack5-images/noruntime-1.png)
 
 修改Button组件后打包:
-![](./image/noruntime-2.png)
+![](./webpack5-images/noruntime-2.png)
 
 可以看到入口文件main的hash也变了。而我们明明只改了button组件。
 
