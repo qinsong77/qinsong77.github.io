@@ -1,0 +1,4 @@
+---
+title: architecture
+layout: BlogLayout
+---

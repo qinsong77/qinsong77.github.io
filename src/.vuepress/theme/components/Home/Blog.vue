@@ -40,7 +40,7 @@ import Icon from "../global/Icon.vue";
 const mdData = usePageFrontmatter();
 
 
-const posts = mdData.value?.posts || []
+const posts = mdData.value?.posts?.reverse() || []
 
 const categories = mdData.value?.categories || []
 

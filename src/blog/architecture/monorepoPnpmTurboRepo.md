@@ -5,6 +5,7 @@ layout: BlogLayout
 
 [[toc]]
 
+> not done
 ## pnpm
 
 `pnpm` 是新一代的包管理工具。按照官网说法，可以实现**节约磁盘空间并提升安装速度和创建非扁平化的 `node_modules` 文件夹**两大目标，具体原理可以参考[pnpm 官网](https://pnpm.io/zh/motivation)。
@@ -276,7 +277,7 @@ pnpm install @sysuke/pkg1 --filter @sysuke/pkg2
 当 `pnpm publish` 的时候，会自动将 package.json 中的 workspace 修正为对应的版本号。
 :::
 
-### what else ?
+### what else?
 
 这样其实一个只是涉及依赖相互引用和包管理的基础`monorepo`工程就搞定了，比如一些历史工程的迁移，直接`copy`到`apps`，复用全局的配置，如`husky,commitlint`等，删除多余的配置和依赖，重新安装即可。但要想做好一个完整的`monorepo`工程，远不止如此。包括：
 
@@ -295,7 +296,7 @@ Either start with `eslint-config-` or `@SCOPE/eslint-config.`
 
 #### husky + commitlint + lint-staged
 
-这几个比较简单，就是把配置提到root。
+这几个比较简单，安装后，再把配置提到root。
 
 ```shell
 pnpm add husky lint-staged @commitlint/cli @commitlint/config-conventional  -w -D
@@ -319,7 +320,8 @@ pnpm add husky lint-staged @commitlint/cli @commitlint/config-conventional  -w -
 
 > Changesets hold two key bits of information: a version type (following semver), and change information to be added to a changelog.
 
-简而言之就是管理包的`version`和生成`changelog`。
+简而言之就是用于管理版本及变更日志`changelog`的工具，专注多包管理。
+生成的 `changelog` 遵循 [语义化版本 2.0.0](https://semver.org/lang/zh-CN/)，具体的做法是先根据你的代码更改生成 `changeset` 文件，然后发版的时候合并这些 `changeset` 文件、更改版本号、生成 `changelog`。
 
 ![](./images/changeset-flow.png)
 
@@ -327,44 +329,67 @@ pnpm add husky lint-staged @commitlint/cli @commitlint/config-conventional  -w -
 
 ```shell
 # 安装
-pnpm add -Dw @changesets/cli
+pnpm add -Dw @changesets/cli @changesets/changelog-github
 # 初始化
 pnpm changeset init
 ```
+
+`@changesets/changelog-github` 是一个生成 `changelog` 的插件，如果不修改这个配置也可以工作，但是生成的 `changelog` 不太完美！
+
+![](./images/changeset-init.png)
 
 执行完初始化命令后，会在工程的根目录下生成 `.changeset` 目录，其中的 `config.json` 作为默认的 `changeset` 的配置文件。
 
 配置文件如下：
 ```json
 {
-  "$schema": "https://unpkg.com/@changesets/config@1.6.4/schema.json",
+  "$schema": "https://unpkg.com/@changesets/config@2.1.1/schema.json",
   "changelog": "@changesets/cli/changelog",
   "commit": false,
+  "fixed": [],
   "linked": [],
   "access": "restricted",
-  "baseBranch": "master",
+  "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": []
 }
 ```
-说明如下：
+[说明](https://github.com/changesets/changesets/blob/main/docs/config-file-options.md) 如下：
 
 - changelog: 设置 `CHANGELOG.md` 生成方式，可以设置 `false` 不生成，也可以设置为定义生成行为的文件地址或依赖名称。
-- commit: 设置是否把执行 `changeset add `或 `changeset publish` 操作时对修改用 `Git` 提交
+
+添加  `@changesets/changelog-github`后修改
+```json5
+{
+  "changelog": [
+    "@changesets/changelog-github",
+    {
+      "repo": "qinsong77/sysuke" // 改为你的 github 仓储
+    }
+  ],
+}
+```
+- commit: 设置是否把执行 `changeset add `或 `changeset version` 操作时对修改用 `git` 自动提交对应文件。(A GitHub token with repo, write:packages permissions)
 - linked: 设置共享版本的包，而不是独立版本的包，例如一个组件库中主题和单独的组件的关系，也就是修改 Version 的时候，共享的包需要同步一起更新版本
-- access: 公私有安全设定，内网建议 restricted ，开源使用 public
-- baseBranch: 设置默认的 Git 分支，例如现在 GitHub 的默认分支应该是 main
-- updateInternalDependencies: 设置互相依赖的包版本更新机制，它是一个枚举（major|minor|patch），例如设置为 minor 时，只有当依赖的包新了 minor 版本或者才会对应地更新 package.json 的 dependencies 或 devDependencies 中对应依赖的版本
-- ignore: 设置不需要发布的包，这些会被 Changesets 忽略
-- ___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH: 在每次 `version` 变动时一定无理由 `patch` 抬升依赖他的那些包的版本，防止陷入 `major` 优先的未更新问题
+- [fixed](https://github.com/changesets/changesets/blob/main/docs/fixed-packages.md): 设置那些包的版本保持一致的更新
+- access: 公私有安全设定，内网建议 `restricted` ，开源使用 `public`
+- baseBranch: 设置默认的 Git 分支，例如现在 GitHub 的默认分支应该是 `main`
+- updateInternalDependencies: 设置互相依赖的包版本更新机制，它是一个枚举（`major|minor|patch`），例如设置为 minor 时，只有当依赖的包新了`minor` 版本或者才会对应地更新 `package.json` 的 `dependencies` 或 `devDependencies` 中对应依赖的版本
+- ignore: 设置不需要发布的包，这些会被 `changesets` 忽略
 
 在初始化 `.changeset` 文件夹后，就可以正常使用 `changeset` 相关的命令，主要是这 3 个命令：
 
-- `chageset` 用于生成本次修改的要添加到 `CHANGELOG.md` 中的描述
+- `chageset/npx changeset` 开始交互式填写变更集，这个命令会将你的包全部列出来，然后选择你要更改发布的包, 用于生成本次修改的要添加到 `CHANGELOG.md` 中的描述
 - `changeset version` 用于生成本次修改后的包的版本
 - `changeset publish` 用于发布包
 
-此外，如果是在业务场景下，我们通常需要把包发到公司私有的 NPM Registry，而这有很多种配置方式。但是，需要注意的是 Changesets 只支持在每个包中声明 publicConfig.registry 或者配置 process.env.npm_config_registry，对应的代码会是这样：
+`changeset version`改命令就是来修改发布包的版本的。里面对应了这样几个版本约束（版本号按0.0.0这样的三段式,严格遵循 [semver](https://semver.org/) 规范。）：
+
+- patch 更新小版本号，代表fix补丁
+- minor 更新中版本号，代表小功能改动
+- major 更新大版本号，代表功能大跨步升级
+
+此外，如果是在业务场景下，我们通常需要把包发到公司私有的 `NPM Registry`，而这有很多种配置方式。但是，需要注意的是 changesets 只支持在每个包中声明 publicConfig.registry 或者配置 process.env.npm_config_registry，对应的代码会是这样：
 
 ```ts
 // https://github.com/changesets/changesets/blob/main/packages/cli/src/commands/publish/npm-utils.ts
@@ -377,17 +402,8 @@ function getCorrectRegistry(packageJson?: PackageJSON): string {
     : registry;
 }
 ```
-可以看到，如果在前面说的这 2 种情况下获取不到 registry 的话，Changesets 都是按公共的 Registry 去查找或者发布包的。
+可以看到，如果在前面说的这2种情况下获取不到 `registry` 的话，Changesets 都是按公共的 Registry 去查找或者发布包的。
 
-
-```shell
-# 执行 changeset，开始交互式填写变更集，这个命令会将你的包全部列出来，然后选择你要更改发布的包
-changeset
-# 执行 changeset version，修改发布包的版本
-changeset version
-```
-
-这里需要注意的是，版本的选择一共有三种类型，分别是 patch、minor 和 major，严格遵循 [semver](https://semver.org/) 规范。
 
 这里还有个细节，如果我不想直接发 release 版本，而是想先发一个带 tag 的 prerelease版本呢(比如beta或者rc版本)？
 
@@ -419,27 +435,7 @@ changeset version
 ```shell
 pnpm changeset pre enter beta
 ```
-之后在此模式下的 changeset publish 均将默认走 beta 环境，下面在此模式下任意地进行你的开发，举一个例子如下：
-```shell
-# 1-1 进行了一些开发...
-# 1-2 提交变更集
-changeset
-# 1-3 提升版本
-changeset version
-# 1-4 发包
-changeset publish --registry="https://registry.npmjs.com/"
-
-# 1-5 得到 1.0.0-beta.1
-
-# 2-1 进行了一些开发...
-# 2-2 提交变更集
-pnpm changeset
-# 2-3 提升版本
-changeset version
-# 2-4 发包
-changeset publish --registry="https://registry.npmjs.com/"
-# 2-5 得到 1.0.0-beta.2
-```
+之后在此模式下的 `changeset publish`  均将默认走 `beta` 环境，下面在此模式下任意地进行你的开发。
 完成版本发布之后，退出 `Prereleases` 模式：
 ```shell
 pnpm changeset pre exit
@@ -451,6 +447,19 @@ pnpm changeset pre exit
   "release:only": "changeset publish --registry=https://registry.npmjs.com/"
 }
 ```
+如果用户想查看当前的 changesets 文件消耗状态，那么可以使用 changeset status 命令。
+
+* 业务项目发布流是怎么样的？
+- 不同开发者先开发，在提交 PR 时使用 pnpm changeset 写入一份变更集
+- 定期项目 owner 发包，使用 pnpm version-packages 消耗所有变更集，由 changesets 自动提升子包版本、生成 changelog
+- 执行 pnpm release 构建全部项目并发包
+* 开源项目发布流是怎样的？
+- 由 github bot 帮助，每位开发者 PR 前提交一份变更集
+- 由 github bot 帮助，项目 owner 定期点击合入 bot 提出的 发版 PR ，一键合入提升版本，生成 changelog
+- 由 github actions 帮助，当 发版 PR 被合入时，自动发包到 npm
+可以看到，发版时项目 owner 做了什么？点击几下鼠标 😅 ，但是 changelog 、版本提升、发包 却一点没少，是真的很 nice。
+
+
 
 ### npm 更新发布后的包
 
@@ -478,9 +487,29 @@ major 主版本号
 `publishConfig`: access 如果是scoped包，一定需要设置为public（付费账号除外）
 
 
-` npm unpublish  @sysuke/eslint-config-react --force` 撤销发布的包。（不加force有限制：只能删除72小时以内发布的包，删除的包，在24小时内不允许重复发布）
+`npm unpublish  @sysuke/eslint-config-react --force` 撤销发布的包。（不加force有限制：只能删除72小时以内发布的包，删除的包，在24小时内不允许重复发布）
 
 如果被其他发布上去的包依赖的话，就删除不了
+
+
+```json
+{
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "changeset": "changeset",
+    "changeset:version": "changeset version",
+    "changeset:publish": "changeset publish",
+    "release": "npm run build && npm run changeset && npm run changeset:version && npm run changeset:publish",
+  },
+}
+```
+
+本地`changeset`选择要发的包，输入相关的信息，生成一份变更集，commit 为true会自动提交一个git commit.
+
+后续changeset version 和changeset pubulish 可以交给git-action完成
+
+https://github.com/vercel/turborepo/tree/main/examples/design-system
 
 ## turboRepo
 
@@ -491,7 +520,12 @@ Turbrepo 则是 Vercel 旗下的一个开源项目。Turborepo 是用于为 Java
 在 Turborepo 中有个 Pipelines 的概念，它是由 turbo.json 文件中的 pipeline 字段的配置描述，它会在执行 turbo run 命令的时候，根据对应的配置进行有序的执行和缓存输出的文件。
 
 
+什么是拓扑 ？
 
+拓扑 [Topological Order](https://turborepo.org/docs/glossary#topological-order)
+是一种排序 拓扑排序是依赖优先的术语， 如果 A 依赖于 B，B 依赖于 C，则拓扑顺序为 C、B、A。
+
+比如一个较大的工程往往被划分成许多子工程，我们把这些子工程称作活动(activity)。在整个工程中，有些子工程(活动)必须在其它有关子工程完成之后才能开始，也就是说，一个子工程的开始是以它的所有前序子工程的结束为先决条件的
 
 trubo 可以智能的安排任务调度。首先在根项目 package.json 中定义任务的依赖关系。例如：
 
@@ -539,3 +573,14 @@ trubo 可以智能的安排任务调度。首先在根项目 package.json 中定
 - [Monorepos in JavaScript & TypeScript](https://www.robinwieruch.de/javascript-monorepos/)
 - [monorepo工作流基础之changesets打开与进阶](https://blog.csdn.net/qq_21567385/article/details/122361591)
 - [Changesets: 流行的 Monorepo 场景发包工具](https://mp.weixin.qq.com/s/QKqaO3U1gzwWb2sDiF4cLQ)
+- [Ditching manual releases with Changesets](https://dnlytras.com/blog/using-changesets/)
+
+prepublishOnly
+
+
+sideEffect(副作用) 的定义是，在导入时会执行特殊行为的代码，而不是仅仅暴露一个 export 或多个 export。
+
+[semantic-release](https://github.com/semantic-release/semantic-release)
+
+[monorepo参考仓库](https://github.com/ycjcl868/monorepo/issues/9#issuecomment-1139647579)
+[Monorepo 下的模块包设计实践](https://juejin.cn/post/7052271542000074782)

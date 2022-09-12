@@ -303,6 +303,67 @@ function a(a: number, b?: number) {}
 
 Typescript 中的基本用法非常简单，有 js 基础的同学很快就能上手，接下来我们分析一下 Typescript 中更高级的用法，以完成更精密的类型检查。
 
+### 类型断言
+
+#### 尖括号语法
+
+```ts
+let value: any = "this is a string";
+let length: number = (<string>value).length;
+```
+
+#### as 语法
+
+```ts
+let value: any = "this is a string";
+let length: number = (value as string).length;
+```
+
+#### 非空断言
+
+当你明确知道某个值不可能为 `undefined` 和 `null` 时，你可以用 在变量后面加上一个 `!`（非空断言符号）来告诉编译器："嘿！相信我，我确信这个值不为空！"。 非空断言具体的使用场景如下：
+
+```ts
+function fun(value: string | undefined | null) {
+  const str1: string = value; // error value 可能为 undefined 和 null
+  const str2: string = value!; //ok
+  const length1: number = value.length; // error value 可能为 undefined 和 null
+  const length2: number = value!.length; //ok
+}
+```
+
+#### 确定赋值断言
+TypeScript 的确定赋值断言，允许在实例属性和变量声明后面放置一个 `!` 号，从而告诉 TypeScript 该属性会被明确地赋值。
+```ts
+let name!: string;
+```
+
+上述表达式就是对编译器说："有一个名为 name 的属性，其类型为 string | undefined。它以值 undefined 开始。但每次获取或设置该属性时，我都希望将其视为类型 string。"
+
+more example
+
+```ts
+let count: number;
+initialize();
+
+// Variable 'count' is used before being assigned.(2454)
+console.log(2 * count); // Error
+
+function initialize() {
+  count = 10;
+}
+```
+很明显该异常信息是说变量 count 在赋值前被使用了，要解决该问题，我们可以使用确定赋值断言：
+
+```ts
+let count!: number;
+initialize();
+console.log(2 * count); // Ok
+
+function initialize() {
+  count = 10;
+}
+```
 ### 类中的高级用法
 
 在类中的高级用法主要有以下几点：
@@ -770,7 +831,7 @@ Typescript 中的高级类型包括：交叉类型、联合类型、字面量类
 - typeof
 - instanceof
 - in
-- 字面量保护，`===`、`!===`、`==`、`!=`
+- 字面量保护，`===`、`!==`、`==`、`!=`
 - 自定义类型保护，通过判断是否有某个属性等
 
 ```ts
@@ -782,6 +843,31 @@ if (isFish(pet)) {
   pet.swim();
 } else {
   pet.fly();
+}
+```
+```ts
+interface Square {
+  kind: 'square';
+  size: number;
+}
+
+interface Rectangle {
+  kind: 'rectangle';
+  width: number;
+  height: number;
+}
+
+type Shape = Square | Rectangle;
+
+function area(s: Shape) {
+  if (s.kind === 'square') {
+    // 现在 TypeScript 知道 s 的类型是 Square
+    // 所以你现在能安全使用它
+    return s.size * s.size;
+  } else {
+    // 不是一个 square ？因此 TypeScript 将会推算出 s 一定是 Rectangle
+    return s.width * s.height;
+  }
 }
 ```
 
