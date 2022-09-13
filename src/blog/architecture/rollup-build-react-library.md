@@ -794,6 +794,13 @@ webpack: {
 }
 ```
 
+
+其实类型文件不应该以`.d.ts`声明，除了能限制在`.d.ts`中不写非类型的代码，其他的基本上都是不好的地方，比如`.d.ts`是全局共享的，不需要`export`
+和`import`就能使用。
+
+TypeScript与ECMAScript 2015一样，任何包含**顶级import或者export**的文件都被当成一个模块。相反地，如果一个文件不带有顶级的import或者export声明，那么它的内容被视为**全局可见**的（因此对模块也是可见的）（全局就是以`tsconfig.json`文件为根目录的所有文件都能访问到）
+所以在`.d.ts`如果使用了`export`和`import`就失去了global type的属性。
+
 #### 用 `tsc` 编译的后，映射的路径（即配置的[path](https://www.typescriptlang.org/tsconfig#paths) ）不会处理，将导致编译后的代码找不到模块。
 
 TypeScript 编译时并不会重写 `module paths`， `path`是设计用来让 typescript 理解其他 bundle 工具的路径别名，比如 webpack 的 `resolve alias`，项目中我选的以下方案的 `tsc-alias`，只需配置到script，本demo暂未用到。

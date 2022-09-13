@@ -971,6 +971,10 @@ type ReturnType<T extends (...args: any) => any> = T extends (...args: any) => i
 
 把声明语句放到一个单独的文件（`Vue.d.ts`）中，这就是声明文件，以 `.d.ts` 为后缀。
 
+TypeScript与ECMAScript 2015一样，任何包含**顶级import或者export**的文件都被当成一个模块。相反地，如果一个文件不带有顶级的import或者export声明，那么它的内容被视为**全局可见**的（因此对模块也是可见的）（全局就是以tsconfig.json文件为根目录的所有文件都能访问到）
+
+
+
 ```ts
 // src/Vue.d.ts
 
