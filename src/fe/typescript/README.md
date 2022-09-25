@@ -910,6 +910,14 @@ type Partial<T> = {
 - `?`:设置为属性为可选的
 - `T[P]`设置类型为原来的类型
 
+`DeepPartial`
+```ts
+type DeepPartial<T> = Partial<{ [P in keyof T]: DeepPartial<T[P]> }>;
+type DeepPartial<T> = T extends object ? {
+  [P in keyof T]?: DeepPartial<T[P]>;
+} : T;
+```
+
 ##### Readonly
 ```ts
 /**

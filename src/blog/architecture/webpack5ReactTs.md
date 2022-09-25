@@ -394,8 +394,8 @@ pnpm add @babel/runtime
 ```
 
 - [@babel/preset-env 与@babel/plugin-transform-runtime 使用及场景区别](https://segmentfault.com/a/1190000021188054)
-- [babel-loader](https://webpack.docschina.org/loaders/babel-loader): 使用 Babel 和 webpack 转译 JavaScript 等文件，内部核心转译功能需要@babel/core这个核心库。
-- @babel/core: @babel/core是babel的核心库，所有的核心api都在这个库里，这些api可供babel-loader调用
+- [babel-loader](https://webpack.docschina.org/loaders/babel-loader): 使用 Babel 和 webpack 转译 JavaScript 等文件，内部核心转译功能需要`@babel/core`这个核心库。
+- @babel/core: @babel/core是babel的核心库，所有的核心api都在这个库里，这些api可供`babel-loader`调用
 - [@babel/preset-env](https://babel.docschina.org/docs/en/babel-preset-env/): 这是一个预设的插件集合，包含了一组相关的插件，Babel中是通过各种插件来指导如何进行代码转换。该插件包含所有es6转化为es5的翻译规则。可以做到按需加载我们需要的 polyfill
 
 > @babel/prest-env是babel转译过程中的一些预设，它负责将一些基础的es 6+语法，比如const/let...转译成为浏览器可以识别的低级别兼容性语法。这里需要注意的是@babel/prest-env并不会对于一些es6+高版本语法的实现，比如Promise等polyfill，你可以将它理解为语法层面的转化不包含高级别模块(polyfill)的实现。
