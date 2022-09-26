@@ -5,7 +5,6 @@ layout: BlogLayout
 
 [[toc]]
 
-> not done
 ## pnpm
 
 `pnpm` 是新一代的包管理工具。按照官网说法，可以实现**节约磁盘空间并提升安装速度和创建非扁平化的 `node_modules` 文件夹**两大目标，具体原理可以参考[pnpm 官网](https://pnpm.io/zh/motivation)。
@@ -23,7 +22,7 @@ layout: BlogLayout
 
 > v7版本的pnpm安装使用需要node版本至少大于v14，所以在安装之前首先需要检查下node版本。
 
-* 初始化项目
+### 初始化项目
 
 ```shell
 # 全局安装pnpm
@@ -57,7 +56,7 @@ pnpm init
 ```json
 {
   "engines": {
-    "node": ">=14.0.0",
+    "node": ">=14.6",
     "npm": "please use pnpm",
     "yarn": "please use pnpm"
   },
@@ -65,11 +64,11 @@ pnpm init
 }
 ```
 
-::: details package.json 个人不常用字段
+::: details package.json 不常用字段
 
-- [type](https://nodejs.org/api/packages.html#type): `type` 字段定义了 `Node.js` 用于所有以 `package.json` 文件作为其最近父级的 .js 文件的模块格式。 当最近的父 `package.json` 文件包含值为`module`的顶级字段type时，以 `.js` 结尾的文件将作为 `ES 模块`加载。
-- files: 指定发布到 `npm`中的文件，默认是所有文件`["*"]`，也可以通过`.npmignore`防止某些文件被包含在内，它不会覆盖`files`字段，但会覆盖其子目录。 如果不存在`.npmignore`将使用`.gitignore`替代。一般来说npm上我们只需要发布打包好的文件，对于git则恰好相反，我们只需要提交源代码。
-- peerdependencies ：设置包的依赖项, `peerdependencies`设置的依赖包表达您的包与主机工具或库的兼容性， 如你开发了一个 `vue` 组件库，需要指定在vue 3.x版本中使用，可以这样设置
+- [type](https://nodejs.org/api/packages.html#type): `type` 字段定义了 `Node.js` 用于所有以 `package.json` 文件作为其最近父级的 .js 文件的模块格式。 当最近的父 `package.json` 文件包含值为`module`的顶级字段`type`时，以 `.js` 结尾的文件将作为 `ES 模块`加载。
+- `files`: 指定发布到 `npm`中的文件，默认是所有文件`["*"]`，也可以通过`.npmignore`防止某些文件被包含在内，它不会覆盖`files`字段，但会覆盖其子目录。 如果不存在`.npmignore`将使用`.gitignore`替代。一般来说npm上我们只需要发布打包好的文件，对于git则恰好相反，我们只需要提交源代码。
+- `peerdependencies`：设置包的依赖项, `peerdependencies`设置的依赖包表达您的包与主机工具或库的兼容性， 如你开发了一个 `vue` 组件库，需要指定在vue 3.x版本中使用，可以这样设置
 
 ```json
 {
@@ -81,7 +80,7 @@ pnpm init
 
 如果用户安装了该组件库，并且安装`peerdependencies`设置的依赖包与用户安装的依赖包指定的版本不一致时，npm 会提示 vue 版本不兼容的信息
 
-- module: 指定模块入口文件，不同于`main`字段，将指向一个具有 ES2015 模块语法的模块入口文件，你可以与main字段同时命名，当你用es6语法导入时，打包工具（rollup,webpack）会优先使用该字段对应的入口文件，
+- module: 指定模块入口文件，不同于`main`字段，将指向一个具有 ES2015 模块语法的模块入口文件，你可以与`main`字段同时命名，当你用es6语法导入时，打包工具（rollup,webpack）会优先使用该字段对应的入口文件，
 
 ```json
 {
@@ -92,7 +91,7 @@ pnpm init
 }
 ```
 
-- exports：字段允许定义包的入口点，当通过 node_modules 查找或对其自身名称的自引用加载的名称导入时。 Node.js 12+ 支持它作为“main”的替代方案，
+- exports：字段允许定义包的入口点，当通过 `node_modules` 查找或对其自身名称的自引用加载的名称导入时。 Node.js 12+ 支持它作为“main”的替代方案，
 
 ```json
 {
@@ -123,13 +122,12 @@ pnpm init
 
 ```shell
 registry=https://registry.npmjs.org/
-shamefully-hoist=true
+# 可设置为淘宝源，但后面发布会有问题
+registry=https://registry.npmmirror.com
 auto-install-peers=false
 ```
 
-[shamefully-hoist](https://pnpm.io/zh/npmrc#shamefully-hoist): 如果某些工具仅在根目录的`node_modules`时才有效，可以将其设置为`true`来提升那些不在根目录的`node_modules`，就是将你安装的依赖包的依赖包的依赖包的...都放到同一级别（扁平化）。其实就是不设置为true有些包就有可能会出问题。
-
-`auto-install-peers`为`true`时依赖树中存在缺失或无效的 peer 依赖关系时，命令将执行失败。
+`auto-install-peers`为`true`时将自动安装任何缺少的非可选同级依赖关系。
 
 ### monorepo的实现： [workspace](https://pnpm.io/zh/workspaces)
 
@@ -148,33 +146,25 @@ packages:
 
 ```md
 ├── apps
-│         ├── web
-│         │         ├── package.json
-│         │         └── pnpm-lock.yaml
-│         ├── docs
-│         │         ├── package.json
-│         │         └── pnpm-lock.yaml
+│   ├── web
+│   │   ├── package.json
+│   ├── docs
+│   │   ├── package.json
 ├── packages
-│         ├── config
-│         │         ├── eslint-config-custom
-│         │         │         ├── package.json
-│         │         │         └── pnpm-lock.yaml
-│         │         ├── tsconfig
-│         │         │         ├── package.json
-│         │         │         └── pnpm-lock.yaml
-│         ├── ui
-│         │         ├── package.json
-│         │         └── pnpm-lock.yaml
-│         ├── util
-│         │         ├── package.json
-│         │         └── pnpm-lock.yaml
-│         ├── webpack-react-base
-│         │         ├── package.json
-│         │         └── pnpm-lock.yaml
+│   ├── config
+│   │   ├── eslint-config-custom
+│   │   │   ├── package.json
+│   │   ├── tsconfig
+│   │   │   ├── package.json
+│   ├── ui
+│   |   ├── package.json
+│   ├── util
+│   │   ├── package.json
+│   ├── webpack-react-base
+│   │   ├── package.json
 ├── projects
-│         ├── demo
-│         │         ├── package.json
-│         │         └── pnpm-lock.yaml
+│   |   ├── demo
+│   │   |    ├── package.json
 ├── package.json
 ├── pnpm-lock.yaml
 └── pnpm-workspace.yaml
@@ -203,6 +193,57 @@ packages:
 此外还有关于如何`发布 workspace 包`, 发布工作流等，可参考[官网](https://pnpm.io/zh/workspaces) 。
 
 :::
+
+其实monorepo下的结构跟普通项目的结构大同小异，但是monorepo下面有一些需要特别注意的点。
+
+a和b分别为monorepo下的一个项目，项目a依赖了`lodash`和`@types/lodash`，项目b依赖了项目a以及`react`。结构的如下：
+
+```md
+
+├── node_modules
+
+│   ├──@types
+
+│   │ └── lodash -> ../.pnpm/@types+lodash@4.14.177/node_modules/@types/lodash
+
+|   |———.pnpm
+
+├── package.json
+
+├── packages
+
+│   ├── a
+
+│   │   ├── node_modules
+
+│   │   │   ├── @types
+
+│               └── lodash
+
+│   │   │   └── lodash -> ../../../node_modules/.pnpm/lodash@4.17.21/node_modules/lodash
+
+│   │   └── package.json
+
+│   └── b
+
+│       ├── node_modules
+
+│       │   ├── a -> ../../a
+
+│       │   └── react -> ../../../node_modules/.pnpm/react@17.0.2/node_modules/react
+
+│       └── package.json
+
+├── pnpm-lock.yaml
+
+└── pnpm-workspace.yaml
+```
+
+可以看到：
+
+- 所有依赖都平铺在最外层的`node_modules/.pnpm`这个目录。
+- 项目b依赖的`react`，和项目a依赖的`lodash`和`@types/lodash`都指向了上面这个目录对应的文件夹。
+- 通过`worksapce协议`，项目b依赖指定其依赖a为本地项目的a，直接把`node_modules/a`软链到了项目a的路径。
 
 ### 依赖管理
 
@@ -302,11 +343,10 @@ Either start with `eslint-config-` or `@SCOPE/eslint-config.`
 pnpm add husky lint-staged @commitlint/cli @commitlint/config-conventional  -w -D
 ```
 
-#### Release工作流
+### Release工作流
 
 一般发一个包，只需要在待发布项目目录，`npm login` + `npm publish`，更新也是一样。
 但每次包（Package）的发布，需要修改 `package.json` 的 `version` 字段，以及同步更新一下本次发布修改的 `CHANGELOG.md`。
-
 
 而在 `workspace` 中对包版本管理是一个非常复杂的工作（会存在依赖链的问题），遗憾的是 `pnpm` 没有提供内置的解决方案，一部分开源项目在自己的项目中自己实现了一套包版本的管理机制，比如 [Vue3](https://github.com/vuejs/vue-next) 、[Vite](https://github.com/vitejs/vite/blob/main/scripts/release.ts) 等。
 `pnpm` 推荐了两个开源的版本控制工具：
@@ -341,6 +381,7 @@ pnpm changeset init
 执行完初始化命令后，会在工程的根目录下生成 `.changeset` 目录，其中的 `config.json` 作为默认的 `changeset` 的配置文件。
 
 配置文件如下：
+
 ```json
 {
   "$schema": "https://unpkg.com/@changesets/config@2.1.1/schema.json",
@@ -354,11 +395,13 @@ pnpm changeset init
   "ignore": []
 }
 ```
+
 [说明](https://github.com/changesets/changesets/blob/main/docs/config-file-options.md) 如下：
 
 - changelog: 设置 `CHANGELOG.md` 生成方式，可以设置 `false` 不生成，也可以设置为定义生成行为的文件地址或依赖名称。
 
 添加  `@changesets/changelog-github`后修改
+
 ```json5
 {
   "changelog": [
@@ -369,6 +412,7 @@ pnpm changeset init
   ],
 }
 ```
+
 - commit: 设置是否把执行 `changeset add `或 `changeset version` 操作时对修改用 `git` 自动提交对应文件。(A GitHub token with repo, write:packages permissions)
 - linked: 设置共享版本的包，而不是独立版本的包，例如一个组件库中主题和单独的组件的关系，也就是修改 Version 的时候，共享的包需要同步一起更新版本
 - [fixed](https://github.com/changesets/changesets/blob/main/docs/fixed-packages.md): 设置那些包的版本保持一致的更新
@@ -402,8 +446,8 @@ function getCorrectRegistry(packageJson?: PackageJSON): string {
     : registry;
 }
 ```
-可以看到，如果在前面说的这2种情况下获取不到 `registry` 的话，Changesets 都是按公共的 Registry 去查找或者发布包的。
 
+可以看到，如果在前面说的这2种情况下获取不到 `registry` 的话，Changesets 都是按公共的 Registry 去查找或者发布包的。
 
 这里还有个细节，如果我不想直接发 release 版本，而是想先发一个带 tag 的 prerelease版本呢(比如beta或者rc版本)？
 
@@ -426,126 +470,195 @@ function getCorrectRegistry(packageJson?: PackageJSON): string {
 
 常见的tag如下所示：
 
-| 名称    | 功能                                                     |
-|-------|--------------------------------------------------------|
-| alpha | 是内部测试版，一般不向外部发布，会有很多Bug，一般只有测试人员使用                     |
-| beta  | 也是测试版，这个阶段的版本会一直加入新的功能。在Alpha版之后推出                     |
+
+| 名称  | 功能                                                                                     |
+| ----- | ---------------------------------------------------------------------------------------- |
+| alpha | 是内部测试版，一般不向外部发布，会有很多Bug，一般只有测试人员使用                        |
+| beta  | 也是测试版，这个阶段的版本会一直加入新的功能。在Alpha版之后推出                          |
 | rc    | Release　Candidate) 系统平台上就是发行候选版本。RC版不会再加入新的功能了，主要着重于除错 |
 
 ```shell
 pnpm changeset pre enter beta
 ```
+
 之后在此模式下的 `changeset publish`  均将默认走 `beta` 环境，下面在此模式下任意地进行你的开发。
 完成版本发布之后，退出 `Prereleases` 模式：
+
 ```shell
 pnpm changeset pre exit
 ```
+
 构建产物后发版本
+
 ```shell
 {
   "release": "pnpm build && pnpm release:only",
   "release:only": "changeset publish --registry=https://registry.npmjs.com/"
 }
 ```
-如果用户想查看当前的 changesets 文件消耗状态，那么可以使用 changeset status 命令。
 
-* 业务项目发布流是怎么样的？
-- 不同开发者先开发，在提交 PR 时使用 pnpm changeset 写入一份变更集
-- 定期项目 owner 发包，使用 pnpm version-packages 消耗所有变更集，由 changesets 自动提升子包版本、生成 changelog
-- 执行 pnpm release 构建全部项目并发包
-* 开源项目发布流是怎样的？
+如果用户想查看当前的 `changesets` 文件消耗状态，那么可以使用 `changeset status` 命令。
+
+##### what else?
+
+业务项目发布流是怎么样的？
+
+- 不同开发者先开发，在提交 PR 时使用 `pnpm changeset` 写入一份变更集
+- 定期项目 owner 发包，使用 `changeset version` 消耗所有变更集，由 `changesets` 自动提升子包版本、生成 changelog
+- 执行 `pnpm release`(build package + `changeset publish`) 构建全部项目并发包
+
+开源项目发布流是怎样的？
+
 - 由 github bot 帮助，每位开发者 PR 前提交一份变更集
 - 由 github bot 帮助，项目 owner 定期点击合入 bot 提出的 发版 PR ，一键合入提升版本，生成 changelog
 - 由 github actions 帮助，当 发版 PR 被合入时，自动发包到 npm
+
+`changeset version` 和`changeset pubulish` 可以交给`git-action`完成，可参考[repo](https://github.com/vercel/turborepo/tree/main/examples/design-system)
+
 可以看到，发版时项目 owner 做了什么？点击几下鼠标 😅 ，但是 changelog 、版本提升、发包 却一点没少，是真的很 nice。
 
+`npm unpublish  @sysuke/eslint-config-react --force` 撤销发布的包。（不加force有限制：只能删除72小时以内发布的包，删除的包，在24小时内不允许重复发布）,如果被其他发布上去的包依赖的话，就删除不了。
+
+## [TurboRepo](https://turborepo.org/)
+
+![](./images/turborepo.png)
+
+Turbrepo 则是 [Vercel](https://vercel.com/) 旗下的一个开源项目。 Turborepo 是一个用于 JavaScript 和 TypeScript 代码库的高性能构建系统。通过增量构建、智能远程缓存和优化的任务调度，Turborepo 可以将构建速度提高 85% 或更多，使各种规模的团队都能够维护一个快速有效的构建系统，该系统可以随着代码库和团队的成长而扩展。
+
+### 什么是monorepo
+
+Monorepo是一种项目管理方式，在Monorepo之前，代码仓库管理方式是 MultiRepo，即每个项目都对应着一个单独的代码仓库每个项目进行分散管理。这就会导致许多弊端，例如可能每个项目的基建以及工具库都是差不多的，基础代码的重复复用问题等等...
+
+Monorepo就是把多个项目放在一个仓库里面, 关于monorepo的文章已经很多了，并且目前可以搭建Monorepo的工具也很多，例如：
 
 
-### npm 更新发布后的包
+| 工具                                | 简述                                                   |
+| ----------------------------------- | ------------------------------------------------------ |
+| [Bit](https://bit.dev/)             | 用于组件驱动开发的工具链                               |
+| [TurboRepo](https://turborepo.org/) | 用于 JavaScript 和 TypeScript 代码库的高性能构建系统。 |
+| [Rush](https://rushjs.io/)          | 一个可扩展的 web 单仓库管理器。                        |
+| [Nx](https://nx.dev/)               | 具有一流的 monorepo 支持和强大集成的下一代构建系统。   |
+| [Lerna](https://lerna.js.org/)      | 用于管理包含多个软件包的项目                           |
 
-npm 更新和发布的命令一样，都是 npm publish，不同之处在于，更新时你需要修改包的版本号
+以上几个，个人都有些尝试，项目中也用过lerna和nx，我理解`Lerna`其实挺适合用来管理发包的，比较纯粹，`nx`集成来太多的功能和配置，类似与react中的`umi.js`，适合与快速搭建跑起项目，但当出了问题或者有自定义功能的适合，就不好操作了，
+文档不全，有时还要深入源码，这时性价比反而不高。至于`bit`理解可用于微前端的场景，而Rush有点复杂，不太推荐。还好最近前端的翘楚Vercel推出了`TurboRepo`，也快一年了，版本来到了1.5， 基本没啥bug可以用了，为啥偏爱这个，我就是觉得它配置比较简单，功能纯粹，对
+本身monorepo下的代码入侵小，即Turborepo抽象出所有烦人的配置、脚本和工具，减少项目配置的复杂性，可以让我们专注于业务的开发，比较干净的能实现包或者应用构建时的任务编排，增量构建，缓存等，而且基于go，还快。
 
-npm 有一套自己的版本控制标准—— [Semantic versioning](https://semver.org/lang/zh-CN/) ，具体如下，
+一个monorepo工具除了最基本的代码共享能力外，还应当至少具备三种能力，即：
 
-版本格式：主版本号.次版本号.修订号，版本号递增规则如下：
+1. 依赖管理能力。随着依赖数量的增加，依旧能够保持依赖结构的正确性、稳定性以及安装效率。
+2. 任务编排能力。能够以最大的效率以及正确的顺序执行 Monorepo 内项目的任务（可以狭义理解为 `npm scripts`，如 build、test 以及 lint 等），且复杂度不会随着 Monorepo 内项目增多而增加。
+3. 版本发布能力。能够基于改动的项目，结合项目依赖关系，正确地进行版本号变更、CHANGELOG 生成以及项目发布。
 
-主版本号：当你做了不兼容的 API 修改
-次版本号：当你做了向下兼容的功能性新增
-修订号：当你做了向下兼容的问题修正
-例如：version: 'x.y.z'
-
-修复 bug，小改动，增加 z，
-增加了新特性，但仍能向下兼容，增加 y
-较大改动，向下不兼容，增加 x
-通过 npm version <update_type> 自动改变版本
-update_type:
-
-patch 修订号
-minor 次版本号
-major 主版本号
-
-`publishConfig`: access 如果是scoped包，一定需要设置为public（付费账号除外）
+基于此，一些流行工具的支持能力如下表所示：
 
 
-`npm unpublish  @sysuke/eslint-config-react --force` 撤销发布的包。（不加force有限制：只能删除72小时以内发布的包，删除的包，在24小时内不允许重复发布）
 
-如果被其他发布上去的包依赖的话，就删除不了
+| -              | 依赖管理     | 任务编排 | 版本管理 |
+| -------------- | ------------ | -------- | -------- |
+| Pnpm Workspace | yes          | yes      | no       |
+| Rush           | yes(by Pnpm) | yes      | yes      |
+| Lage           | no           | yes      | no       |
+| Turborepo      | no           | yes      | no       |
+| Lerna          | no           | yes      | yes      |
 
 
-```json
-{
-  "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev --parallel",
-    "changeset": "changeset",
-    "changeset:version": "changeset version",
-    "changeset:publish": "changeset publish",
-    "release": "npm run build && npm run changeset && npm run changeset:version && npm run changeset:publish",
-  },
-}
+
+依赖管理过于底层，版本控制较为简单且已成熟，将这两项能力再做突破是比较困难的，实践中基本都是结合 Pnpm 以及  Changesets 补全整体能力，甚至就干脆专精于一点，即任务编排，也就是 Lage 以及 Turborepo 的发力点。
+
+
+
+#### 如何选择合适自己的 Monorepo 工具链？
+
+1. Pnpm Workspace + Changesets：成本低，满足大多数场景
+2. Pnpm Workspace + Changesets + Turborepo/Lage：在 1 的基础上增强任务编排能力
+3. Rush：考虑全面，扩展性强
+
+任务编排可以划分为三个步骤，各工具支持如下：
+
+
+| <br/>          | 范围界定 | 并行执行 | 云端缓存 |
+| -------------- | -------- | -------- | -------- |
+| Pnpm           | ✅       | ✅       | ❌       |
+| Rush           | ✅       | ✅       | ✅       |
+| Turborepo/Lage | ✅       | ✅       | ✅       |
+
+
+### TurboRepo的优势
+
+#### 多任务并行处理
+
+Turbo支持多个任务的并行运行，我们在对多个子包编译打包的过程中，turbo会同时进行多个任务的处理。在传统的 monorepo 任务运行器中，就像`lerna`或者`yarn`自己的内置`workspaces run` 命令一样，每个项目的script生命周期脚本都以拓扑方式运行（这是“依赖优先”顺序的数学术语）或单独并行运行。根据 monorepo 的依赖关系图，CPU 内核可能处于空闲状态——这样就会浪费宝贵的时间和资源。
+
+> 什么是拓扑 ？
+拓扑 [Topological Order](https://turborepo.org/docs/glossary#topological-order) 是一种排序 拓扑排序是依赖优先的术语， 如果 A 依赖于 B，B 依赖于 C，则拓扑顺序为 C、B、A。
+> 
+> 比如一个较大的工程往往被划分成许多子工程，我们把这些子工程称作活动(activity)。在整个工程中，有些子工程(活动)必须在其它有关子工程完成之后才能开始，也就是说，一个子工程的开始是以它的所有前序子工程的结束为先决条件的
+
+为了可以了解turbo多么强大，下图比较了turbo vs lerna任务执行时间线：
+
+![](./images/turbo1.png)
+
+Turbo它能够有效地安排任务类似于瀑布可以同时异步执行多个任务，而lerna一次只能执行一项任务 所以Turbo的 性能不言而喻。
+
+
+#### 更快的增量构建
+
+如果我们的项目过大，构建多个子包会造成时间和性能的浪费，turborepo中的缓存机制 可以帮助我们记住构建内容 并且跳过已经计算过的内容，优化打包效率。应该是借鉴了nx。
+
+#### 云缓存
+
+Turbo通过其远程缓存功能可以帮助多人远程构建云缓存实现了更快的构建。
+
+#### 任务管道
+
+用配置文件定义任务之间的关系，然后让Turborepo优化构建内容和时间。在 Turborepo 中有个 Pipelines 的概念，它是由 `turbo.json` 文件中的 `pipeline` 字段的配置描述，它会在执行 `turbo run` 命令的时候，根据对应的配置进行有序的执行和缓存输出的文件。
+
+#### 基于约定的配置
+
+通过约定降低复杂性，只需几行JSON 即可配置整个项目依赖，执行脚本的顺序结构。
+
+#### 浏览器中的配置文件
+
+生成构建配置文件并将其导入Chrome或Edge以了解哪些任务花费的时间最长。这点还比不上nx，nx可以直接生成拓扑图
+
+### Turbo 核心概念
+
+包括`pipeline`，`DependsOn`，拓扑依赖，`Output`，`Caching`, `Remote Caching`等，可以看官网有详细的文档描述。
+
+
+### Demo实战
+
+我们可以通过现有的monorepo改造，也可以直接创建turbo项目，直接创建参考官网，直接选择模版体验就行，这里就不展示了。
+
+turbo的另一大特色就是改造现有的monorepo也很简单，只需要安装 turbo 依赖，根目录添加 `turbo.json` 一切就尽在掌握了。
+
+1. 安装
+```shell
+pnpm add turbo -Dw
 ```
+2. 创建`turbo.json`
 
-本地`changeset`选择要发的包，输入相关的信息，生成一份变更集，commit 为true会自动提交一个git commit.
-
-后续changeset version 和changeset pubulish 可以交给git-action完成
-
-https://github.com/vercel/turborepo/tree/main/examples/design-system
-
-## turboRepo
-
-Turbrepo 则是 Vercel 旗下的一个开源项目。Turborepo 是用于为 JavaScript/TypeScript 的 Monorepo 提供一个极快的构建系统，简单地理解就是用 `Turborepo` 来执行 Monorepo 项目的中构建（或者其他）任务会非常快！
-
-以理解成快是选择 Turborepo 负责 Monorepo 项目多包任务执行的原因。而在 Turborepo 中执行多包任务是通过 `turbo run <script>`。不过，turbo run 和 lerna run 直接使用有所不同，它需要配置 turbo.json 文件，注册每个需要执行的 script 命令。
-
-在 Turborepo 中有个 Pipelines 的概念，它是由 turbo.json 文件中的 pipeline 字段的配置描述，它会在执行 turbo run 命令的时候，根据对应的配置进行有序的执行和缓存输出的文件。
-
-
-什么是拓扑 ？
-
-拓扑 [Topological Order](https://turborepo.org/docs/glossary#topological-order)
-是一种排序 拓扑排序是依赖优先的术语， 如果 A 依赖于 B，B 依赖于 C，则拓扑顺序为 C、B、A。
-
-比如一个较大的工程往往被划分成许多子工程，我们把这些子工程称作活动(activity)。在整个工程中，有些子工程(活动)必须在其它有关子工程完成之后才能开始，也就是说，一个子工程的开始是以它的所有前序子工程的结束为先决条件的
-
-trubo 可以智能的安排任务调度。首先在根项目 package.json 中定义任务的依赖关系。例如：
+trubo 可以智能的安排任务调度。在根项目 `turbo.json` 中定义任务的依赖关系。例如：
 
 ```json
 {
-  "turbo": {
-    "pipeline": {
-      "build": {
-        "dependsOn": ["^build"]
-      },
-      "test": {
-        "dependsOn": ["build"]
-      },
-      "deploy": {
-        "dependsOn": ["build", "test", "lint"]
-      },
-      "lint": {},
-      "dev": {
-        "cache": false
-      }
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"]
+    },
+    "test": {
+      "dependsOn": ["build"]
+    },
+    "deploy": {
+      "dependsOn": ["build", "test", "lint"]
+    },
+    "lint": {
+      "outputs": []
+    },
+    "dev": {
+      "dependsOn": ["build", "test", "lint"],
+      "cache": false
     }
   }
 }
@@ -553,34 +666,38 @@ trubo 可以智能的安排任务调度。首先在根项目 package.json 中定
 
 上面描述的大致意思是：
 
-- dependsOn 表示当前命令所依赖的命令，`^`表示 `dependencies` 和 `devDependencies` 的所有依赖都执行完 `build`，才执行 `build`
-- `outputs `表示命令执行输出的文件缓存目录，例如我们常见的 dist、coverage 等
-- cache 表示是否缓存，通常我们执行 dev 命令的时候会结合 watch 模式，所以这种情况下关闭掉缓存比较切合实际需求
-
-- build 命令执行依赖于其依赖项的 `build` 命令执行完成
-- test 命令执行依赖于自身的 `build` 命令执行完成
-- lint 命令可以任何时候执行
-- deploy 命令执行依赖于自身的 `build test lint` 命令执行完成
+- `dependsOn` 表示当前命令所依赖的命令，`^`表示 `dependencies` 和 `devDependencies` 的所有依赖都执行完 `build`，才执行 `build`
+- `outputs `表示命令执行输出的文件缓存目录，例如我们常见的 `dist`、`coverage` 等
+- `cache` 表示是否缓存，通常我们执行 dev 命令的时候会结合 watch 模式，所以这种情况下关闭掉缓存比较切合实际需求
+- `build` 命令执行依赖于其依赖项的 `build` 命令执行完成
+- `test` 命令执行依赖于自身的 `build` 命令执行完成
+- `lint` 命令可以任何时候执行
+- `deploy` 命令执行依赖于自身的 `build test lint` 命令执行完成
 
 使用一条命令执行所有任务`turbo run lint build test deploy`
 
-![](./images/turbo1.png)
+在`package.json`中配置`script`:
 
+```json
+{
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint"
+  }
+}
+```
+只要你的每个包或者app的`package.json`中配置的`script`都符合配置，那么turbo就算基本配置完成了，是真的🐮。
 
+maybe need to add more detail...
 
-`"type": "module",` 
-
+## Reference
 - [Monorepos in JavaScript & TypeScript](https://www.robinwieruch.de/javascript-monorepos/)
 - [monorepo工作流基础之changesets打开与进阶](https://blog.csdn.net/qq_21567385/article/details/122361591)
 - [Changesets: 流行的 Monorepo 场景发包工具](https://mp.weixin.qq.com/s/QKqaO3U1gzwWb2sDiF4cLQ)
 - [Ditching manual releases with Changesets](https://dnlytras.com/blog/using-changesets/)
-
-prepublishOnly
-
-
-sideEffect(副作用) 的定义是，在导入时会执行特殊行为的代码，而不是仅仅暴露一个 export 或多个 export。
-
-[semantic-release](https://github.com/semantic-release/semantic-release)
-
-[monorepo参考仓库](https://github.com/ycjcl868/monorepo/issues/9#issuecomment-1139647579)
-[Monorepo 下的模块包设计实践](https://juejin.cn/post/7052271542000074782)
+- [从 Turborepo 看 Monorepo 工具的任务编排能力](https://mp.weixin.qq.com/s/OrekHmMrn8UlisTrvt3MNA)
+- [semantic-release](https://github.com/semantic-release/semantic-release)
+- [monorepo参考仓库](https://github.com/ycjcl868/monorepo/issues/9#issuecomment-1139647579)
+- [Monorepo 下的模块包设计实践](https://juejin.cn/post/7052271542000074782)
+---
