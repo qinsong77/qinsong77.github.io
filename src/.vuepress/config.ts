@@ -222,7 +222,7 @@ export default defineUserConfig({
         },
         {
           text: 'Vue',   // 必要的
-          // collapsible: true,
+          collapsible: true,
           children: [
             {
               text: '原理',
@@ -246,14 +246,15 @@ export default defineUserConfig({
         },
         {
           text: 'React',   // 必要的
-          collapsible: true,
+          collapsible: false,
           children: [
             '/fe/react',
             '/fe/react/react_hooks',
             '/fe/react/react_around',
             '/fe/react/react_native',
             '/fe/react/next',
-            '/fe/react/build_mini_react'
+            '/fe/react/build_mini_react',
+            '/fe/react/collection'
           ]
         },
         {

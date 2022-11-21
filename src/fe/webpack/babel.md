@@ -19,6 +19,7 @@ Babel本身不支持转换，转换是通过一个个 plugin实现。
 ![](./image/babel_process.png)
 
 #### 相关文章
+- [一文聊完前端项目中的Babel配置](https://juejin.cn/post/7151653067593613320)
 - [Babel 可以这样学！](https://mp.weixin.qq.com/s/Ngehh9RoG6lrQATxddn-iQ)
 - [Babel介绍](https://mp.weixin.qq.com/s/1OyBkl5NnFO1q86L7GjQwg)
 - [Babel7](https://juejin.cn/post/6844904008679686152)

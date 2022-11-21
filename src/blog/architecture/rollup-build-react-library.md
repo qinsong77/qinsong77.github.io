@@ -768,7 +768,7 @@ webpack: {
 
 ## 总结
 
-使用rollup打包一个可用的react组件库基本实现，源代码见[rollup-react-component-library](https://github.com/qinsong77/sysuke/tree/main/demos/rollup-react-component-library)，其实一些常见的组件库，如`mui`，`ant-design`, [naive-ui](https://github.com/tusen-ai/naive-ui)等，在打包成es module，按模块
+使用rollup打包一个可用的react组件库基本实现，源代码见[rollup-react-component-library](https://github.com/qinsong77/sysuke/tree/rollup-react-component-library-save-version/demos/rollup-react-component-library)，其实一些常见的组件库，如`mui`，`ant-design`, [naive-ui](https://github.com/tusen-ai/naive-ui)等，在打包成es module，按模块
 打包输出时，都是用的其他方式，比如babel，tsc等，后面会补一篇文章去解析其他开源的组件库是如何打包的。
 
 ## 踩坑记录
@@ -783,7 +783,7 @@ webpack: {
 
 即如果 `src` 的类型文件是`.d.ts`结尾的，编译构建时`tsc`不会处理，导致文件不会复制到`outDir`。解决方式主要有 2 种
 
-- `.d.ts`重命名为`.ts`
+- `.d.ts`重命名为`.ts`, 正确的方式，类型文件不该`.d.ts`，一般全局的才用这个。
 - 构建阶段单独处理，复制文件到输出目录，这里使用的[copyfiles](https://www.npmjs.com/package/copyfiles)
 
 ```json
@@ -864,6 +864,7 @@ TypeScript 编译时并不会重写 `module paths`， `path`是设计用来让 t
 ## Reference
 
 - [rollup](https://rollupjs.org/guide/en/)
+- [从 package.json 来聊聊如何管理一款优秀的 Npm 包](https://juejin.cn/post/7126394898445500423)
 - [rollup 从入门到打包一个按需加载的组件库](https://mp.weixin.qq.com/s/Rk729v6VI0IbwVPsuaPdOw)
 - [Typescript does not copy d.ts files to build](https://stackoverflow.com/questions/56018167/typescript-does-not-copy-d-ts-files-to-build)
 - [Why I use Rollup, and not Webpack](https://medium.com/@PepsRyuu/why-i-use-rollup-and-not-webpack-e3ab163f4fd3)
