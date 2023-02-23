@@ -669,6 +669,8 @@ class NameForm extends React.Component {
 }
 ```
 
+### note
+1. 如果 `input` 的 `value` 是 `undefined` ，则这个`input`是**非受控组件**。
 
 ## [setState](https://zhuanlan.zhihu.com/p/39512941)
 
@@ -1582,11 +1584,11 @@ function mountLazyComponent(
   workInProgress,
   elementType,
   updateExpirationTime,
-  renderExpirationTime,
+  renderExpirationTime
 ) { 
-  ...
+  // ...
   let Component = readLazyComponentType(elementType);
-  ...
+  // ...
 }
 
 // Pending = 0, Resolved = 1, Rejected = 2
@@ -1697,6 +1699,54 @@ React17 是一个用以稳定CM的过渡版本。
 
 ![](./image/model.png)
 
+#### [StrictMode](https://zh-hans.reactjs.org/docs/strict-mode.html#detecting-unexpected-side-effects)
+
+react17 其实也是执行了两次render phase ，会调用两次render，constructor方法。但是由于我们经常用`console.log` 去认为就是执行次数，而react又对第二次调用做了静默处理。用`alert`代替，或者`debugger`就可以看到调用两次的效果。
+
+而对于react17，只是重新调用render phase（constructor跟render等生命周期），所以componentDidMount，useEffect都只调用一次，而react18是直接unmounting and remounting the component，所以componentDidMount，useEffect也会执行两次
+
+```js
+function ExampleComponent(props) {
+  useEffect(() => {
+    // Effect setup code...
+
+    return () => {
+      // Effect cleanup code...
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    // Layout effect setup code...
+
+    return () => {
+      // Layout effect cleanup code...
+    };
+  }, []);
+
+  // Render stuff...
+}
+```
+This component declares some effects to be run on mount and unmount. Normally these effects would only be run once (after the component is initially mounted) and the cleanup functions would be run once (after the component is unmounted). In React 18 Strict Mode, the following will happen:
+
+- React renders the component. 
+- React mounts the component 
+ - Layout effect setup code runs. 
+ - Effect setup code runs.
+- React simulates the component being hidden or unmounted. 
+  - Layout effect cleanup code runs
+  - Effect cleanup code runs
+- React simulates the component being shown again or remounted.
+  - Layout effect setup code runs
+  - Effect setup code runs
+  
 ## React fast refresh
 
 - [Fast Refresh原理剖析](http://www.ayqy.net/blog/fast-refresh-under-the-hood/)
+
+## re-render
+
+- [React re-renders guide: everything, all at once](https://www.developerway.com/posts/react-re-renders-guide)
+
+翻译：[React 重新渲染：最佳实践](https://zhuanlan.zhihu.com/p/554118692)
+
+nested form field getByrole cannot find

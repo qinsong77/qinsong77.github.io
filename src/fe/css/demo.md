@@ -162,3 +162,9 @@ title: demo
 </html>
 
 ```
+
+#### B站的弹幕不遮挡人物效果
+
+只要在视频播放的时候把人物的轮廓填充透明其他地方填充颜色即可，实现这样的一个功能就需要引入`tensorflowjs`，使用官方训练好的人体分割（Body Segmentation）模型，在视频播放时将每一帧生成一直图片，放到弹幕的父元素上。
+使用css特性：
+- [mask-image](https://developer.mozilla.org/zh-CN/docs/Web/CSS/mask-image)

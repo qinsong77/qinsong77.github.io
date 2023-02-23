@@ -14,6 +14,7 @@ specifiers:
   autoprefixer: ^10.4.7
   postcss: ^8.4.13
   postcss-import: ^14.1.0
+  prettier: ^2.8.4
   promises-aplus-tests: ^2.1.2
   tailwindcss: ^3.0.24
   vue: ^3.2.33
@@ -33,6 +34,7 @@ devDependencies:
   autoprefixer: 10.4.7_postcss@8.4.13
   postcss: 8.4.13
   postcss-import: 14.1.0_postcss@8.4.13
+  prettier: 2.8.4
   promises-aplus-tests: 2.1.2
   tailwindcss: 3.0.24
   vue: 3.2.33
@@ -341,6 +343,8 @@ packages:
     resolution: {integrity: sha512-n2Q6i+fnJqzOaq2VkdXxy2TCPCWQZHiCo0XqmrCvDWcZQKRyZzYi4Z0yxlBuN0w+r2ZHmre+Q087DSrw3pbJDQ==}
     engines: {node: '>=6.0.0'}
     hasBin: true
+    dependencies:
+      '@babel/types': 7.17.10
     dev: true
 
   /@babel/plugin-bugfix-safari-id-destructuring-collision-in-function-expression/7.16.7_@babel+core@7.17.10:
@@ -2209,10 +2213,16 @@ packages:
     resolution: {integrity: sha512-/WwNkdXfckNgw6S5R125rrW8ez139lBHWouiBvX8dfMFtcn6V81REDqnH7+CRpRipfYlyU1CmOnOxrmGcFOjeA==}
     dev: true
 
-  /debug/2.2.0:
+  /debug/2.2.0_supports-color@1.2.0:
     resolution: {integrity: sha512-X0rGvJcskG1c3TgSCPqHJ0XJgwlcvOC7elJ5Y0hYuKBZoVqWpAMfLOeIh2UI/DCQ5ruodIjvsugZtjUYUw2pUw==}
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
     dependencies:
       ms: 0.7.1
+      supports-color: 1.2.0
     dev: true
 
   /debug/4.3.4:
@@ -3300,7 +3310,7 @@ packages:
     hasBin: true
     dependencies:
       commander: 2.3.0
-      debug: 2.2.0
+      debug: 2.2.0_supports-color@1.2.0
       diff: 1.4.0
       escape-string-regexp: 1.0.2
       glob: 3.2.11
@@ -3499,6 +3509,12 @@ packages:
       nanoid: 3.3.4
       picocolors: 1.0.0
       source-map-js: 1.0.2
+    dev: true
+
+  /prettier/2.8.4:
+    resolution: {integrity: sha512-vIS4Rlc2FNh0BySk3Wkd6xmwxB0FpOndW5fisM5H8hsZSxU2VWVB5CWIkIjWvrHjIhxk2g3bfMKM87zNTrZddw==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
     dev: true
 
   /pretty-bytes/5.6.0:
