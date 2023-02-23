@@ -51,3 +51,142 @@ title: 组件库设计
 ### Element-ui
 - [Element-UI（2.11.1） 构建流程](https://juejin.cn/post/6844904003541663757)
 - [Element-UI 技术揭秘- 组件库的整体设计](https://juejin.cn/post/6844903925632466951)
+
+
+## How to build a component library
+
+### Modern Library Feature
+
+1. Output to `esm`, `cjs`, and `umd` formats
+2. Support tree-shaking, output `esm` can cover it(if `css-in-js`)
+3. Output to multiple files(folder to folder, file to file)
+4. Better tree-shaking by maintaining the file structure
+5. This makes it easier to mark specific files as having side effects, which helps the developer's bundler with tree-shaking
+6. Support TypeScript types
+
+### build output
+
+key feature:
+- Dead code elimination, or Tree shaking, as it’s often called, is very important to achieve the optimum bundle size and hence app performance.
+
+### webpack vs rollup
+
+> Use webpack for apps, and Rollup for libraries
+
+- output to `ESM` formats still is an experimental feature in webpack latest version(5.74.0), [output.library.type](https://webpack.js.org/configuration/output/#type-module)
+
+### scope
+
+how to build a react component library
+
+### ways 
+#### rollup
+
+#### tsc
+
+#### glup + babel
+
+#### third package
+
+- [unbuild](https://github.com/unjs/unbuild)
+- [tsup](https://github.com/egoist/tsup)
+
+#### babel
+
+### example
+#### Mui
+
+@emotion, css in js, `  "sideEffects": false,`
+
+- use rollup to bundle umd format output
+- use tsc to build type
+- use babel to build esm/cjs, folder structure
+
+#### [chakra-ui](https://github.com/chakra-ui/chakra-ui)
+
+turborepo + pnpm workspace, each component is a package. gather in `@chakra-ui/react` as dependencies and use `tsup` to bundle component
+
+@emotion, css in js, `  "sideEffects": false,`
+
+
+folder structure
+```md
+├── package
+│ ├── components
+│ │ ├── button
+│ │ │ ├── src
+│ │ │ ├── **tests**
+│ │ │ ├── **stories**
+│ │ │ ├── index.ts
+│ │ │ ├── package.json
+│ │ │ ├── tsconfig.json
+│ │ │ ├── tsup.config.ts
+│ │ ├── react
+│ │ │ ├── src
+│ │ │ ├── **tests**
+│ │ │ ├── index.ts
+│ │ │ ├── package.json
+│ │ │ ├── tsconfig.json
+│ │ │ ├── tsup.config.ts
+```
+
+`tsup.config.ts` each component is same
+
+```ts
+import { defineConfig } from "tsup"
+import { findUpSync } from "find-up"
+
+export default defineConfig({
+  clean: true,
+  format: ["cjs", "esm"],
+  outExtension(ctx) {
+    return { js: `.${ctx.format}.js` }
+  },
+  inject: process.env.JSX ? [findUpSync("react-shim.js")!] : undefined,
+})
+```
+
+#### [naive-ui](https://github.com/tusen-ai/naive-ui)
+
+- use rollup to bundle umd format output
+- use tsc to build esm and cjs folder structure, tsc can do this
+
+`tsconfig.esm.json`
+```json5
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "**/*.spec.ts"
+  ],
+  "include": ["src/components"],
+  "compilerOptions": {
+    "declaration": true,
+    "noEmit": false,
+    "rootDir": "./src/components",
+    "outDir": "./es",
+    // cjs CommonJs
+    "module": "ES6",
+    "target": "ES6"
+  }
+}
+```
+
+## ant-design
+
+[`antd-tools`](https://github.com/ant-design/antd-tools): `glup + babel`
+
+less config
+```json
+{
+  "sideEffects": [
+    "dist/*",
+    "es/**/style/*",
+    "lib/**/style/*",
+    ".less"
+  ]
+}
+```
+
+### reference
+
+- [The Modern Guide to Packaging your JavaScript library](https://github.com/frehner/modern-guide-to-packaging-js-library)
