@@ -1,0 +1,1 @@
+const e={key:"v-753a45c6",path:"/fe/frameWork/agile-collections.html",title:"\u654F\u6377\u6C47\u603B",lang:"en-US",frontmatter:{title:"\u654F\u6377\u6C47\u603B"},excerpt:"",headers:[],git:{updatedTime:1678464105e3,contributors:[{name:"notend",email:"xyqinsong@163.com",commits:1}]},filePathRelative:"fe/frameWork/agile-collections.md"};export{e as data};

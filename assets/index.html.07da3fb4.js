@@ -1,0 +1,1 @@
+const t={key:"v-3da6ba9a",path:"/backEnd/kotlin/",title:"title",lang:"en-US",frontmatter:{title:"title"},excerpt:"",headers:[],git:{updatedTime:1678464105e3,contributors:[{name:"notend",email:"xyqinsong@163.com",commits:1}]},filePathRelative:"backEnd/kotlin/README.md"};export{t as data};

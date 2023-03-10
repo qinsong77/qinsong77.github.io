@@ -1,0 +1,1 @@
+const t={key:"v-30caa536",path:"/word.html",title:"",lang:"en-US",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1651850976e3,contributors:[{name:"sysuke",email:"xyqinsong@163.com",commits:1}]},filePathRelative:"word.md"};export{t as data};

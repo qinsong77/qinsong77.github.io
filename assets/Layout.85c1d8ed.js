@@ -1,0 +1,1 @@
+import{P as t}from"./Layout.9900d338.js";import{_ as e,o as a,i as o,w as _,a as s}from"./app.a96f585b.js";const r=s("div",{class:"my-footer"},"Life is hard, but still have to move on",-1),u={setup(c){return(i,l)=>(a(),o(t,null,{"page-bottom":_(()=>[r]),_:1}))}};var f=e(u,[["__file","Layout.vue"]]);export{f as default};

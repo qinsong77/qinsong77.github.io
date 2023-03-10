@@ -1,0 +1,1 @@
+const e={key:"v-db946ca2",path:"/fe/frameWork/mobile.html",title:"\u79FB\u52A8\u7AEF",lang:"en-US",frontmatter:{title:"\u79FB\u52A8\u7AEF"},excerpt:"",headers:[],git:{updatedTime:1646930185e3,contributors:[{name:"qinsong01",email:"qinsong01@huohua.cn",commits:1}]},filePathRelative:"fe/frameWork/mobile.md"};export{e as data};

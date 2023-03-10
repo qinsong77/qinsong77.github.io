@@ -1,0 +1,1 @@
+const e={key:"v-53bc29be",path:"/fe/MicroFrontends/microapp.html",title:"MicroApp",lang:"en-US",frontmatter:{title:"MicroApp"},excerpt:"",headers:[],git:{updatedTime:1647532884e3,contributors:[{name:"qinsong01",email:"qinsong01@huohua.cn",commits:1}]},filePathRelative:"fe/MicroFrontends/microapp.md"};export{e as data};

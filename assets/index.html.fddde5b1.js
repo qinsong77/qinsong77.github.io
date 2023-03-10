@@ -1,0 +1,1 @@
+const t={key:"v-620d7848",path:"/blog/architecture/",title:"architecture",lang:"en-US",frontmatter:{title:"architecture",layout:"BlogLayout"},excerpt:"",headers:[],git:{updatedTime:1662997214e3,contributors:[{name:"notend",email:"xyqinsong@163.com",commits:1}]},filePathRelative:"blog/architecture/README.md"};export{t as data};

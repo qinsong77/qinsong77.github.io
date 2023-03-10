@@ -1,0 +1,1 @@
+const t={key:"v-6229b1ea",path:"/emptyTemplate.html",title:"title",lang:"en-US",frontmatter:{title:"title"},excerpt:"",headers:[],git:{updatedTime:1646930185e3,contributors:[{name:"qinsong01",email:"qinsong01@huohua.cn",commits:1}]},filePathRelative:"emptyTemplate.md"};export{t as data};
