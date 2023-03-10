@@ -305,6 +305,7 @@ export default defineUserConfig({
           // collapsible: true,
           children: [
             '/fe/frameWork',
+            '/fe/frameWork/agile-collections',
             '/fe/frameWork/microservices',
             '/fe/frameWork/mobile',
             '/fe/frameWork/miniprogram',

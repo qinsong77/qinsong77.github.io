@@ -446,7 +446,6 @@ clear: xx -- 组件销毁时
 第一次渲染是打印render,并且执行副作用函数, 打印effect，并且返回清楚副作用的函数clear, **3秒后**打印setCounter，执行`setCounter`，
 组件重新渲染，打印render，渲染完成后执行上一次的clear，接着执行副作用函数，一直循环，直到销毁时执行clear函数。
 
-
 #### 和setInterval
 
 [React Hooks 中的闭包问题](https://juejin.cn/post/6847902217031122951)
@@ -612,6 +611,115 @@ function useAsyncEffect(
 export default useAsyncEffect;
 
 ```
+#### 使用guide
+
+React中有两个重要的概念：
+
+1. Rendering code（渲染代码）
+2. Event handlers（事件处理器）
+
+* `Rendering code`指「开发者编写的组件渲染逻辑」，最终会返回一段`JSX`。比如，如下组件内部就是Rendering code：
+```tsx
+function App() {
+  const [name, update] = useState('Song');
+  
+  return <div>Hello {name}</div>;
+}
+```
+Rendering code的特点是：他应该是**不带副作用的纯函数**。
+
+
+* `Event handlers`是「**组件内部包含的函数**」，用于执行用户操作，可以**包含副作用**。
+
+下面这些操作都属于Event handlers：
+
+- 更新input输入框
+- 提交表单
+- 导航到其他页面
+
+如下例子中组件内部的`changeName`方法就属于`Event handlers`：
+
+```tsx
+function App() {
+  const [name, update] = useState('Song');
+  
+  const changeName = () => {
+    update('Sysuke');
+  }
+  
+  return <div onClick={changeName}>Hello {name}</div>;
+}
+```
+
+但是，并不是所有副作用都能在`Event handlers`中解决。
+
+比如，在一个聊天室中，「发送消息」是用户触发的，应该交给`Event handlers`处理。
+
+除此之外，聊天室需要随时保持和服务端的长连接，「保持长连接」的行为属于**副作用**，但并不是用户行为触发的。
+
+对于这种：**在视图渲染后触发的副作用，就属于effect，应该交给useEffect处理。**
+
+##### conclusion
+当我们编写组件时，应该尽量将组件编写为[纯函数](https://beta.reactjs.org/learn/keeping-components-pure)。
+
+对于组件中的副作用，首先应该明确： 是「用户行为触发的」还是「视图渲染后主动触发的」？
+
+- 对于前者，将逻辑放在`Event handlers`中处理。
+- 对于后者，使用`useEffect`处理。
+
+- [Synchronizing with Effects](https://beta.reactjs.org/learn/synchronizing-with-effects)
+
+#### 执行顺序
+
+```tsx
+const Child: FC<{ name: string }> = ({ name }) => {
+  useEffect(() => {
+    console.log(name + ' effect')
+    return () => {
+      console.log(name + ' clear')
+    }
+  }, [])
+  return <div>{name}</div>
+}
+const Parent = () => {
+  useEffect(() => {
+    console.log('Parent effect')
+    return () => {
+      console.log('Parent clear')
+    }
+  }, [])
+  return (
+          <div>
+            Parent
+            <Child name={'child1'} />
+            <Child name={'child2'} />
+          </div>
+  )
+}
+
+const App = () => {
+  const [show, setShow] = useState(true)
+  return (
+          <>
+            <button onClick={() => setShow(!show)}>show</button>
+            {show && (
+                    <>
+                      <Parent />
+                      <Child name={'child1'} />
+                      <Child name={'child2'} />
+                    </>
+            )}
+          </>
+  )
+}
+```
+![](./image/useEffect-render.png)
+
+如果是`StrictMode`组件会render 两次
+
+子组件的 `effet` 首先执行，然后执行父组件的
+
+子组件的 `clean` 执行，然后父组件的 `clean` 也执行，顺序和 `effect` 执行顺序一致
 
 ### useLayoutEffect
 

@@ -1749,4 +1749,23 @@ This component declares some effects to be run on mount and unmount. Normally th
 
 翻译：[React 重新渲染：最佳实践](https://zhuanlan.zhihu.com/p/554118692)
 
-nested form field getByrole cannot find
+### forwardRef
+
+`React.forwardRef(render)`的返回值是react组件，接收的参数是一个 `render`函数，函数签名为`render(props, ref)`，第二个参数将其接受的 [`ref`](https://react.docschina.org/docs/refs-and-the-dom.html) 属性转发到render返回的组件中。
+
+两种场景中特别有用:
+
+- 转发 `ref` 到组件内部的DOM节点上
+- 在高阶组件中转发ref
+
+```tsx
+const FancyButton = React.forwardRef((props, ref) => (
+  <button ref={ref} className="FancyButton">
+    {props.children}
+  </button>
+));
+
+// You can now get a ref directly to the DOM button:
+const ref = React.createRef();
+<FancyButton ref={ref}>Click me!</FancyButton>;
+```
