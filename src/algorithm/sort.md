@@ -1,20 +1,11 @@
----
-title: 排序算法
----
+# 排序算法
  ![An image](./image/sort.png)
 
 [动图演示](https://www.cnblogs.com/onepixel/p/7674659.html)
 
-- [冒泡排序](#_1-冒泡排序)
-- [选择排序](#_2-选择排序)
-- [插入排序](#_3-插入排序)
-- [归并排序](#_4-归并排序)
-- [希尔排序](#_5-希尔排序)
-- [快速排序](#_6-快速排序)
-- [堆排序](#_7-堆排序)
-- [二分查找](#二分查找)
+[[toc]]
 
-### 1. 冒泡排序
+## 1. 冒泡排序
 > 冒泡排序比较所有相邻的两个项，如果第一个比第二个大，则交换它们。元素项向上移动至
   正确的顺序，就好像气泡升至表面一样。
 ```javascript
@@ -37,7 +28,7 @@ function bubbleSort (arr) {
 
 }
 ```
-### 2. 选择排序
+## 2. 选择排序
 > 选择排序大致的思路是找到数据结构中的最小值并
   将其放置在第一位，接着找到第二小的值并将其放在第二位，以此类推。
 
@@ -58,7 +49,7 @@ function selectionSort (arr) {
 	return arr
 }
 ```
-### 3. 插入排序
+## 3. 插入排序
  ![An image](./image/insert_sort.gif)
 ```javascript
 function insertSort (arr) {
@@ -80,7 +71,7 @@ function insertSort (arr) {
 }
 ```
 
-### 4. 归并排序
+## 4. 归并排序
  ![An image](./image/merge_sort.gif)
  
 Mozilla Firefox 使用归并排序作为 Array.prototype.sort 的实现
@@ -152,10 +143,11 @@ function merge2(arr, temp, left, middle, right) {
 	}
 }
 ```
-### 5. 希尔排序
+## 5. 希尔排序
 1959年Shell发明，第一个突破O(n2)的排序算法，是简单插入排序的改进版。它与插入排序的不同之处在于，它会优先比较距离较远的元素。希尔排序又叫缩小增量排序。
 
-#### 5.1 算法描述
+### 算法描述
+
 先将整个待排序的记录序列分割成为若干子序列分别进行直接插入排序，具体算法描述：
 - 选择一个增量序列t1，t2，…，tk，其中ti>tj，tk=1；
 - 按增量序列个数k，对序列进行k 趟排序；
@@ -255,7 +247,7 @@ function quick(arr, left = 0, right = arr.length - 1) {
 		while(i < j) {
 			while(arr[j] >= arr[flag] && j > flag) j--;
 			if (i >= j) break;
-			while(arr[i] <= arr[flag] && i < j)  ++;
+			while(arr[i] <= arr[flag] && i < j)  j++;
 			var temp = arr[flag];
 			arr[flag] = arr[j];
 			arr[j] = arr[i];
@@ -266,10 +258,6 @@ function quick(arr, left = 0, right = arr.length - 1) {
 		list.push([flag + 1, now[1]]);
 	}
 }
-
-
-
-
 
 function quickSort(array) {
 	return quick(array, 0, array.length - 1)
@@ -316,10 +304,9 @@ function partition(array, left, right) {
 // [3,12,43,7,34,56,36] i = 1; j = 3; pivot = 7
 // [7,12,43,3,34,56,36] i = 2; j = 2; pivot = 7
 
-
 ```
 
-### 7. 堆排序
+## 7. 堆排序
 
 创建一个大顶堆，大顶堆的堆顶一定是最大的元素。
 
@@ -364,7 +351,7 @@ function heapSort(array) {
     }
 ```
 
-## 二分查找
+## 8. 二分查找
 
 这个算法要求是被搜索的数据结构是已排序的
 过程是：

@@ -431,7 +431,7 @@ pnpm i ts-jest -D
 ```json
 {
   "compilerOptions": {
-   "types": ["node", "jest", "@testing-library/jest-dom"],
+    "types": ["node", "jest", "@testing-library/jest-dom"]
   }
 }
 ```
@@ -620,7 +620,7 @@ pnpm i eslint-plugin-jest-dom eslint-plugin-testing-library
 jest.config.js
 
 ```js
-{
+export default {
     setupFiles: ['<rootDir>/tests/settings/env-setup.ts'],
     setupFilesAfterEnv: ['<rootDir>/testSetupFile.js'],
 }
@@ -743,7 +743,7 @@ module.exports = {
 
 单元测试覆盖率是一种软件测试的度量指标，指在所有功能代码中，完成了单元测试的代码所占的比例。有很多自动化测试框架工具可以提供这一统计数据，其中最基础的计算方式为：
 
-```text
+```txt
 单元测试覆盖率 = 被测代码行数 / 参测代码总行数 * 100%
 ```
 

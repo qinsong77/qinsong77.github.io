@@ -33,6 +33,10 @@ typings/
 # VuePress directory
 .temp
 .cache
+/src/.vuepress/dist/
 
  dist
-/src/.vuepress/dist/
+
+ # vitepress
+.vitepress/dist
+.vitepress/cache

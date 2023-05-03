@@ -1,6 +1,5 @@
----
-title: 面试记录
----
+# 面试记录
+
  - [实现一个string的indexOf方法](#_1-一面实现一个string的indexof方法)
  - [树形结构数据打印](#_1、树形结构数据打印)
  - [React Input 表单组件](#_2、react-input-表单组件)

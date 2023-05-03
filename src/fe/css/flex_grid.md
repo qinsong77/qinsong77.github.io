@@ -2,8 +2,9 @@
 title: flex和grid
 ---
 
+# flex和grid
 
-### flex布局
+## flex布局
 
 ![](./imgs/flex.png)
 
@@ -54,7 +55,7 @@ flex左侧固定，右侧自适应，设置`min-width: 0;`保证内容不超出�
 }
 </style>
 ```
-#### align-items和align-content
+### align-items和align-content
 align-items: 定义了项目在交叉轴上的对齐方式
 ```
 .container {
@@ -67,10 +68,10 @@ align-content: 定义了多根轴线的对齐方式，如果项目只有一根�
     align-content: flex-start | flex-end | center | space-between | space-around | stretch;
 }
 ```
-#### Flex布局如何实现最后一个元素右对齐（CSS）
+### Flex布局如何实现最后一个元素右对齐（CSS）
 在最后一项元素使用样式：`margin-left: auto;`
 
-### [Grid布局](http://www.ruanyifeng.com/blog/2019/03/grid-layout-tutorial.html)
+## [Grid布局](http://www.ruanyifeng.com/blog/2019/03/grid-layout-tutorial.html)
 
 display: grid | inline-grid，设为网格布局以后，容器子元素（项目）的`float`、`display: inline-block`、`display: table-cell`、`vertical-align和column-*`等设置都将失效。
 
@@ -78,7 +79,7 @@ display: grid | inline-grid，设为网格布局以后，容器子元素（项�
 
 `grid-template-rows`属性定义每一行的行高。
 
-#### grid-template-columns 属性，grid-template-rows 属性
+### grid-template-columns 属性，grid-template-rows 属性
 
 `grid-template-columns: 100px 100px 100px;`表示3列，每一列的行宽是100px，也可使用百分比。
 
@@ -108,7 +109,7 @@ display: grid | inline-grid，设为网格布局以后，容器子元素（项�
 ```
 - **十二网格布局**: grid-template-columns: repeat(12, 1fr);
 
-#### `grid-row-gap` 属性，`grid-column-gap` 属性，`grid-gap` 属性
+### `grid-row-gap` 属性，`grid-column-gap` 属性，`grid-gap` 属性
 - `grid-row-gap`属性设置行与行的间隔（行间距）
 - `grid-column-gap`属性设置列与列的间隔（列间距）
 - `grid-gap`属性是`grid-column-gap`和`grid-row-gap`的合并简写形式,`grid-gap: <grid-row-gap> <grid-column-gap>;`省略了第二个值，浏览器认为第二个值等于第一个值。
@@ -120,9 +121,9 @@ display: grid | inline-grid，设为网格布局以后，容器子元素（项�
 }
 ```
 
-#### grid-auto-flow: 子元素顺序grid-auto-flow属性决定，默认值是row，即"先行后列"。也可以将它设成column，变成"先列后行"。
+### grid-auto-flow: 子元素顺序grid-auto-flow属性决定，默认值是row，即"先行后列"。也可以将它设成column，变成"先列后行"。
 
-#### justify-items 属性，align-items 属性，place-items 属性
+### justify-items 属性，align-items 属性，place-items 属性
 
 - justify-items属性设置单元格内容的水平位置（左中右）
 - align-items属性设置单元格内容的垂直位置（上中下）。
@@ -133,7 +134,7 @@ display: grid | inline-grid，设为网格布局以后，容器子元素（项�
   align-items: start | end | center | stretch;
 }
 ```
-#### justify-content 属性，align-content 属性，place-content 属性
+### justify-content 属性，align-content 属性，place-content 属性
 - justify-content属性是整个内容区域在容器里面的水平位置（左中右）
 - align-content属性是整个内容区域的垂直位置（上中下）。
 - place-content属性是align-content属性和justify-content属性的合并简写形式。

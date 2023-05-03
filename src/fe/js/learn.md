@@ -1,6 +1,4 @@
----
-title: 学习笔记
----
+# JS学习笔记
 
 - [内置类型及存储](#内置类型)
 - [var, let, const](#var-const-let-区别)
@@ -28,7 +26,7 @@ title: 学习笔记
 - [垃圾回收](#垃圾回收)
 
 
-
+## 类型
 
 ### 语言中所有的底层存储方式是是什么。
 
@@ -62,7 +60,7 @@ title: 学习笔记
 - 散列表(Hash)
 散列表源自于散列函数(Hash function)，其思想是如果在结构中存在关键字和T相等的记录，那么必定在F(T)的存储位置可以找到该记录，这样就可以不用进行比较操作而直接取得所查记录
 
-#### JavaScript使用的是 堆(Heap) 和 栈( Stack)
+### JavaScript使用的是 堆(Heap) 和 栈( Stack)
 JavaScript基本类型数据都是直接按值存储在栈中的(`Undefined`、`Null`、不是`new`出来的布尔、数字和字符串)，每种类型的数据占用的内存空间的大小是确定的，并由系统自动分配和自动释放。这样带来的好处就是，内存可以及时得到回收，相对于堆来说 ，更加容易管理内存空间。
 
 JavaScript引用类型数据被存储于堆中 (如对象、数组、函数等，它们是通过拷贝和new出来的）。其实，说存储于堆中，也不太准确，因为，引用类型的数据的地址指针是存储于栈中的，当我们想要访问引用类型的值的时候，需要先从栈中获得对象的地址指针，然后，在通过地址指针找到堆中的所需要的数据。
@@ -95,7 +93,7 @@ JavaScript目前有八种内置类型（包含ES6的symbol）：
 当一个对象被赋值了null 以后，原来的对象在内存中就处于游离状态，GC 会择机回收该对象并释放内存。因此，如果需要释放某个对象，就将变量设置为 null，即表示该对象已经被清空，目前无效状态。
 
 
-##### `typeof null` 为 `object`的bug
+#### `typeof null` 为 `object`的bug
 > `null` 有属于自己的类型 `Null`，而不属于`Object`类型，`typeof` 之所以会判定为 Object 类型，是因为JavaScript中的数据在底层是以二进制存储，比如null所有存储值都是0，但是底层的判断机制，只要前三位为0，就会判定为object，所以才会有typeof null === 'object'这个bug。
 
 - 000 - 对象，数据是对象的应用
@@ -109,7 +107,28 @@ Object.prototype.toString.call(undefined) ; // [object Undefined]
 Object.prototype.toString.call(null) ; // [object Null]
 ```
 
-#### for循环中的let
+## `var`,`const` `let` 区别
+1. var声明的变量会挂载在`window`上，而let和const声明的变量不会：
+2. var声明变量存在变量提升，let和const不存在变量提升
+3. let和const声明形成块作用域
+4. 同一作用域下let和const不能声明同名变量，而var可以
+5. 暂存死区
+```javascript
+var a = 100;
+
+if(1){
+    a = 10;
+    //在当前块作用域中存在a使用let/const声明的情况下，给a赋值10时，只会在当前作用域找变量a，
+    // 而这时，还未到声明时候，所以控制台Uncaught ReferenceError: Cannot access 'a' before initialization
+    let a = 1;
+}
+```
+- const
+    - 1、一旦声明必须赋值，不能使用null占位。
+    - 2、声明后不能再修改
+    - 3、如果声明的是复合类型数据，可以修改其属性
+
+### for循环中的let
 
 ```javascript
 var funcs = []
@@ -157,29 +176,7 @@ for (let i = 0; i < 3; i++) {
 // abc
 // abc
 // abc
-```
-
-#### `var`,`const` `let` 区别
-1. var声明的变量会挂载在`window`上，而let和const声明的变量不会：
-2. var声明变量存在变量提升，let和const不存在变量提升
-3. let和const声明形成块作用域
-4. 同一作用域下let和const不能声明同名变量，而var可以
-5. 暂存死区
-```javascript
-var a = 100;
-
-if(1){
-    a = 10;
-    //在当前块作用域中存在a使用let/const声明的情况下，给a赋值10时，只会在当前作用域找变量a，
-    // 而这时，还未到声明时候，所以控制台Uncaught ReferenceError: Cannot access 'a' before initialization
-    let a = 1;
-}
-```
-- const
-    - 1、一旦声明必须赋值，不能使用null占位。
-    - 2、声明后不能再修改
-    - 3、如果声明的是复合类型数据，可以修改其属性
-    
+```  
 **变量提升和函数声明覆盖**
 
 函数声明的执行优先级会比变量声明的优先级更高一点， 而且同名的函数会覆盖函数与变量，但是同名的变量并不会覆盖函数。但是在上下文的执行阶段，同名的函数会被变量重新赋值。
@@ -226,7 +223,9 @@ var fn = function() {
 }
 ```
 
-#### instanceof 运算符用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上
+## 类型判断
+
+### instanceof 运算符用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上
 语法
 > object instanceof constructor 即 `Object.__proto__ === fun.prototype`
 
@@ -240,6 +239,7 @@ var fn = function() {
 - 注意Infinity为真
    
 ### `Object.is()`方法
+
 >相等运算符（`==`）和严格相等运算符（`===`）。它们都有缺点，前者会自动转换数据类型，后者的`NaN`不等于自身，以及`+0`等于`-0`。`Object.is`用来比较两个值是否严格相等，与严格比较运算符（`===`）的行为基本一致，不同之处只有两个：一是`+0`不等于`-0`，二是`NaN`等于自身。
 ```javascript
 +0 === -0 //true
@@ -266,7 +266,7 @@ Object.defineProperty(Object, 'is', {
 ````
 
 
-#### [Set, Map, WeakMap, WeakSet](https://mp.weixin.qq.com/s/YwJxwkEVc711NOdHd54ZIQ)
+## [Set, Map, WeakMap, WeakSet](https://mp.weixin.qq.com/s/YwJxwkEVc711NOdHd54ZIQ)
 
 - [你不知道的 WeakMap](https://juejin.cn/post/6844904169417998349)
 
@@ -344,7 +344,9 @@ map.forEach(function(value, key, map) {
 - 键名是弱引用，键值可以是任意的，键名所指向的对象可以被垃圾回收，此时键名是无效的
 - 不能遍历，方法有get、set、has、delete
 
-#### `Object.defineProperty(obj, prop, descriptor)`
+## Object的方法
+
+### `Object.defineProperty(obj, prop, descriptor)`
 
 - `obj`: 要定义属性的对象。
 - `prop`: 要定义或修改的属性的名称或 `Symbol` 。
@@ -410,7 +412,8 @@ Object.isExtensible(empty) === false
 - `Object.freeze(obj)` ：完全冻结对象，在 seal 的基础上，属性值也不可以修改（每个属性的 `writable` 也被设为 false）。`Object.isFrozen(obj)`
 
 
-#### Object.create()方法创建一个新对象，使用现有的对象来提供新创建的对象的[`__proto__`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
+### Object.create
+`Object.create()` 方法创建一个新对象，使用现有的对象来提供新创建的对象的[`__proto__`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
 这是一个**浅拷贝**方法
 ```javascript
 // 创建一个原型为null的空对象
@@ -421,25 +424,7 @@ var atom = Object.setPrototypeOf(new Object, null)
 
 pureObj其实是个原子（原子是JavaScript中的对象的最小单元，它是对象但不继承自Object()；以原子为原型的对象也会被称为原子对象。）在同一个运行环境中，可以并存多个原子，以及由原型指向原子的、原型继承的对象系统。所有这些原子以及衍生的对象系统都是互不相等、没有交集的。
 
-### [九种常用的设计模式](https://juejin.cn/post/6881384600758091784)
-
-- [使用设计模式封装代码](https://juejin.cn/post/6844904165836062734)
-
-### [前端模块化](https://juejin.im/post/6844903744518389768)
-
- #### [ES6 模块与 CommonJS 模块的差异](https://es6.ruanyifeng.com/#docs/module-loader#ES6-%E6%A8%A1%E5%9D%97%E4%B8%8E-CommonJS-%E6%A8%A1%E5%9D%97%E7%9A%84%E5%B7%AE%E5%BC%82)
- - CommonJS 模块输出的是一个值的拷贝(浅拷贝)，ES6 模块输出的是值的引用。
- - CommonJS 模块是运行时加载，ES6 模块是编译时输出接口。
- - CommonJs 是单个值导出，ES6 Module可以导出多个
- - CommonJs 是动态语法可以写在判断里，ES6 Module 静态语法只能写在顶层
- - CommonJs 的 this 是当前模块，ES6 Module的 this 是 undefined
- - CommonJS 模块的require()是同步加载模块，ES6 模块的import命令是异步加载，有一个独立的模块依赖的解析阶段。
- - CommonJS 模块处理循环加载的方法是返回的是当前已经执行的部分的值，而不是代码全部执行后的值，两者可能会有差异。因为CommonJS 输入的是被输出值的拷贝，不是引用，只会在第一次加载时运行一次，以后再加载，就返回第一次运行的结果，除非手动清除系统缓存。
- - ES6 处理“循环加载”与 CommonJS 有本质的不同。ES6 模块是动态引用，如果使用import从一个模块加载变量（即`import foo from 'foo'`），那些变量不会被缓存，而是成为一个指向被加载模块的引用，需要开发者自己保证，真正取值的时候能够取到值。
- >AMD(require.js) 推崇依赖前置、提前执行，CMD(sea.js)推崇依赖就近、延迟执行。
-
-   [深入 CommonJs 与  ES6 Module](https://segmentfault.com/a/1190000017878394)
-### JavaScript Number类型
+## JavaScript Number类型
 - 文章[JavaScript 深入之浮点数精度](https://github.com/mqyqingfeng/Blog/issues/155)
 
 - [浮点数](https://zhuanlan.zhihu.com/p/339949186)
@@ -568,6 +553,8 @@ if (Number.EPSILON === undefined) {
 
 ### 位运算
 
+## 函数
+
 ### 函数的argument
 `argument`是一个对象，只不过它的属性从`0`开始排，依次为`0，1，2...`最后还有`callee`和`length`属性。这样的对象称为**类数组**。
 
@@ -575,7 +562,7 @@ if (Number.EPSILON === undefined) {
 1. 用`getElementByTagName/ClassName/Name（）`获得的`HTMLCollection`
 2. 用`querySelector`获得的`nodeList`
 
-转换成数组的方法
+**转换成数组的方法**
 1. `Array.prototype.slice.call()`
 ```javascript
 function sum(a, b) {
@@ -788,7 +775,7 @@ log() // "Current value is 10" 未能正确打印30
 
 ```
 
-### 数组
+## 数组
 
 ::: tip
 注意： 除了抛出异常以外，没有办法中止或跳出 forEach() 循环, `return`也不行。如果需要中止或跳出循环，`forEach()` 方法不是应当使用的工具。
@@ -1078,7 +1065,8 @@ for (let value of range(0, 3)) {
 	console.log(value); // 0, 1, 2
 }
 ```
-#### `Iterator` 接口与 `Generator` 函数
+
+## `Iterator` 接口与 `Generator` 函数
 任意一个对象的`Symbol.iterator`方法，等于该对象的遍历器生成函数，调用该函数会返回该对象的一个遍历器对象。
 
 由于 `Generator` 函数就是遍历器生成函数，因此可以把 `Generator` 赋值给对象的`Symbol.iterator`属性，从而使得该对象具有 `Iterator` 接口。
@@ -1107,7 +1095,8 @@ for (let x of obj) {
 ```
 
 
-### JavaScript的异步方式
+## JavaScript的异步方式
+
 - [异步I/O及异步编程](https://sanyuan0704.top/blogs/javascript/js-async/001.html)
 1. 回调方式 --- 嵌套地狱
 2. promise --- then写法代码冗余，语义不清楚
@@ -1382,7 +1371,7 @@ co(g).then(res =>{
 
 实现有两个关键点，一是要保存函数的上下文信息，二是实现一个完善的迭代方法，使得多个 yield 表达式按序执行，从而实现生成器的特性。、
 
-借助babel插件`@babel/plugin-transform-regenerator`转成es5:
+借助`babel`插件`@babel/plugin-transform-regenerator`转成es5:
 
  ::: details 点击查看代码
  ```javascript
@@ -1394,6 +1383,7 @@ function* example() {
 var iter=example();
 iter.next();
 ```
+
 ```javascript
 "use strict";
 
@@ -1471,7 +1461,7 @@ a2:  10 ------- 输出10，await左边的a是同步的先固定成0了
 其实 a 为 0 是因为加法运算法，先算左边再算右边，所以会把 0 固定下来。如果把题目改成 `await 10 + a` 的话，答案就是 11 了。
 
 
-### JSON
+## JSON
 
 JSON 是一种数据格式，并不是编程语言，多用于数据传输交换和静态配置
 
@@ -1525,6 +1515,26 @@ console.log(b);
 // 		date: [ '2018-09-11T01:00:00.000Z', '2018-10-20T15:00:00.000Z' ]
 // }
 ```
+
+## [九种常用的设计模式](https://juejin.cn/post/6881384600758091784)
+
+- [使用设计模式封装代码](https://juejin.cn/post/6844904165836062734)
+
+## [前端模块化](https://juejin.im/post/6844903744518389768)
+
+#### [ES6 模块与 CommonJS 模块的差异](https://es6.ruanyifeng.com/#docs/module-loader#ES6-%E6%A8%A1%E5%9D%97%E4%B8%8E-CommonJS-%E6%A8%A1%E5%9D%97%E7%9A%84%E5%B7%AE%E5%BC%82)
+- CommonJS 模块输出的是一个值的拷贝(浅拷贝)，ES6 模块输出的是值的引用。
+- CommonJS 模块是运行时加载，ES6 模块是编译时输出接口。
+- CommonJs 是单个值导出，ES6 Module可以导出多个
+- CommonJs 是动态语法可以写在判断里，ES6 Module 静态语法只能写在顶层
+- CommonJs 的 this 是当前模块，ES6 Module的 this 是 undefined
+- CommonJS 模块的require()是同步加载模块，ES6 模块的import命令是异步加载，有一个独立的模块依赖的解析阶段。
+- CommonJS 模块处理循环加载的方法是返回的是当前已经执行的部分的值，而不是代码全部执行后的值，两者可能会有差异。因为CommonJS 输入的是被输出值的拷贝，不是引用，只会在第一次加载时运行一次，以后再加载，就返回第一次运行的结果，除非手动清除系统缓存。
+- ES6 处理“循环加载”与 CommonJS 有本质的不同。ES6 模块是动态引用，如果使用import从一个模块加载变量（即`import foo from 'foo'`），那些变量不会被缓存，而是成为一个指向被加载模块的引用，需要开发者自己保证，真正取值的时候能够取到值。
+>AMD(require.js) 推崇依赖前置、提前执行，CMD(sea.js)推崇依赖就近、延迟执行。
+
+[深入 CommonJs 与  ES6 Module](https://segmentfault.com/a/1190000017878394)
+
 
 ## [垃圾回收](https://zh.javascript.info/garbage-collection)
 - [V8 引擎如何进行垃圾内存的回收](https://sanyuan0704.top/blogs/javascript/js-v8/002.html)

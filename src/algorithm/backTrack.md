@@ -1,6 +1,4 @@
----
-title: 回溯算法
----
+# 回溯算法
 
 - [全排列](#全排列)
 - [子集](#子集)
@@ -34,7 +32,7 @@ function backTrack(路径, 选择列表) {
 ```
 **其核心就是 for 循环里面的递归，在递归调用之前「做选择」，在递归调用之后「撤销选择」**
 
-### [全排列](https://leetcode-cn.com/problems/permutations/)
+## [全排列](https://leetcode-cn.com/problems/permutations/)
 
 时间复杂度 O(N!)
 ```javascript
@@ -65,7 +63,7 @@ var permute = function(nums) {
 };
 ```
 
-### [子集](https://leetcode-cn.com/problems/subsets/)
+## [子集](https://leetcode-cn.com/problems/subsets/)
 遇到一个数就把所有子集加上该数组成新的子集，遍历完毕即是所有子集
 ```javascript
 var subsets = function(nums) {
@@ -104,7 +102,7 @@ const subsets = (nums) => {
 };
 ```
 
-### [N皇后](https://leetcode-cn.com/problems/n-queens/)
+## [N皇后](https://leetcode-cn.com/problems/n-queens/)
 回溯的套路：
 
 遍历枚举出所有可能的选择。
@@ -157,7 +155,7 @@ const solveNQueens = (n) => {
 };
 ```
 
-#### [组合总和](https://leetcode-cn.com/problems/combination-sum/)
+## [组合总和](https://leetcode-cn.com/problems/combination-sum/)
 
 ```javascript
 const combinationSum = (candidates, target) => {
@@ -180,7 +178,7 @@ const combinationSum = (candidates, target) => {
 };
 ```
 
-### [单词搜索](https://leetcode-cn.com/problems/word-search/)
+## [单词搜索](https://leetcode-cn.com/problems/word-search/)
 ```javascript
 // 链接：https://leetcode-cn.com/problems/word-search/solution/shou-hua-tu-jie-79-dan-ci-sou-suo-dfs-si-lu-de-cha/
 const exist = (board, word) => {

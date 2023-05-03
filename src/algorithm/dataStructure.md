@@ -1,19 +1,9 @@
----
-title: 数据结构
----
+# 数据结构
 
-程序 = 数据结构 + 算法
-
-[学习目录](https://juejin.cn/post/6844903919722692621)
-
-[学习目录](https://github.com/sisterAn/JavaScript-Algorithms)
-
-[算法小抄](https://labuladong.gitee.io/algo/)
-
-[算法小抄](https://mp.weixin.qq.com/s?__biz=MzAxODQxMDM0Mw==&mid=100000768&idx=1&sn=86d496e4a1e65c72cddca36977c61eb4&chksm=1bd7fa082ca0731ed85848513bc8d983f2b1f51f40c159d33c249aaa7de9687dfa17a6662fae&mpshare=1&scene=23&srcid=0121uSqibym3NutRzJZlKCeV&sharer_sharetime=1611239435527&sharer_shareid=1958dfa2b35b63c7a7463d11712f39df#rd)
+> 程序 = 数据结构 + 算法
 
 
-### 时间复杂度
+## 时间复杂度
 
 一个算法的时间复杂度反映了程序运行从开始到结束所需要的时间。把算法中基本操作重复执行的次数（频度）作为算法的时间复杂度。
 
@@ -33,7 +23,8 @@ title: 数据结构
  
   ![An image](./image/time_complete.png)
   
-#### 对数阶O(logN)
+### 对数阶O(logN)
+
 ```javascript
 let i = 1;
 while(i<n)
@@ -43,13 +34,14 @@ while(i<n)
 ```
 从上面代码可以看到，在while循环里面，每次都将 i 乘以 2，乘完之后，i 距离 n 就越来越近了。我们试着求解一下，假设循环x次之后，i 就大于 n 了，此时这个循环就退出了，也就是说 2 的 x 次方等于 n，那么 x = log2^n
 也就是说当循环 log2^n 次以后，这个代码就结束了。因此这个代码的时间复杂度为：`O(logn)`  
-### 空间复杂度
+
+## 空间复杂度
+
 一个程序的空间复杂度是指运行完一个程序所需内存的大小。利用程序的空间复杂度，可以对程序的运行所需要的内存多少有个预先估计。
 
 一个程序执行时除了需要存储空间和存储本身所使用的指令、常数、变量和输入数据外，还需要一些对数据进行操作的工作单元和存储一些为现实计算所需信息的辅助空间。
 
-## 学习javascript数据结构和算法[github代码地址](https://github.com/loiane/javascript-datastructures-algorithms)
-### 栈
+## 栈
 - 栈是一种遵从后进先出（LIFO）原则的有序集合。新添加或待删除的元素都保存在栈的同
    一端，称作栈顶，另一端就叫栈底。在栈里，新元素都靠近栈顶，旧元素都接近栈底。犹如在桌子上堆叠书。
 ```javascript
@@ -105,7 +97,8 @@ function baseConverter(decNumber, base) {
 }
 ```
 
-### 队列
+## 队列
+
 - 队列是遵循先进先出（FIFO，也称为先来先服务）原则的一组有序的项。队列在尾部添加新
   元素，并从顶部移除元素。最新添加的元素必须排在队列的末尾。
   
@@ -292,7 +285,10 @@ class Deque {
 	}
 }
 ```
-### 链表 [代码](https://github.com/loiane/javascript-datastructures-algorithms/blob/master/src/js/data-structures/linked-list.js)
+## 链表
+
+[代码](https://github.com/loiane/javascript-datastructures-algorithms/blob/master/src/js/data-structures/linked-list.js)
+
 ```javascript
 function defaultEquals(a, b) {
   return a === b;

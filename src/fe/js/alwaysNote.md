@@ -1,8 +1,6 @@
----
-title: 常用笔记
----
+ # 常用笔记
 
-### 事件防抖和节流
+## 事件防抖和节流
 >节流防抖就好比乘电梯，比如delay是10秒，那么防抖就是电梯每进来一个人就要等10秒再运行，而节流就是电梯保证每10秒可以运行一次
 
 区别：防抖动是将多次执行变为最后一次执行，节流是将多次执行变成每隔一段时间执行。
@@ -268,14 +266,14 @@ export default function isObject(obj) {
 }
 ```
 
-### 数组乱序
+## 数组乱序
 ```js
 const shuffleArray = (arr) => arr.sort(() => Math.random() - 0.5)
 // 测试
 const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 console.log(shuffleArray(arr))
 ```
-### 复制到剪贴板
+## 复制到剪贴板
 
 ```js
 const copyToClipboard = (text) =>
@@ -283,7 +281,7 @@ const copyToClipboard = (text) =>
 // 测试
 copyToClipboard("Hello World!")
 ```
-### 检测暗黑模式、生成随机色、滚动到顶部
+## 检测暗黑模式、生成随机色、滚动到顶部
 
 ```js
 const isDarkMode = () =>

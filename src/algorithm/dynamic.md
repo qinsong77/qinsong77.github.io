@@ -1,7 +1,7 @@
----
-title: 动态规划
----
+# 动态规划
+
 ### 目录
+
 - [斐波那契数列](#斐波那契数列)
 - [打家劫舍](#打家劫舍)
 - [凑零钱问题](#凑零钱问题)
@@ -26,7 +26,7 @@ title: 动态规划
 dp解法一般是「自顶向下」，动态规划叫做「自底向上」。
 
 
-#### 斐波那契数列
+## 斐波那契数列
 `F(0)=0，F(1)=1, F(n)=F(n - 1)+F(n - 2)（n ≥ 2，n ∈ N*）`
 ```javascript
 /**
@@ -83,7 +83,7 @@ var fib = function(N){
 }
 ```
 
-#### [打家劫舍](https://leetcode-cn.com/problems/house-robber/)
+## [打家劫舍](https://leetcode-cn.com/problems/house-robber/)
 
 当位于i时，只能选择不偷或者偷，偷的话就是 `nums[i] + dp[i - 2]`，不偷则是前一步的最大值，`dp[i-1]`
 
@@ -104,7 +104,7 @@ var rob = function(nums) {
     return curr
 };
 ```
-#### [打家劫舍2](https://leetcode-cn.com/problems/house-robber-ii/)
+### [打家劫舍2](https://leetcode-cn.com/problems/house-robber-ii/)
 条件只是变成所有的房屋都 **围成一圈** ， 即第一间房间和最后一间不能同时偷。
 
 就是把环拆成两个队列，一个是从`0到n-1`，另一个是从`1到n`，然后返回`两个结果最大的`。
@@ -130,7 +130,7 @@ function robNotCircle(nums) {
 }
 ```
 
-### [凑零钱问题](https://leetcode-cn.com/problems/coin-change/)
+## [凑零钱问题](https://leetcode-cn.com/problems/coin-change/)
 
 给你k种面值的硬币，面值分别为c1, c2 ... ck，每种硬币的数量无限，再给一个总金额amount，问你最少需要几枚硬币凑出这个金额，如果不可能凑出，算法返回 -1 。算法的函数签名如下：
 ```javascript
@@ -215,7 +215,7 @@ var coinChange = function(coins, amount) {
     return dp[amount] === Infinity ? -1 : dp[amount]
 }
 ```
-#### [爬楼梯](https://leetcode-cn.com/problems/climbing-stairs/)
+## [爬楼梯](https://leetcode-cn.com/problems/climbing-stairs/)
 动态规划思路： 要考虑第爬到第n阶楼梯时候可能是一步，也可能是两步。 
 1. 计算爬上n-1阶楼梯的方法数量。因为再爬1阶就到第n阶 
 2. 计算爬上n-2阶楼梯体方法数量。因为再爬2阶就到第n阶 那么f(n)=f(n-1)+f(n-2);
@@ -236,7 +236,7 @@ var climbStairs = function(n) {
     return b
 };
 ```
-#### [单词拆分](https://leetcode-cn.com/problems/word-break/)
+## [单词拆分](https://leetcode-cn.com/problems/word-break/)
 ```javascript
 var wordBreak = function(s, wordDict) {
     const { length } = s
@@ -286,7 +286,7 @@ function knapsack (W, N, wt, val) {
   return dp[N][W]
 }
 ```
-#### [分割等和子集](https://leetcode-cn.com/problems/partition-equal-subset-sum/)
+## [分割等和子集](https://leetcode-cn.com/problems/partition-equal-subset-sum/)
 [题解](https://mp.weixin.qq.com/s?__biz=MzAxODQxMDM0Mw==&mid=2247485103&idx=1&sn=8a9752e18ed528e5c18d973dcd134260&chksm=9bd7f8a7aca071b14c736a30ef7b23b80914c676414b01f8269808ef28da48eb13e90a432fff&scene=21#wechat_redirect)
 ```javascript
 /**

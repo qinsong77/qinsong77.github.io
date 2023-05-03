@@ -383,6 +383,5 @@ http 缓存策略图：
 ## 相关链接
 
 - [HTTP 协议入门](http://www.ruanyifeng.com/blog/2016/08/http.html)
-- [HTTP2 基础教程总结](/book/book-http2.html)
 - [HTTP/2 简介](https://developers.google.com/web/fundamentals/performance/http2/?hl=zh-cn#_2)
 - [一文读懂 HTTP/2 及 HTTP/3 特性](https://blog.fundebug.com/2019/03/07/understand-http2-and-http3/)

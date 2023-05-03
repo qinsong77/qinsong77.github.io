@@ -1,12 +1,13 @@
 {
   "name": "qinsong77.github.io",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "blog",
   "main": "index.js",
   "scripts": {
-    "dev": "vuepress dev src",
-    "build": "vuepress build src",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vitepress",
+    "build": "vitepress build",
+    "preview": "vitepress preview",
+    "preinstall": "npx only-allow pnpm"
   },
   "repository": {
     "type": "git",
@@ -19,23 +20,10 @@
   },
   "homepage": "https://github.com/qinsong77/qinsong77.github.io#readme",
   "devDependencies": {
-    "@vuepress/bundler-vite": "2.0.0-beta.43",
-    "@vuepress/client": "2.0.0-beta.43",
-    "@vuepress/plugin-back-to-top": "^2.0.0-beta.43",
-    "@vuepress/plugin-medium-zoom": "^2.0.0-beta.43",
-    "@vuepress/plugin-pwa": "^2.0.0-beta.43",
-    "@vuepress/plugin-pwa-popup": "^2.0.0-beta.43",
-    "@vuepress/plugin-search": "^2.0.0-beta.43",
-    "@vuepress/plugin-theme-data": "2.0.0-beta.45",
-    "@vuepress/theme-default": "^2.0.0-beta.43",
-    "@vuepress/utils": "^2.0.0-beta.43",
-    "autoprefixer": "^10.4.7",
-    "postcss": "^8.4.13",
-    "postcss-import": "^14.1.0",
+    "@vue/theme": "^2.2.1",
     "prettier": "^2.8.4",
-    "promises-aplus-tests": "^2.1.2",
-    "tailwindcss": "^3.0.24",
-    "vue": "^3.2.33",
-    "vuepress": "^2.0.0-beta.43"
+    "vite-plugin-pwa": "^0.14.7",
+    "vitepress": "1.0.0-alpha.75",
+    "vue": "^3.2.47"
   }
 }

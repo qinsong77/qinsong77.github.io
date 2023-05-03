@@ -598,7 +598,7 @@ pnpm add eslint-plugin-import -D
 ## lint-stage, husky, commitlint
 
 统一编辑器格式`.editorconfig`
-```editorconfig
+```txt
 # Editor configuration, see http://editorconfig.org
 root = true
 

@@ -1,10 +1,7 @@
----
-title: LeetCode
----
-
-[内涵字节真题](https://github.com/sisterAn/JavaScript-Algorithms)
+# LeetCode
 
 ## 目录
+
 - [1.和问题](#_1-和问题)
   - [两数之和](#两数之和)
   - [三数之和](#三数之和)
@@ -100,7 +97,9 @@ title: LeetCode
 - [电话号码的字母组合](#电话号码的字母组合)
 - [岛屿数量](#岛屿数量)
 
-获取26个字母
+## 常用代码短
+
+### 获取26个字母
 ```javascript
 const letters = []
 for (let i = 0; i < 26; i++) {
@@ -119,13 +118,13 @@ for (let i = 0; i < 26; i++) {
 'a'.charCodeAt() // 97
 ```
 
-Math 对象方法
+### Math对象方法
 
 - `Math.floor(x)`: 向下取证。
 - `Math.ceil(x)`: 向上取证。
 - `Math.round(x)`: 把数四舍五入为最接近的整数。
 
-### [1.和问题](https://mp.weixin.qq.com/s/uKDWyg1inPCk0xMczY20qQ)
+## [1.和问题](https://mp.weixin.qq.com/s/uKDWyg1inPCk0xMczY20qQ)
 
 #### [两数之和](https://leetcode-cn.com/problems/two-sum )
 > 给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数，并返回他们的数组下标。  <br />你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。
@@ -374,7 +373,7 @@ const search = (arr, count, sum) => {
 }
 ```
 
-### 2.回文
+## 2.回文
 
 #### [回文数](https://leetcode-cn.com/problems/palindrome-number/)
 > 判断一个整数是否是回文数。回文数是指正序（从左向右）和倒序（从右向左）读都是一样的整数。
@@ -559,7 +558,7 @@ function reverseLink(head) {
 }
 ```
 
-### 3.字符串
+## 3.字符串
 
 #### [比较版本号](https://leetcode-cn.com/problems/compare-version-numbers/)
 ```javascript
@@ -1387,7 +1386,7 @@ var permutation = function(str) {
 };
 ```
 
-### 4.二叉树
+## 4.二叉树
 做二叉树的问题，关键是把题目的要求细化，搞清楚根节点应该做什么，然后剩下的事情抛给前/中/后序的遍历框架就行了。比如对于一般的构造二叉树的题目，是要想怎么构造出根节点。所以应该是前序遍历。
 ```javascript
 /* 二叉树遍历框架 */
@@ -2002,7 +2001,7 @@ var sumNumbers = function(root) {
 };
 ```
 
-### 5.二叉搜索树
+## 5.二叉搜索树
 
 BST(Binary Search Tree) 的特性
 
@@ -2243,7 +2242,7 @@ var numTrees = function(n) {
 }
 ```
 
-### 6.链表
+## 6.链表
 
 #### [反转链表](https://leetcode-cn.com/problems/fan-zhuan-lian-biao-lcof/)
 
@@ -2747,7 +2746,7 @@ var deleteDuplicates = function(head) {
     return prevHead.next
 };
 ```
-### 7.动态规划
+## 7.动态规划
 
 #### [凑零钱问题](https://leetcode-cn.com/problems/coin-change/)
 ```javascript
@@ -3210,7 +3209,7 @@ var findTargetSumWays = function (nums, S) {
 
 // 链接：https://leetcode-cn.com/problems/target-sum/solution/jing-dian-0-1bei-bao-by-rodrick278-7ohy/
 ```
-### 8.数组
+## 8.数组
 
 #### [连续子数组的最大和](https://leetcode-cn.com/problems/maximum-subarray/)
 暴力求解：时间复杂度O(n^2),空间复杂度O(1)
@@ -3696,7 +3695,7 @@ var findUnsortedSubarray = function(nums) {
 };
 ```
 
-### 9.二维数组
+## 9.二维数组
 #### [N x N二维数组翻转90度](https://leetcode-cn.com/problems/rotate-image)
 ```
 给定 matrix = 
@@ -3971,7 +3970,7 @@ var minPathSum = function(grid) {
 };
 ```
 
-### 二分查找
+## 二分查找
 
 #### [二分查找](https://leetcode-cn.com/problems/binary-search/)
 
@@ -4109,7 +4108,7 @@ var search = function(nums, target) {
     return -1
 };
 ```
-### 双指针
+## 双指针
 
 - [双指针技巧总结](https://mp.weixin.qq.com/s/yLc7-CZdti8gEMGWhd0JTg)
 
@@ -4408,7 +4407,7 @@ NestedIterator.prototype.next = function() {
 */
 ```
 
-### 计算器
+## 计算器
 
 [如何拆解复杂问题：实现一个计算器](https://mp.weixin.qq.com/s/ds0guq9gPTLIHLEQnFxZVQ)
 
@@ -4610,7 +4609,7 @@ function swap (nums, i, j) {
     nums[j] = temp
 }
 ```
-### [岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
+## [岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
 
 1. dfs
 

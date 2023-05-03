@@ -97,7 +97,7 @@ ESLint 主要解决了两类问题,
 
 `.huskyrc`
 
-````config
+````txt
 {
   "hooks": {
     "pre-commit": "lint-staged"
@@ -109,7 +109,7 @@ ESLint 主要解决了两类问题,
 比如：`.prettierignore` / `.eslintignore` 。lint-stage 总是配合 husky一起使用。
 
 `.lintstagedrc`
-```cofgig
+```json
 {
   "src/**/*.js": [
     "eslint --fix",
@@ -120,9 +120,53 @@ ESLint 主要解决了两类问题,
 ```
 
 ### Nginx
-
 - [巩固你的Nginx知识体系](https://juejin.cn/post/6870264679063617550)
 
+- 正向代理: 是你发出请求的时候先经过代理服务器，所以实际上**发出请求的是代理服务器**。
+
+![](./image/nginx/nginx1.png)
+- 反向代理: **代理你的目标服务器**，请求目标服务器的代理，做一些处理后再真正请求。
+![](./image/nginx/nginx2.png)
+
+webpack dev serve proxy对应的部分
+```js
+module.exports = {
+  publicPath: '/',
+  devServer: {
+    proxy: {
+      '/wiki': {
+        target: 'http://xxx.com.cn', // 代理到的目标地址
+        pathRewrite: { '^/wiki': '' }, // 重写部分路径
+        ws: true, // 是否代理 websockets
+        changeOrigin: true,
+      },
+    },
+  },
+}
+```
+按照上面的配置启动测试环境之后，直接在浏览器输入 `http://localhost/wiki/rest/api/2/user/picker` 就等于访问 `http://xxx.com.cn/rest/api/2/user/picker`。
+
+对应nginx的配置
+
+```
+location /wiki/ {
+    rewrite ^/wiki/(.*)$ /$1 break;
+    proxy_pass http://xxx.com.cn;
+}
+```
+rewrite 的语法是（来自文档）：[rewrite regex replacement](http://nginx.org/en/docs/http/ngx_http_rewrite_module.html#rewrite) ;
+
+这个是想说的重点如何配置的，所以上面的效果是匹配 `^/wiki/(.*)$` 然后替换为 `/` 加匹配到的后面括号后的分块。
+
+按照上面的配置，重启 `nginx ./nginx -s reload`，直接在浏览器输入 `http://localhost/wiki/rest/api/2/user/picker` 就等于访问 `http://xxx.com.cn/rest/api/2/user/picker`。
+
+其实 `$1` 在 JavaScript 的正则里也能使用：
+```js
+let reg = /^\/wiki\/(.*)$/
+'/wiki/2111edqd'.replace(reg, '$1')
+// => 2111edqd
+```
+在这里，括号的作用就是用于匹配一个分块
 ### Axios
 - [值得借鉴的地方](https://juejin.im/post/6885471967714115597)
 - [封装 axios 取消重复请求](https://mp.weixin.qq.com/s/b5W7Xq4UzTkAB1B8w80NXA)

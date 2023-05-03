@@ -1,6 +1,8 @@
 ---
 title: Summary
 ---
+
+# Dom
 - [Chrome 浏览器架构](https://xie.infoq.cn/article/5d36d123bfd1c56688e125ad3)
 - [Chrome 浏览器引擎 Blink & V8](https://xie.infoq.cn/article/9cf7bd9dfca63acb2e4aaabf8)
 - [浏览器的工作原理：新式网络浏览器幕后揭秘](https://www.html5rocks.com/zh/tutorials/internals/howbrowserswork/)
@@ -42,9 +44,9 @@ title: Summary
   
 ----
 
-### 操作dom的Api
+## 操作dom的Api
 
-#### 节点查找API
+### 节点查找API
 
 - document.getElementById ：根据ID查找元素，大小写敏感，如果有多个结果，只返回第一个；
 
@@ -60,7 +62,7 @@ title: Summary
 
 - document.forms ：获取当前页面所有form，返回一个 HTMLCollection ；
 
-#### 节点创建API
+### 节点创建API
 - createElement创建元素：
 ```javascript
 var elem = document.createElement("div");  
@@ -146,14 +148,14 @@ list.appendChild(fragment);
 </script>
 </body>
 ```
-#### 节点修改API
+### 节点修改API
 - `appendChild`: `parent.appendChild(child);`
 - `insertBefore`: `parentNode.insertBefore(newNode, refNode);` 在指定的已有子节点之前插入新的子节点。
 - `removeChild`: removeChild用于删除指定的子节点并返回子节点，`var deletedChild = parent.removeChild(node);  `
 - `replaceChild`: 用于将一个节点替换另一个节点, `parent.replaceChild(newChild, oldChild);`
 - [`insertAdjacentHTML`](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/insertAdjacentHTML)
 
-#### 节点关系API
+### 节点关系API
 - 父关系API
   - parentNode ：每个节点都有一个parentNode属性，它表示元素的父节点。Element的父节点可能是Element，Document或DocumentFragment；
   - parentElement ：返回元素的父元素节点，与parentNode的区别在于，其父节点必须是一个Element元素，如果不是，则返回null；
@@ -171,7 +173,7 @@ list.appendChild(fragment);
   
   - nextElementSibling ：返回后一个元素节点，后一个节点必须是Element，注意IE9以下浏览器不支持。
 
-#### 元素属性型API  
+### 元素属性型API  
 - setAttribute 给元素设置属性：`element.setAttribute(name, value);`其中name是特性名，value是特性值。如果元素不包含该特性，则会创建该特性并赋值。
 - getAttribute: getAttribute返回指定的特性名相应的特性值，如果不存在，则返回null：`var value = element.getAttribute("id");`
 - hasAttribute: `var result = element.hasAttribute(name);`
@@ -192,7 +194,7 @@ el.dataset.dateOfBirth = '1960-10-03'; // set the DOB.
 el.dataset.someDataAttr = 'mydata';
 // 'someDataAttr' in el.dataset === true
 ```
-#### 样式相关API
+### 样式相关API
 - 1. 直接修改元素的样式
 ```javascript
 elem.style.color = 'red';  
@@ -235,11 +237,11 @@ div.classList.replace("foo", "bar");
 
 
 
-### [输入URL到页面展示发生了什么](https://zhuanlan.zhihu.com/p/190320054)
+## [输入URL到页面展示发生了什么](https://zhuanlan.zhihu.com/p/190320054)
 >[git地址](https://github.com/venaissance/myBlog/issues/17)
 
-### [事件机制](https://zh.javascript.info/introduction-browser-events)
-#### 事件触发有三个阶段
+## [事件机制](https://zh.javascript.info/introduction-browser-events)
+### 事件触发有三个阶段
 1. 捕获阶段：事件从window对象自上而下向目标节点传播的阶段；
 
 2. 目标阶段：真正的目标节点正在处理事件的阶段；
@@ -268,7 +270,7 @@ el.addEventListener(
 ````
 事件触发一般来说会按照上面的顺序进行，但是也有特例，如果给一个目标节点同时注册冒泡和捕获事件，事件触发会按照注册的顺序执行。
 
-#### 注册事件
+### 注册事件
 通常我们使用`addEventListener`注册事件，该函数的第三个参数可以是布尔值，也可以是对象。
 对于布尔值 `useCapture` 参数来说，该参数默认值为`false`。`useCapture`决定了注册的事件是捕获事件还是冒泡事件。对于对象参数来说，可以使用以下几个属性
 
@@ -279,7 +281,7 @@ el.addEventListener(
 一般来说，我们只希望事件只触发在目标上，这时候可以使用`stopPropagation` 来阻止事件的进一步传播。通常我们认为`stopPropagation` 是用来阻止事件冒泡的，
 其实该函数也可以阻止捕获事件。`stopImmediatePropagation` 同样也能实现阻止事件，但是还能阻止该事件目标执行别的注册事件。
 
-##### passive为什么能优化页面的滚动性能
+#### passive为什么能优化页面的滚动性能
 
 chrome的线程化渲染框架的两个线程：
 
@@ -305,7 +307,7 @@ chrome的线程化渲染框架的两个线程：
 
 passive 的意思是“顺从的”，表示它不会对事件的默认行为说 no，浏览器知道了一个监听器是 passive 的，它就可以在两个线程里同时执行监听器中的 JavaScript 代码和浏览器的默认行为了。
 
-#### [事件委托](https://zh.javascript.info/event-delegation)
+### [事件委托](https://zh.javascript.info/event-delegation)
 
 由于事件会在冒泡阶段向上传播到父节点，因此可以把子节点的监听函数定义在父节点上，由父节点的监听函数统一处理多个子元素的事件。这种方法叫做事件的代理（delegation）。
 
@@ -329,7 +331,7 @@ passive 的意思是“顺从的”，表示它不会对事件的默认行为说
 - 节省内存
 - 不需要给子节点注销事件
 
-#### e.target和e.currentTarget
+### e.target和e.currentTarget
 
 `Event` 接口的只读属性 [`currentTarget`](https://developer.mozilla.org/zh-CN/docs/Web/API/Event/currentTarget)表示的，**标识是当事件沿着 `DOM` 触发时事件的当前目标。它总是指向事件绑定的元素，而 `Event.target` 则是事件触发的元素。**
 
@@ -374,18 +376,18 @@ passive 的意思是“顺从的”，表示它不会对事件的默认行为说
 `this === e.target` 有可能不是true
 
 
-#### oninput和onchange区别
+### oninput和onchange区别
 
 - oninput事件在元素值发送变化是立即触发
 - onchange在元素失去焦点时触发（当失去焦点时，修改属性值，则无法触发此事件）
 
 react 把两者视为一样的了
 
-### [跨域](https://juejin.im/post/6844904126246027278)
+## [跨域](https://juejin.im/post/6844904126246027278)
 因为浏览器出于安全考虑，有同源策略。也就是说，如果协议、域名或者端口有一个不同就是跨域，Ajax 请求会失败。
 
 常用方法解决方法
-#### JSONP
+### JSONP
 JSONP 的原理很简单，就是利用`<script>`标签没有跨域限制的漏洞。通过`<script>`标签指向一个需要访问的地址并提供一个回调函数来接收数据当需要通讯时。
 ```html
 <script src="http://domain/api?param1=a&param2=b&callback=jsonp"></script>
@@ -413,7 +415,7 @@ jsonp('http://xxx', 'callback', function(value) {
   console.log(value)
 })
 ```
-#### CORS
+### CORS
 > CORS（Cross-Origin Resource Sharing）跨域资源共享，定义了必须在访问跨域资源时，浏览器与服务器应该如何沟通。CORS背后的基本思想就是使用自定义的HTTP头部让浏览器与服务器进行沟通，从而决定请求或响应是应该成功还是失败。目前，所有浏览器都支持该功能，IE浏览器不能低于IE10。整个CORS通信过程，都是浏览器自动完成，不需要用户参与。对于开发者来说，CORS通信与同源的AJAX通信没有差别，代码完全一样。浏览器一旦发现AJAX请求跨源，就会自动添加一些附加的头信息，有时还会多出一次附加的请求，但用户不会有感觉。
 
 
@@ -423,7 +425,7 @@ CORS 需要浏览器和后端同时支持。IE 8 和 9 需要通过 `XDomainRequ
 
 服务端设置 Access-Control-Allow-Origin 就可以开启 CORS。 该属性表示哪些域名可以访问资源，如果设置通配符则表示所有网站都可以访问资源。
 
-#### 关于cors的cookie问题
+### 关于cors的cookie问题
 
 想要传递 `cookie` 需要满足 3 个条件
 
@@ -442,16 +444,16 @@ axios.defaults.withCredentials = true;
 
 
 
-#### WebSocket协议跨域
+### WebSocket协议跨域
 
 > Websocket是HTML5的一个持久化的协议，它实现了浏览器与服务器的全双工通信，同时也是跨域的一种解决方案。WebSocket和HTTP都是应用层协议，都基于 TCP 协议。但是 「WebSocket 是一种双向通信协议，在建立连接之后，WebSocket 的 server 与 client 都能主动向对方发送或接收数据」。同时，WebSocket 在建立连接时需要借助 HTTP 协议，连接建立好了之后 client 与 server 之间的双向通信就与 HTTP 无关了。
   
 
-#### document.domain
+### document.domain
 该方式只能用于二级域名相同的情况下，比如 `a.test.com `和 `b.test.com` 适用于该方式。
 
 只需要给页面添加 document.domain = 'test.com' 表示二级域名都相同就可以实现跨域
-#### postMessage
+### postMessage
 这种方式通常用于获取嵌入页面中的第三方页面数据。一个页面发送消息，另一个页面判断来源并接收消息
 ```javascript
 // 发送消息端
@@ -467,12 +469,12 @@ mc.addEventListener('message', event => {
 ```
 
 
-### 浏览器缓存
+## 浏览器缓存
 > [介绍](https://sanyuan0704.top/blogs/perform/001.html)
 
-### [web储存方案](https://juejin.im/post/6844904192549584903)
+## [web储存方案](https://juejin.im/post/6844904192549584903)
 
-### cookie到WebStorage、IndexedDB
+## cookie到WebStorage、IndexedDB
 > [介绍](https://juejin.im/post/6844903812092674061)
 
 cookie，localStorage，sessionStorage，indexDB
@@ -494,7 +496,7 @@ cookie，localStorage，sessionStorage，indexDB
 |  secure   |               只能在协议为 HTTPS 的请求中携带                |
 | same-site |    规定浏览器不能在跨域请求中携带 Cookie，减少 CSRF 攻击     |
 
-#### LocalStorage与SessionStorage的区别
+### LocalStorage与SessionStorage的区别
 LocalStorage和SessionStorage之间的主要区别在于浏览器窗口和选项卡之间的数据共享方式不同。
 
 LocalStorage可跨浏览器窗口和选项卡间共享。就是说如果在多个选项卡和窗口中打开了一个应用程序，而一旦在其中一个选项卡或窗口中更新了LocalStorage，则在所有其他选项卡和窗口中都会看到更新后的LocalStorage数据。
@@ -503,7 +505,7 @@ LocalStorage可跨浏览器窗口和选项卡间共享。就是说如果在多�
 
 - [LocalStorage与SessionStorage详解](https://www.cnblogs.com/powertoolsteam/p/webstorage.html)
 
-#### [sessionStorage](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/sessionStorage)
+### [sessionStorage](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/sessionStorage)
 
 它与 localStorage 相似，不同之处在于 localStorage 里面存储的数据没有过期时间设置，而存储在 sessionStorage 里面的数据在页面会话结束时会被清除（关闭当前页面的时候会清除）。
 
@@ -545,7 +547,7 @@ sessionStorage 应用
   </script>
 </body>
 ```
-### [Storage Event](https://developer.mozilla.org/zh-CN/docs/Web/API/StorageEvent)
+## [Storage Event](https://developer.mozilla.org/zh-CN/docs/Web/API/StorageEvent)
 其实就是当浏览器打开多个同域的tab页面时，设置了storage的监听事件，并且值和之前的不一样，其他tab会触发回调，`localStorage`可以，但`sessionStorage`不可以。
 ```javascript
 localStorage.setItem('name', 'tom')
@@ -569,7 +571,7 @@ event 包含的关键信息：
 
 - localstorage.setItem(key, value) 只有当后一次设置的 value 不同的时候才会触发该事件，相同的话也没有必要触发了；
 
-### 浏览器页面渲染机制
+## 浏览器页面渲染机制
 - [浏览器是如何运作的？](https://www.bilibili.com/video/BV1x54y1B7RE)
 - [【Web动画】CSS3 3D 行星运转 && 浏览器渲染原理](https://www.cnblogs.com/coco1s/p/5439619.html)
 - [你不知道的浏览器页面渲染机制](https://juejin.im/post/6844903815758479374)
@@ -629,13 +631,13 @@ Transform
 ![An image](../image/dom/2.png)
 ![An image](../image/dom/3.png)
 
-#### Load 和 DOMContentLoaded 区别
+### Load 和 DOMContentLoaded 区别
 
 Load 事件触发代表页面中的 DOM，CSS，JS，图片已经全部加载完毕。
 
 DOMContentLoaded 事件触发代表初始的 HTML 被完全加载和解析，不需要等待 CSS，JS，图片加载。
 
-#### 图层
+### 图层
 
 一般来说，可以把普通文档流看成一个图层。特定的属性可以生成一个新的图层。**不同的图层渲染互不影响**，所以对于某些频繁需要渲染的建议单独生成一个新图层，提高性能。**但也不能生成过多的图层，会引起反作用。**
 
@@ -647,7 +649,7 @@ DOMContentLoaded 事件触发代表初始的 HTML 被完全加载和解析，不
 - 通过动画实现的 `opacity` 动画转换
 - `position: fixed`
 
-#### 重绘（Repaint）和回流（Reflow）
+### 重绘（Repaint）和回流（Reflow）
 
 重绘和回流是渲染步骤中的一小节，但是这两个步骤对于性能影响很大。
 
@@ -724,7 +726,7 @@ aDiv.style.height = newHeight + 'px'; // Write
 
 以上内容来自于 [HTML 文档](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model)
 
-#### 减少重绘和回流
+### 减少重绘和回流
 
 - 使用 `translate` 替代 `top`
 
@@ -770,7 +772,7 @@ aDiv.style.height = newHeight + 'px'; // Write
 
 ![An image](../image/dom/4.png)
 
-#### 动画的性能检测及优化
+### 动画的性能检测及优化
 
 chrome 勾选下面 `show FPS meter` 显示页面的 FPS 信息，以及 GPU 的使用率
 
@@ -796,7 +798,7 @@ will-change: inherit
 
 3D transform 会启用GPU加速，例如 translate3D, scaleZ 之类，当然我们的页面可能并没有 3D 变换，但是不代表我们不能启用 GPU 加速，在非 3D 变换的页面也使用 3D transform 来操作，算是一种 hack 加速法。我们实际上不需要z轴的变化，但是还是假模假样地声明了，去欺骗浏览器。
 
-### Event loop
+## Event loop
 众所周知 JS 是门非阻塞单线程语言，因为在最初 JS 就是为了和浏览器交互而诞生的。如果 JS 是门多线程的语言话，我们在多个线程中处理 DOM 就可能会发生问题（一个线程中新加节点，另一个线程中删除节点），当然可以引入读写锁解决这个问题。
 
 JS 在执行的过程中会产生执行环境，这些执行环境会被顺序的加入到执行栈中。如果遇到异步的代码，会被挂起并加入到 Task（有多种 task） 队列中。一旦执行栈为空，Event Loop 就会从 Task 队列中拿出需要执行的代码并放入执行栈中执行，所以本质上来说 JS 中的异步还是同步行为。
@@ -851,7 +853,7 @@ console.log('script end')
 - 然后开始下一轮 Event loop，执行宏任务中的异步代码
 通过上述的 Event loop 顺序可知，如果宏任务中的异步代码有大量的计算并且需要操作 DOM 的话，为了更快的 界面响应，我们可以把操作 DOM 放入微任务中
 
-### Node 中的 Event loop
+## Node 中的 Event loop
 ```
 ┌───────────────────────┐
 ┌─>│        timers         │
@@ -984,11 +986,11 @@ process.nextTick(() => {
 })
 // nextTick, timer1, promise1
 ```
-### 浏览器与Node的事件循环(Event Loop)的区别
+## 浏览器与Node的事件循环(Event Loop)的区别
 > [介绍](https://juejin.im/post/6844903761949753352)
 
 
-### Service Worker
+## Service Worker
 
 > Service workers 本质上充当Web应用程序与浏览器之间的代理服务器，也可以在网络可用时作为浏览器和网络间的代理。它们旨在（除其他之外）使得能够创建有效的离线体验，拦截网络请求并基于网络是否可用以及更新的资源是否驻留在服务器上来采取适当的动作。他们还允许访问推送通知和后台同步API。
 
@@ -1006,7 +1008,7 @@ Service Worker 只能被使用在 https
 
 - [谨慎处理 Service Worker 的更新](https://zhuanlan.zhihu.com/p/51118741)
 
-#### 生命周期
+### 生命周期
 
 ![](./image/serviceWorkLifeCircle.png)
 
@@ -1058,7 +1060,7 @@ self.addEventListener("fetch", e => {
 ![An image](../image/dom/7.png)
 
 
-### setTimeout和requestAnimationFrame
+## setTimeout和requestAnimationFrame
 > [介绍](https://juejin.im/post/6844904083204079630)
 
 屏幕刷新率是屏幕在每秒钟能刷新的次数，单位是赫兹（Hz），取决于显示器。
@@ -1067,34 +1069,34 @@ self.addEventListener("fetch", e => {
 
 [为什么要用 setTimeout 模拟 setInterval ？](https://segmentfault.com/a/1190000038829248)
 
-### defer与async的区别
+## defer与async的区别
 defer与async的区别是：defer要等到整个页面在内存中正常渲染结束（DOM 结构完全生成，以及其他脚本执行完成），才会执行；async一旦下载完，渲染引擎就会中断渲染，执行这个脚本以后，再继续渲染。一句话，defer是“渲染完再执行”，async是“下载完就执行”。另外，如果有多个defer脚本，会按照它们在页面出现的顺序加载，而多个async脚本是不能保证加载顺序的。
 
 如果 script 标签是由 JavaScript 代码创建的，标签的 async 属性会默认为 true。
 ![An image](./image/defer_async.png)
 
-### [Preload&Prefetch](https://blog.csdn.net/vivo_tech/article/details/109485871)
+## [Preload&Prefetch](https://blog.csdn.net/vivo_tech/article/details/109485871)
 
-#### `prefetch`(预提取)
+### `prefetch`(预提取)
 prefetch(链接预取）是一种浏览器机制，其利用浏览器空闲时间来下载或预取用户在不久的将来可能访问的文档。网页向浏览器提供一组预取提示，并在浏览器完成当前页面的加载后开始静默地拉取指定的文档并将其存储在缓存中。当用户访问其中一个预取文档时，便可以快速的从浏览器缓存中得到。
 
 prefetch作用是告诉浏览器加载下一页面可能会用到的资源,加速下一个页面的加载速度;
 
-#### `Preload`(预加载)
+### `Preload`(预加载)
 1. preload 提供了一种声明式的命令，让浏览器提前加载指定资源(加载后并不执行)，需要执行时再执行，不阻塞渲染和document的onload事件
 2. as 属性不能忽略，如果忽略 as 属性，或者错误的 as 属性会使 preload 等同于 XHR 请求，浏览器不知道加载的是什么，因此会赋予此类资源非常低的加载优先级
 3. 对于字体文件，要带`crossorigin `属性，
 
-#### [modulepreload](https://html.spec.whatwg.org/multipage/links.html#link-type-modulepreload)
+### [modulepreload](https://html.spec.whatwg.org/multipage/links.html#link-type-modulepreload)
 
-#### 区分
+### 区分
 1. preload 是告诉浏览器页面必定需要的资源，浏览器一定会加载这些资源
 
 2. prefetch 是告诉浏览器页面可能需要的资源，浏览器不一定会加载这些资源
 
 3. 在VUE SSR生成的页面中，首页的资源均使用preload，而路由对应的资源，则使用prefetch
 
-### [MutationObserver](https://segmentfault.com/a/1190000012787829)
+## [MutationObserver](https://segmentfault.com/a/1190000012787829)
 
 兼容最低要求IE11，用于观察Node(节点)变化的。
 
@@ -1111,7 +1113,7 @@ MutationObserver对象有三个方法，分别如下：
 - disconnect：阻止观察者观察任何改变
 - taskRecords：清空记录队列并返回里面的内容
 
-### base64编码解码
+## base64编码解码
 ```javascript
 window.btoa('china is so nb') // 编码
 "Y2hpbmEgaXMgc28gbmI="
@@ -1119,12 +1121,12 @@ window.atob("Y2hpbmEgaXMgc28gbmI=") // 解码
 "china is so nb"
 ```
 
-#### [property 和 attribute](https://www.cnblogs.com/lmjZone/p/8760232.html)
+### [property 和 attribute](https://www.cnblogs.com/lmjZone/p/8760232.html)
 - property是DOM中的属性，是JavaScript里的对象；
 - attribute是HTML标签上的特性，它的值只能够是字符串；
 attributes是属于property的一个子集，它保存了HTML标签上定义属性。
 
-### 浏览器每一帧都需要完成哪些工作
+## 浏览器每一帧都需要完成哪些工作
 页面是一帧一帧绘制出来的，当每秒绘制的帧数（FPS）达到 60 时，页面是流畅的，小于这个值时，用户会感觉到卡顿。
 
 1s 60 帧，所以每一帧分到的时间是 `1000/60 ≈ 16 ms`。所以书写代码时力求不让一帧的工作量超过 16ms。
@@ -1138,12 +1140,12 @@ attributes是属于property的一个子集，它保存了HTML标签上定义属�
 - 布局
 - 绘制
 - 如果这六个步骤中，任意一个步骤所占用的时间过长，总时间超过 16ms 了之后，用户也许就能看到卡顿。
-#### 如何选择图片格式
+### 如何选择图片格式
 - [图片知识](https://mp.weixin.qq.com/s?__biz=MzI1ODk2Mjk0Nw==&mid=2247484351&idx=1&sn=e88a658e93cd5e3fa4abd035714d2fa4&chksm=ea0160d3dd76e9c56df658fab1466d41751b90e05bd6a27b972ebf5f5d7204d11c6cd4d8a089&scene=21#wechat_redirect)
 
 ![](./image/howtochosePic.png)
 
-### [前端跨页面通信](https://segmentfault.com/a/1190000018731597)
+## [前端跨页面通信](https://segmentfault.com/a/1190000018731597)
 一、同源页面间的跨页面通信
 - BroadCast Channel
 - Service Worker

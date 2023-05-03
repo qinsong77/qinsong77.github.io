@@ -1,23 +1,19 @@
----
-title: 总结
----
-[react](https://zh-hans.reactjs.org/)
+# React 
+- [react](https://zh-hans.reactjs.org/)
 
-[React技术揭秘](https://react.iamkasong.com/)
+- [React技术揭秘](https://react.iamkasong.com/)
 
-[React 运行时优化方案的演进](https://juejin.cn/post/7010539227284766751)
+- [React 运行时优化方案的演进](https://juejin.cn/post/7010539227284766751)
 
-[React 是如何工作的](https://mp.weixin.qq.com/s/ifLP36rFhYJsU2RCAi7OZQ)
+- [React 是如何工作的](https://mp.weixin.qq.com/s/ifLP36rFhYJsU2RCAi7OZQ)
 
-[图解React](https://7kms.github.io/react-illustration-series/)
+- [图解React](https://7kms.github.io/react-illustration-series/)
 
-[react+typescript](https://github.com/typescript-cheatsheets/react)
+- [react+typescript](https://github.com/typescript-cheatsheets/react)
 
-[2021年React学习路线图](https://mp.weixin.qq.com/s?__biz=MzUxMzcxMzE5Ng==&mid=2247505750&idx=2&sn=a31164ddf69f49e3761d2a6d660cf316&chksm=f9526215ce25eb031cbb1f8e0137b3fb3e30f6305fb183f028ab12419699695173b51c44b49d&scene=132#wechat_redirect)
+- [Build your own React](https://pomb.us/build-your-own-react/) | [Build your own React-中文](https://github.com/defpis/build-your-own-react)
 
-[Build your own React](https://pomb.us/build-your-own-react/) | [Build your own React-中文](https://github.com/defpis/build-your-own-react)
-
-[react-面试题](https://github.com/semlinker/reactjs-interview-questions)
+- [react-面试题](https://github.com/semlinker/reactjs-interview-questions)
 
 -------
 
@@ -1769,3 +1765,5 @@ const FancyButton = React.forwardRef((props, ref) => (
 const ref = React.createRef();
 <FancyButton ref={ref}>Click me!</FancyButton>;
 ```
+
+useRef和createRef区别
