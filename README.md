@@ -4,4 +4,6 @@
 
 ## TODO
 
-- [] PWA
+- [ ] PWA
+- [ ] Update blog
+- [ ] Go through all of it
