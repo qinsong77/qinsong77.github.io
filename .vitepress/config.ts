@@ -592,6 +592,9 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     // logo: 'favicon.ico',
     logo: '/icons/128.ico',
+    search: {
+      provider: 'local'
+    },
     nav: nav,
 
     sidebar: sidebar,
