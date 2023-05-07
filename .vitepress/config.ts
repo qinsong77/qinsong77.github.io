@@ -1,7 +1,6 @@
 import { defineConfig } from 'vitepress'
-// https://vite-pwa-org.netlify.app/guide/
-// https://github.com/vitest-dev/vitest/blob/main/docs/.vitepress/scripts/pwa.ts
-// import { VitePWA } from 'vite-plugin-pwa'
+// https://github.com/vite-pwa/vitepress
+import { withPwa } from '@vite-pwa/vitepress'
 import type { Config as ThemeConfig } from '@vue/theme'
 
 const nav: ThemeConfig['nav'] = [
@@ -581,7 +580,7 @@ export const sidebar: ThemeConfig['sidebar'] = {
 }
 
 // https://vitepress.dev/reference/site-config
-export default defineConfig({
+export default withPwa(defineConfig({
   title: "Sysuke's World",
   description: 'A FE Blog Site',
   srcDir: 'src',
@@ -636,6 +635,46 @@ export default defineConfig({
 			})();
 			`
     ]
-  ]
-  // plugins: [VitePWA({ registerType: 'autoUpdate' })]
-})
+  ],
+  // https://github.com/vite-pwa/vitepress/blob/main/examples/pwa-prompt/.vitepress/config.ts
+  pwa: {
+    mode: 'development',
+    base: '/',
+    scope: '/',
+    includeAssets: ['favicon.svg'],
+    manifest: {
+      "name": "Sysuke' World",
+      "short_name": "Sysuke",
+      theme_color: '#2979ff',
+      "icons": [
+        {
+          "src": "/icons/64",
+          "sizes": "64x64",
+          "type": "image/x-icon"
+        },
+        {
+          "src": "/icons/128.ico",
+          "sizes": "128x128",
+          "type": "image/x-icon"
+        },
+        {
+          "src": "/icons/256.ico",
+          "sizes": "256x256",
+          "type": "image/x-icon"
+        },
+        {
+          "src": "/icons/512.ico",
+          "sizes": "512x512",
+          "type": "image/x-icon"
+        }
+      ],
+    },
+    workbox: {
+      globPatterns: ['**/*.{css,js,html,svg,png,ico,txt,woff2}'],
+    },
+    devOptions: {
+      enabled: true,
+      navigateFallback: '/',
+    },
+  }
+}))
