@@ -18,7 +18,7 @@
 
 `getStaticProps`这个方法是构建的时候运行的，也就是说他是运行在 node 上的，所以我们可以用 node 的语法编写，他也可以访问文件和数据库。
 
-```jsx
+```tsx
 import Head from 'next/head'
 // 导出一个异步函数
 export async function getStaticProps() {
@@ -78,3 +78,81 @@ export default function List(props) {
   )
 }
 ```
+
+## error handling
+
+next.js 的[error Handling](https://nextjs.org/docs/app/building-your-application/routing/error-handling)
+
+- Next.js:
+
+  > `Error does not currently support [...] getStaticProps or getServerSideProps [ed. only getInitialProps]`
+
+- next-i18next:
+
+> serverSideTranslations is not compatible with getInitialProps, as it only can execute in a server environment, whereas getInitialProps is called on the client side when navigating between pages.
+
+so, there is no way to translate Error using next-i18next. [Impossible to translate the _error page](https://github.com/i18next/next-i18next/issues/1020)
+- next 的 error handling 策略，在触发 500 时，**会触发页面 reload**
+- 比较合适的解决方案，是自定义 error 页面，然后提供一个`wrapGetServerSideProps`的高阶函数，内部 `try catch`, 出错是 `redirect`，还能统一处理 i18n
+
+```ts
+export const wrapGetServerSideProps: <P>(
+  callback: (
+    context: GetServerSidePropsContext
+  ) => Promise<GetServerSidePropsResult<P>>
+) => GetServerSideProps = (callback) => {
+  return async (context: GetServerSidePropsContext) => {
+    let response
+    try {
+      response = await callback(context)
+    } catch (e) {
+      console.error('error happened while getServerSideProps')
+      return {
+        redirect: {
+          description: '/error'
+        }
+      }
+    }
+    const { locale } = context
+    return {
+      ...(await serverSideTranslations(locale || DEFAULT_LOCALE),
+      ['common'],
+      nextConfig),
+      ...response
+    }
+  }
+}
+```
+
+或者 上面 return 不是 redirect, 而是 return
+
+```
+{
+  error: {
+      statusCode: 500,
+      message: 'xxx'
+  }
+}
+```
+
+然后`_app.tsx`
+
+```tsx
+import Error from 'next/error'
+
+function MyApp({ Component, pageProps }) {
+  if (pageProps.error) {
+    return (
+      <Error
+        statusCode={pageProps.error.statusCode}
+        title={pageProps.error.message}
+      />
+    )
+  }
+  return <Component {...pageProps} />
+}
+
+export default MyApp
+```
+
+- [another way?](https://github.com/acikkaynak/deprem-yardim-frontend/blob/development/src/pages/_error.tsx)

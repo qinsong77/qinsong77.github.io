@@ -863,6 +863,7 @@ TypeScript 编译时并不会重写 `module paths`， `path`是设计用来让 t
 
 ## Reference
 
+- [code](https://github.com/qinsong77/sysuke/blob/rollup-react-component-library-save-version/demos/rollup-react-component-library/rollup.config.js)
 - [rollup](https://rollupjs.org/guide/en/)
 - [从 package.json 来聊聊如何管理一款优秀的 Npm 包](https://juejin.cn/post/7126394898445500423)
 - [rollup 从入门到打包一个按需加载的组件库](https://mp.weixin.qq.com/s/Rk729v6VI0IbwVPsuaPdOw)
