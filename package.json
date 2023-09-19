@@ -21,12 +21,9 @@
   "homepage": "https://github.com/qinsong77/qinsong77.github.io#readme",
   "devDependencies": {
     "@algolia/client-search": "^4.17.0",
-    "@vite-pwa/vitepress": "^0.2.0",
     "@vue/theme": "^2.2.1",
     "prettier": "^3.0.1",
-    "vite-plugin-pwa": "^0.16.4",
     "vitepress": "1.0.0-beta.7",
-    "vue": "^3.2.47",
-    "workbox-window": "^6.6.0"
+    "vue": "^3.2.47"
   }
 }

@@ -12,10 +12,7 @@
     "baseUrl": ".",
     "paths": {
       "@theme/*": [".vitepress/theme/*"]
-    },
-    "types": [
-      "vite-plugin-pwa/client"
-    ]
+    }
   },
   "include": ["env.d.ts", "src/**/*", ".vitepress/**/*"]
 }
