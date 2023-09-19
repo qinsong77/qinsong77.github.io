@@ -688,4 +688,4 @@ export default defineConfig({
   //     navigateFallback: '/',
   //   },
   // }
-}))
+})
