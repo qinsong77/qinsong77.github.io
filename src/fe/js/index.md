@@ -1,11 +1,5 @@
 # todo and done list
 
-## WIP
-
-- vite + [vitest](https://vitest.dev/) or update vite+jest
-- Monorepo: [turbo](https://turbo.build/)
-- Kotlin + Java + Spring boot
-
 -----
 - **JavaScript**
 - **CSS**

@@ -196,6 +196,10 @@ export const sidebar: ThemeConfig['sidebar'] = {
         {
           text: '常用笔记',
           link: '/fe/js/alwaysNote'
+        },
+        {
+          text: '犯错记录',
+          link: '/fe/js/error_logs'
         }
       ]
     },

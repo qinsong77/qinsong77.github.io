@@ -51,3 +51,31 @@ const usePrevious = <T>(value: T): T | undefined => {
 }
 ```
 当state变化， `useEffect` 是副作用，所以会先执行 `return` ，返回的是上一次的值，然后再执行 `useEffect`，`ref.current`变化不会导致重新render。
+
+### useSetState 
+
+```ts
+import { useCallback, useState } from 'react';
+import { isFunction } from '../utils';
+
+export type SetState<S extends Record<string, any>> = <K extends keyof S>(
+  state: Pick<S, K> | null | ((prevState: Readonly<S>) => Pick<S, K> | S | null),
+) => void;
+
+const useSetState = <S extends Record<string, any>>(
+  initialState: S | (() => S),
+): [S, SetState<S>] => {
+  const [state, setState] = useState<S>(initialState);
+
+  const setMergeState = useCallback((patch) => {
+    setState((prevState) => {
+      const newState = isFunction(patch) ? patch(prevState) : patch;
+      return newState ? { ...prevState, ...newState } : prevState;
+    });
+  }, []);
+
+  return [state, setMergeState];
+};
+
+export default useSetState;
+```

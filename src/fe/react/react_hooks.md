@@ -723,8 +723,8 @@ const Parent = () => {
   return (
     <div>
       Parent
-      <Child name={'child1'} />
-      <Child name={'child2'} />
+      <Child name="child1" />
+      <Child name="child2" />
     </div>
   )
 }
@@ -734,13 +734,7 @@ const App = () => {
   return (
     <>
       <button onClick={() => setShow(!show)}>show</button>
-      {show && (
-        <>
-          <Parent />
-          <Child name={'child1'} />
-          <Child name={'child2'} />
-        </>
-      )}
+      {show && <Parent />}
     </>
   )
 }

@@ -543,3 +543,6 @@ export default () => {
   return <h1 className={style.title}>Hello World</h1>
 }
 ```
+
+## `overflow-x:auto;overflow-y:visible;` 混用不生效的问题
+W3C规定，如果 `overflow-x` 和 `overflow-y `中的一个被赋为 `visible` ，而另一个被赋值为 `scroll` 或 `auto` ，那么 `visible` 会被重置为 `auto` 。

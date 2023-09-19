@@ -871,6 +871,15 @@ function area(s: Shape) {
 }
 ```
 
+##### is
+
+`is` 关键字更为精准的控制类型，以下代码相当于告诉编译器，如果返回结果为 true，则代表 val 是 string 类型：
+```typescript
+const isString = (val: unknown): val is string => getType(val) === 'string'
+```
+
+没有 `is string`人是可以看出结果就是 val 为 string，但是 ts 类型推导不出来，只能推出 isString 方法传入了类型为 unknown 的参数，方法的返回结果类型为 boolean，加了 `is string` 就是多了这么一个信息：若返回值为 true，则 val 类型为 string。这一点放在 if 里边有用。
+
 #### 映射类型
 
 映射类型表示可以对某一个类型进行操作，产生出另一个符合我们要求的类型：
