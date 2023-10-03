@@ -1,7 +1,9 @@
 ---
-title: Jest
 layout: BlogLayout
-------------------
+---
+
+# Jest
+
 [[toc]]
 
 [Jest](https://jestjs.io) 是 Facebook 出品的一个 JavaScript 开源测试框架。相对其他测试框架，其一大特点就是就是内置了常用的测试工具，比如零配置、自带断言、测试覆盖率工具等功能，实现了开箱即用。
@@ -9,11 +11,13 @@ layout: BlogLayout
 单元测试还有其他比如Mocha、Ava等，但在`React`中选Jest + React Testing Library就完事儿.
 
 ## basic
+
 先以经典的sum函数为例子讲解下基本概念。
+
 ```js
 // sum.js
 export function sum(a, b) {
-    return a + b
+  return a + b
 }
 ```
 
@@ -24,9 +28,9 @@ export function sum(a, b) {
 import { sum } from './sum'
 
 describe('sum function', () => {
-    test('adds 1 + 2 to equal 3', () => {
-        expect(sum(1, 2)).toBe(3)
-    })
+  test('adds 1 + 2 to equal 3', () => {
+    expect(sum(1, 2)).toBe(3)
+  })
 })
 ```
 
@@ -34,10 +38,12 @@ describe('sum function', () => {
 - test方法称做测试用例，接收两个参数，第一个参数是测试的名称，第二个参数是个函数，在函数内可以写一些测试逻辑;
 - `expect`顾名思义就是期望的意思，`expect(sum(1, 2)).toBe(3)`意思就是期望这个`sum(1, 2)`的返回值和3相等，整体称做为`断言`;
 - `toBe`就是一个匹配器matcher，匹配`expect`的值是否和匹配器中的值相等。
-> 断言指的是一些布尔表达式，在程序中的某个特定点该表达式值为真，判断代码的实际执行结果与预期结果是否一致，而断言库则是将常用的方法封装起来
+  > 断言指的是一些布尔表达式，在程序中的某个特定点该表达式值为真，判断代码的实际执行结果与预期结果是否一致，而断言库则是将常用的方法封装起来
 
 ### [匹配器matchers](https://jestjs.io/zh-Hans/docs/expect)
+
 其实这部分内容查询官方的[文档](https://jestjs.io/zh-Hans/docs/expect) 入门更好，写的很详细。
+
 #### `.toBe(value)`：匹配值，相当于`===`
 
 注意点：
@@ -49,21 +55,21 @@ describe('sum function', () => {
 
 ```js
 const can1 = {
-    flavor: 'grapefruit',
-    ounces: 12
+  flavor: 'grapefruit',
+  ounces: 12
 }
 const can2 = {
-    flavor: 'grapefruit',
-    ounces: 12
+  flavor: 'grapefruit',
+  ounces: 12
 }
 
 describe('the La Croix cans on my desk', () => {
-    test('have all the same properties', () => {
-        expect(can1).toEqual(can2)
-    })
-    test('are not the exact same can', () => {
-        expect(can1).not.toBe(can2)
-    })
+  test('have all the same properties', () => {
+    expect(can1).toEqual(can2)
+  })
+  test('are not the exact same can', () => {
+    expect(can1).not.toBe(can2)
+  })
 })
 ```
 
@@ -114,6 +120,7 @@ describe('the La Croix cans on my desk', () => {
 js中的异步常用的无非就是[回调、`promise`和`async/await`](https://sanyuan0704.top/blogs/javascript/js-async/012.html)
 
 #### `callback`回调函数异步
+
 对于回调函数异步（如`setTimeout`回调），如果像同步函数一样进行测试，是没办法获取正确地断言结果的：
 
 ```ts
@@ -121,15 +128,17 @@ export const funcA = (callback: (data: number) => void): void => {
   setTimeout(() => {
     callback(1)
   }, 1000)
-};
+}
 ```
 
 ```ts
 test('funcA', () => {
-  funcA((data) => expect(data).toEqual(2));
+  funcA((data) => expect(data).toEqual(2))
 })
 ```
+
 像上面那样，`funcA`会在回调里传入`1`，单测里就算是直接断言结果为`2`，可却直接通过单测，这是因为`jest`在运行完`funcA`后就直接结束了，不会等待`setTimeout`的回调，自然也就没有执行`expect`断言。正确的做法是，传入一个`done`参数：
+
 ```ts
 test('funcA', (done) => {
   funcA((data) => {
@@ -138,17 +147,18 @@ test('funcA', (done) => {
   })
 })
 ```
+
 #### Promises
 
 ```js
 test('测试 fetchList 的返回值为 { code: 200 } using return', () => {
-  return fetchList().then(res => {
+  return fetchList().then((res) => {
     expect(res).toEqual({ code: 210 })
   })
 })
 
 test('测试 fetchList 的返回值包含 404', () => {
-  return fetchList(false).catch(err => {
+  return fetchList(false).catch((err) => {
     expect.assertions(1)
     expect(err.toString()).toMatch('404')
   })
@@ -188,6 +198,7 @@ test('测试 fetchList 的返回值包含 404', () => {
 jest对象上有`fn`,`mock`,`spyOn`三个方法，在实际项目的单元测试中，`jest.fn()`常被用来进行某些有回调函数的测试；`jest.mock()`可以mock整个模块中的方法，当某个模块已经被单元测试100%覆盖时，使用`jest.mock()`去mock该模块，节约测试时间和测试的冗余度是十分必要；当需要测试某些必须被完整执行的方法时，常常需要使用`jest.spyOn()`。
 
 #### jest.fn()
+
 jest.fn()是创建 Mock 函数最简单的方式，如果没有定义函数内部的实现，jest.fn() 会返回 undefined 作为返回值。
 
 ```ts
@@ -204,34 +215,34 @@ test('测试jest.fn()调用', () => {
   // 断言mockFn传入的参数为1, 2, 3
   expect(mockFn).toHaveBeenCalledWith(1, 2, 3)
 })
-
 ```
+
 jest.fn()所创建的Mock函数还可以设置返回值，定义内部实现或返回Promise对象。
 
 ```ts
-  test('测试jest.fn()返回固定值', () => {
-    const mockFn = jest.fn().mockReturnValue('default')
-    // 断言mockFn执行后返回值为default
-    expect(mockFn()).toBe('default')
-  })
+test('测试jest.fn()返回固定值', () => {
+  const mockFn = jest.fn().mockReturnValue('default')
+  // 断言mockFn执行后返回值为default
+  expect(mockFn()).toBe('default')
+})
 
-  test('测试jest.fn()内部实现', () => {
-    const mockFn = jest.fn((num1, num2) => {
-      return num1 * num2
-    })
-    // 断言mockFn执行后返回100
-    expect(mockFn(10, 10)).toBe(100)
+test('测试jest.fn()内部实现', () => {
+  const mockFn = jest.fn((num1, num2) => {
+    return num1 * num2
   })
+  // 断言mockFn执行后返回100
+  expect(mockFn(10, 10)).toBe(100)
+})
 
-  test('测试jest.fn()返回Promise', async () => {
-    const mockFn = jest.fn().mockResolvedValue('default')
-    const result = await mockFn()
-    // 断言mockFn通过await关键字执行后返回值为default
-    expect(result).toBe('default')
-    // 断言mockFn调用后返回的是Promise对象 ❌
-    expect(Object.prototype.toString.call(mockFn())).toBe('[object Promise]')
-    // 上面这个实际上返回的是String对象，返回Promise对象的写法要怎么做呢？
-  })
+test('测试jest.fn()返回Promise', async () => {
+  const mockFn = jest.fn().mockResolvedValue('default')
+  const result = await mockFn()
+  // 断言mockFn通过await关键字执行后返回值为default
+  expect(result).toBe('default')
+  // 断言mockFn调用后返回的是Promise对象 ❌
+  expect(Object.prototype.toString.call(mockFn())).toBe('[object Promise]')
+  // 上面这个实际上返回的是String对象，返回Promise对象的写法要怎么做呢？
+})
 ```
 
 #### `.mock`属性
@@ -239,59 +250,66 @@ jest.fn()所创建的Mock函数还可以设置返回值，定义内部实现或�
 所有的 mock 函数都有一个特殊的 .mock 属性，它保存了关于此函数`如何被调用`、调用时的`返回值`的信息。
 
 #### mock模块
+
 使用`jest.mock`即可mock模块，主要是有两种情况：
 
 1. 只mock模块中的非default导出
 
 对于只有非`default`导出的情况（如`export const`、`export class`等），只需要使用`jest.mock`，返回一个对象即可，对象中包含有你想要mock的函数或者变量：
+
 ```ts
 // mock 'moduleName' 中的 foo 函数
 jest.mock('../moduleName', () => ({
-  foo: jest.fn().mockReturnValue('mockValue'),
-}));
+  foo: jest.fn().mockReturnValue('mockValue')
+}))
 ```
+
 2. mock模块中的default导出
 
 对于`default导出`的mock，则不能返回一个简单的对象，而是需要在对象中包含一个`default属性`，同时添加`__esModule: true`。
 
-> When using the factory parameter for an ES6 module with a default export, the __esModule: true property needs to be specified. This property is normally generated by Babel / TypeScript, but here it needs to be set manually. When importing a default export, it's an instruction to import the property named default from the export object
+> When using the factory parameter for an ES6 module with a default export, the \_\_esModule: true property needs to be specified. This property is normally generated by Babel / TypeScript, but here it needs to be set manually. When importing a default export, it's an instruction to import the property named default from the export object
 
 ```ts
-import moduleName, { foo } from '../moduleName';
+import moduleName, { foo } from '../moduleName'
 
 jest.mock('../moduleName', () => {
   return {
     __esModule: true,
     default: jest.fn(() => 10),
-    foo: jest.fn(() => 11),
-  };
-});
+    foo: jest.fn(() => 11)
+  }
+})
 
-moduleName(); // Will return 10
-foo(); // Will return 11
+moduleName() // Will return 10
+foo() // Will return 11
 ```
 
 #### mock模块部分内容
+
 如果只想mock模块中的部分内容，对于其他部分保持原样，可以使用`jest.requireActual`来引入真实的模块：
+
 ```ts
-import { getRandom } from '../myModule';
+import { getRandom } from '../myModule'
 
 jest.mock('../myModule', () => {
   // Require the original module to not be mocked...
-  const originalModule = jest.requireActual('../myModule');
+  const originalModule = jest.requireActual('../myModule')
 
   return {
     __esModule: true, // Use it when dealing with esModules
     ...originalModule,
-    getRandom: jest.fn().mockReturnValue(10),
-  };
-});
+    getRandom: jest.fn().mockReturnValue(10)
+  }
+})
 
-getRandom(); // Always returns 10
+getRandom() // Always returns 10
 ```
 
 #### mock模块内部函数
+
 设想一种情况，有一个`utils.t`s文件，内部导出了两个函数`funcA`和`funcB`，然后在`funcB`中引用了`funcA`:
+
 ```ts
 // utils.ts
 export const funcA = () => {
@@ -299,12 +317,13 @@ export const funcA = () => {
 }
 
 export const funcB = () => {
-  funcA();
+  funcA()
   // ...
 }
-
 ```
+
 这个时候在对`funcB`进行单元测试时，如果想要对`funcA`进行mock，会发现mock失败：
+
 ```ts
 import { funcA, funcB } from './utils'
 
@@ -312,7 +331,7 @@ jest.mock('../src/utils', () => {
   const originalModule = jest.requireActual('../src/utils')
   return {
     ...originalModule,
-    funcA: jest.fn(),
+    funcA: jest.fn()
   }
 })
 
@@ -322,8 +341,8 @@ describe('utils.ts 单元测试', () => {
     expect(funcA).toBeCalled()
   })
 })
-
 ```
+
 运行单测会得到一个报错
 
 ![](./images/test_fail_error1.png)
@@ -342,14 +361,15 @@ describe('utils.ts 单元测试', () => {
 ```ts
 class Person {
   constructor() {
-    this.init();
+    this.init()
     // ...
   }
   public init() {}
 }
 ```
+
 ```ts
-Person.prototype.init = jest.fn();
+Person.prototype.init = jest.fn()
 ```
 
 #### mock对象的只读属性（`getter`）
@@ -357,95 +377,102 @@ Person.prototype.init = jest.fn();
 在单测中，对于可读可写属性我们可以比较方便地进行mock，直接赋值为对应的mocK值即可，如`Platform.OS`。但是对于只读属性（getter）的mock却不能直接这样写。通常对于只读属性（此处以`document.body.clientWidth`为例）有以下两种mock方式：
 
 1. 通过`Object.defineProperty`
+
 ```ts
 Object.defineProperty(document.body, 'clientWidth', {
-  value: 10, 
-  set: jest.fn(),
+  value: 10,
+  set: jest.fn()
 })
-````
+```
 
 2. 通过`jest.spyOn`
+
 ```ts
 const mockClientWidth = jest.spyOn(document.body, 'clientWidth', 'get')
 mockClientWidth.mockReturnValue(10)
 ```
+
 #### Mock Location/localStorage/indexedDB
+
 如`localStorage`是浏览器环境下的一个全局变量，挂载在`window`下，在单测运行时（Node环境）是获取不到的。可以自己实现如
+
 ```ts
 class LocalStorageMock {
-  private store: Record<string, string> = {};
+  private store: Record<string, string> = {}
 
   public setItem(key: string, value: string) {
-    this.store[key] = String(value);
+    this.store[key] = String(value)
   }
 
   public getItem(key: string): string | null {
-    return this.store[key] || null;
+    return this.store[key] || null
   }
 
   public removeItem(key: string) {
-    delete this.store[key];
+    delete this.store[key]
   }
 
   public clear() {
-    this.store = {};
+    this.store = {}
   }
 
   public key(index: number): string | null {
-    return Object.keys(this.store)[index] || null;
+    return Object.keys(this.store)[index] || null
   }
 
   public get length(): number {
-    return Object.keys(this.store).length;
+    return Object.keys(this.store).length
   }
 }
 
-global.localStorage = new LocalStorageMock();
+global.localStorage = new LocalStorageMock()
 ```
-还是使用第三方包更快，比如[`jest-localstorage-mock`](https://www.npmjs.com/package/jest-localstorage-mock)
 
+还是使用第三方包更快，比如[`jest-localstorage-mock`](https://www.npmjs.com/package/jest-localstorage-mock)
 
 #### `test.each`
 
 有时会遇到这种情况，要写大量单测用例，但是每个用例结构一样或相似，只有细微不同，比如测试某个`format函数`对于不同的字符串的返回结果，或者调用一个类不同的成员方法但返回的结果类似（如都抛出错误或`return null`等），对于这些情况，可以在单测内写一个数组然后遍历执行一下，但其实`jest已经提供了应对这种情况的方法，即`test.each`，举几个例子：
+
 ```ts
 // each.ts
 export const checkString = (str: string): boolean => {
   if (str.length <= 0) {
-    throw new Error('mockError 1');
+    throw new Error('mockError 1')
   } else if (str.length > 5) {
-    throw new Error('mockError 2');
+    throw new Error('mockError 2')
   } else {
-    return true;
+    return true
   }
-};
+}
 
 // each.test.ts
 describe('each.ts 单元测试', () => {
   test.each<{ param: string; expectRes: boolean | string }>([
     {
       param: '',
-      expectRes: 'mockError 1',
+      expectRes: 'mockError 1'
     },
     {
       param: '123456',
-      expectRes: 'mockError 2',
+      expectRes: 'mockError 2'
     },
     {
       param: '1234',
-      expectRes: true,
-    },
-  ])('checkString', (data) => {
-    const { param, expectRes } = data;
-    try {
-      const result = checkString(param);
-      expect(result).toEqual(expectRes);
-    } catch (error) {
-      expect(error.message).toEqual(expectRes);
+      expectRes: true
     }
-  });
-});
+  ])('checkString', (data) => {
+    const { param, expectRes } = data
+    try {
+      const result = checkString(param)
+      expect(result).toEqual(expectRes)
+    } catch (error) {
+      expect(error.message).toEqual(expectRes)
+    }
+  })
+})
 ```
+
 除了`test.each`外，还有`describe.each`，更多具体用法可以参考[test.each](https://jestjs.io/docs/api#testeachtablename-fn-timeout) 和`describe.each`
 
 #### `mockFunction` 的类型错误
@@ -487,6 +514,7 @@ Jest 还有一个非常强大的功能，利用 Node.js 的 `Worker` 开启多�
 
 通常来说，单个测试用例速度应该要做到非常快的，尽量不写一些耗时的操作，比如不要加 `setTimeout`，`n` 个 `for` 循环等。
 所以，理论上，测试数量不多的情况下单线程就足够了。可以把 `jest.config.js` 配置改为用单线程：
+
 ```js
 // jest.config.js
 module.exports = {
@@ -531,7 +559,7 @@ module.exports = {
 // index.ts
 const services = (require as any).context('./instances', false, /.*/)
 
-console.log(services); // api1, api2, api3, api4
+console.log(services) // api1, api2, api3, api4
 ```
 
 **所以说，通过文件找依赖的方式不是很可靠，有太多不确定因素，最终 Jest 还是选择 “执行到那个文件再做转译” 的方法。**
@@ -551,15 +579,15 @@ pnpm i -D @swc/core@1.2.165 @swc/jest@0.2.20
 ```js
 module.exports = {
   // 不用 ts-jest
-  // preset: "ts-jest", 
+  // preset: "ts-jest",
 
   transform: {
     // 使用 swc 转译 JavaScript 和 TypeScrit
-    "^.+\\.(t|j)sx?$": ["@swc/jest"],
+    '^.+\\.(t|j)sx?$': ['@swc/jest'],
     // 静态资源 stub 转译
-    ".+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$":
-      "jest-transform-stub",
-  },
+    '.+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$':
+      'jest-transform-stub'
+  }
 }
 ```
 
@@ -572,8 +600,6 @@ module.exports = {
 **@swc/jest：**
 
 ![@swc/jest](./images/performance/swc.png)
-
-
 
 - [Jest 实践指南](https://github.yanhaixiang.com/jest-tutorial/)
 - [从零开始实现一个 Jest 单元测试框架](https://github.com/wscats/jest-tutorial)

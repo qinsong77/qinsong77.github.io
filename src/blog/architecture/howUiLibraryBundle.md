@@ -1,7 +1,8 @@
 ---
-title: 组件库都是如何打包的
 layout: BlogLayout
-------------------
+---
+
+# 组件库都是如何打包的
 
 打包后的标准的输出参考：
 - [打包 JavaScript 库的现代化指南](https://github.com/frehner/modern-guide-to-packaging-js-library/blob/main/README-zh_CN.md)

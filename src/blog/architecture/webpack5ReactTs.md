@@ -1,8 +1,7 @@
 ---
-title: 从零搭建 webpack5 + React + Typescript + Jest 基础模版
 layout: BlogLayout
 ---
-
+# 从零搭建 webpack5 + React + Typescript + Jest 基础模版
 > not Done
 
 [github](https://github.com/qinsong77/webpack5-react-template)

@@ -1,7 +1,9 @@
 ---
-title: 敏捷开发
 layout: BlogLayout
 ---
+
+# 敏捷开发
+
 [[toc]]
 
 ![](./images/agile.png)

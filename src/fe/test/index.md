@@ -1,8 +1,8 @@
----
-title: 测试
-layout: BlogLayout
----
-## Guide
+# Guide
+
+## 黑盒测试和白盒测试
+- [黑盒测试](https://zh.wikipedia.org/wiki/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95)
+- [白盒测试](https://zh.wikipedia.org/wiki/%E7%99%BD%E7%9B%92%E6%B5%8B%E8%AF%95)
 
 ### 将组件看成整体，不要测试代码细节
 

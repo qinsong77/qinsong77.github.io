@@ -1,7 +1,8 @@
 ---
-title: MonoRepo by pnpm workspace + TurboRepo
 layout: BlogLayout
-------------------
+---
+
+# MonoRepo by pnpm workspace + TurboRepo
 
 [[toc]]
 

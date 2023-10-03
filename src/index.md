@@ -22,17 +22,17 @@ features:
   - title: 前端测试
     details: 简介、React+Vite配置Jest 
     icon: 🚀 
-    link: /blog/test/guideAndConfigSetting
+    link: /fe/test/guideAndConfigSetting
   - title: Jest
     details: Jest入门
     icon: 
       src: logo/rtl.png
-    link: /blog/test/jest
+    link: /fe/test/jest
   - title: React Test library
     details: React Test library常用
     icon:
       src: logo/rtl.png
-    link: /blog/test/RTL
+    link: /fe/test/RTL
   - title: Rollup打包React组件库
     details: Rollup
     icon:

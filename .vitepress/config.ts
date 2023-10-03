@@ -356,6 +356,10 @@ export const sidebar: ThemeConfig['sidebar'] = {
         {
           text: 'React Testing Library',
           link: '/fe/test/rtl'
+        },
+        {
+          text: '实战篇',
+          link: '/fe/test/Combat'
         }
       ]
     },
@@ -630,22 +634,22 @@ export default defineConfig({
       { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }
     ],
     ['meta', { name: 'msapplication-TileColor', content: '#333' }],
-    ['link', { rel: 'apple-touch-icon', href: '/icons/128.ico' }],
+    ['link', { rel: 'apple-touch-icon', href: '/icons/128.ico' }]
     // 百度统计
     // [
     //   'script',
     //   {},
     //   `
-		// 	var _hmt = _hmt || [];
-		// 	(function() {
-		// 		var hm = document.createElement("script");
-		// 		hm.src = "https://hm.baidu.com/hm.js?b180689c6fba69ad8ef56c3e0034ce9f";
-		// 		var s = document.getElementsByTagName("script")[0];
-		// 		s.parentNode.insertBefore(hm, s);
-		// 	})();
-		// 	`
+    // 	var _hmt = _hmt || [];
+    // 	(function() {
+    // 		var hm = document.createElement("script");
+    // 		hm.src = "https://hm.baidu.com/hm.js?b180689c6fba69ad8ef56c3e0034ce9f";
+    // 		var s = document.getElementsByTagName("script")[0];
+    // 		s.parentNode.insertBefore(hm, s);
+    // 	})();
+    // 	`
     // ]
-  ],
+  ]
   // https://github.com/vite-pwa/vitepress/blob/main/examples/pwa-prompt/.vitepress/config.ts
   // pwa: {
   //   mode: 'development',

@@ -1,7 +1,9 @@
 ---
-title: 前端测试简介、React+Vite配置Jest
 layout: BlogLayout
-------------------
+---
+
+# 前端测试简介、React+Vite配置Jest
+
 [[toc]]
 
 ## 引言
@@ -30,28 +32,28 @@ layout: BlogLayout
 
 ```ts
 type TProduct = {
- name: string
- price: number
+  name: string
+  price: number
 }
 // production code
 const computeTotalAmount = (products: TProduct[]) => {
- return products.reduce((total, product) => total + product.price, 0)
+  return products.reduce((total, product) => total + product.price, 0)
 }
 
 // testing code
 it('should return summed up total amount 1000 when there are three products priced 200, 300, 500', () => {
- // given - 准备数据
- const products = [
-  { name: 'nike', price: 200 },
-  { name: 'adidas', price: 300 },
-  { name: 'lining', price: 500 },
- ]
+  // given - 准备数据
+  const products = [
+    { name: 'nike', price: 200 },
+    { name: 'adidas', price: 300 },
+    { name: 'lining', price: 500 }
+  ]
 
- // when - 调用被测函数
- const result = computeTotalAmount(products)
+  // when - 调用被测函数
+  const result = computeTotalAmount(products)
 
- // then - 断言结果
- expect(result).toBe(1000)
+  // then - 断言结果
+  expect(result).toBe(1000)
 })
 ```
 
@@ -127,22 +129,18 @@ E2E（end to end）端到端测试是最直观可以理解的测试类型。在�
 
 > 不要一味的只追求覆盖率，要衡量利弊后考虑整个测试方案
 
-### 前端测试测了什么？
-
 当需要对一个 web application 进行测试，从而增强对这个软件的信心的话，需要关心（测试）的同样至少有这三个方面：
+
 - 页面有什么内容？
 - 页面的内容长什么样子？
 - 如果进行了某个交互，发生了什么行为（比如跟服务端进行了交互）？带来的影响是什么（比如内容和样式的变化）？
   当然这三个要素，可以在不同的场景下进行扩展。比如性能上的测试（首屏渲染，响应时间…），用户体验上的测试（动画，可用性…） 等等
 
-
 前端测试中有两种模型, `金字塔模型`与`奖杯模型`。
-
 
 ### 测试金字塔
 
 4种那到底该写哪种测试？都写，根据情况灵活分配。比较典型的就是： [金字塔模式](https://martinfowler.com/bliki/TestPyramid.html)
-
 
 ![](./images/pyramid_model2.png)
 
@@ -178,7 +176,6 @@ E2E（end to end）端到端测试是最直观可以理解的测试类型。在�
 - 集成测试：模拟用户的行为进行测试，对网络请求、获取数据库的数据等依赖第三方环境的行为进行 Mock。（代表库: Jest、react-testing-library、Vue Testing Library 等）
 - e2e 测试：模拟用户在真实环境上操作行为（包括网络请求、获取数据库数据等）的测试。（代表库: Cypress）
 
-
 越是上层的测试给开发者带来的自信是越大的, 与此同时, 越是下层的测试测试的效率是越高的。奖杯模型综合考虑了这两点因素, 可以看到其在集成测试中的占比是最高的。
 
 ### 什么场景适合
@@ -210,6 +207,7 @@ TDD由于是先写测试用例再进行开发，所以会保证每个功能的�
 同时在编写测试代码的时候，很自然地要去思考这个功能的代码如何组织，也在一定程度上提高了代码的可维护性。
 
 在考虑 TDD 和自动化测试代码的时候，从来都不是要求和指标，而应该针对不同的情况去考虑利弊，回到 TDD 带来的三个好处：
+
 - 厘清需求，确保代码足够满足需求并简单，并驱动出更好的封装和模块化设计（Simplify）
 - TDD 带来的自动化测试代码，可以在编写代码带来错误时快速反馈(Fast Feedback)
 - TDD 带来的自动化测试代码，减少反复手工测试带来的偏差（Repeatability）
@@ -257,18 +255,18 @@ TDD 的基本流程
 
 优先级从上至下降低
 
-* 通过测试-最简单的方式让测试通过
-* 揭示意图-表明代码意图
-* 消除重复-去除重复代码
-* 最少元素-使用最少的代码完成这个功能
+- 通过测试-最简单的方式让测试通过
+- 揭示意图-表明代码意图
+- 消除重复-去除重复代码
+- 最少元素-使用最少的代码完成这个功能
 
 ### 测试条件格式
 
 在我们编写测试用例的时候通常遵循以下形式：
 
-* Given-给定上下文
-* When-条件、行为，触发一个动作或者事件
-* Then-对期望结果的验证
+- Given-给定上下文
+- When-条件、行为，触发一个动作或者事件
+- Then-对期望结果的验证
 
 ### 传统编码方式 对比 TDD 编码方式
 
@@ -311,6 +309,7 @@ BDD实际上是模拟用户的行为，在业务代码完成后，用测试用�
 再结合BDD，使开发时更加关注业务代码，不必先写繁琐的测试用例。而且只要操作流程不会变，那测试用例也基本不用动，更加适合平时业务的开发。
 
 ### 测试原则
+
 1. 从真实用户的行为流程去测试，往往比测函数本身，能给你带来更多的信心。
 2. 对于没有独立性和通用性的函数或对象，把它们视作实现的一部分，一般没有必要为它们去写单独的测试。不要拘泥于对“单元测试”的字面理解，不要被形式上的规律所束缚。
 3. 不要把测试覆盖率视为太过重要的指标，它的目的还是帮助提升代码的稳定。有的代码没有覆盖也没关系，有的代码值得你覆盖好多遍。毕竟，我们不是为了写测试而写测试。
@@ -359,7 +358,7 @@ pmpm install eslint-plugin-jest -D
 // module.exports = sum
 
 export function sum(a, b) {
-    return a + b
+  return a + b
 }
 ```
 
@@ -376,7 +375,7 @@ export function sum(a, b) {
 import { sum } from './sum'
 
 test('adds 1 + 2 to equal 3', () => {
-    expect(sum(1, 2)).toBe(3)
+  expect(sum(1, 2)).toBe(3)
 })
 ```
 
@@ -400,24 +399,23 @@ module.exports = {
       '@babel/preset-env',
       {
         targets: {
-          node: 'current',
-        },
-      },
+          node: 'current'
+        }
+      }
     ],
     '@babel/preset-react',
-    '@babel/preset-typescript',
+    '@babel/preset-typescript'
   ],
   plugins: [
     [
       // https://zh-hans.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html#manual-babel-setup
       '@babel/plugin-transform-react-jsx',
       {
-        runtime: 'automatic',
-      },
-    ],
-  ],
+        runtime: 'automatic'
+      }
+    ]
+  ]
 }
-
 ```
 
 > 在vite下使用Jest, 应该可以考虑不要babel，比如用[`esbuild-jest`](https://www.npmjs.com/package/esbuild-jest) 去transform file，毕竟vite也是基于esbuild的，这个后面尝试下
@@ -429,9 +427,7 @@ module.exports = {
 ```json
 {
   "babel": {
-    "presets": [
-      "react-app"
-    ]
+    "presets": ["react-app"]
   }
 }
 ```
@@ -446,48 +442,53 @@ module.exports = {
 pnpm remove babel-jest @babel/core @babel/preset-env @babel/preset-react @babel/preset-typescript @babel/plugin-transform-react-jsx -D
 pnpm i ts-jest -D
 ```
- :::warning 
- 注意，这里 ts-jest 一定要和 jest 的大版本一致！ 比如 27 对 27，或者 26 对 26，否则会有兼容问题！
- :::
+
+:::warning
+注意，这里 ts-jest 一定要和 jest 的大版本一致！ 比如 27 对 27，或者 26 对 26，否则会有兼容问题！
+:::
 
 当然还得安装typescript + tsconfig.json 的设置，创建的模版项目已配置好，但需新增如下配置：
+
 ```json
 {
   "compilerOptions": {
-   "types": ["node", "jest", "@testing-library/jest-dom"],
+    "types": ["node", "jest", "@testing-library/jest-dom"]
   }
 }
 ```
+
 这样TS 就能找到如`describe` 和 `it` 的类型定义。
 
 并且需要在jest.config.ts中修改如下：
+
 ```ts
 export default {
- transform: {
-  // '\\.[jt]sx?$': 'babel-jest',
-  '\\.[jt]sx?$': 'ts-jest',
-  '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
-          '<rootDir>/jest/fileTransformer.js',
- },
+  transform: {
+    // '\\.[jt]sx?$': 'babel-jest',
+    '\\.[jt]sx?$': 'ts-jest',
+    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
+      '<rootDir>/jest/fileTransformer.js'
+  }
 }
 ```
 
 或者如下配置jest.config.ts:
+
 ```ts
 // https://stackoverflow.com/questions/66465339/how-to-make-ts-jest-work-with-import-export-syntax-of-the-js-files-that-are-bein
 export default {
   globals: {
-      extensionsToTreatAsEsm: ['.ts', '.js'],
-      'ts-jest': {
-          useESM: true
-      }
+    extensionsToTreatAsEsm: ['.ts', '.js'],
+    'ts-jest': {
+      useESM: true
+    }
   },
 
   preset: 'ts-jest/presets/js-with-ts-esm',
 
   // from https://stackoverflow.com/a/57916712/15076557
   transformIgnorePatterns: [
-      'node_modules/(?!(module-that-needs-to-be-transformed)/)' 
+    'node_modules/(?!(module-that-needs-to-be-transformed)/)'
   ]
 }
 ```
@@ -515,13 +516,13 @@ export default {
  */
 
 export default {
-    testEnvironment: 'jsdom',
-    setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
-    moduleNameMapper: {
-        '\\.(css|sass|scss)$': 'identity-obj-proxy'
-    },
-    // 是否显示覆盖率报告
-    collectCoverage: true
+  testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+  moduleNameMapper: {
+    '\\.(css|sass|scss)$': 'identity-obj-proxy'
+  },
+  // 是否显示覆盖率报告
+  collectCoverage: true
 }
 ```
 
@@ -532,19 +533,10 @@ export default {
 ```json
 {
   "jest": {
-    "roots": [
-      "<rootDir>/src"
-    ],
-    "collectCoverageFrom": [
-      "src/**/*.{js,jsx,ts,tsx}",
-      "!src/**/*.d.ts"
-    ],
-    "setupFiles": [
-      "react-app-polyfill/jsdom"
-    ],
-    "setupFilesAfterEnv": [
-      "<rootDir>/src/setupTests.ts"
-    ],
+    "roots": ["<rootDir>/src"],
+    "collectCoverageFrom": ["src/**/*.{js,jsx,ts,tsx}", "!src/**/*.d.ts"],
+    "setupFiles": ["react-app-polyfill/jsdom"],
+    "setupFilesAfterEnv": ["<rootDir>/src/setupTests.ts"],
     "testMatch": [
       "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
       "<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}"
@@ -593,16 +585,16 @@ export default {
 
 ```js
 module.exports = {
-    // ...
-    "moduleNameMapper": {
-        "\\.(css|sass|scss)$": "identity-obj-proxy"
-    },
-    // in cra
-    "moduleNameMapper": {
-        "^react-native$": "react-native-web",
-        "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy"
-    },
-};
+  // ...
+  moduleNameMapper: {
+    '\\.(css|sass|scss)$': 'identity-obj-proxy'
+  },
+  // in cra
+  moduleNameMapper: {
+    '^react-native$': 'react-native-web',
+    '^.+\\.module\\.(css|sass|scss)$': 'identity-obj-proxy'
+  }
+}
 ```
 
 关于该配置字段的[描述文档](https://jestjs.io/docs/next/configuration#modulenamemapper-objectstring-string--arraystring) 如下所述：
@@ -618,9 +610,11 @@ module.exports = {
 解决eslint关于jest的报错，比如`ESLint: 'test' is not defined.(no-undef)`之类的，因为Jest的Api是全局不需要`import`的。
 
 额外的还可以补全eslint的测试插件：
+
 ```shell
 pnpm i eslint-plugin-jest-dom eslint-plugin-testing-library
 ```
+
 如何配置可以参考安装后package的`README.md`文件
 
 #### setupFiles/setupFilesAfterEnv
@@ -630,33 +624,35 @@ pnpm i eslint-plugin-jest-dom eslint-plugin-testing-library
 ![](./images/setupFiles-vs-setupFilesAfterEnv.png)
 
 简单来说：
-* `setupFiles` 是在 **引入测试环境（比如下面的 `jsdom`）之后** 执行的代码
-* `setupFilesAfterEnv` 则是在 **安装测试框架之后** 执行的代码
+
+- `setupFiles` 是在 **引入测试环境（比如下面的 `jsdom`）之后** 执行的代码
+- `setupFilesAfterEnv` 则是在 **安装测试框架之后** 执行的代码
 
 具体应用场景是：在 `setupFiles` 可以添加 **测试环境** 的补充，比如 Mock 全局变量 `abcd` 等。而在 `setupFilesAfterEnv` 可以引入和配置 **Jest/Jasmine（Jest 内部使用了 Jasmine）** 插件。
 
 如果试图在 `setupFiles` 添加 Jest 的扩展/插件，那么你可能会得到 `expect is not defined` 报错。[详见这个 Issue](https://github.com/testing-library/jest-dom/issues/122#issuecomment-650520461) 。
-
 
 一般用setupFiles设置`.env`环境变量，使用setupFilesAfterEnv设置jest的配置比如`jest.setTimeout(70000)`
 
 jest.config.js
 
 ```js
-{
-    setupFiles: ['<rootDir>/tests/settings/env-setup.ts'],
-    setupFilesAfterEnv: ['<rootDir>/testSetupFile.js'],
+export default {
+  setupFiles: ['<rootDir>/tests/settings/env-setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/testSetupFile.js']
 }
 ```
 
 env-setup.ts
 
 ```js
-import dotenv from 'dotenv';
-import path from 'path';
+import dotenv from 'dotenv'
+import path from 'path'
 
-console.log(`============ env-setup Loaded ===========`);
-dotenv.config({ path: path.resolve(process.cwd(), 'tests', 'settings', '.test.env') });
+console.log(`============ env-setup Loaded ===========`)
+dotenv.config({
+  path: path.resolve(process.cwd(), 'tests', 'settings', '.test.env')
+})
 ```
 
 testSetupFile.ts
@@ -664,30 +660,30 @@ testSetupFile.ts
 ```js
 // Some of the `jest` tests are very slow and cause
 // timeouts on bitbucket pipeline
-console.log(`============ testSetupFile Loaded ===========`);
-jest.setTimeout(70000);
+console.log(`============ testSetupFile Loaded ===========`)
+jest.setTimeout(70000)
 ```
 
 在根目录src新建 `setupTests.ts`
 
 ```js
-import "@testing-library/jest-dom"
+import '@testing-library/jest-dom'
 ```
 
 一次引用，不要再次import
 
 #### jsdom 测试环境
+
 `jest` 提供了 `testEnvironment` 配置：
 
 ```js
 module.exports = {
-  testEnvironment: "jsdom",
+  testEnvironment: 'jsdom'
 }
 ```
 
 添加 `jsdom` 测试环境后，全局会自动拥有完整的浏览器标准 API。**原理是使用了 [jsdom](https://github.com/jsdom/jsdom) 。
 这个库用 JS 实现了一套 Node.js 环境下的 Web 标准 API。** 由于 Jest 的测试文件也是 Node.js 环境下执行的，所以 Jest 用这个库充当了浏览器环境的 Mock 实现。
-
 
 ### 路径简写
 
@@ -698,7 +694,7 @@ module.exports = {
 ```js
 // jest.config.js
 module.exports = {
-  moduleDirectories: ["node_modules", "src"],
+  moduleDirectories: ['node_modules', 'src']
   // ...
 }
 ```
@@ -736,8 +732,8 @@ module.exports = {
 ```js
 // jest.config.js
 modulex.exports = {
-  "moduleNameMapper": {
-    "@/(.*)": "<rootDir>/src/$1"
+  moduleNameMapper: {
+    '@/(.*)': '<rootDir>/src/$1'
   }
 }
 ```
@@ -752,13 +748,12 @@ const { compilerOptions } = require('./tsconfig')
 module.exports = {
   // [...]
   // { prefix: '<rootDir/>' }
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths),
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths)
 }
 ```
 
 看到这样的配置方法，你是不是觉得 JS 的单一原则太难顶了？这么简单的一个功能都要通过第三方的 `ts-jest` 来提供？然而，坏消息是 `webpack` 的配置也不会读 `tsconfig.json` 里面的 `paths`，
 **所以，开发者不仅要在 `tsconfig.json` 里写一份路径映射，还要在 `webpack.config.js` 里再写一份** 。[详见这里](https://stackoverflow.com/questions/40443806/webpack-resolve-alias-does-not-work-with-typescript) 。
-
 
 ### 生成测试覆盖率报告
 
@@ -779,7 +774,7 @@ module.exports = {
   // 是否显示覆盖率报告
   collectCoverage: true,
   // 告诉 Jest 哪些文件需要经过单元测试测试
-  collectCoverageFrom: ['src'],
+  collectCoverageFrom: ['src']
 }
 ```
 
@@ -787,14 +782,12 @@ module.exports = {
 
 参数解读
 
-
 | 参数名   | 含义       | 说明                           |
-| ---------- | ------------ | -------------------------------- |
+| -------- | ---------- | ------------------------------ |
 | % stmts  | 语句覆盖率 | 是不是每个语句都执行了？       |
 | % Branch | 分支覆盖率 | 是不是每个 if 代码块都执行了？ |
 | % Funcs  | 函数覆盖率 | 是不是每个函数都调用了？       |
 | % Lines  | 行覆盖率   | 是不是每一行都执行了？         |
-
 
 上面终端里展示的就是覆盖率情况，只不过以终端的形式展示。现在我们打开根目录下的 `coverage` 目录，会发现生成很多覆盖率文件：
 
@@ -819,6 +812,27 @@ Jest 会在 `coverage` 目录下生成各种不同格式的覆盖率报告文件
 
 无论哪种格式，都很难直观地看懂。因此，Jest 也支持生成网页的测试报告，打开 `lcov-report/index.html` 就可以看到网页版的测试报告了.
 
+#### 测试报告细则
+
+如：
+![](./images/coverage_html.png)
+
+![](./images/coverage_with_I.png)
+在测试文件中：
+
+- `E`代表代码`else`分支没有cover ('E' stands for 'else path not taken', which means that for the marked if/else statement, the 'if' path has been tested but not the 'else'.)
+- `I`代表代码`if`分支没有cover ('I' stands for 'if path not taken', which is the opposite case: the 'if' hasn't been tested.)
+- 左侧每行的`xN`代表执行的次数(The xN in left column is the amount of times that line has been executed).
+- 没有执行的行**红色**高亮（Not executed lines, or pieces of code, will be highlighted in red）.
+
+It also provides some color codes -
+
+- Pink: statements not covered.（粉色声明没有cover）
+
+- Orange: functions not covered.（橘色function没有cover）
+
+- Yellow: branches not covered.（黄色分支没有cover）
+
 ### 报错
 
 1. ![](./images/jest-env-dom-error.png)
@@ -827,18 +841,19 @@ v28版本更新导致，见[文档](https://jestjs.io/blog/2022/04/25/jest-28#br
 
 安装`pnpm i jest-environment-jsdom -D` 解决
 
-2. svg资源导致  `Jest encountered an unexpected token`
+2. svg资源导致 `Jest encountered an unexpected token`
 
 jest配置添加如下，如[Code Transformation](https://jestjs.io/docs/next/code-transformation)
 
 ```js
 export default {
-    // ...
-    transform: {
-        '\\.[jt]sx?$': 'babel-jest',
-        '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': '<rootDir>/jest/fileTransformer.js'
-    },
-    // ...
+  // ...
+  transform: {
+    '\\.[jt]sx?$': 'babel-jest',
+    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
+      '<rootDir>/jest/fileTransformer.js'
+  }
+  // ...
 }
 ```
 
@@ -849,15 +864,16 @@ export default {
 
 ```js
 export default {
-    moduleNameMapper: {
-        '\\.(css|sass|scss)$': 'identity-obj-proxy',
-        '^@api': '<rootDir>/src/api/index.ts',
-        '^@/(.*)$': '<rootDir>/src/$1',
-    },
+  moduleNameMapper: {
+    '\\.(css|sass|scss)$': 'identity-obj-proxy',
+    '^@api': '<rootDir>/src/api/index.ts',
+    '^@/(.*)$': '<rootDir>/src/$1'
+  }
 }
 ```
 
 ## Reference
+
 - [jest](https://jestjs.io/docs/getting-started)
 - [write-tests](https://kentcdodds.com/blog/write-tests)
 - [深度解读 - TDD（测试驱动开发）](https://www.jianshu.com/p/62f16cd4fef3)
@@ -865,3 +881,4 @@ export default {
 - [React单元测试策略及落地](https://insights.thoughtworks.cn/react-strategies-for-unit-testing/)
 - [前端测试的反模式](https://insights.thoughtworks.cn/front-end-testing/)
 - [重构：干掉有坏味道的代码](https://www.cnblogs.com/xybaby/p/12894470.html)
+- [How to read Test Coverage report generated using Jest.](https://krishankantsinghal.medium.com/how-to-read-test-coverage-report-generated-using-jest-c2d1cb70da8b)
