@@ -1,10 +1,9 @@
-import { defineConfig } from 'vitepress'
+import { defineConfig, type DefaultTheme } from 'vitepress'
 // https://vite-pwa-org.netlify.app/guide/
 // https://github.com/vitest-dev/vitest/blob/main/docs/.vitepress/scripts/pwa.ts
 // import { VitePWA } from 'vite-plugin-pwa'
-import type { Config as ThemeConfig } from '@vue/theme'
 
-const nav: ThemeConfig['nav'] = [
+const nav: DefaultTheme.NavItem[] = [
   { text: 'Home', link: '/' },
   {
     text: '前端',
@@ -102,22 +101,22 @@ const nav: ThemeConfig['nav'] = [
     items: [
       {
         text: 'Basic',
-        activeMatch: `^//backEnd/base/`,
+        activeMatch: `^/backEnd/base/`,
         link: '/backEnd/base/'
       },
       {
         text: 'Node',
-        activeMatch: `^//backEnd/node/`,
+        activeMatch: `^/backEnd/node/`,
         link: '/backEnd/node/'
       },
       {
         text: 'Java',
-        activeMatch: `^//backEnd/java/`,
+        activeMatch: `^/backEnd/java/`,
         link: '/backEnd/java/'
       },
       {
         text: 'Kotlin',
-        activeMatch: `^//backEnd/kotlin/`,
+        activeMatch: `^/backEnd/kotlin/`,
         link: '/backEnd/kotlin/'
       }
     ]
@@ -128,7 +127,7 @@ const nav: ThemeConfig['nav'] = [
     items: [
       {
         text: 'English',
-        activeMatch: `^/english/`,
+        // activeMatch: `^/english/`,
         items: [
           { text: 'summary', link: '/english/' },
           { text: 'phrase', link: '/english/phrase' },
@@ -137,7 +136,7 @@ const nav: ThemeConfig['nav'] = [
       },
       {
         text: '面试',
-        activeMatch: `^/interview/`,
+        // activeMatch: `^/interview/`,
         items: [
           { text: 'summary', link: '/interview/' },
           { text: 'blog', link: '/interview/blog' },
@@ -153,7 +152,7 @@ const nav: ThemeConfig['nav'] = [
   }
 ]
 
-export const sidebar: ThemeConfig['sidebar'] = {
+export const sidebar: DefaultTheme.Sidebar = {
   '/fe/': [
     {
       text: 'JavaScript',
@@ -293,6 +292,10 @@ export const sidebar: ThemeConfig['sidebar'] = {
         {
           text: 'demo',
           link: '/fe/css/demo'
+        },
+        {
+          text: 'css方案',
+          link: '/fe/css/framework'
         }
       ]
     },
@@ -599,8 +602,11 @@ export default defineConfig({
   description: 'A FE Blog Site',
   srcDir: 'src',
   srcExclude: ['tutorial/**/description.md'],
-  scrollOffset: 'header',
+  // scrollOffset: 'header',
+
   lastUpdated: true,
+  cleanUrls: true,
+
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     // logo: 'favicon.ico',
@@ -621,7 +627,12 @@ export default defineConfig({
     //   }
     // ],
 
-    socialLinks: [{ icon: 'github', link: 'https://github.com/qinsong77' }]
+    socialLinks: [{ icon: 'github', link: 'https://github.com/qinsong77' }],
+    footer: {
+      message: 'In case I don\'t see you. Good afternoon, good evening, and good night.',
+      copyright: 'Copyright © 2019-present Notend'
+    },
+
   },
   head: [
     ['link', { rel: 'icon', href: '/favicon.ico', type: 'image/x-icon' }],

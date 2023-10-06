@@ -19,11 +19,9 @@
     "url": "https://github.com/qinsong77/qinsong77.github.io/issues"
   },
   "homepage": "https://github.com/qinsong77/qinsong77.github.io#readme",
+  "type": "module",
   "devDependencies": {
-    "@algolia/client-search": "^4.17.0",
-    "@vue/theme": "^2.2.1",
     "prettier": "^3.0.3",
-    "vitepress": "1.0.0-beta.7",
-    "vue": "^3.2.47"
+    "vitepress": "1.0.0-rc.20"
   }
 }

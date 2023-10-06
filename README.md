@@ -4,6 +4,7 @@
 
 ## TODO
 
+- [ ] BlogLayout
 - [ ] PWA
   - Remove old PWA cache: https://plugin-remove-pwa.vuejs.press/
 - [ ] Update blog
@@ -15,7 +16,8 @@
 ### want to know
 
 - [bun](https://bun.sh/) 一个js的运行时框架，可以理解为更快的node.js，可以之间run typescript等
-
+- [unocss](https://github.com/unocss/unocss) 原子化CSS模式实现的一种, No parsing, no AST, no scanning, it's INSTANT.
+- headless UI 
 ## WIP
 
 - vite + [vitest](https://vitest.dev/) or update vite+jest
