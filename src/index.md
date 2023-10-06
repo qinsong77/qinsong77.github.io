@@ -5,7 +5,7 @@ layout: home
 hero:
   name: "Sysuke's World"
   text: "A FE Blog Site"
-  tagline: My great project tagline
+  tagline: You Got ME!
   actions:
     - theme: brand
       text: Get Started

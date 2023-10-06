@@ -1,6 +1,4 @@
----
-layout: BlogLayout
----
+
 
 # 实战篇
 

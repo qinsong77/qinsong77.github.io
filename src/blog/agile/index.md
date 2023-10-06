@@ -1,6 +1,4 @@
----
-layout: BlogLayout
----
+
 
 # 敏捷开发
 

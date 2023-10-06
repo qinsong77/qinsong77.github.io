@@ -1,6 +1,4 @@
----
-layout: BlogLayout
----
+
 
 # MonoRepo by pnpm workspace + TurboRepo
 

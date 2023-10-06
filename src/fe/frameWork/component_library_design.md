@@ -2,7 +2,6 @@
 title: 组件库设计
 ---
 
-
 - [面试官: 写过『通用前端组件』吗?](https://www.jianshu.com/p/81128ab478e9)
 - [使用mono-repo实现跨项目组件共享](https://juejin.cn/post/6913788953971654663)
 - [前端业务组件库怎么样做到极致](https://mp.weixin.qq.com/s/DUDnzQWgcdrKAJeMwsmZBw)
@@ -28,14 +27,13 @@ title: 组件库设计
 
 不是从上层开始使用底层构建或者组装依赖。而是从底层开始设计叠加，感觉有点像是从递归到动态规划的过程。比较明显的一个就是React中的高阶组件（HOC）
 
-------
+---
 
 基于`Sketch`中的symbol功能，前端也需要将组件进行原子化，并根据`symbol`的变量命名将常用的大小、颜色创建为变量。
 
 前端组件根据功能以及颗粒度可以分为“基础组件”和“高阶组件”。基础组件一般是页面中颗粒度中最小也是最常用的组件，例如`input`，`button`等；高阶组件通常是由基础组件进行一定的变形、组合或两者兼有而形成的；而高阶组件+基础组件最终组成了完整的页面。 为了满足2B场景下的整体风格替换，所有组件在开发的时候要将用到的颜色、字体等"原子"用变量的方式引入。
 
 在目前前端开发中，样式的变量创建方式主要有两种：一是基于css原生支持的自定义变量，二是基于`less`、`scss`等css预编译器。考虑到自定义变量可能存在的浏览器兼容性问题，组件库可以采用了less作为样式开发的语言。less 是一门 CSS 预处理语言，除了之前提到的变量功能，还有嵌套、混合（mixin）、函数等方便的功能。
-
 
 ### 前端组件设计原则
 
@@ -49,9 +47,9 @@ title: 组件库设计
 - 集中/统一的状态管理
 
 ### Element-ui
+
 - [Element-UI（2.11.1） 构建流程](https://juejin.cn/post/6844904003541663757)
 - [Element-UI 技术揭秘- 组件库的整体设计](https://juejin.cn/post/6844903925632466951)
-
 
 ## How to build a component library
 
@@ -67,6 +65,7 @@ title: 组件库设计
 ### build output
 
 key feature:
+
 - Dead code elimination, or Tree shaking, as it’s often called, is very important to achieve the optimum bundle size and hence app performance.
 
 ### webpack vs rollup
@@ -77,9 +76,10 @@ key feature:
 
 ### scope
 
-how to build a react component library
+how to build a React component library
 
-### ways 
+### ways
+
 #### rollup
 
 #### tsc
@@ -94,6 +94,7 @@ how to build a react component library
 #### babel
 
 ### example
+
 #### Mui
 
 @emotion, css in js, `  "sideEffects": false,`
@@ -108,8 +109,8 @@ turborepo + pnpm workspace, each component is a package. gather in `@chakra-ui/r
 
 @emotion, css in js, `  "sideEffects": false,`
 
-
 folder structure
+
 ```md
 ├── package
 │ ├── components
@@ -133,16 +134,16 @@ folder structure
 `tsup.config.ts` each component is same
 
 ```ts
-import { defineConfig } from "tsup"
-import { findUpSync } from "find-up"
+import { defineConfig } from 'tsup'
+import { findUpSync } from 'find-up'
 
 export default defineConfig({
   clean: true,
-  format: ["cjs", "esm"],
+  format: ['cjs', 'esm'],
   outExtension(ctx) {
     return { js: `.${ctx.format}.js` }
   },
-  inject: process.env.JSX ? [findUpSync("react-shim.js")!] : undefined,
+  inject: process.env.JSX ? [findUpSync('react-shim.js')!] : undefined
 })
 ```
 
@@ -152,41 +153,51 @@ export default defineConfig({
 - use tsc to build esm and cjs folder structure, tsc can do this
 
 `tsconfig.esm.json`
+
 ```json5
 {
-  "extends": "./tsconfig.json",
-  "exclude": [
-    "**/*.spec.ts"
-  ],
-  "include": ["src/components"],
-  "compilerOptions": {
-    "declaration": true,
-    "noEmit": false,
-    "rootDir": "./src/components",
-    "outDir": "./es",
+  extends: './tsconfig.json',
+  exclude: ['**/*.spec.ts'],
+  include: ['src/components'],
+  compilerOptions: {
+    declaration: true,
+    noEmit: false,
+    rootDir: './src/components',
+    outDir: './es',
     // cjs CommonJs
-    "module": "ES6",
-    "target": "ES6"
+    module: 'ES6',
+    target: 'ES6'
   }
 }
 ```
 
-## ant-design
+### ant-design
 
 [`antd-tools`](https://github.com/ant-design/antd-tools): `glup + babel`
 
 less config
+
 ```json
 {
-  "sideEffects": [
-    "dist/*",
-    "es/**/style/*",
-    "lib/**/style/*",
-    ".less"
-  ]
+  "sideEffects": ["dist/*", "es/**/style/*", "lib/**/style/*", ".less"]
 }
 ```
 
-### reference
+## Headless components
+
+The libraries will give you well tested and accessible components or hooks without any default styling, so you can style and render them however you’d like, and if the authors were kind enough — you’ll also be able to control their functionality and behavior.
+
+When building design system, these requirements need answer:
+
+- Accessibility: the components must be accessible.
+- Theming: each component should support multiple themes (light mode\dark mode for example).
+- Uniqueness: The look of our product should be unique. We don’t want our product to have that Material (or Bootstrap) generic look and feel. We have a design team, and they determine how our product should look like.
+- Browser support: it should support all major browsers.
+- Functionality: We need complete control on how our components behave.
+- Responsiveness — it should support all screen sizes and devices.
+- Maintainability: it should be easy and seamless to modify and maintain.
+
+## reference
 
 - [The Modern Guide to Packaging your JavaScript library](https://github.com/frehner/modern-guide-to-packaging-js-library)
+- [Headless components in React and why I stopped using a UI library for our design system](https://medium.com/@nirbenyair/headless-components-in-react-and-why-i-stopped-using-ui-libraries-a8208197c268)

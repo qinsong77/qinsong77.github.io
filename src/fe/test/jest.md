@@ -1,6 +1,4 @@
----
-layout: BlogLayout
----
+
 
 # Jest
 
