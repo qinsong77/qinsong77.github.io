@@ -1701,6 +1701,7 @@ react17 其实也是执行了两次render phase ，会调用两次render，const
 
 而对于react17，只是重新调用render phase（constructor跟render等生命周期），所以componentDidMount，useEffect都只调用一次，而react18是直接unmounting and remounting the component，所以componentDidMount，useEffect也会执行两次
 
+如果你安装了`React DevTools`，第二次渲染的日志信息将显示为灰色，以柔和的方式显式在控制台。
 ```js
 function ExampleComponent(props) {
   useEffect(() => {
@@ -1766,4 +1767,10 @@ const ref = React.createRef();
 <FancyButton ref={ref}>Click me!</FancyButton>;
 ```
 
-useRef和createRef区别
+#### useRef和createRef区别
+
+### how do you decide where to put state?
+
+This is from [State Colocation will make your React app faster](https://kentcdodds.com/blog/state-colocation-will-make-your-react-app-faster)
+
+![](./image/where-to-put-state.png)

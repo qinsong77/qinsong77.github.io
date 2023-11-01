@@ -8,7 +8,7 @@ const d = new Date('2019-10-10');
 const date = d.getDate();
 
 // 10
-// Looks good!
+// Good!
 
 
 // code is runningg on GMT -10:00
@@ -16,12 +16,12 @@ const d = new Date('2019-10-10');
 const date = d.getDate();
 
 // 9
-// Amazing?!
+// WTF?!
 ```
 
-在小于0时区的地方，直接用 new Date('YYYY-MM-DD') 这样的方式实例化日期并且获取日期，永远会少一天。但是使用 new Date('YYYY-MM-DD 00:00:00') 就不会。
+在小于0时区的地方，直接用 `new Date('YYYY-MM-DD')` 这样的方式实例化日期并且获取日期，永远会少一天。但是使用 `new Date('YYYY-MM-DD 00:00:00')` 就不会。
 
-其实是使用 `new Date()` 转换年月日字符串日期，只是`YYYY-MM-DD`这种格式，有bug，就是会自动根据本地时区，在传入日期的基础上，加上或者减去时差
+其实是使用 `new Date()` 转换年月日字符串日期，只是`YYYY-MM-DD`这种格式，有bug，就是会自动根据本地时区，在传入日期的基础上，加上或者减去时差。
 
 ```js
 const timeOffset = new Date('2019-09-01').getTime() - new Date('2019/09/01').getTime()
@@ -90,6 +90,12 @@ module.exports = {
 GMT 即 Greenwich Mean Time， 代表格林威治标准时间。
 
 对全球而言，这里所设定的时间是世界时间参考点，全球都以格林威治的时间作为标准来设定时间。
+由此也确认了全球24小时自然时区的划分，所有时区都以和GMT之间的偏移量作为参考。全球划分为24个时区，东、西各12个时区，每个时区横跨15个经纬度相当于一个小时。
+
+比如:
+- 美国纽约时区为： GMT -4
+- 成都时区为： GMT +8 即CST(china standard time)
+
 
 
 ```js

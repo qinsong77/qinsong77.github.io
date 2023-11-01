@@ -335,7 +335,7 @@ export default function Counter2() {
 
 3. 业务逻辑散乱在不同的生命周期中
 
-Effect Hook 可以让你在函数组件中执行副作用操作。数据获取，设置订阅以及手动更改 React 组件中的 DOM 都属于副作用。类比于 class component，可以把 useEffect Hook 看做 componentDidMount，componentDidUpdate 和 componentWillUnmount 这三个函数的组合。
+Effect Hook 可以让你在函数组件中执行副作用操作。数据获取，设置订阅以及手动更改 React 组件中的 DOM 都属于副作用。类比于 class component，可以把 useEffect Hook 看做 componentDidMount，componentDidUpdate 和 componentWillUnmount 这三个函数的组合。但也不尽相同。
 
 在 function 组件中，**每当 DOM 完成一次渲染，都会有对应的副作用执行**，useEffect 用于提供自定义的执行内容，它的第一个参数（作为函数传入）就是自定义的执行内容。为了避免反复执行，传入第二个参数（由监听值组成的数组）作为比较(浅比较)变化的依赖，比较之后值都保持不变时，副作用逻辑就不再执行。
 useEffect 还是异步执行的，所谓的异步就是被 React 使用 requestIdleCallback 封装的，只在浏览器空闲时候才会执行，这就保证了不会阻塞浏览器的渲染过程。
@@ -385,7 +385,7 @@ export default function AnimateDemo() {
 }
 ```
 
-3. return 一个 clear 函数清楚副作用
+3. return 一个 clear 函数清除副作用
 
 - 每次副作用执行，都会返回一个新的 clear 函数
 - **clear 函数会在下一次副作用逻辑之前执行**（DOM 渲染完成之后）
@@ -465,7 +465,7 @@ clear: 2
 clear: xx -- 组件销毁时
 ```
 
-第一次渲染是打印 render,并且执行副作用函数, 打印 effect，并且返回清楚副作用的函数 clear, **3 秒后**打印 setCounter，执行`setCounter`，
+第一次渲染是打印 render,并且执行副作用函数, 打印 effect，并且返回清除副作用的函数 clear, **3 秒后**打印 setCounter，执行`setCounter`，
 组件重新渲染，打印 render，渲染完成后执行上一次的 clear，接着执行副作用函数，一直循环，直到销毁时执行 clear 函数。
 
 ### 和 setInterval
@@ -742,7 +742,7 @@ const App = () => {
 
 ![](./image/useEffect-render.png)
 
-如果是`StrictMode`组件会 render 两次
+如果是`StrictMode`组件会 render 两次，如果你安装了React DevTools，第二次渲染的日志信息将显示为灰色，以柔和的方式显式在控制台。
 
 子组件的 `effet` 首先执行，然后执行父组件的
 

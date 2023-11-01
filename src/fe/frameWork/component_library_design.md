@@ -183,7 +183,10 @@ less config
 }
 ```
 
-## Headless components
+## [Headless components/UI
+
+- Good example: [TanStack Table](https://tanstack.com/table/v8/docs/guide/introduction) Can know more.
+- [全新的 React 组件设计理念 Headless UI](https://juejin.cn/post/7160223720236122125)
 
 The libraries will give you well tested and accessible components or hooks without any default styling, so you can style and render them however you’d like, and if the authors were kind enough — you’ll also be able to control their functionality and behavior.
 
@@ -196,6 +199,7 @@ When building design system, these requirements need answer:
 - Functionality: We need complete control on how our components behave.
 - Responsiveness — it should support all screen sizes and devices.
 - Maintainability: it should be easy and seamless to modify and maintain.
+
 
 ## reference
 
