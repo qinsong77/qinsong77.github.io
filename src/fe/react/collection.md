@@ -23,6 +23,10 @@ title: collection
 - [emotion](https://emotion.sh/docs/introduction) Css in Js
 - [vanilla-extract](https://github.com/vanilla-extract-css/vanilla-extract)，Css in Js but Zero-runtime Stylesheets in TypeScript.
 
+### 动画
+
+- [Framer Motion](https://www.framer.com/motion/)
+
 ## Articles
 
 -[Modularizing React Applications with Established UI Patterns](https://martinfowler.com/articles/modularizing-react-apps.html)

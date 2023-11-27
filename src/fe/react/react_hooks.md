@@ -805,6 +805,16 @@ export default function FuncCom() {
 
 但如果在`if (counter === 12) {`这里 F12 debug，屏幕上会显示 12。
 
+### ssr
+
+next.js的ssr中使用useLayoutEffect会有warning，由于 useLayoutEffect 是同步执行的，它会在服务器端和客户端都执行，但由于服务器端没有真实的 DOM 环境，可能会导致一些问题，例如引起样式计算的阻塞，或者导致服务器端和客户端的 DOM 结构不一致。
+
+为了解决这个问题，Next.js 引入了 useEffect 的替代方案 useLayoutEffect，该钩子函数在服务器端渲染时会被自动替换为 useEffect，以确保在服务器端渲染过程中不会触发同步的 DOM 操作。
+
+`useEffect happens *after* mount/update, but the server doesn’t mount so it doesn’t happen. it [useEffect] won’t run on the server, but it also won’t warn.`
+
+`useEffect`也不会在ssr时运行，他被设计来就是在dom渲染后的执行副作用。可以用在ssr，但不会run,也不会像useLayoutEffect那样有 warning。
+
 ## 自定义 Hooks
 
 自定义 hooks 都会以`use`开头，以表示该方法**只能在函数式组件中使用**。感觉就是对原有函数组件中依赖于 state 的逻辑的抽离

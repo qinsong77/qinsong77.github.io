@@ -3,7 +3,7 @@ title: 打包原理和Module federation
 ---
 
 - [webpack5 Module federation](http://www.alloyteam.com/2020/04/14338/)
-- [Webpack 新功能 Module Federation 深入解析](https://blog.csdn.net/qq_29438877/article/details/105672029)
+- [最详细的Module Federation的实现原理讲解](https://juejin.cn/post/7151281452716392462)
 ### chunk 和 module
 
 module：每一个源码 js 文件其实都可以看成一个 module

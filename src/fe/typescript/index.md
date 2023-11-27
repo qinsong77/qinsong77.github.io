@@ -977,7 +977,58 @@ type T1 = ReturnType<(s: string) => void>  // void
  */
 type ReturnType<T extends (...args: any) => any> = T extends (...args: any) => infer R ? R : any
 ```
+#### Omit和[Exclude](https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers)区别
 
+主要是泛型的参数不一样
+
+- `Omit<Type, Keys>`: 基于以声明的类型做属性剔除
+```ts
+interface Todo {
+  title: string;
+  description: string;
+  completed: boolean;
+  createdAt: number;
+}
+ 
+type TodoPreview = Omit<Todo, "description">;
+ 
+const todo: TodoPreview = {
+  title: "Clean room",
+  completed: false,
+  createdAt: 1615544252770,
+};
+```
+- `Exclude<UnionType, ExcludedMembers>` => 从UnionType中去掉所有能够赋值给ExcludedMembers的属性，然后剩下的属性构成一个新的类型
+
+```ts
+type T0 = Exclude<"a" | "b" | "c", "a">; // "b" | "c"
+type T1 = Exclude<"a" | "b" | "c", "a" | "b">; // type T1 = "c"
+type T2 = Exclude<string | number | (() => void), Function>; // type T2 = string | number
+
+//源码实现 T extends U可以理解为 T是否assignable到U
+type Exclude<T, U> = T extends U ? never : T;
+type Extract<T, U> = T extends U ? T : never;
+```
+
+Pick结合Omit实现Omit
+```ts
+type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
+```
+
+```ts
+type Test = {
+ name: string;
+ age: number;
+ salary?: number;
+};
+//无效，这样没有意义，并不能够删除其中的字段
+type wrongExcluded = Exclude<Test, "salary">;
+type salary = { salary?: number };
+//有效
+type excluded1 = Exclude<Test, salary>; //never，
+//有效且有意义
+type excluded2 = Exclude<Test | salary | { noSalary: boolean }, salary>; //{ noSalary: boolean }
+```
 ## TS 声明文件
 
 ### `declare`
