@@ -32,7 +32,7 @@ features:
     details: React Test library常用
     icon:
       src: logo/rtl.png
-    link: /fe/test/RTL
+    link: /fe/test/rtl
   - title: Rollup打包React组件库
     details: Rollup
     icon:
