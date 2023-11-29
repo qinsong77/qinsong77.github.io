@@ -134,6 +134,7 @@ export default App;
 ```
 
 ### `import React from ‘react’` 和 `import * as React from 'react'`区别
+
 示例代码
 ```js
 // constant.js
@@ -187,6 +188,7 @@ TS1259: Module 'xxxx' has no default export.
 
 ### esModuleInterop 和 allowSyntheticDefaultImports
 
+
 上面的问题延伸一下，其实不仅仅是引入react，在esm中引入任何commonjs的模块在ts默认编译时都会有这样的问题，ts提供了`esModuleInterop` 和 `allowSyntheticDefaultImports` 这两个配置来影响ts默认的解析。
 
 `allowSyntheticDefaultImports`是一个类型检查的配置，它会把`import`没有`exports.default`的报错忽略，如果你的`target`是`es6`加上这个配置就够了，但如果你的目标代码是`es5`仅仅加上这个还不行，还需要使用`esModuleInterop`，因为它才会改变tsc的编译产物：
@@ -218,6 +220,13 @@ console.log(react_1.default.useEffect);
 
 在加上`esModuleInterop` 之后编译产物多了一个`_importDefault` 辅助函数，而他的作用就是给`module.exports` 加上`default` 属性。
 根据 [ts官网](https://www.typescriptlang.org/tsconfig#allowSyntheticDefaultImports)的说明 开启`esModuleInterop`的同时也会默认开启`allowSyntheticDefaultImports`,因此更推荐直接加`esModuleInterop`。
+
+
+ - [esModuleInterop 是如何影响 tsc 的](https://juejin.cn/post/7138308695900815373)
+ts 中导入一个 CommonJS 模块最佳实践仍然是：
+
+`esModuleInterop=false`，使用 `import * as XX`语法
+`esModuleInterop=true`，使用 `import XX from 'XX'`语法
 
 ## 项目目录
 

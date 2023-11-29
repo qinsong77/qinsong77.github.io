@@ -72,7 +72,15 @@ useBuiltIns 从其名字来说是“使用内置”，“内置”的什么呢�
 `npm i -S core-js@2`或者 `npm i -S core-js@3`，
 `corejs` 只在 `useBuiltIns`取值为 `entry` 或 `usage` 的时候有用，因为 `Babel` 所谓内置的 polyfills 工具就是 `corejs`。`corejs`可以配置为 2 或 3。
 
+
+
 #### polyfill和runtime的区别
+
+##### polyfill
+
+polyfill的英文意思是填充工具，意义就是兜底的东西；为什么会有polyfill这个概念，因为ECMASCRIPT一直在发布新的api，当使用这些新的api的时候，在旧版本的浏览器上是无法使用的，因为旧的版本上是没有提供这些新的api的，所以为了让代码也能在旧的浏览器上跑起来，于是手动添加对应的api，这就是polyfill，如下图所示；
+
+![](./image/polyfill_1.png)
 
 `polyfill`是会污染原来的全局环境的（因为新的原生对象、API这些都直接由polyfill引入到全局环境）。这样就很容易会发生冲突。对于库library来说，是供外部使用的，但外部的环境并不在library的可控范围。所以runtime就是解决这个问题的，避免全局污染。
 
@@ -182,7 +190,7 @@ not dead
 可以先对比下 `AST` ：
 ::: details 点击查看代码
 
-```js
+```
 // import { Button } from 'element-ui'
 {
     "type": "Program",

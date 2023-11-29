@@ -118,6 +118,16 @@ const nav: DefaultTheme.NavItem[] = [
         text: 'Kotlin',
         activeMatch: `^/backEnd/kotlin/`,
         link: '/backEnd/kotlin/'
+      },
+      {
+        text: '微服务',
+        activeMatch: `^/backEnd/microservices/`,
+        link: '/backEnd/microservices/'
+      },
+      {
+        text: 'database',
+        activeMatch: `^/backEnd/database/`,
+        link: '/backEnd/database/'
       }
     ]
   },
@@ -538,6 +548,15 @@ export const sidebar: DefaultTheme.Sidebar = {
       ]
     },
     {
+      text: 'Java',
+      items: [
+        {
+          text: 'Summary',
+          link: '/backEnd/java/'
+        }
+      ]
+    },
+    {
       text: 'Kotlin',
       items: [
         {
@@ -552,6 +571,19 @@ export const sidebar: DefaultTheme.Sidebar = {
         {
           text: 'Summary',
           link: '/backEnd/microservices/'
+        }
+      ]
+    },
+    {
+      text: 'Database',
+      items: [
+        {
+          text: 'Summary',
+          link: '/backEnd/database/'
+        },
+        {
+          text: 'My sql',
+          link: '/backEnd/database/mysql'
         }
       ]
     }

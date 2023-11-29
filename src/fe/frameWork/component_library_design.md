@@ -188,6 +188,7 @@ less config
 - Good example: [TanStack Table](https://tanstack.com/table/v8/docs/guide/introduction) Can know more.
 - [全新的 React 组件设计理念 Headless UI](https://juejin.cn/post/7160223720236122125)
 - [Headless Component: a pattern for composing React UIs](https://martinfowler.com/articles/headless-component.html)
+- [shadcn/ui](https://ui.shadcn.com/) Re-usable components built using Radix UI and Tailwind CSS. 不是通过npm安装而是直接Pick the components you need. Copy and paste the code into your project and customize to your needs.
 
 The libraries will give you well tested and accessible components or hooks without any default styling, so you can style and render them however you’d like, and if the authors were kind enough — you’ll also be able to control their functionality and behavior.
 
