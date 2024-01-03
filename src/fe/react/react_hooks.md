@@ -753,7 +753,7 @@ const App = () => {
 ```js
 useLayoutEffect(() => {
   // do side effects
-  return () => /* cleanup */
+  return () => {} /* cleanup */
 }, [dependency, array]);
 ```
 
@@ -923,7 +923,7 @@ export default function FunctionDemo() {
 
 刷新页面: `setLoading(true);`
 
-### useReducer
+## useReducer
 
 ```typescript jsx
 import React, { useReducer } from 'react'
@@ -968,6 +968,107 @@ export default function ReactHooksWay() {
 }
 ```
 
+使用useReducer优化：
+```tsx
+import { useEffect, useState } from 'react'
+
+export function CounterOne() {
+  const [count, setCount] = useState(0)
+  const [step, setStep] = useState(1)
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setCount((c) => c + step)
+    }, 1000)
+    return () => clearInterval(id)
+  }, [step])
+
+  return (
+    <>
+      <h1>{count}</h1>
+      <input
+        value={step}
+        onChange={(e) => setStep(Number(e.target.value))}
+      />
+    </>
+  )
+}
+
+```
+现在count的值不仅仅依赖自己上一次的值，还依赖`step`状态。
+它可以正确运行。但**问题在于**每一次改变step后，计时器都会被**销毁重建**。
+
+当你想更新一个状态，并且这个状态更新依赖于另一个状态的值时，你可能需要用`useReducer`去替换它们。
+
+当写类似`setSomething(something => ...)`这种代码的时候，也许就是考虑使用reducer的契机。reducer可以让你把组件内发生了什么(actions)和状态如何响应并更新分开表述。
+
+```tsx
+import { useEffect, useReducer } from 'react'
+
+type State = {
+  count: number
+  step: number
+}
+
+enum Action {
+  TICK = 'tick',
+  STEP = 'step',
+}
+
+const initialState: State = {
+  count: 0,
+  step: 1,
+}
+function reducer(
+  state: State,
+  action: { type: Action.TICK } | { type: Action.STEP; val: number }
+) {
+  const { count, step } = state
+  if (action.type === Action.TICK) {
+    return { count: count + step, step }
+  } else if (action.type === Action.STEP) {
+    return { count, step: action.val }
+  } else {
+    throw new Error()
+  }
+}
+export function CounterReducer() {
+  const [state, dispatch] = useReducer(reducer, initialState)
+  const { count, step } = state
+
+  useEffect(() => {
+    console.log('two')
+
+    const id = setInterval(() => {
+      dispatch({ type: Action.TICK }) // 更新count
+    }, 1000)
+    return () => clearInterval(id)
+  }, [dispatch])
+
+  return (
+    <>
+      <h1>{count}</h1>
+      <input
+        value={step}
+        onChange={(e) => {
+          // 更新step
+          dispatch({
+            type: Action.STEP,
+            val: Number(e.target.value),
+          })
+        }}
+      />
+    </>
+  )
+}
+```
+使用useReducer可以完美解决上述问题，因为**React会保证`dispatch`在组件的声明周期内保持不变**
+
+可以从依赖中去除dispatch, setState, 和useRef包裹的值因为React会确保它们是静态的。不过设置了它们作为依赖也没什么问题。
+
+与其在Effect中去获取状态，不如只是dispatch一个action来描述行为，这使得Effect与状态解耦，Effect再也不用关心具体的状态了～
+
+Example from: [useEffect你真的会用嘛](https://mp.weixin.qq.com/s/i84NcfBo-vQmayEpt-gaPQ)
 ## useContext
 
 ContextProvider

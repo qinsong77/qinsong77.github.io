@@ -17,6 +17,11 @@ title: collection
 ## State Manage
 - [zustand](https://github.com/pmndrs/zustand)
 
+### server api state
+
+- [React query](https://tanstack.com/query/v5/docs/react/overview)
+  - [作者博客系列文章](https://tkdodo.eu/blog/placeholder-and-initial-data-in-react-query)
+
 ## CSS
 
 - [styled-components](https://styled-components.com/) Css in Js

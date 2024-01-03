@@ -3,6 +3,7 @@ title: Typescript
 ---
 
 - [TypeScript 高级用法](https://juejin.cn/post/6926794697553739784)
+- [TypeScript是如何工作的](https://mp.weixin.qq.com/s/9ajVxJst3gqWslvgsxEliQ)
 
 ### [interface和type的区别](https://www.jianshu.com/p/555e6998af36)
 不同点：

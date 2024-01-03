@@ -133,3 +133,5 @@ new Date();
 // Sat Jun 15 2019 20:36:10 GMT+0800 (中国标准时间)
 
 ```
+
+- [前端时间国际化入门](https://mp.weixin.qq.com/s/Gw6UiovEvu76a-9zxL3BdA)

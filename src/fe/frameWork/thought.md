@@ -64,3 +64,9 @@ title: 想法和总结
 9. utils：页面或组件中所需要用到的工具，以及对于其他第三方工具的二次封装
 10. main.js：程序的入口文件
 11. static：较大的静态资源文件
+
+## 前端工作流
+
+忘记哪里copy的了
+
+![](./image/fe-process-copy.webp)

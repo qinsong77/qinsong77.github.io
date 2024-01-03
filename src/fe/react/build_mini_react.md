@@ -1,6 +1,7 @@
 # 构建你自己的 React 框架
 
 > 原文链接：https://pomb.us/build-your-own-react/
+- [How to build your own React: Didact 解析](https://mp.weixin.qq.com/s/EL3Qu6SB9pct4d_vF7XVtQ)
 
 我们将从头开始，遵循真实的 React 源码架构，排除掉所有的优化和非必要的功能。一步一步地重新构建我们自己版本的 React。
 
@@ -216,7 +217,7 @@ function createDom(fiber) {
     fiber.type == "TEXT_ELEMENT"
       ? document.createTextNode("")
       : document.createElement(fiber.type)
-​
+
   const isProperty = key => key !== "children"
 
   Object.keys(fiber.props)
@@ -224,10 +225,10 @@ function createDom(fiber) {
     .forEach(name => {
       dom[name] = fiber.props[name]
     })
-​
+
   return dom
 }
-​
+
 function render(element, container) {}
 ```
 
@@ -332,7 +333,7 @@ function render(element, container) {
   }
   nextUnitOfWork = wipRoot
 }
-​
+
 let wipRoot = null
 ```
 
@@ -402,7 +403,7 @@ function render(element, container) {
   }
   nextUnitOfWork = wipRoot
 }
-​
+
 let currentRoot = null
 ```
 
@@ -413,10 +414,10 @@ function performUnitOfWork(fiber) {
   if (!fiber.dom) {
     fiber.dom = createDom(fiber)
   }
-​
+
   const elements = fiber.props.children
   reconcileChildren(fiber, elements)
-​
+
   if (fiber.child) {
     return fiber.child
   }
@@ -520,7 +521,7 @@ function render(element, container) {
   deletions = []
   nextUnitOfWork = wipRoot
 }
-​
+
 let deletions = null
 ```
 
@@ -773,7 +774,7 @@ function useState(initial) {
   const hook = {
     state: oldHook ? oldHook.state : initial,
   }
-​
+
   wipFiber.hooks.push(hook)
   hookIndex++
   return [hook.state]
