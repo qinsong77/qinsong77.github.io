@@ -36,6 +36,35 @@ title: collection
 
 -[Modularizing React Applications with Established UI Patterns](https://martinfowler.com/articles/modularizing-react-apps.html)
 
+核心：React入官网所述，只是一个构建UI的库，但对一个复杂的React Application来说，如何构建，处理却没有很好的说明，当然不止是react，下面只是结合React展开，其实对于一个前端应用来说都可以复用这些思想。
+
+如何组织代码，组装，存放计算/业务，数据交互/联动等逻辑，大概就是根据不同的关注点，划分到不同的文件/夹结构，`view-model-data`的分层设计，而不是在组件/hooks中搞定一切
+
+**Single Component Application**
+![](./modularizing-react-apps-images/1.png)
+
+**Multiple Component Application**
+![](./modularizing-react-apps-images/2.png)
+
+问题： there are things like sending network requests, converting data into different shapes for the view to consume, and collecting data to send back to the server. And having this code inside components doesn’t feel right as they’re not really about user interfaces. Also, some components have too many internal states.
+
+**State management with hooks**
+
+![](./modularizing-react-apps-images/3.png)
+
+使用自定义hooks抽取这些逻辑到单独的地方，The only problem is that in hooks, apart from the side effect and state management, some logic doesn’t seem to belong to the state management but pure calculations.
+
+**Business models emerged**
+![](./modularizing-react-apps-images/4.png)
+
+**Layered frontend application**
+
+![](./modularizing-react-apps-images/5.png)
+
+- [PresentationDomainDataLayering](https://martinfowler.com/bliki/PresentationDomainDataLayering.html)
+
+
+It’s good practice to split view and non-view code into separate places. The reason is, in general, views are changing more frequently than non-view logic. Also, as they deal with different aspects of the application, separating them allows you to focus on a particular self-contained module that is much more manageable when implementing new features.
 
 ## project 
 - [Turbopack](https://github.com/vercel/turbo)

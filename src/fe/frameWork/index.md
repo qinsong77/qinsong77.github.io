@@ -35,15 +35,17 @@ MVVM框架的三大要素
 3. 独立开发。开发人员可以专注于业务逻辑和数据的开发（ViewModel），设计人员可以专注于页面设计。
 4. 可测试。界面素来是比较难于测试的，测试可以针对ViewModel来写。
 
+## library 分析文章
 ### [SPA 路由](https://juejin.im/post/6895882310458343431)
 
 ### [Better Scroll](https://juejin.im/post/6876943860988772360)
 
-### git
+## git
 #### [git-rebase](https://www.jianshu.com/p/6960811ac89c)
 - [git rebase vs git merge详解](https://www.cnblogs.com/kidsitcn/p/5339382.html)
 - [操作](https://juejin.cn/post/6933956481423245326)
 - [操作](https://juejin.cn/post/6844904132415848456)
+
 git merge 操作合并分支会让两个分支的每一次提交都按照提交时间（并不是push时间）排序，并且会将两个分支的最新一次commit点进行合并成一个新的commit，最终的分支树呈现非整条线性直线的形式
 
 git rebase操作实际上是将当前执行rebase分支的所有基于原分支提交点之后的commit打散成一个一个的patch，并重新生成一个新的commit hash值，再次基于原分支目前最新的commit点上进行提交，并不根据两个分支上实际的每次提交的时间点排序，rebase完成后，切到基分支进行合并另一个分支时也不会生成一个新的commit点，可以保持整个分支树的完美线性
@@ -62,11 +64,10 @@ rebase的最大好处并不是消除merge，而是避免merge的交织。
 
 等 dev 分支开发完成了之后，要合并到上游分支 master 上的时候，切换到 master 分支，使用 git merge dev。
 
-直接的分支合并主分支最新代码使用git rebase
+直接的分支合并主分支最新代码使用`git rebase`
 ```
 git pull origin dev --rebase // 拉取最新代码，可以避免git pull(默认是merge)多一天拉去自己代码的日志
 git rebase master
-
 ```
 
 #### [Git Reset 三种模式](https://www.jianshu.com/p/c2ec5f06cf1a)
@@ -83,7 +84,7 @@ Git有三个区域：
 1. git revert 后会多出一条commit，这里可进行回撤操作
 2. git reset 直接把之前 commit 删掉，非 git reset --hard 的操作是不会删掉修改代码，如果远程已经有之前代码，需要强推 git push -f
 
-### [ESLint 和 Prettier](https://zhuanlan.zhihu.com/p/80574300)
+## [ESLint 和 Prettier](https://zhuanlan.zhihu.com/p/80574300)
 ESLint 主要解决了两类问题, 
 
 1. 代码质量问题：使用方式有可能有问题(problematic patterns)
@@ -119,7 +120,7 @@ ESLint 主要解决了两类问题,
 }
 ```
 
-### Nginx
+## Nginx
 - [巩固你的Nginx知识体系](https://juejin.cn/post/6870264679063617550)
 
 - 正向代理: 是你发出请求的时候先经过代理服务器，所以实际上**发出请求的是代理服务器**。
@@ -167,19 +168,19 @@ let reg = /^\/wiki\/(.*)$/
 // => 2111edqd
 ```
 在这里，括号的作用就是用于匹配一个分块
-### Axios
+## Axios
 - [值得借鉴的地方](https://juejin.im/post/6885471967714115597)
 - [封装 axios 取消重复请求](https://mp.weixin.qq.com/s/b5W7Xq4UzTkAB1B8w80NXA)
 - [封装 axios 拦截器实现用户无感刷新](https://juejin.cn/post/6844903993274007565)
 
-#### 取消请求有两种方式
+### 取消请求有两种方式
 1. 统一批量取消， 通过`axios.CancelToken.source`生成取消令牌`token`和取消方法`cancel`
 ```javascript
 const CancelToken = axios.CancelToken;
 const source = CancelToken.source();
 
 axios.get('/user/12345', {
-  cancelToken: source.token
+  cancelToken: source.token // [!code hl]
 }).catch(function(thrown) {
   if (axios.isCancel(thrown)) {
     console.log('Request canceled', thrown.message);
@@ -191,7 +192,7 @@ axios.get('/user/12345', {
 axios.post('/user/12345', {
     name: 'new name'
   }, {
-  cancelToken: source.token
+  cancelToken: source.token // [!code hl]
 })
 
 // 取消请求 (消息参数是可选的)
