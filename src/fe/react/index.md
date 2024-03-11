@@ -19,55 +19,6 @@
 
 [[toc]]
 
-[//]: # (- [概述]&#40;#概述&#41;)
-
-[//]: # (- [React15架构]&#40;#react15架构&#41;)
-
-[//]: # (    - [Reconciler]&#40;#reconciler&#41;)
-
-[//]: # (    - [Renderer]&#40;#renderer-渲染器&#41;)
-
-[//]: # (- [React16架构]&#40;#react16架构&#41;)
-
-[//]: # (- [React16的组件类型]&#40;#react16的组件类型&#41;)
-
-[//]: # (- [函数式组件]&#40;#函数式组件&#41;)
-
-[//]: # (- [JSX简介]&#40;#jsx简介&#41;)
-
-[//]: # (- [Fiber]&#40;#fiber&#41;)
-
-[//]: # (    - [双缓存Fiber树]&#40;#双缓存fiber树&#41;)
-
-[//]: # (    - [Fiber是如何工作的]&#40;#fiber是如何工作的&#41;)
-
-[//]: # (- [生命周期]&#40;#生命周期&#41;)
-
-[//]: # (    - [React16.3.0之前生命周期]&#40;#react16-3-0之前生命周期&#41;)
-
-[//]: # (    - [React16.3.0之后的生命周期]&#40;#react16-3-0之后的生命周期&#41;)
-
-[//]: # (- [受控与非受控组件]&#40;#受控与非受控组件&#41;)
-
-[//]: # (- [setState]&#40;#setstate&#41;)
-
-[//]: # (- [react合成事件]&#40;#react合成事件&#41;)
-
-[//]: # (- [React.PureComponent与React.memo&#40;&#41;]&#40;#react-purecomponent与react-memo&#41;)
-
-[//]: # (- [React组件到底什么时候render]&#40;#react组件到底什么时候render&#41;)
-
-[//]: # (- [高阶组件]&#40;#高阶组件&#41;)
-
-[//]: # (- [render props]&#40;#render-props&#41;)
-
-[//]: # (- [真实DOM操作和Virtual Dom]&#40;#真实dom操作和virtual-dom&#41;)
-
-[//]: # (- [Diff算法]&#40;#diff算法&#41;)
-
-[//]: # (- [React懒加载]&#40;#react懒加载&#41;)
-
-[//]: # (- [React17/18新特性]&#40;#react17-18新特性&#41;)
 
 ## 概述
 
@@ -1746,7 +1697,7 @@ This component declares some effects to be run on mount and unmount. Normally th
 
 翻译：[React 重新渲染：最佳实践](https://zhuanlan.zhihu.com/p/554118692)
 
-### forwardRef
+## forwardRef
 
 `React.forwardRef(render)`的返回值是react组件，接收的参数是一个 `render`函数，函数签名为`render(props, ref)`，第二个参数将其接受的 [`ref`](https://react.docschina.org/docs/refs-and-the-dom.html) 属性转发到render返回的组件中。
 
@@ -1769,7 +1720,7 @@ const ref = React.createRef();
 
 #### useRef和createRef区别
 
-### how do you decide where to put state?
+## how do you decide where to put state?
 
 This is from [State Colocation will make your React app faster](https://kentcdodds.com/blog/state-colocation-will-make-your-react-app-faster)
 

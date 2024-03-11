@@ -6,28 +6,9 @@
 
 - [React Hooks 完全上手指南](https://zhuanlan.zhihu.com/p/92211533)
 
-[//]: # '# 目录'
-[//]: #
-[//]: # '- [什么是 Hooks](#一、什么是-hooks)'
-[//]: # '- [Hooks 解决的问题](#二、hooks-解决的问题)'
-[//]: # '- [Hooks 优势](#hooks-优势)'
-[//]: # '- [注意事项](#注意事项)'
-[//]: # '- [React Hooks 能够让函数组件拥有内部状态的基本原理](#react-hooks能够让函数组件拥有内部状态的基本原理)'
-[//]: # '- [useState](#usestate)'
-[//]: # '- [useEffect](#useeffect)'
-[//]: # '  - [useEffect 解决了哪些问题](#useeffect解决了哪些问题)'
-[//]: # '  - [和 setInterval](#和setinterval)'
-[//]: # '  - [useEffect 中不能使用 async function](#useeffect中不能使用async-function)'
-[//]: # '- [useLayoutEffect](#uselayouteffect)'
-[//]: # '- [自定义 Hooks](#自定义hooks)'
-[//]: # '- [useReducer](#usereducer)'
-[//]: # '- [useContext](#usecontext)'
-[//]: # '- [useRef](#useref)'
-[//]: # '  - [useImperativeHandle](#useimperativehandle)'
-[//]: # '- [useMemo](#usememo)'
-[//]: # '- [useCallback](#usecallback)'
-[//]: # '- [优化总结](#优化总结)'
-[//]: # '- [原理](#原理)'
+-------------- 
+
+[[toc]]
 
 ## 一、什么是 Hooks
 
@@ -967,6 +948,7 @@ export default function ReactHooksWay() {
   )
 }
 ```
+* 使用场景：为了简单起见，如果你的状态依赖其他状态和上次的值，考虑使用 `useReducer`，而不是使用很多个 `useState`。
 
 使用useReducer优化：
 ```tsx
