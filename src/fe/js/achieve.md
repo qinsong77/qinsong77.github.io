@@ -874,6 +874,24 @@ elem.dispatchEvent(myEvent)
 ```
 
 ### 单例模式
+
+```typescript
+// new OpenAI只会创建一次
+export const getOpenaiClient: () => OpenAI = (function () {
+  let instance: OpenAI
+  return {
+    getInstance: function () {
+      if (!instance) {
+        instance = new OpenAI({
+          apiKey: process.env.OPENAI_API_KEY,
+          baseURL: process.env.OPENAI_BASE_URL,
+        })
+      }
+      return instance
+    },
+  }
+})().getInstance
+```
 ```javascript
 class Singleton {
 	constructor(name) {

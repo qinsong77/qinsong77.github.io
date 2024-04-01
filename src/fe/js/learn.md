@@ -807,11 +807,11 @@ words.forEach(function(word) {
 ```
 
 #### Array.from和Array.fill
-Array.from第二个参数可以对item进行转换，相当于`map`
+`Array.from`第二个参数可以对item进行转换，相当于`map`。eg：构造一个n*m的二维数组：
 ```javascript
-let dp = Array.from(new Array(n+1),() => new Array(m+1).fill(0));
+let dp = Array.from(new Array(n),() => new Array(m).fill(0));
 ```
-Array.fill()的参数是对象时，要写成箭头函数，不然引用是一个。
+`Array.fill()`的参数是对象时，要写成箭头函数，不然引用是一个。
 ```javascript
 const length = 100
 const arr = Array.from(new Array(length)).fill((() => [])())
@@ -820,18 +820,18 @@ const arr = Array.from(new Array(length)).fill((() => [])())
 #### reduce
 `reduce` `reduceRight`
 ```javascript
-[0, 1, 2, 3, 4].reduce(function(accumulator, currentValue, currentIndex, array){
-  return accumulator + currentValue;
-}, 0);
+[0, 1, 2, 3, 4].reduce((accumulator, currentValue, currentIndex, array) => {
+  return accumulator + currentValue
+}, 0)
 ```
 
-#### forEach 与async
+#### forEach与async
  问题描述
  ```javascript
-var getNumbers = () => {
+const getNumbers = () => {
   return Promise.resolve([1, 2, 3])
 }
-var multi = num => {
+const multi = num => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (num) {
@@ -843,9 +843,9 @@ var multi = num => {
   })
 }
 async function test () {
-  var nums = await getNumbers()
+  const nums = await getNumbers()
   nums.forEach(async x => {
-    var res = await multi(x)
+    const res = await multi(x)
     console.log(res)
   })
 }
@@ -856,7 +856,7 @@ test()
 
 问题原因： 因为`forEach`方法的参数是一个普通函数，并没有`async`函数，类似的还有`Generator`，`forEach`中不能写`yield`
 
-解决问题
+解决方式：
 
 方式一
 
@@ -869,9 +869,9 @@ async function asyncForEach(array, callback) {
   }
 }
 async function test () {
-  var nums = await getNumbers()
+  const nums = await getNumbers()
   asyncForEach(nums, async x => {
-    var res = await multi(x)
+    const res = await multi(x)
     console.log(res)
   })
 }
@@ -897,9 +897,9 @@ var zeroesForeverIterator = {
 
 ```javascript
 async function test () {
-  var nums = await getNumbers()
+  const nums = await getNumbers()
   for(let x of nums) {
-    var res = await multi(x)
+    const res = await multi(x)
     console.log(res)
   }
 }
