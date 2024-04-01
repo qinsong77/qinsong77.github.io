@@ -38,7 +38,7 @@ describe('sum function', () => {
 - `toBe`就是一个匹配器matcher，匹配`expect`的值是否和匹配器中的值相等。
   > 断言指的是一些布尔表达式，在程序中的某个特定点该表达式值为真，判断代码的实际执行结果与预期结果是否一致，而断言库则是将常用的方法封装起来
 
-### [匹配器matchers](https://jestjs.io/zh-Hans/docs/expect)
+## [匹配器matchers](https://jestjs.io/zh-Hans/docs/expect)
 
 其实这部分内容查询官方的[文档](https://jestjs.io/zh-Hans/docs/expect) 入门更好，写的很详细。
 
@@ -113,9 +113,9 @@ describe('the La Croix cans on my desk', () => {
 - .toHaveNthReturnedWith(nthCall, value)/.nthReturnedWith(nthCall, value)：检查第nth次调用函数返回值是否匹配
 - [expect api](https://www.jestjs.cn/docs/expect)
 
-### [异步代码测试](https://jestjs.io/zh-Hans/docs/asynchronous)
+## [异步代码测试](https://jestjs.io/zh-Hans/docs/asynchronous)
 
-js中的异步常用的无非就是[回调、`promise`和`async/await`](https://sanyuan0704.top/blogs/javascript/js-async/012.html)
+js中的异步常用的无非就是[回调callback、`promise`和`async/await`](https://sanyuan0704.top/blogs/javascript/js-async/012.html)
 
 #### `callback`回调函数异步
 
@@ -171,7 +171,7 @@ test('测试 fetchList 的返回值包含 404', () => {
 
 #### 还有`Async/Await`,`.resolves` / `.rejects`，回调等，可查阅官网
 
-### 钩子函数
+## 钩子函数
 
 - beforeAll：在所有测试用例执行之前调用（调用一次）
 - afterAll：在所有测试用例执行之后调用（调用一次）
@@ -190,12 +190,12 @@ test('测试 fetchList 的返回值包含 404', () => {
 - 每一个 describe 里面的钩子函数对自己作用域下面所有的测试用例都生效
 - 如果 describe 是多层嵌套的，那么测试用例执行的顺序是由外到内
 
-### Mock
+## Mock
 
 在单元测试中,我们一般对代码进行最小单元的测试 , 并不会关心模块/业务之间的耦合 , 所以我们会使用mock工具进行数据/方法的模拟实现, 节约不必要的测试用例代码。
 jest对象上有`fn`,`mock`,`spyOn`三个方法，在实际项目的单元测试中，`jest.fn()`常被用来进行某些有回调函数的测试；`jest.mock()`可以mock整个模块中的方法，当某个模块已经被单元测试100%覆盖时，使用`jest.mock()`去mock该模块，节约测试时间和测试的冗余度是十分必要；当需要测试某些必须被完整执行的方法时，常常需要使用`jest.spyOn()`。
 
-#### jest.fn()
+### jest.fn()
 
 jest.fn()是创建 Mock 函数最简单的方式，如果没有定义函数内部的实现，jest.fn() 会返回 undefined 作为返回值。
 
@@ -247,7 +247,7 @@ test('测试jest.fn()返回Promise', async () => {
 
 所有的 mock 函数都有一个特殊的 .mock 属性，它保存了关于此函数`如何被调用`、调用时的`返回值`的信息。
 
-#### mock模块
+### mock模块
 
 使用`jest.mock`即可mock模块，主要是有两种情况：
 
@@ -306,7 +306,7 @@ getRandom() // Always returns 10
 
 #### mock模块内部函数
 
-设想一种情况，有一个`utils.t`s文件，内部导出了两个函数`funcA`和`funcB`，然后在`funcB`中引用了`funcA`:
+设想一种情况，有一个`utils.ts`文件，内部导出了两个函数`funcA`和`funcB`，然后在`funcB`中引用了`funcA`:
 
 ```ts
 // utils.ts
@@ -350,7 +350,7 @@ describe('utils.ts 单元测试', () => {
 - 拆分文件，将`funcA`拆分到不同的文件。这种做法可能会造成文件过多且分散的问题。
 - 将相互调用的函数，作为一个工具类的方法来实现。即将互相调用的函数，放到同一个工具类中。
 
-#### mock类（class）构造函数中对其他成员函数的调用
+### mock类（class）构造函数中对其他成员函数的调用
 
 在mock一个`class`的方法的时候，很简单地将类对象的对应方法赋值为`jest.fn()`即可，但是对于在构造函数中调用的成员方法，却不能这样做。因为类里面的方法只能在实例化完成之后再进行mock，不能阻止`constructor`中执行原函数。
 
@@ -370,7 +370,7 @@ class Person {
 Person.prototype.init = jest.fn()
 ```
 
-#### mock对象的只读属性（`getter`）
+### mock对象的只读属性（`getter`）
 
 在单测中，对于可读可写属性我们可以比较方便地进行mock，直接赋值为对应的mocK值即可，如`Platform.OS`。但是对于只读属性（getter）的mock却不能直接这样写。通常对于只读属性（此处以`document.body.clientWidth`为例）有以下两种mock方式：
 
@@ -390,7 +390,7 @@ const mockClientWidth = jest.spyOn(document.body, 'clientWidth', 'get')
 mockClientWidth.mockReturnValue(10)
 ```
 
-#### Mock Location/localStorage/indexedDB
+### Mock Location/localStorage/indexedDB
 
 如`localStorage`是浏览器环境下的一个全局变量，挂载在`window`下，在单测运行时（Node环境）是获取不到的。可以自己实现如
 
@@ -428,7 +428,13 @@ global.localStorage = new LocalStorageMock()
 
 还是使用第三方包更快，比如[`jest-localstorage-mock`](https://www.npmjs.com/package/jest-localstorage-mock)
 
-#### `test.each`
+### `mockFunction` 的类型错误
+
+[Using Jest mock functions in TypeScript]https://www.benmvp.com/blog/using-jest-mock-functions-typescript/)
+
+## Skills
+
+### `test.each`
 
 有时会遇到这种情况，要写大量单测用例，但是每个用例结构一样或相似，只有细微不同，比如测试某个`format函数`对于不同的字符串的返回结果，或者调用一个类不同的成员方法但返回的结果类似（如都抛出错误或`return null`等），对于这些情况，可以在单测内写一个数组然后遍历执行一下，但其实`jest已经提供了应对这种情况的方法，即`test.each`，举几个例子：
 
@@ -472,10 +478,6 @@ describe('each.ts 单元测试', () => {
 ```
 
 除了`test.each`外，还有`describe.each`，更多具体用法可以参考[test.each](https://jestjs.io/docs/api#testeachtablename-fn-timeout) 和`describe.each`
-
-#### `mockFunction` 的类型错误
-
-[Using Jest mock functions in TypeScript]https://www.benmvp.com/blog/using-jest-mock-functions-typescript/)
 
 ## Jest 架构
 
