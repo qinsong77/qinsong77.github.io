@@ -95,7 +95,7 @@ ON s.class_id = c.id;
 把tableA看作左表，把tableB看成右表，
 
 那么INNER JOIN是选出两张表都存在的记录：
-![img.png](image/img.png)
+![img.png](image/join.png)
 
 ## 修改数据
 

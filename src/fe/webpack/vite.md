@@ -64,9 +64,9 @@ createApp(App).mount('#app')
 
 浏览器请求到了 main.js 文件，检测到内部含有 import 引入的包，又会对其内部的 import 引用发起 HTTP 请求获取模块的内容文件
 
-如：GET http://localhost:3000/@modules/vue.js
+如：GET `http://localhost:3000/@modules/vue.js`
 
-如：GET http://localhost:3000/src/App.vue
+如：GET `http://localhost:3000/src/App.vue`
 
 Vite 的主要功能就是通过劫持浏览器的这些请求，并在后端进行相应的处理将项目中使用的文件通过简单的分解与整合，然后再返回给浏览器，vite 整个过程中没有对文件进行打包编译，所以其运行速度比原始的 webpack 开发编译速度快出许多
 

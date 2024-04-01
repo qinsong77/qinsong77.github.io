@@ -16,7 +16,7 @@
 
 ### want to know
 
-- [bun](https://bun.sh/) 一个js的运行时框架，可以理解为更快的node.js，可以之间run typescript等
+- [bun](https://bun.sh/) 一个js的运行时框架，可以理解为更快的node.js，可以直接run typescript等
 - [unocss](https://github.com/unocss/unocss) 原子化CSS模式实现的一种, No parsing, no AST, no scanning, it's INSTANT.
 - headless UI 
 
