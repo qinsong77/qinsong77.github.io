@@ -3,9 +3,12 @@ title: Summary
 ---
 
 # Summary
+Node 的特性是**单线程、非阻塞时I/O**
 
 ## collection
-
+- [一篇文章构建你的 NodeJS 知识体系](https://juejin.cn/post/6844903767926636558)
+- [Node.js 并发能力总结](https://mp.weixin.qq.com/s/6LsPMIHdIOw3KO6F2sgRXg)
+- [MongoDB 极简入门实践](https://mp.weixin.qq.com/s/lcoa6X-aSaUJHzdXFEjuzA)
 ### Nest.js
 
 > [中文网](https://docs.nestjs.cn/)
@@ -16,10 +19,37 @@ title: Summary
 - [V8 引擎详解](https://juejin.cn/post/6844904137792962567)
 - [从 Chrome 源码看 JS Object 的实现](https://zhuanlan.zhihu.com/p/26169639)
 
-### [一篇文章构建你的 NodeJS 知识体系](https://juejin.cn/post/6844903767926636558)
 
-- [Node.js 并发能力总结](https://mp.weixin.qq.com/s/6LsPMIHdIOw3KO6F2sgRXg)
-- [MongoDB 极简入门实践](https://mp.weixin.qq.com/s/lcoa6X-aSaUJHzdXFEjuzA)
+## 阻塞、非阻塞和同步、异步
+
+
+阻塞和非阻塞 I/O 其实是针对操作系统内核而言的，而不是 nodejs 本身。阻塞 I/O 的特点就是**一定要等到操作系统完成所有操作后才表示调用结束**，而非阻塞 I/O 是调用后立马返回，不用等操作系统内核完成操作。
+
+阻塞I/O造成CPU等待I/O，CPU的处理能力不能充分利用，浪费等待时间。
+非阻塞I/O不带数据直接返回，性能提高很大，但完整的I/O并没有完成，所有应用程序需要重复调用I/O操作来确认是否完成，这种叫**轮询**
+
+nodejs中的异步 I/O 采用**多线程**的方式，由 `EventLoop`、`I/O 观察者`，`请求对象`、`线程池`四大要素相互配合，共同实现。
+
+
+## Js
+
+JS属于解释型语言，对于解释型的语言说，解释器会对源代码做如下分析:
+
+1. 通过词法分析和语法分析生成 AST(抽象语法树)，接下来会生成执行上下文
+2. 将 AST 转换为字节码（字节码是介于`AST` 和 `机器码`之间的一种代码，但是与特定类型的机器码无关，字节码需要通过解释器将其转换为机器码然后执行。）
+3. 由解释器逐行执行字节码，遇到热点代码启动编译器进行编译，生成对应的机器码, 以优化执行效率。
+
+如果把AST直接转成机器码给V8执行，也可以，但转成的机器码的体积太大，引发了严重的内存占用问题。
+
+所以`解释器`是将字节码转成机器码。
+
+在执行字节码的过程中，如果发现某一部分代码重复出现，那么 V8 将它记做`热点代码`(HotSpot)，然后将这段代码`编译`成`机器码`保存起来，这个用来编译的工具就是V8的`编译器`(也叫做TurboFan) , 因此在这样的机制下，代码执行的时间越久，那么执行效率会越来越高，因为有越来越多的字节码被标记为热点代码，遇到它们时直接执行相应的机器码，不用再次将转换为机器码。
+
+编译器和解释器的 根本区别在于前者会编译生成二进制文件但后者不会。
+
+并且，这种字节码跟编译器和解释器结合的技术，称之为即时编译(JIT)。
+
+![](../image/howJSRun.png)
 
 ## [Cookie、Session、Token、JWT](https://juejin.im/post/6844904034181070861)
 
