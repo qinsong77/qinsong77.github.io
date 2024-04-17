@@ -203,6 +203,18 @@ When building design system, these requirements need answer:
 - Maintainability: it should be easy and seamless to modify and maintain.
 
 
+### shadcn/ui
+
+- [shadcn/ui 是什么、使用方式、实现原理](https://mp.weixin.qq.com/s/Vo6gz7YiyPmHSyVssyJJ9A)
+
+Shadcn UI 组件的通用架构如下：
+
+![](./image/shadcn_base_infa_design.png)
+
+shadcn/ui基于核心原则构建，即组件的设计应与其实现分开。因此，shadcn/ui中的每个组件都具有两层架构。即：
+* 结构和行为层
+* 样式层
+
 ## reference
 
 - [The Modern Guide to Packaging your JavaScript library](https://github.com/frehner/modern-guide-to-packaging-js-library)

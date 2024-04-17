@@ -8,10 +8,29 @@ title: Typescript
 ### [interface和type的区别](https://www.jianshu.com/p/555e6998af36)
 不同点：
 
-- 扩展语法： interface使用extends，type使用‘&’
+- 扩展语法： `interface`使用`extends`，type使用`&`
 - 同名合并：interface 支持，type 不支持。
 - 描述类型：对象、函数两者都适用，但是 type 可以用于基础类型、联合类型、元祖。
-- 计算属性：type 支持计算属性，生成映射类型,；interface 不支持。
+- 计算属性：type 支持计算属性，生成映射类型,；interface 不支持
+```ts
+// type 能使用 in 关键字生成映射类型，但 interface 不行。
+type Keys = "firstname" | "surname"
+
+type DudeType = {
+[key in Keys]: string
+}
+
+const test: DudeType = {
+firstname: "Pawel",
+surname: "Grzybek"
+}
+
+// 报错
+//interface DudeType2 {
+//  [key in keys]: string
+//}
+
+```
 
 相同点：
 
@@ -20,8 +39,8 @@ title: Typescript
 - 总的来说，公共的用 interface 实现，不能用 interface 实现的再用 type 实现。主要是一个项目最好保持一致。
 
 ## 泛型
-泛型，即为更广泛的约束类型。解决类型不确定时的约束，如array中map的声明，
-定义了一个泛型变量`T`。`T`作为泛型变量的含义为：在定义约束条件时，暂时还不知道数组的每一项数据类型到底是什么，因此我们只能放一个占位标识在这里，待具体使用时再来明确每一项的具体类型。
+泛型，即为更广泛的约束类型。解决类型不确定时的约束，如array中`map`的声明，
+定义了一个泛型变量`T`。`T`作为泛型变量的含义为：在定义约束条件时，暂时还不知道数组的每一项数据类型到底是什么，因此只能放一个占位标识在这里，待具体使用时再来明确每一项的具体类型。
 回调函数会返回一个新的数组项，因此需要重新定义一个新的泛型变量来表达这个新数组，即为`U`。
 ```typescript
 interface Array<T> {
@@ -185,9 +204,7 @@ function fetchDat(): Promise<Result<page<Person>>> {
 
 # Typescript 使用总结
 
-最近这两年，有很多人都在讨论 Typescript，无论是社区还是各种文章都能看出来，整体来说正面的信息是大于负面的，这篇文章就来整理一下我所了解的 Typescript。
-
-本文主要分为 3 个部分：
+主要分为 3 个部分：
 
 - Typescript 基本概念
 - Typescript 高级用法
@@ -195,7 +212,7 @@ function fetchDat(): Promise<Result<page<Person>>> {
 
 ## Typescript 基本概念
 
-至于官网的定义，这里就不多做解释了，大家可以去官网查看。[Typescript 设计目标](https://github.com/Microsoft/TypeScript/wiki/TypeScript-Design-Goals)
+至于官网的定义，官网：[Typescript 设计目标](https://github.com/Microsoft/TypeScript/wiki/TypeScript-Design-Goals)
 
 我理解的定义：赋予 Javascript 类型的概念，让代码可以在运行前就能发现问题。
 
@@ -302,7 +319,7 @@ function a(a: number, b?: number) {}
 
 ## Typescript 高级用法
 
-Typescript 中的基本用法非常简单，有 js 基础的同学很快就能上手，接下来我们分析一下 Typescript 中更高级的用法，以完成更精密的类型检查。
+-[一文带你理解TS中各种高级语法](https://mp.weixin.qq.com/s/B4BHeXliyRHw8TgVva7xcw)
 
 ### 类型断言
 
@@ -887,9 +904,10 @@ const isString = (val: unknown): val is string => getType(val) === 'string'
 
 - `Partial<T>`，将 `T` 中的类型都变为可选；
 - `ReadOnly<T>`，将 `T` 中的类型都变为只读；
-- `Pick`, 抽取对象子集，挑选一组属性并组成一个新的类型；
-- `Record`，只作用于 obj 属性而不会引入新的属性；
-- `Exclude<T, U>`，从 `T` 中剔除可以赋值给 `U `的类型；
+- `Pick<Type, Keys>`, 抽取对象子集，挑选一组属性并组成一个新的类型；
+- `Omit<Type, Keys>`, 从type中剔除keys后的新类型
+- `Record<Keys, Type>`，只作用于 obj 属性而不会引入新的属性；
+- `Exclude<UnionType, ExcludedMembers>`，从 `T` 中剔除可以赋值给 `U `的类型；
 - `Extract<T, U>`，提取 T 中可以赋值给 U 的类型；
 - `NonNullable<T>`，从 T 中剔除 null 和 undefined；
 - `Parameters<T>`，获取函数的参数类型，将每个参数类型放在一个元组中；
@@ -950,7 +968,13 @@ type Pick<T, K extends keyof T> = {
 Pick映射类型有两个参数:
 - 第一个参数T，表示要抽取的目标对象
 - 第二个参数K，具有一个约束：K一定要来自T所有属性字面量的联合类型
-
+##### Omit
+```ts
+/**
+ * Construct a type with the properties of T except for those in type K.
+ */
+type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
+```
 ##### Record
 ```ts
 /**
@@ -1042,8 +1066,7 @@ type excluded2 = Exclude<Test | salary | { noSalary: boolean }, salary>; //{ noS
 
 TypeScript与ECMAScript 2015一样，任何包含**顶级import或者export**的文件都被当成一个模块。相反地，如果一个文件不带有顶级的import或者export声明，那么它的内容被视为**全局可见**的（因此对模块也是可见的）（全局就是以tsconfig.json文件为根目录的所有文件都能访问到）
 
-
-
+比如下面`Vue`类型声明就是全局的
 ```ts
 // src/Vue.d.ts
 
@@ -1058,6 +1081,45 @@ declare class Vue {
 }
 ```
 
+但如果文件有`import`或者`export`
+```ts
+import { VueOption } from './option.ts'
+// src/Vue.d.ts
+
+declare class Vue {
+    options: VueOption
+    constructor(options: VueOption)
+}
+```
+那Vue就不再是全局的类型了。
+
+这时候可以手动 `declare global`：
+
+```ts
+import { VueOption } from './option.ts'
+// src/Vue.d.ts
+
+declare global {
+  class Vue {
+    options: VueOption
+    constructor(options: VueOption)
+  }
+}
+```
+不止是 `es module` 的模块里可以用 `global` 声明全局类型，`module` 的方式声明的 `CommonJS` 模块也是可以的：
+
+那么如果就是需要引入模块，但是也需要全局声明类型，有什么更好的方式呢？
+
+通过**编译器指令 `reference`**。这样既可以引入类型声明，又不会导致所有类型声明都变为模块内的：
+
+eg: `next-env.d.ts`
+```ts
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/basic-features/typescript for more information.
+```
 ### 自己写声明文件
 
 比如以前写了一个请求小模块 `myFetch`，代码如下，
@@ -1102,40 +1164,104 @@ declare namespace myFetch { // 使用 namespace 来声明对象下的属性和�
 // keyof any对应的类型为number | string | symbol，也就是可以做对象键(专业说法叫索引 index)的类型集合。
 type k1 = keyof any;
 ```
-## Typescript 总结
+```ts
+function getValueFromKey(obj: object, key: string) {
+  // throw error
+  // key的值为string代表它仅仅只被规定为字符串 
+  // TS无法确定obj中是否存在对应的key
+  return obj[key];
+}
+```
+==>
+```ts
+// 函数接受两个泛型参数
+// T 代表object的类型，同时T需要满足约束是一个对象
+// K 代表第二个参数K的类型，同时K需要满足约束keyof T （keyof T 代表object中所有key组成的联合类型）
+// 自然，在函数内部访问obj[key]就不会提示错误了
+function getValueFromKey<T extends object, K extends keyof T>(obj: T, key: K) {
+  return obj[key];
+}
+```
 
-### Typescript 优点
+* never
 
-1、静态类型检查，提早发现问题。
+表示不存在的值的类型，是任何类型的子类型，除了本身也没有任何子类型，即可以赋值给其他类型，但是其他类型（除了 never））均不能赋值给其他类型，包括any）。
 
-2、类型即文档，便于理解，协作。
+下面的fail 就返回了 never就说明出现这个函数时已经是该处终点了，后续的代码都不会被执行到，所以 console.log 会变灰色意味着这些代码是永远都到达不了的，如果使用 Lint格式化时会删除。
+nodeJs Fn `process.exit` 就是返回never
+```ts
+function fail(msg: string): never {
+  throw new Error(msg)
+}
 
-3、类型推导，自动补全，提升开发效率。
+fail('error')
 
-4、出错时，可以大概率排除类型问题，缩短 bug 解决时间。
+// 下面这行会显示：TS7027: Unreachable code detected.
+console.log(123)
+```
+![img.png](image/relation_types.png)
 
-实战中的优点：
+### `is` 关键字自定义
 
-1、发现 es 规范中弃用的方法，如：Date.toGMTString。
+有时候类型的判断是复杂的，或者这样的判断是通用的，所以为了避免重复的编写我们可能需要对这个类型的保护需要提取成函数，那么就可以使用 `is` 来进行指定。
 
-2、避免了一些不友好的开发代码，如：动态给 obj 添加属性。
+```ts{13}
+type Item1 = {
+  type: 'item1';
+  name: string;
+  age: number;
+}
 
-3、vue 使用变量，如果没有在 data 定义，会直接抛出问题。
+type Item2 = {
+  type: 'item2',
+  title: string;
+  description: string;
+}
 
-### Typescript 缺点
+const isItem1Arr = (value: any): value is Item1[] => {
+  if (!Array.isArray(value)) {
+    return false;
+  }
+  if (value.length === 0) {
+    return true;
+  }
+  return value.every(item => item.type === 'item1');
+}
 
-1、短期增加开发成本。
+const fn = (value: Item1[] | Item2[]): void => {
+  if (isItem1Arr(value)) {
+    value.forEach(item => {
+      item.age // no error
+    });
+  }
+}
+```
 
-2、部分库还没有写 types 文件。
+### 定义类型的对象增加属性，并避免用`as`
+```ts{10}
+interface User {
+  type: 'student';
+  name: string;
+}
 
-3、不是完全的超集。
+const createUser = (name: string): User => {
+  // const result = {
+  //   type: 'student'
+  // } as User;
+  const result = <User>{
+    type: 'student'
+  };
 
-实战中的问题：
+  if (name) {
+    result.name = parseName(name);
+  }
 
-1、还有一些坑不好解决，axios 编写了拦截器之后，typescript 反映不到 response 中去。
-
+  return result;
+}
+```
 ## 参考资料
 
-- [Typescript 官网](https://www.tslang.cn/)
+- [Typescript 官网](https://www.typescriptlang.org/)
 - [一份通俗易懂的 TS 教程，入门 + 实战](https://mp.weixin.qq.com/s/C3A-uNwAeqajB4NqwFIBPQ)
 - [深入理解 Typescript](https://jkchao.github.io/typescript-book-chinese/)
+

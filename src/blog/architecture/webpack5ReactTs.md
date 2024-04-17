@@ -2,6 +2,7 @@
 # 从零搭建 webpack5 + React + Typescript + Jest 基础模版
 > not Done
 
+* repo下READMEN是最新的
 [github](https://github.com/qinsong77/webpack5-react-template)
 
 ## 初始化 package.json

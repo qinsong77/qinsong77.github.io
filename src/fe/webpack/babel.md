@@ -5,7 +5,7 @@ title: Babel
 
 **Babel is a JavaScript compiler.**
 
-Babel就是一个JavaScript编译器，babel编译分为三个阶段，**解析（parse），转换（transform），生成（generate）**。
+Babel就是一个JavaScript编译器，babel编译分为三个阶段，**解析（parse），转换（transform），生成（generate）**。解析过程又可分为**词法解析**和**语法解析**两个过程。
 Babel本身不支持转换，转换是通过一个个 plugin实现。
 
 ![](./image/babel.png)

@@ -45,6 +45,7 @@ webpack 打包原理
 
 ### 原理
 
+- [Vite 的实现原理](https://mp.weixin.qq.com/s/ejkfARh6hlOAUnw5Eadb6Q)
 - [文章](https://juejin.cn/post/6931618997251080200)
 
 当声明一个 script 标签类型为 module 时如：

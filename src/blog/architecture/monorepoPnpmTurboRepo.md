@@ -55,11 +55,12 @@ pnpm init
 ```json
 {
   "engines": {
-    "node": ">=14.6",
+    "node": ">=18.17.0",
+    "pnpm": ">=8",
     "npm": "please use pnpm",
     "yarn": "please use pnpm"
   },
-  "packageManager": "pnpm@7.6.0"
+  "packageManager": "pnpm@8.9.0"
 }
 ```
 
@@ -134,12 +135,12 @@ auto-install-peers=false
 
 ```yaml
 packages:
-  - "apps/**"
+  - "apps/*"
   - "packages/**"
-  - "projects/**"
+  - '!**/__test__/**'
 ```
 
-这里如果是 `'packages/*'`, 只会识别直接子目录下所有的包，而`'packages/**`, 2个`*`会识别到嵌套的子目录。 而`'!**/test/**'`会排除掉所有的`test`目录。
+这里如果是 `'packages/*'`, 只会识别直接子目录下所有的包，而`'packages/**`, 2个`*`会识别到嵌套的子目录。 而`'!**/__test__/**'`会排除掉所有的`__test__`目录。
 
 创建文件夹目录结构
 
@@ -161,9 +162,6 @@ packages:
 │   │   ├── package.json
 │   ├── webpack-react-base
 │   │   ├── package.json
-├── projects
-│   |   ├── demo
-│   │   |    ├── package.json
 ├── package.json
 ├── pnpm-lock.yaml
 └── pnpm-workspace.yaml
@@ -262,7 +260,7 @@ pnpm add axios --filter @apps/web
 # 3. 模块之间的相互依赖
 pnpm install @sysuke/eslint-config-react @sysuke/tsconfig --filter @sysuke/webpack-react-base -D
 # 安装到多个项目
- pnpm add mf-communication --filter="@mf.react-ts/*"
+pnpm add mf-communication --filter="@mf.react-ts/*"
 # 会执行所有 package 下的 build 命令
 pnpm build --filter "./packages/**"
 # 并行的跑apps所有的 dev 命令
@@ -342,8 +340,28 @@ Either start with `eslint-config-` or `@SCOPE/eslint-config.`
 pnpm add husky lint-staged @commitlint/cli @commitlint/config-conventional  -w -D
 ```
 
-### Release工作流
+## Release工作流 - changesets
 
+::: details npm版本规范
+
+版本格式：主版本号.次版本号.修订号
+
+版本号递增规则如下：
+
+- 主版本号：当你做了不兼容的 API 修改，
+- 次版本号：当你做了向下兼容的功能性新增，
+- 修订号：当你做了向下兼容的问题修正。
+
+> 先行版本号及版本编译信息可以加到“主版本号.次版本号.修订号”的后面，作为延伸。 比如，我们经常在开源项目中见到的：alpha、beta 、rc
+
+here is the detail doc: [语义化版本 2.0.0](https://semver.org/lang/zh-CN/)
+
+npm 的版本匹配策略
+
+- `^1.0.1`：只要主版本一致都匹配（1.x），如：1、1.x
+- `~1.0.1`：只要主版本和次版本一致都匹配（1.1.x），如：1.1、1.1.x
+- `*`/`latest` ：全匹配，不受版本号影响，可以命中一切新发布的版本号
+:::
 一般发一个包，只需要在待发布项目目录，`npm login` + `npm publish`，更新也是一样。
 但每次包（Package）的发布，需要修改 `package.json` 的 `version` 字段，以及同步更新一下本次发布修改的 `CHANGELOG.md`。
 
@@ -364,6 +382,27 @@ pnpm add husky lint-staged @commitlint/cli @commitlint/config-conventional  -w -
 
 ![](./images/changeset-flow.png)
 
+### process
+
+1. `changeset init`
+- 新项目执行该命令，完成对项目的初始化
+- 会在根目录下生成 .changeset 目录，config.json配置文件
+
+2. `changeset`
+
+- 执行该命令，进行版本管理，会交互式选择不同项目，以及确定发布的版本
+- 会生成一些 .md 文件在目录下，会在 version 的时候消耗
+
+3. `changeset version`
+
+- 消耗上一步生成的相关的一些版本信息及记录内容的 .md 文件，并生成或更新 CHANGELOG.md 文件，之后 .md 文件会被自动删除
+- 相应的 package.json 中的 version 信息也会同步更新
+
+4. `changeset publish`
+
+- 发布包到远程 npm 源
+- 前置条件是你已经进行了 npm 账户登录，如果包名称为 @ah-ailpha/components该类型，还需要在 npm 账户中设置组织
+
 * 安装
 
 ```shell
@@ -383,7 +422,7 @@ pnpm changeset init
 
 ```json
 {
-  "$schema": "https://unpkg.com/@changesets/config@2.1.1/schema.json",
+  "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
   "changelog": "@changesets/cli/changelog",
   "commit": false,
   "fixed": [],
@@ -413,8 +452,8 @@ pnpm changeset init
 ```
 
 - commit: 设置是否把执行 `changeset add `或 `changeset version` 操作时对修改用 `git` 自动提交对应文件。(A GitHub token with repo, write:packages permissions)
-- linked: 设置共享版本的包，而不是独立版本的包，例如一个组件库中主题和单独的组件的关系，也就是修改 Version 的时候，共享的包需要同步一起更新版本
 - [fixed](https://github.com/changesets/changesets/blob/main/docs/fixed-packages.md): 设置那些包的版本保持一致的更新
+- linked: 设置共享版本的包，而不是独立版本的包，例如一个组件库中主题和单独的组件的关系，也就是修改 Version 的时候，共享的包需要同步一起更新版本
 - access: 公私有安全设定，内网建议 `restricted` ，开源使用 `public`
 - baseBranch: 设置默认的 Git 分支，例如现在 GitHub 的默认分支应该是 `main`
 - updateInternalDependencies: 设置互相依赖的包版本更新机制，它是一个枚举（`major|minor|patch`），例如设置为 minor 时，只有当依赖的包新了`minor` 版本或者才会对应地更新 `package.json` 的 `dependencies` 或 `devDependencies` 中对应依赖的版本
