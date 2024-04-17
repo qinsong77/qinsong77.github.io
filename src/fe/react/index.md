@@ -543,6 +543,23 @@ React应用的根节点通过current指针在不同Fiber树的rootFiber间切换
 
 ## 受控与非受控组件
 
+- [React 中 Form 的最佳实践](https://mp.weixin.qq.com/s/xBYhfvnUIZmuuI7lOfNbJw)
+
+文章核心点：
+
+- 多使用非受控表单，会简化代码结构并优化性能。
+- 在 `onSubmit` 函数中使用 `new FormData (...)` 而不要使用 useRef。
+- 封装和组合受控表单去尽量减少 `state` 更新对其他组件的影响，并依靠组合后的 DOM 来处理提交事件。
+```ts
+const handleSubmit = (event) => {
+     event.preventDefault();
+     const formData = new FormData(event.currentTarget as HTMLFormElement);
+     // const inputValue = formData.get('inputName');
+     const { name, email, address } = Object.fromEntries(formData);
+   };
+
+```
+
 受控组件：在 HTML 中，表单元素（如`<input>、 <textarea>、<select>`)通常自己维护 state，并根据用户输入进行更新。
 即如Input的value绑定了state，而onChange时使用`setState`更新。
 
@@ -618,6 +635,45 @@ class NameForm extends React.Component {
 
 ### note
 1. 如果 `input` 的 `value` 是 `undefined` ，则这个`input`是**非受控组件**。
+
+#### usePropsValue
+组件库中的组件通常要同时支持受控与非受控，下面是封装的一个hook，来自[antd-mobile:React 组件的受控与非受控](https://zhuanlan.zhihu.com/p/536322574)
+```ts
+import { SetStateAction, useRef } from 'react'
+import { useMemoizedFn, useUpdate } from 'ahooks'
+
+type Options<T> = {
+  value?: T
+  defaultValue: T
+  onChange?: (v: T) => void
+}
+
+export function usePropsValue<T>(options: Options<T>) {
+  const { value, defaultValue, onChange } = options
+
+  const update = useUpdate()
+
+  const stateRef = useRef<T>(value !== undefined ? value : defaultValue)
+  if (value !== undefined) {
+    stateRef.current = value
+  }
+
+  const setState = useMemoizedFn(
+    (v: SetStateAction<T>, forceTrigger: boolean = false) => {
+      // `forceTrigger` means trigger `onChange` even if `v` is the same as `stateRef.current`
+      const nextValue =
+        typeof v === 'function'
+          ? (v as (prevState: T) => T)(stateRef.current)
+          : v
+      if (!forceTrigger && nextValue === stateRef.current) return
+      stateRef.current = nextValue
+      update()
+      onChange?.(nextValue)
+    }
+  )
+  return [stateRef.current, setState] as const
+}
+```
 
 ## [setState](https://zhuanlan.zhihu.com/p/39512941)
 
@@ -1470,9 +1526,9 @@ function MyComponent() {
 
 ### 3. import() 原理
 
-import() 函数是由TS39提出的一种动态加载模块的规范实现，其返回是一个 promise。在浏览器宿主环境中一个`import()`的参考实现如下：
+`import()` 函数是由TS39提出的一种动态加载模块的规范实现，其返回是一个 promise。在浏览器宿主环境中一个`import()`的参考实现如下：
 ```js
-function import(url) {
+function _import(url) {
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");
     const tempGlobal = "__tempModuleLoadingVariable" + Math.random().toString(32).substring(2);
@@ -1696,6 +1752,34 @@ This component declares some effects to be run on mount and unmount. Normally th
 - [React re-renders guide: everything, all at once](https://www.developerway.com/posts/react-re-renders-guide)
 
 翻译：[React 重新渲染：最佳实践](https://zhuanlan.zhihu.com/p/554118692)
+
+一个 React 组件是否发生了变化由三个因素决定
+- props
+- state
+- context
+
+这三个因素中的任何一个发生了变化，组件都会认为自己应该发生变化。
+
+state 和 context 都是不可变数据,一般是主动调用 dispatch 去触发他们发生改变
+
+但对于props，React 组件的每次执行，都会传入新的 props 对象，虽然内容可能一样，但是在内存中却已经发生了变化。
+
+```ts
+function Child(props) {}
+
+// 执行一次传入新的对象
+Child({})
+
+// 执行一次传入新的对象
+Child({})
+```
+
+与 state 不一样的是，props 并没有缓存在别的地方，因此，一个组件 的 props 哪怕什么都没有变化，比较的结果也是 false
+
+
+但React diff有一个逻辑是：**如果父组件被判定为没有变化，那么，在判断子组件是否发生变化时，不会比较子组件的 props**，除此之外，Fiber Tree 的根节点，被判定为始终不会发生变化。
+
+above from： [理解这个机制，是成为React性能优化高手的关键](https://mp.weixin.qq.com/s/5J3yLpC51NYJZMDnAcDe0w)
 
 ## forwardRef
 

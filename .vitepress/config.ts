@@ -15,9 +15,9 @@ const nav: DefaultTheme.NavItem[] = [
         activeMatch: '^/fe/js'
       },
       {
-        text: 'Vue',
-        link: '/fe/vue/',
-        activeMatch: '^/fe/vue'
+        text: 'React',
+        link: '/fe/react/',
+        activeMatch: '^/fe/react'
       },
       {
         text: 'Typescript',
@@ -25,9 +25,9 @@ const nav: DefaultTheme.NavItem[] = [
         activeMatch: '^/fe/typescript'
       },
       {
-        text: 'React',
-        link: '/fe/react/',
-        activeMatch: '^/fe/react'
+        text: 'Vue',
+        link: '/fe/vue/',
+        activeMatch: '^/fe/vue'
       },
       {
         text: 'CSS',
@@ -214,40 +214,6 @@ export const sidebar: DefaultTheme.Sidebar = {
       ]
     },
     {
-      text: 'Vue', // 必要的
-      items: [
-        {
-          text: '原理',
-          link: '/fe/vue/'
-        },
-        {
-          text: 'Vuex',
-          link: '/fe/vue/vuex'
-        },
-        {
-          text: '常用笔记',
-          link: '/fe/vue/alwaysNote'
-        },
-        {
-          text: 'Vue3.0',
-          link: '/fe/vue/vue3'
-        }
-      ]
-    },
-    {
-      text: 'Typescript',
-      items: [
-        {
-          text: 'summary',
-          link: '/fe/typescript/'
-        },
-        {
-          text: 'Typescript with React',
-          link: '/fe/typescript/typescript_with_react'
-        }
-      ]
-    },
-    {
       text: 'React', // 必要的
       items: [
         {
@@ -271,12 +237,54 @@ export const sidebar: DefaultTheme.Sidebar = {
           link: '/fe/react/next'
         },
         {
+          text: 'React 18 & 19',
+          link: '/fe/react/react_18_19'
+        },
+        {
+          text: 'Next.js latest(14)',
+          link: '/fe/react/next_latest'
+        },
+        {
           text: '构建你自己的 React 框架',
           link: '/fe/react/build_mini_react'
         },
         {
           text: 'Collection',
           link: '/fe/react/collection'
+        }
+      ]
+    },
+    {
+      text: 'Typescript',
+      items: [
+        {
+          text: 'summary',
+          link: '/fe/typescript/'
+        },
+        {
+          text: 'Typescript with React',
+          link: '/fe/typescript/typescript_with_react'
+        }
+      ]
+    },
+    {
+      text: 'Vue', // 必要的
+      items: [
+        {
+          text: '原理',
+          link: '/fe/vue/'
+        },
+        {
+          text: 'Vuex',
+          link: '/fe/vue/vuex'
+        },
+        {
+          text: '常用笔记',
+          link: '/fe/vue/alwaysNote'
+        },
+        {
+          text: 'Vue3.0',
+          link: '/fe/vue/vue3'
         }
       ]
     },
