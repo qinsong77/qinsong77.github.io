@@ -4,6 +4,19 @@
 
 ## Basic
 
+### shell
+
+```shell
+python --version
+
+brew install pyenv
+# 使用pyenv安装特定版本的Python
+pyenv install 3.12
+# 设置一个Python版本为全局默认
+pyenv global 3.12.2
+pyenv local 3.12.2  # 在当前目录设置本地Python版本
+```
+
 ### 数据类型和变量
 
 ```python
@@ -127,7 +140,7 @@ for key in d:
 
 #### set
 set和dict类似，也是一组key的集合，但不存储value。由于key不能重复，所以，在set中，没有重复的key。
-```pyhton
+```python
 s = set([1, 2, 3])
 // 添加 add(key)
 s.add(4)

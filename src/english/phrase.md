@@ -114,3 +114,13 @@ The meeting has been brought forward to 10:00 AM to accommodate everyone's avail
 
 - Let's touch base after the meeting to align our strategies.
 - Let's touch base after the meeting to go over the next steps. 我们会后碰一下接下来的行动
+
+#### 我刚口误了
+
+- I just misspoke.
+  - I apologize, I just misspoke about the project deadline. It's actually the end of the month.
+  - I just misspoke regarding the budget allocation. Let me provide the correct figures. 关于预算分配我刚刚口误了，我现在来提供正确的数据。
+- I made a slip of tongue.
+  - During the presentation, I made a slip of tongue about the sales figures(销售数字)
+- That came out wrong.
+  - I apologize, that came out wrong. I didn't mean to offend anyone. 对不起，我刚口误了，我没有意图冒犯任何人。

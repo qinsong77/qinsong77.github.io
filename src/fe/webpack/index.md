@@ -22,16 +22,13 @@ title: Summary
 
 ## 文章合集
 - [webpack 5源码解析系列](https://juejin.cn/column/6978684601921175583)
-- [[万字总结] 一文吃透 Webpack 核心原理](https://juejin.cn/post/6949040393165996040)
+- [万字总结一文吃透 Webpack 核心原理](https://juejin.cn/post/6949040393165996040)
+- [基于源码的 Webpack 结构分析](https://mp.weixin.qq.com/s/JjjL3ojDVreAIfdQzYum1g)
 - [webpack 中那些最易混淆的 5 个知识点](https://juejin.cn/post/6844904007362674701)
-- [Webpack4打包机制原理解析](https://mp.weixin.qq.com/s/WXUW4bS4nT90uycodN0avw)
-- [Webpack面试题](https://juejin.cn/post/6844904094281236487)
-- [从源码窥探Webpack4.x原理](https://juejin.cn/post/6844904046294204429)
-- [webpack小书](https://www.timsrc.com/article/2/webpack-book)
-- [Webpack揭秘](https://juejin.cn/post/6844903685407916039)
-- [由浅入深配置webpack4](https://juejin.im/post/6859888538004783118)
-- [手写webpack核心原理](https://juejin.im/post/6854573217336541192)
-- [Vite 原理分析](https://juejin.cn/post/6881078539756503047)
+
+### DSL
+`domain specific language`，领域特定语言
+
 - [前端 DSL 实践指南](https://zhuanlan.zhihu.com/p/107947462)
 
 

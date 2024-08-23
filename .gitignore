@@ -35,7 +35,7 @@ typings/
 .cache
 /src/.vuepress/dist/
 
- dist
+dist
 
  # vitepress
 .vitepress/dist

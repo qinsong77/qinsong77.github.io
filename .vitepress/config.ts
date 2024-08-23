@@ -566,6 +566,10 @@ export const sidebar: DefaultTheme.Sidebar = {
         {
           text: 'v8',
           link: '/backEnd/node/v8'
+        },
+        {
+          text: 'collections',
+          link: '/backEnd/node/collections'
         }
       ]
     },

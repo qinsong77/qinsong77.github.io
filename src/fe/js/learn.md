@@ -1429,11 +1429,11 @@ runtime.mark = function(genFun) {
 ```
 
 ### async await
-generator function 即能支持同步行为，也能支持异步行为。
+`generator function` 即能支持同步行为，也能支持异步行为。
 
 async function 只支持异步行为。
 
-await 关键字总是串行，所以在并行的情况下promsie更合适，当然也可以`await Promise.all[]`
+await 关键字总是串行，所以在并行的情况下`promise`更合适，当然也可以`await Promise.all[]`
 
 async await更强语义化和标准化，async/await 语法可以视为多个 callback 函数组合的语法糖，可以简化我们编写的异步代码的复杂性。
 
@@ -1461,6 +1461,149 @@ a2:  10 ------- 输出10，await左边的a是同步的先固定成0了
 其实 a 为 0 是因为加法运算法，先算左边再算右边，所以会把 0 固定下来。如果把题目改成 `await 10 + a` 的话，答案就是 11 了。
 
 
+#### `thenable`对象
+`await`命令后面是一个`thenable`对象（即定义了`then`方法的对象），那么`await`会将其等同于 `Promise` 对象。
+```js
+class Sleep {
+  constructor(timeout) {
+    this.timeout = timeout;
+  }
+  then(resolve, reject) {
+    const startTime = Date.now();
+    setTimeout(
+      () => resolve(Date.now() - startTime),
+      this.timeout
+    );
+  }
+}
+
+(async () => {
+  const sleepTime = await new Sleep(1000);
+  console.log(sleepTime);
+})();
+// 1000
+```
+上面代码中，await命令后面是一个Sleep对象的实例。这个实例不是 `Promise` 对象，但是因为定义了`then`方法，`await`会将其视为`Promise`处理。
+#### 错误处理
+1. `async`中`await`用`Promise`的`catch`捕获了错误，并不能在外层捕获，try catch捕获不了，无论是`promise`内部抛出的错误还是`then`里抛出的错误，且会执行到`return`
+```js
+async function test() {
+  try {
+    const res = await new Promise((resolve) => {
+      setTimeout(() => resolve(2), 2000)
+      // throw new Error(`error:${2222}`)
+    })
+      .then((res) => {
+        if (res === 2) {
+          throw new Error(`error:${res}`)
+        }
+        console.log('1111') // 不会执行
+        return res
+      })
+      .catch((e) => {
+        // 无论是`promise`内部抛出的错误还是`then`里抛出的错误，都会在这里catch
+        console.log('catch e')
+        console.log(e)
+        // return 'error text' // 如果return了，会当作这个await的返回，对应的test().then会输出error text
+      })
+    console.log('return')
+    return res
+  } catch (e) {
+    // 这里catch不了
+    console.log('e0')
+    console.log(e)
+  }
+}
+test().then((res) => {
+  // 输出undefined
+  console.log(res)
+})
+```
+2. `async`函数中 如果try catch了，如果抛出了错误 try catch内的，await throw error promise后的都不会执行，错误会被try catch住。
+
+```js
+async function test() {
+  try {
+    const res = await new Promise((resolve) => {
+      setTimeout(() => resolve(2), 2000)
+      // throw new Error(`error:${2222}`) //和then中throw没区别
+    }).then((res) => {
+      if (res === 2) {
+        throw new Error(`error:${res}`)
+      }
+      return res
+    })
+    console.log('res: ' + res) // 不会执行
+    return res
+  } catch (e) {
+    console.log('e0')
+    console.log(e)
+  }
+  return 'final return'
+}
+
+test().then((res) => {
+  console.log(res) // final return
+}).catch((e) => { // 不会执行，除非test非try catch的部分，再抛出错误
+  console.log('eee: ', e)
+})
+```
+
+任何一个`await`语句后面的 `Promise` 对象变为`reject`状态，那么整个`async`函数都会中断执行。
+
+```js
+async function f() {
+  await Promise.reject('出错了');
+  await Promise.resolve('hello world'); // 不会执行
+}
+```
+如果要前一个异步操作失败，也不要中断后面的异步操作。这时可以将第一个`await`放在`try...catch`结构里面，这样不管这个异步操作是否成功，第二个await都会执行。
+
+```js
+async function f() {
+  try {
+    await Promise.reject('出错了');
+  } catch(e) {
+  }
+  return await Promise.resolve('hello world');
+}
+
+f()
+.then(v => console.log(v))
+// hello world
+```
+or,`await`后面的 `Promise` 对象再跟一个`catch`方法，处理前面可能出现的错误。
+```js
+async function f() {
+  await Promise.reject('出错了')
+    .catch(e => console.log(e));
+  return await Promise.resolve('hello world');
+}
+
+f()
+.then(v => console.log(v))
+// 出错了
+// hello world
+```
+使用`try...catch`结构，实现多次重复尝试。
+```js
+const superagent = require('superagent');
+const NUM_RETRIES = 3;
+
+async function test() {
+  let i;
+  for (i = 0; i < NUM_RETRIES; ++i) {
+    try {
+      await superagent.get('http://google.com/this-throws-an-error');
+      break;
+    } catch(err) {}
+  }
+  console.log(i); // 3
+}
+
+test();
+```
+上面代码中，如果`await`操作成功，就会使用`break`语句退出循环；如果失败，会被`catch`语句捕捉，然后进入下一轮循环。
 ## JSON
 
 JSON 是一种数据格式，并不是编程语言，多用于数据传输交换和静态配置
@@ -1586,3 +1729,61 @@ V8 把堆内存分成了两部分进行处理——`新生代内存和老生代�
 由于JS的单线程机制，V8 在进行垃圾回收的时候，不可避免地会阻塞业务逻辑的执行，倘若老生代的垃圾回收任务很重，那么耗时会非常可怕，严重影响应用的性能。那这个时候为了避免这样问题，V8 采取了增量标记的方案，即将一口气完成的标记任务分为很多小的部分完成，每做完一个小的部分就"歇"一下，就js应用逻辑执行一会儿，然后再执行下面的部分，如果循环，直到标记阶段完成才进入内存碎片的整理上面来。其实这个过程跟React Fiber的思路有点像。
 
 #### [定时器setTimeout源码深入](http://www.alloyteam.com/2021/03/15389/)
+
+## [Stream](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API)
+
+### [ReadableStream](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream)
+
+### [TextDecoder](https://zh.javascript.info/text-decoder)
+
+`TextDecoder` 接口表示一个文本解码器，一个解码器只支持一种特定文本编码，例如 UTF-8、ISO-8859-2、KOI8-R、GBK，等等，default is 'utf-8' or 'utf8'。解码器将字节流作为输入，并提供码位流作为输出。
+
+支持Node.js和Web API
+
+```js
+// 如stream（是否允许错误的解码）和fatal（是否抛出错误而不是替换非法字符）。
+const decoder = new TextDecoder('utf-8', { stream: true, fatal: true });
+```
+decode方法： TextDecoder 实例有一个decode方法，它接受一个ArrayBuffer或TypedArray作为参数，并将其解码为字符串。如果数据包含不完整的字符，decode方法可以留下未解码的数据以供后续调用使用。
+```js
+const buffer = new ArrayBuffer(8);
+// 假设buffer已经被填充了UTF-8编码的数据
+const str = decoder.decode(buffer);
+console.log(str); // 输出解码后的字符串
+```
+* 处理不完整的数据：
+如果有一系列数据块需要解码，可以连续调用`decode`方法。如果最后一块数据不完整，`decode`方法会返回一个包含部分解码文本的字符串，并留下未解码的部分以供下次调用。
+```js
+const chunks = [
+  Uint8Array.from([0xEF, 0xBB, 0xBF, 0xF4]), // 包含UTF-8的BOM和部分字符
+  Uint8Array.from([0x8F, 0xBE]), // 包含部分字符，但不完整
+  Uint8Array.from([0x45, 0x43, 0x4F, 0x44, 0x45]) // 包含剩余的完整字符
+];
+
+// 创建TextDecoder实例，指定编码为UTF-8
+const decoder = new TextDecoder('utf-8');
+
+let partialResult = '';
+
+// 处理每个数据块
+chunks.forEach((chunk, index) => {
+  if (index === 0) {
+    // 第一个数据块可能包含BOM，我们将其剥离
+    partialResult = decoder.decode(chunk, { stream: true }).replace('\uFEFF', '');
+  } else {
+    // 对于后续的数据块，我们继续解码并追加到结果字符串
+    partialResult += decoder.decode(chunk, { stream: true, partial: true });
+  }
+});
+
+console.log(partialResult); // 输出最终解码的字符串
+```
+错误处理：
+当`fatal`选项设置为`true`时，如果解码过程中遇到无法正确解码的字符，`decode`方法将抛出一个Error。如果`fatal`选项设置为false（默认值），则遇到无法解码的字符时，将用Unicode替换字符``（U+FFFD）代替
+
+TextDecoder 是为了处理二进制数据而设计的，所以它不会处理像HTML或XML这样的标记语言。如果需要解析这些类型的数据，应该使用相应的解析器。
+
+### [TransformStream](https://developer.mozilla.org/zh-CN/docs/Web/API/TransformStream)
+
+TransformStream 是 Stream API 的一部分，提供了一种在链式管道传输中转换数据流的方法。允许将一种格式的数据流转换成另一种格式，非常适合用于解码或编码视频帧、解压缩数据、将 XML 转换为 JSON 等场景。
+

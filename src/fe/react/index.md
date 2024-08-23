@@ -74,6 +74,10 @@ React15架构可以分为两层：
 
 ## React16架构
 
+在React15及以前，`Reconciler`采用递归的方式创建虚拟DOM，**递归过程是不能中断的**。如果组件树的层级很深，递归会占用线程很多时间，造成卡顿。
+
+为了解决这个问题，React16将**递归的无法中断的更新重构为异步的可中断更新**，由于曾经用于递归的虚拟DOM数据结构已经无法满足需要。于是，全新的Fiber架构应运而生。
+
 React16架构可以分为三层：
 
 - Scheduler（调度器）—— 调度任务的优先级，高优任务优先进入Reconciler
@@ -1702,7 +1706,7 @@ React17 是一个用以稳定CM的过渡版本。
 
 ![](./image/model.png)
 
-#### [StrictMode](https://zh-hans.reactjs.org/docs/strict-mode.html#detecting-unexpected-side-effects)
+#### [StrictMode](https://react.dev/reference/react/StrictMode)
 
 react17 其实也是执行了两次render phase ，会调用两次render，constructor方法。但是由于我们经常用`console.log` 去认为就是执行次数，而react又对第二次调用做了静默处理。用`alert`代替，或者`debugger`就可以看到调用两次的效果。
 
@@ -1730,6 +1734,15 @@ function ExampleComponent(props) {
   // Render stuff...
 }
 ```
+besides:
+```ts
+function onClick() {
+  setState((prevState) => {
+    console.log('exec') // 这里也会执行2次
+    return prevState + 1
+  })
+}
+```
 This component declares some effects to be run on mount and unmount. Normally these effects would only be run once (after the component is initially mounted) and the cleanup functions would be run once (after the component is unmounted). In React 18 Strict Mode, the following will happen:
 
 - React renders the component. 
@@ -1752,6 +1765,8 @@ This component declares some effects to be run on mount and unmount. Normally th
 - [React re-renders guide: everything, all at once](https://www.developerway.com/posts/react-re-renders-guide)
 
 翻译：[React 重新渲染：最佳实践](https://zhuanlan.zhihu.com/p/554118692)
+
+- [https://mp.weixin.qq.com/s/svGYB3HvmLDMerlM50BhAg](深度解析 React 性能优化 API)
 
 一个 React 组件是否发生了变化由三个因素决定
 - props
@@ -1780,6 +1795,130 @@ Child({})
 但React diff有一个逻辑是：**如果父组件被判定为没有变化，那么，在判断子组件是否发生变化时，不会比较子组件的 props**，除此之外，Fiber Tree 的根节点，被判定为始终不会发生变化。
 
 above from： [理解这个机制，是成为React性能优化高手的关键](https://mp.weixin.qq.com/s/5J3yLpC51NYJZMDnAcDe0w)
+### 如何优化
+- [✅ Preventing re-renders with composition: moving state down...](https://www.developerway.com/posts/react-re-renders-guide#part3.2)
+
+```tsx
+export default function App() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <>
+        <button onClick={() => setCount(count + 1)}>update</button>
+        {React.createElement('Child', {})}
+        <Child />
+    </>
+  );
+}
+```
+到每次点击，Child组件都会**重新渲染**。
+
+因为JSX本质上是`React.createElement`的语法糖，所以调用`Child`的地方（App 组件内），本质上是调用`React.createElement`，传递的 `props` 为一个空对象，App 两次渲染传递给子组件的 props 并不相等 `{} !== {}`。
+
+#### 最常用的方式：
+
+- React.memo
+```tsx
+const Child = memo(() => {
+  console.log('child render');
+
+  return <div>I am child</div>;
+});
+
+export default function App() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <>
+      <button onClick={() => setCount(count + 1)}>update</button>
+      <Child />
+    </>
+  );
+}
+```
+React 为什么不直接默认给所有组件都包裹一下`memo`? : 因为`memo`并不是免费的，`shallowEqual`会去挨个遍历 props 并进行比较，这个成本可要比全等大多了。
+- Lift content up - 内容提升
+```jsx
+const Child = () => {
+  console.log('child render');
+
+  return <div>I am child</div>;
+};
+
+const Counter = () => {
+  const [count, setCount] = useState(0);
+
+  return <button onClick={() => setCount(count + 1)}>update</button>;
+}
+
+export default function App() {
+  return (
+    <>
+        <Counter />
+        <Child />
+    </>
+  );
+}
+```
+在 React 中，组件本质上就是函数，函数有单一职责原则，组件也适用
+
+- Move state down - 状态下放
+```jsx
+const Child = () => {
+  console.log('child render');
+
+  return <div>I am child</div>;
+};
+
+const Counter = ({children}) => {
+  const [count, setCount] = useState(0);
+
+  return (
+      <div classname={count}>
+        <button onClick={() => setCount(count + 1)}>update</button>
+        {children}
+       </div>
+   );
+}
+
+export default function App() {
+  return (
+      <Counter>
+          <Child />
+      </Counter>
+  );
+}
+```
+原因是`Child`现在是作为`Counter`组件的 `props`，`props` 的内容是在App组件中传递的，因此可以理解成Child依然是直接依赖于App组件，由于App没有重新渲染，因此Child也满足了默认的性能优化策略。
+### re-render list
+* 组件本身使用 `useState` 或 `useReducer` 更新，引起的 `re-render`,即`setState`
+
+但如果是只改变对象的值，点击并不会引起 `re-render`
+eg:
+```js
+const [count, addCount] = useState({ num: 0, time: Date.now() });
+const clickHandler = () => {
+  count.num++;
+  count.time = Date.now();
+  addCount(count);
+};
+```
+原因是更新 `state` 的时候，会有一个新老 `state` 的比较，用的是 `Object.is` 进行比较，如果为 true 则直接返回不更新，源码如下（objectIs 会先判断 Object.is 是否支持，如果不支持则重新实现，eagerState 就是 oldState ）：
+```js
+if (objectIs(eagerState, currentState)) {
+  return;
+}
+```
+state 为不可变数据，每次更新都需要一个新值才会有效。
+
+eg: `forceUpdate`
+```js
+const [, forceUpdate] = useState({});
+forceUpdate({})
+```
+
+* 父组件更新引起子组件的 re-render
+...
 
 ## forwardRef
 

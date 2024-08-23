@@ -308,6 +308,9 @@ export default function Counter2() {
 
 - [源码解读](https://www.jianshu.com/p/a838d8c22089)
 
+> Here's the crux of the issue: **`useEffect` is not a lifecycle hook. It's a mechanism for synchronizing side effects with the state of your app.**
+
+> 依赖数组使用的[Object.is()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is)对比
 ### useEffect 解决了哪些问题
 
 1. 函数组件没有生命周期。
@@ -316,7 +319,7 @@ export default function Counter2() {
 
 3. 业务逻辑散乱在不同的生命周期中
 
-Effect Hook 可以让你在函数组件中执行副作用操作。数据获取，设置订阅以及手动更改 React 组件中的 DOM 都属于副作用。类比于 class component，可以把 useEffect Hook 看做 componentDidMount，componentDidUpdate 和 componentWillUnmount 这三个函数的组合。但也不尽相同。
+Effect Hook 可以让你在函数组件中执行副作用操作。数据获取，设置订阅以及手动更改 React 组件中的 DOM 都属于副作用。~~类比于 class component，可以把 useEffect Hook 看做 componentDidMount，componentDidUpdate 和 componentWillUnmount 这三个函数的组合~~。但也不尽相同。
 
 在 function 组件中，**每当 DOM 完成一次渲染，都会有对应的副作用执行**，useEffect 用于提供自定义的执行内容，它的第一个参数（作为函数传入）就是自定义的执行内容。为了避免反复执行，传入第二个参数（由监听值组成的数组）作为比较(浅比较)变化的依赖，比较之后值都保持不变时，副作用逻辑就不再执行。
 useEffect 还是异步执行的，所谓的异步就是被 React 使用 requestIdleCallback 封装的，只在浏览器空闲时候才会执行，这就保证了不会阻塞浏览器的渲染过程。

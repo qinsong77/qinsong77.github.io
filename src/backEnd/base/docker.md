@@ -222,6 +222,9 @@ docker attach [OPTIONS] CONTAINER
 - docker-compose up：启动Compose文件中定义的服务，创建并启动所有容器。
 
 - docker-compose down：停止Compose文件中定义的服务，删除所有容器和网络。
+- `docker-compose down --remove-orphans`: 停止并删除通过 docker-compose up 命令所启动的所有容器、网络和卷。具体来说：
+  - `down`：停止并删除容器、网络，移除已挂载的卷。
+  - `--remove-orphans`：移除在 `docker-compose.yml` 文件中未定义的但是由 `docker-compose` 创建的任何服务。
 
 - docker-compose ps：显示Compose文件中定义的所有容器的状态。
 

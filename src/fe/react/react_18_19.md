@@ -5,11 +5,20 @@
 - [React 期许的未来（RSC）可不能并不是国内前端想要的未来](https://mp.weixin.qq.com/s/yU6elfP0zSyKese_fu-knA) 列了工作期间遇到种种问题，比如：代码质量应该如何保证，之前工作的公司的同事水平都挺高，可为什么代码总是会变成屎山？是架构做的不好？管理不到位？时间年限太久了？还是什么原因？看起来RSC并不适合重客户端，轻服务端的后台管理系统。
 - [React Server Components手把手教学](https://mp.weixin.qq.com/s/bSV19qdx96Bch_Ryg1pWXA)
 - [Understanding React Server Components](https://vercel.com/blog/understanding-react-server-components)
-- [the-two-reacts/](https://overreacted.io/the-two-reacts/) =》 `UI = f(data, state)`
+- [The-Two-Reacts](https://overreacted.io/the-two-reacts/) => `UI = f(data, state)`
 
-使用http分块传输，利用`RSC协议`将`rsc`转化为可以传输的可序列化数据，实现流失传输，再结合`Suspense`请求未完成前占位，server 端异步执行完后，client在利用react 18的并发模式更新UI。
+核心：使用http分块协议的传输，利用`RSC协议`将`rsc`转化为可以传输的可序列化数据，实现流式stream传输，再结合`Suspense`请求未完成前占位，server 端异步执行完后，client在利用react 18的并发模式更新UI。
 
 ### basic concept
+
+#### Client side rendering
+
+- [Fetch Waterfall in React](https://blog.sentry.io/fetch-waterfall-in-react/)
+
+![](./rsc-image/client-side-rendering.png)
+![](./rsc-image/server-side-rendering.png)
+![](./rsc-image/rsc-tree.png)
+![](./rsc-image/rsc-rendering.png)
 
 #### Serializable - 可序列化
 
@@ -44,7 +53,7 @@
 
 ![](./image/rsc.png)
 
-一款rpc协议最基本的组成包括三部分：
+一款rpc协议最基本地组成包括三部分：
 
 - 数据的序列化与反序列化
 - id映射
@@ -133,6 +142,14 @@ export default function OuterServerComponent() {
 
 ## Hooks
 
+### 18
+- useTransition: 用于过渡动画的 Hook。返回过渡状态和一个函数，用于启动过渡。
+- useDeferredValue：接受一个值并返回一个新值的 hook，类似于使用防抖或节流来延迟更新。旧值将保留，直到紧急更新完成，然后渲染新值。
+- useId：生成唯一 ID 的hook函数。
+- useSyncExternalStore：用于订阅外部 store 的hook。
+- useInsertionEffect：该 hook 用于在读取布局之前将样式插入到 DOM 中，会在所有 DOM 变化之前同步触发。也就是说，该 hook 会在 useLayoutEffect 之前被触发。`useInsertionEffect` 主要用于 `CSS-in-JS` 库，例如 `styled-components`。由于该钩子的作用范围有限，它无法访问 `refs`，也不能安排更新。
+
+### 19
 - use: 读取 Promise 或 Context 等资源的值
 - useOptimistic: 乐观地更新 UI
 
@@ -140,6 +157,9 @@ react-dom:
 
 - useFormStatus：提供上次表单提交的状态信息。
 - useFormState：允许根据表单操作的结果更新状态
+
+### use
+可以在循环和条件判断如`if`中使用
 
 
 ### useDeferredValue
@@ -156,3 +176,116 @@ react-dom:
 默认情况下，由`useDeferredValue` 完成的延迟重新渲染是可中断的。这意味着，如果 React 正在重新渲染一个大列表，但用户再次击键，React 将放弃重新渲染，处理击键，然后再次开始在后台渲染。
 相比之下，`debouncing` 和 `throttling` 仍然会产生卡顿的体验，因为它们会阻塞：它们只是推迟渲染阻塞击键的时刻。
 如果要优化的工作在渲染期间没有发生，则去抖动和限制仍然有用。例如，它们可以让您发出更少的网络请求。您也可以同时使用这些技术。
+
+### `useOptimistic(state, updateFn)`
+```jsx
+import { useOptimistic } from 'react';
+
+function AppContainer() {
+  const [optimisticState, addOptimistic] = useOptimistic(
+    state,
+    // updateFn
+    (currentState, optimisticValue) => {
+      // merge and return new state
+      // with optimistic value
+    }
+  );
+}
+```
+`useOptimistic` 可以在异步操作进行时显示不同的状态。它接受某个 `state` 作为参数，并返回该 `state` 的副本，该`state` 在异步操作（如网络请求）的持续时间内可能会有所变化。`useOptimistic` 的第二个参数为一个函数，该函数以 state 的当前状态和操作的输入，函数返回值为异步操作 pending 时会使用的乐观状态。
+被称为乐观状态，是因为它通常用于**立即向用户显示执行操作的结果**，即使该操作实际上还未返回最终结果。
+
+```tsx
+import { useOptimistic, useRef, useState } from 'react'
+
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+
+type Message = {
+  text: string
+  sending: boolean
+  key: number
+}
+
+export async function deliverMessage(message: string) {
+  // const res = await fetch("https://api.chucknorris.io/jokes/random")
+  // const data = await res.json();
+  await new Promise((res) => setTimeout(res, 1000))
+  return message
+}
+
+type ThreadProps = {
+  messages: Message[]
+  sendMessage: (formData: FormData) => Promise<void>
+}
+
+function Thread({ messages, sendMessage }: ThreadProps) {
+  const formRef = useRef<HTMLFormElement>(null)
+
+  const [optimisticMessages, addOptimisticMessage] = useOptimistic<
+    Message[],
+    string
+  >(messages, (state, newMessage) => [
+    ...state,
+    {
+      text: newMessage,
+      sending: true,
+      key: Date.now(), // Generate a unique key for each message
+    },
+  ])
+
+  async function formAction(formData: FormData) {
+    addOptimisticMessage(formData.get('message') as string)
+    formRef.current?.reset()
+    await sendMessage(formData)
+  }
+
+  return (
+    <div className="w-72">
+      <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
+        {optimisticMessages.map((message, index) => (
+          <li key={index}>
+            {message.text}
+            {message.sending && <small> (Sending...)</small>}
+          </li>
+        ))}
+      </ul>
+      <form
+        action={formAction}
+        ref={formRef}
+        className="flex space-x-4"
+      >
+        <Input
+          type="text"
+          name="message"
+          placeholder="Hello!"
+        />
+        <Button type="submit">Send</Button>
+      </form>
+    </div>
+  )
+}
+export const UseOptimisticHook = () => {
+  const [messages, setMessages] = useState<Message[]>([
+    { text: 'Hello there!', sending: false, key: 1 },
+  ])
+
+  async function sendMessage(formData: FormData) {
+    const sentMessage = await deliverMessage(formData.get('message') as string)
+    setMessages((messages) => [
+      ...messages,
+      { text: sentMessage, sending: false, key: Date.now() },
+    ])
+  }
+  return (
+    <Thread
+      messages={messages}
+      sendMessage={sendMessage}
+    />
+  )
+}
+```
+
+## References
+
+- [The Forensics Of React Server Components (RSCs)](https://www.smashingmagazine.com/2024/05/forensics-react-server-components/)

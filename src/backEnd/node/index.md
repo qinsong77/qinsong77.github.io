@@ -9,9 +9,6 @@ Node 的特性是**单线程、非阻塞时I/O**
 - [一篇文章构建你的 NodeJS 知识体系](https://juejin.cn/post/6844903767926636558)
 - [Node.js 并发能力总结](https://mp.weixin.qq.com/s/6LsPMIHdIOw3KO6F2sgRXg)
 - [MongoDB 极简入门实践](https://mp.weixin.qq.com/s/lcoa6X-aSaUJHzdXFEjuzA)
-### Nest.js
-
-> [中文网](https://docs.nestjs.cn/)
 
 ### v8
 
@@ -50,6 +47,82 @@ JS属于解释型语言，对于解释型的语言说，解释器会对源代码
 并且，这种字节码跟编译器和解释器结合的技术，称之为即时编译(JIT)。
 
 ![](../image/howJSRun.png)
+
+## [asynclocalstorage](https://nodejs.org/api/async_context.html#new-asynclocalstorage)
+
+```js
+const http = require('http');
+function handler1(req, res) {
+  console.log(req.url);
+}
+
+function handler2(req, res) {
+  console.log(req.url);
+}
+
+http.createServer((req, res) => {
+  handler1(req, res);
+  handler2(req, res);
+  res.end();
+}).listen();
+```
+上面的代码中，每次收到一个请求时都会执行 `handler1` 和 `handler2`，为了在不同的地方里都能拿到对应的请求上下文，只能逐级进行传递，如果业务逻辑很复杂，这个维护性是非常差的
+
+`AsyncLocalStorage` 是基于 `Async Hooks` 实现的，它**通过上下文传递实现了异步代码的上下文共享和隔离**。
+
+```ts
+const { AsyncLocalStorage } = require('async_hooks');
+
+const asyncLocalStorage = new AsyncLocalStorage();
+function logWithId(msg) {
+  const id = asyncLocalStorage.getStore();
+  console.log(`${id !== undefined ? id : '-'}:`, msg);
+}
+
+asyncLocalStorage.run(1, () => {
+    logWithId('start');
+    setImmediate(() => {
+      logWithId('finish');
+    });
+ });
+```
+输出：
+```
+1: start
+1: finish
+```
+
+两个 logWithId 共享了同一个上下文，这个上下文是由 run 函数设置的 1
+
+```js
+const http = require('http');
+const { AsyncLocalStorage } = require('async_hooks');
+
+const asyncLocalStorage = new AsyncLocalStorage();
+
+function handler1() {
+    const { req } = asyncLocalStorage.getStore();
+    console.log(req.url);
+}
+
+function handler2() {
+    setImmediate(() => {
+        const { req } = asyncLocalStorage.getStore();
+        console.log(req.url);
+    });
+}
+
+http.createServer((req, res) => {
+    asyncLocalStorage.run({ req, res }, () => {   
+        handler1();
+        handler2();
+    });
+    res.end();
+}).listen(9999, () => {
+    http.get({ port: 9999, path: '/test' })
+});
+```
+不需要逐级地传递请求上下文并且可以在任意异步代码中获取请求上下文
 
 ## [Cookie、Session、Token、JWT](https://juejin.im/post/6844904034181070861)
 
@@ -172,3 +245,23 @@ if (new Date() - payload.iat < 'token 有效期') {
 - `path.dirname()`： 返回 path 的目录名
 - `path.join()`：所有给定的 path 片段连接到一起，然后规范化生成的路径
 - `path.resolve()`：方法会将路径或路径片段的序列解析为绝对路径，解析为相对于当前目录的绝对路径，相当于 cd 命令
+
+## Nest.js
+- [中文网](https://docs.nestjs.cn/)
+- [教你如何构建自己的依赖注入工具](https://mp.weixin.qq.com/s/m45XiXL2-DVyYUUsQ4G5vQ)
+
+### 控制反转
+控制反转（Inversion of Control，缩写为 IoC）是一种设计原则，通过反转程序逻辑来降低代码之间的耦合性。
+
+控制反转容器（IoC 容器）是某一种具体的工具或者框架，用来执行从内部程序反转出来的代码逻辑，从而提高代码的复用性和可读性。我们常常用到的 DI 工具，就扮演了 IoC 容器的角色，连接着所有的对象和其依赖。
+
+### 依赖注入
+
+依赖注入是控制反转的一种具体地实现，通过放弃程序内部对象生命创建的控制，由外部去创建并注入依赖的对象。
+
+依赖注入的方法主要是以下四种：
+
+- 基于接口。实现特定接口以供外部容器注入所依赖类型的对象。
+- 基于 set 方法。实现特定属性的 public set 方法，来让外部容器调用传入所依赖类型的对象。
+- 基于构造函数。实现特定参数的构造函数，在新建对象时传入所依赖类型的对象。
+- 基于注解，在私有变量前加类似 `@Inject` 的注解，让工具或者框架能够分析依赖，自动注入依赖。

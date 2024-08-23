@@ -15,3 +15,13 @@ JavaScriptCore 是 JavaScript 引擎，通常会被叫做虚拟机，专门设�
 ### JS Engine
 
 React Native 需要一个 JS 的运行环境，因为 React Native 会把应用的 JS 代码编译成一个 JS 文件（x x.bundle），React Native 框架的目标就是解释运行这个 JS 脚本文件，如果是 Native 拓展的 API，则直接通过 bridge 调用 Native 方法，最基础的比如绘制 UI 界面，映射 Virtual DOM 到真实的 UI 组件中。
+
+## Style
+
+1. flexDirection: RN中默认为`flexDirection:'column'`，在Web中默认为`flex-direction:'row'`
+2. alignItems: RN中默认为`alignItems:'stretch'`，在Web中默认align-items:'flex-start'
+3. flex: 相比Web的flex接受多参数，如:`flex: 2 2 10%`;，但在RN中`flex`只接受一个参数
+4. 不支持属性：order，flex-flow
+
+定位：
+支持绝对定位和相对定位，不过不支持固定定位（fixed）。

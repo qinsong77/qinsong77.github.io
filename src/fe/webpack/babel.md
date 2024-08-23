@@ -303,3 +303,58 @@ console.log(result) // import Button from "element-ui/lib/Button";
 ```
 
 :::
+
+## 按需 polyfill 是怎么实现的
+
+polyfill即垫片，使用比较新的api开发，但浏览器可能不支持，在运行业务代码前，在全局注入一些 api 的实现，处理兼容问题。但用户浏览器和版本多种多样，如何按需加载polyfill呢
+
+答案就是 `preset-env`，它实现了按需引入 `polyfill`。
+
+这里的 `preset-env` 指的是 babel 的 `@babel/preset-env` 和 postcss 的 `postcss-preset-env`，它们一个是按需做语法转换、按需引入 JS 的 polyfill，一个是按需做添加 prefix 等 css 兼容处理。
+
+他们分别是针对 JS 和 CSS 的，但他们两个的原理差不多。
+
+### @babel/preset-env
+`@babel/preset-env` 支持通过 `targets` 来指定目标环境：
+eg:
+```json
+{ 
+   "presets": [
+        ["@babel/preset-env", { 
+            "targets": "> 0.25%, not dead" 
+        }]
+   ]
+}
+```
+这里的 `targets` 是 `browserslist` 的查询字符串，它可以解析查询字符串返回对应的浏览器版本：
+
+有了这些目标浏览器的版本，还需要知道各种特性是在什么版本支持的：
+
+babel 维护了一个数据库，在 [`@babel/compat-data`](https://github.com/babel/babel/tree/main/packages/babel-compat-data/data) 这个包里,eg:
+```json
+{
+  "es6.array.copy-within": {
+    "chrome": "45",
+    "opera": "32",
+    "edge": "12",
+    "firefox": "32",
+    "safari": "9",
+    "node": "4",
+    "deno": "1",
+    "ios": "9",
+    "samsung": "5",
+    "rhino": "1.7.13",
+    "opera_mobile": "32",
+    "electron": "0.31"
+  }
+}
+```
+这样就能根据目标浏览器的版本，过滤出哪些特性是支持的，哪些是不支持的。然后只对不支持的特性做语法转换和 polyfill 即可
+
+![](./image/babel_polyfill_process.png)
+
+`postcss-preset-env`原理类似
+
+babel 是通过 `@babel/preset-env` 来做按需 `polyfill` 和转换的，原理是通过 `browserslist` 来查询出目标浏览器版本，然后根据 `@babel/compat-data` 的数据库来过滤出这些浏览器版本里哪些特性不支持，之后引入对应的插件处理。
+
+postcss 是通过 `postcss-preset-env` 来做按需 `prefix` 等的，原理也是通过 `browserslist` 来查询出目标浏览器版本，然后根据 `cssdb` 的数据库（来自 caniuse）来过滤出不支持的 CSS 特性，然后对这些 CSS 做处理即可。
