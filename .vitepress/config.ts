@@ -128,6 +128,16 @@ const nav: DefaultTheme.NavItem[] = [
         text: 'database',
         activeMatch: `^/backEnd/database/`,
         link: '/backEnd/database/'
+      },
+      {
+        text: 'python',
+        activeMatch: `^/backEnd/python/`,
+        link: '/backEnd/python/'
+      },
+      {
+        text: 'ruby',
+        activeMatch: `^/backEnd/ruby/`,
+        link: '/backEnd/ruby/'
       }
     ]
   },
@@ -392,6 +402,10 @@ export const sidebar: DefaultTheme.Sidebar = {
           link: '/fe/frameWork/'
         },
         {
+          text: '架构',
+          link: '/fe/frameWork/architecture/'
+        },
+        {
           text: '敏捷汇总',
           link: '/fe/frameWork/agile-collections'
         },
@@ -594,6 +608,14 @@ export const sidebar: DefaultTheme.Sidebar = {
           link: '/backEnd/database/mysql'
         }
       ]
+    },
+    {
+      text: 'python',
+      link: '/backEnd/python'
+    },
+    {
+      text: 'ruby',
+      link: '/backEnd/ruby'
     }
   ],
   '/english/': [
