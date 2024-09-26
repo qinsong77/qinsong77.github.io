@@ -9,6 +9,7 @@
 
 核心：使用http分块协议的传输，利用`RSC协议`将`rsc`转化为可以传输的可序列化数据，实现流式stream传输，再结合`Suspense`请求未完成前占位，server 端异步执行完后，client在利用react 18的并发模式更新UI。
 
+- [React Server Components Demo](https://github.com/reactjs/server-components-demo)
 ### basic concept
 
 #### Client side rendering

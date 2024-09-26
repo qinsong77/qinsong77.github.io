@@ -4,7 +4,6 @@ title: collection
 
 # React Around Collections
 
-
 ## Framework
 
 - [nextjs](https://nextjs.org/docs)
@@ -16,74 +15,77 @@ title: collection
 - [React 开发思想纲领](https://github.com/mithi/react-philosophies) - [翻译](https://juejin.cn/post/7076244324614144014)
 - [bulletproof-react](https://github.com/alan2207/bulletproof-react) - A simple, scalable, and powerful architecture for building production ready React applications.
 
-
 ## State Manage
+
 - [zustand](https://github.com/pmndrs/zustand)
   - [关于zustand的一些最佳实践](https://mp.weixin.qq.com/s/QRM5A_Q-kOlSumfeUm_Gvw)
-  
+
 实现：
 
 ::: details 点击查看代码
+
 ```ts
-import { useSyncExternalStore } from "react";
+import { useSyncExternalStore } from 'react'
 
 const createStore = (createState) => {
-    let state;
-    const listeners = new Set();
-  
-    const setState = (partial, replace) => {
-      const nextState = typeof partial === 'function' ? partial(state) : partial
+  let state
+  const listeners = new Set()
 
-      if (!Object.is(nextState, state)) {
-        const previousState = state;
+  const setState = (partial, replace) => {
+    const nextState = typeof partial === 'function' ? partial(state) : partial
 
-        if(!replace) {
-            state = (typeof nextState !== 'object' || nextState === null)
-                ? nextState
-                : Object.assign({}, state, nextState);
-        } else {
-            state = nextState;
-        }
-        listeners.forEach((listener) => listener(state, previousState));
+    if (!Object.is(nextState, state)) {
+      const previousState = state
+
+      if (!replace) {
+        state =
+          typeof nextState !== 'object' || nextState === null
+            ? nextState
+            : Object.assign({}, state, nextState)
+      } else {
+        state = nextState
       }
+      listeners.forEach((listener) => listener(state, previousState))
     }
-  
-    const getState = () => state;
-  
-    const subscribe= (listener) => {
-      listeners.add(listener)
-      return () => listeners.delete(listener)
-    }
-  
-    const destroy= () => {
-      listeners.clear()
-    }
-  
-    const api = { setState, getState, subscribe, destroy }
+  }
 
-    state = createState(setState, getState, api)
+  const getState = () => state
 
-    return api
+  const subscribe = (listener) => {
+    listeners.add(listener)
+    return () => listeners.delete(listener)
+  }
+
+  const destroy = () => {
+    listeners.clear()
+  }
+
+  const api = { setState, getState, subscribe, destroy }
+
+  state = createState(setState, getState, api)
+
+  return api
 }
 
 function useStore(api, selector) {
-    function getState() {
-        return selector(api.getState());
-    }
-    
-    return useSyncExternalStore(api.subscribe, getState)
+  function getState() {
+    return selector(api.getState())
+  }
+
+  return useSyncExternalStore(api.subscribe, getState)
 }
 
 export const create = (createState) => {
-    const api = createStore(createState)
+  const api = createStore(createState)
 
-    const useBoundStore = (selector) => useStore(api, selector)
+  const useBoundStore = (selector) => useStore(api, selector)
 
-    Object.assign(useBoundStore, api);
+  Object.assign(useBoundStore, api)
 
-    return useBoundStore
+  return useBoundStore
 }
 ```
+
 :::
 
 ### server api state
@@ -98,6 +100,7 @@ export const create = (createState) => {
 - [vanilla-extract](https://github.com/vanilla-extract-css/vanilla-extract)，Css in Js but Zero-runtime Stylesheets in TypeScript.
 
 ## UI library
+
 - [nextui](https://nextui.org/)
 - [shadcn/ui](https://ui.shadcn.com/) headless
 - [Mantine](https://mantine.dev/)
@@ -108,16 +111,23 @@ export const create = (createState) => {
 - [Framer Motion](https://www.framer.com/motion/)
 
 ### RN
+
 - [react-native-ui-lib](https://github.com/wix/react-native-ui-lib)
 - [Tamagui](https://tamagui.dev/docs/intro/introduction)
 - [gluestack](https://gluestack.io/)
 - [react-strict-dom：React官方跨平台方案](https://github.com/react-native-community/discussions-and-proposals/pull/496)
 
+- [ignite](https://github.com/infinitered/ignite) the battle-tested React Native boilerplate
+
 ## project
+
 - [Turbopack](https://github.com/vercel/turbo)
 - [Bit.dev](https://bit.dev/docs/quick-start) Bit.dev是一种快速、动态化、协同式构建团队组件库的解决方案
 
 ## Articles
+
+- [How to fetch data in React [2024]](https://www.robinwieruch.de/react-fetching-data/)， [self summary](./next_latest#data-fetch)
+
 - [React系列（二）：单元测试最佳实践与前端TDD](https://ethan.thoughtworkers.me/#/post/2023-12-10-react-unit-testing-best-practices-v2)，实践证明，在前端以细粒度的UI组件为单元做测试不能很好地支撑重构和需求变化。本文将介绍一种能更好地支撑重构和开发、更能支撑前端TDD的单元测试方案。
 - [Modularizing React Applications with Established UI Patterns](https://martinfowler.com/articles/modularizing-react-apps.html)
 
@@ -147,6 +157,5 @@ export const create = (createState) => {
 ![](./modularizing-react-apps-images/5.png)
 
 - [PresentationDomainDataLayering](https://martinfowler.com/bliki/PresentationDomainDataLayering.html)
-
 
 It’s good practice to split view and non-view code into separate places. The reason is, in general, views are changing more frequently than non-view logic. Also, as they deal with different aspects of the application, separating them allows you to focus on a particular self-contained module that is much more manageable when implementing new features.
