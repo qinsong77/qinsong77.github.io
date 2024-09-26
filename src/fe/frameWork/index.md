@@ -322,3 +322,15 @@ export const getWorkList = (params) => {
 -[pont](https://github.com/alibaba/pont)
 
 Pont 把 swagger、rap、dip 等多种接口文档平台，转换成 Pont 元数据。Pont 利用接口元数据，可以高度定制化生成前端接口层代码，接口 mock 平台和接口测试平台。
+
+- [OpenAPI Typescript](https://github.com/hey-api/openapi-ts) Generate TypeScript interfaces, REST clients, and JSON Schemas from OpenAPI specifications.
+- [orval](https://github.com/orval-labs/orval) orval is able to generate client with appropriate type-signatures (TypeScript) from any valid OpenAPI v3 or Swagger v2 specification, either in yaml or json formats. 
+- [openapi-typescript](https://github.com/openapi-ts/openapi-typescript) Tools for consuming OpenAPI schemas in TypeScript.
+- [swagger-typescript-api](https://github.com/acacode/swagger-typescript-api) Generate the API Client for Fetch or Axios from an OpenAPI Specification
+- [ts-codegen](https://github.com/reeli/ts-codegen)  一个生成前端接口层代码和对应 TypeScript 定义的工具。
+
+对比了下，功能都差不多，但orval更自由些，支持自定义API client，没有强绑定，且：
+
+- Generate typescript models
+- Generate HTTP Calls
+- Generate Mocks with MSW
