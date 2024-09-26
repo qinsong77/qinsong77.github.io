@@ -143,7 +143,7 @@ const nav: DefaultTheme.NavItem[] = [
   },
   {
     text: 'stuff',
-    activeMatch: `^/interview/|^/demo/|^/english/`,
+    activeMatch: `^/interview/|^/demo/|^/english/|^/agile/`,
     items: [
       {
         text: 'English',
@@ -152,6 +152,17 @@ const nav: DefaultTheme.NavItem[] = [
           { text: 'summary', link: '/english/' },
           { text: 'phrase', link: '/english/phrase' },
           { text: 'words', link: '/english/words' }
+        ]
+      },
+      {
+        text: '敏捷',
+        items: [
+          { text: '敏捷开发', link: '/blog/agile/' },
+          { text: '估点', link: '/agile/estimation' },
+          {
+            text: '敏捷汇总',
+            link: '/agile/agile-collections'
+          }
         ]
       },
       {
@@ -406,10 +417,6 @@ export const sidebar: DefaultTheme.Sidebar = {
           link: '/fe/frameWork/architecture/'
         },
         {
-          text: '敏捷汇总',
-          link: '/fe/frameWork/agile-collections'
-        },
-        {
           text: '微前端',
           link: '/fe/frameWork/microservices'
         },
@@ -641,6 +648,19 @@ export const sidebar: DefaultTheme.Sidebar = {
       ]
     }
   ],
+  '/agile/': [
+    {
+      text: '敏捷',
+      items: [
+        { text: '敏捷开发', link: '/blog/agile/' },
+        { text: '估点', link: '/agile/estimation' },
+        {
+          text: '敏捷汇总',
+          link: '/agile/agile-collections'
+        }
+      ]
+    }
+  ],
   '/interview/': [
     {
       text: 'interview',
@@ -695,10 +715,10 @@ export default defineConfig({
 
     socialLinks: [{ icon: 'github', link: 'https://github.com/qinsong77' }],
     footer: {
-      message: 'In case I don\'t see you. Good afternoon, good evening, and good night.',
+      message:
+        "In case I don't see you. Good afternoon, good evening, and good night.",
       copyright: 'Copyright © 2019-present Notend'
-    },
-
+    }
   },
   head: [
     ['link', { rel: 'icon', href: '/favicon.ico', type: 'image/x-icon' }],
