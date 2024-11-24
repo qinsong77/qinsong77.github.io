@@ -88,6 +88,100 @@ export const create = (createState) => {
 
 :::
 
+- [Xstate](https://github.com/statelyai/xstate) - 很复杂的业务可以用！
+  - [状态管理新思路：有限状态机在前端的应用](https://mp.weixin.qq.com/s/qgomiACv4VgTkn7rPGoT1A) 文章用到的版本API有些过时了
+  - [研发协同利器：XState调研与应用](https://mp.weixin.qq.com/s/atX0OiU4CTRU2Ur6W0HSXg)
+
+::: details official start example
+
+```ts
+import { createMachine, createActor, assign } from 'xstate'
+
+// State machine
+const toggleMachine = createMachine({
+  id: 'toggle',
+  initial: 'inactive',
+  context: {
+    count: 0
+  },
+  states: {
+    inactive: {
+      on: {
+        TOGGLE: { target: 'active' }
+      }
+    },
+    active: {
+      entry: assign({ count: ({ context }) => context.count + 1 }),
+      on: {
+        TOGGLE: { target: 'inactive' }
+      }
+    }
+  }
+})
+
+// Actor (instance of the machine logic, like a store)
+const toggleActor = createActor(toggleMachine)
+toggleActor.subscribe((state) => console.log(state.value, state.context))
+toggleActor.start()
+// => logs 'inactive', { count: 0 }
+
+toggleActor.send({ type: 'TOGGLE' })
+// => logs 'active', { count: 1 }
+
+toggleActor.send({ type: 'TOGGLE' })
+// => logs 'inactive', { count: 1 }
+```
+
+:::
+
+::: details Xstate实现红绿灯有限状态机
+
+```ts
+import { createMachine, createActor } from 'xstate'
+
+const lightMachine = createMachine({
+  id: 'light',
+  initial: 'red',
+  states: {
+    red: {
+      on: {
+        TRANS: 'green'
+      }
+    },
+    green: {
+      on: {
+        TRANS: 'yellow'
+      }
+    },
+    yellow: {
+      on: {
+        TRANS: 'red'
+      }
+    }
+  }
+})
+
+const lightService = createActor(lightMachine).start()
+
+lightService.subscribe((state) => {
+  console.log(state.value)
+})
+
+// 发送事件
+lightService.send('TRANS') // 'green'
+lightService.send('TRANS') // 'yellow'
+lightService.send('TRANS') // 'red'
+
+// 批量发送事件
+lightService.send({ type: 'TRANS' }) // 单个事件
+lightService.send({ type: 'TRANS' }) // 单个事件
+
+// 终止状态机
+lightService.stop()
+```
+
+:::
+
 ### server api state
 
 - [React query](https://tanstack.com/query/v5/docs/react/overview)
@@ -110,7 +204,7 @@ export const create = (createState) => {
 
 - [Framer Motion](https://www.framer.com/motion/)
 
-### RN
+## RN
 
 - [react-native-ui-lib](https://github.com/wix/react-native-ui-lib)
 - [Tamagui](https://tamagui.dev/docs/intro/introduction)
@@ -118,6 +212,8 @@ export const create = (createState) => {
 - [react-strict-dom：React官方跨平台方案](https://github.com/react-native-community/discussions-and-proposals/pull/496)
 
 - [ignite](https://github.com/infinitered/ignite) the battle-tested React Native boilerplate
+
+- [React Native Testing Library (RNTL) Cookbook](https://callstack.github.io/react-native-testing-library/cookbook/index)
 
 ## project
 

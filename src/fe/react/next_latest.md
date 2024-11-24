@@ -117,7 +117,7 @@ load Order
 
 #### (RSC) 数据获取
 
-- 特点：在服务器端执行，直接返回HTML给客户端。
+- 特点：在服务器端执行，直接返回HTML给客户端，并且是 Streaming UI。
 - 适用场景：使用支持RSC的框架（如Next.js）。
 - 优势：避免客户端-服务器通信往返，直接访问服务器端数据源。
 
@@ -146,8 +146,9 @@ export default PostsPage
 - 特点：客户端数据获取，提供hooks用于数据获取、缓存和更新。
 - 适用场景：客户端渲染的React应用（SPA）。
 - 优势：处理缓存、竞态条件和陈旧数据
+- 不能实现stream ui(也不用提，本身就是client发起请求的)
 
-getPost和服务的有所区别：要使用a remote API over HTTP
+这里的`getPosts`和服务端的有所区别：要使用a remote API over HTTP / endpoint
 
 ```tsx
 export const getPosts = async () => {
@@ -156,7 +157,7 @@ export const getPosts = async () => {
 }
 ```
 
-RSC就可以直接访问数据库：
+而RSC就可以直接访问数据库：
 
 ```ts
 export const getPosts = async () => {
@@ -192,7 +193,7 @@ export default PostsPage
 
 #### RSC + RCC
 
-- 特点：服务器端获取初始数据，客户端继续使用React Query获取数据。
+- 特点：服务器端获取初始数据，客户端继续使用React Query获取数据。初始化时是 streaming ui
 - 适用场景：需要初始数据快速加载和客户端无限滚动等高级数据获取模式。
 - 优势：结合服务器端和客户端数据获取的优势。
 
@@ -241,14 +242,20 @@ const PostList = ({ initialPosts }: PostListProps) => {
 export { PostList }
 ```
 
-**可以用Server Actions, 在server和client重复使用，这样就不用反复声明了**
+**可以用Server Actions, 在server和client重复使用，这样就不用反复声明了**，但要注意鉴权如果接口需要的话
 
 **也可以从RSC中传入一个promise到RCC,当作init promise, 并用`Suspense` wrap RCC, 也能实现streaming UI，并且client也能update data**
+
+> 但 client update promise时，组件也会fallback 到最近的`Suspense`，组件就会消失而显示Suspense 的fallback，可以通过 [useTransition](https://19.react.dev/reference/react/useTransition), refer: [Preventing unwanted loading indicators ](https://19.react.dev/reference/react/useTransition#preventing-unwanted-loading-indicators)
 
 ```ts
 // in RCC
 const [promise, setPromise] = useState(initPromise)
 const data = use(promise)
+// update promise to get new data due to some user interaction
+const onClick = () => {
+  setPromise()
+}
 ```
 
 #### use Api
@@ -413,3 +420,12 @@ SSE 与 WebSocket 作用相似，都是建立浏览器与服务器之间的通�
 解决办法：服务端接口的 Response Header 内通过设置Cache-Control 为 no-cache, no-transform
 
 `revalidatePath`是在server action使用
+
+## 原理
+
+- [How Do Server Actions Work in NextJS?](https://codelynx.dev/posts/how-work-server-actions)
+
+## Libraries
+
+- [nuqs](https://github.com/47ng/nuqs) Type-safe search params state manager for Next.js - Like React.useState, but stored in the URL query string.
+- [next-safe-action](https://github.com/TheEdoRan/next-safe-action) Type safe and validated Server Actions in your Next.js project.
