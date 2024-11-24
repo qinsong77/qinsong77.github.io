@@ -6,24 +6,24 @@ title: 组件库设计
 - [使用mono-repo实现跨项目组件共享](https://juejin.cn/post/6913788953971654663)
 - [前端业务组件库怎么样做到极致](https://mp.weixin.qq.com/s/DUDnzQWgcdrKAJeMwsmZBw)
 
-### 前端组件库的设计原则
+## 前端组件库的设计原则
 
-#### 细粒度的考量
+### 细粒度的考量
 
 从软件的设计模式上，确定组件的**单一职责原则**，原则上一个组件只专注一件事情，单一职责的组件的好处很明显，由于职责单一就可以最大可能性地**复用**组件。保证组件单一的最大好处**就是方便单元测试**。
 同时要考虑划分过细而导致**组件碎片化**的问题。
 
-#### 通用性考量
+### 通用性考量
 
 组件的形态(DOM结构)永远是千变万化的,但是其行为(逻辑)是固定的,因此通用组件的秘诀之一就是将 DOM 结构的控制权交给开发者,组件只负责行为和最基本的 DOM 结构。
 
 预留合适的api，或者叫pros等，比如提供自定义渲染render，提过组件核心能力的同事也能根据业务上进行扩展。
 
-#### 原子性设计
+### 原子性设计
 
 比如样式主题，在`sketch`文件中将最小颗粒度“原子(如颜色)”按照其使用意图作为名称进行命名；颗粒度再复杂一级的“分子(如字体)”变量名则由`typeface/weight/color/size`的组合排列产生。
 
-#### 控制反转设计IOC
+### 控制反转设计IOC
 
 不是从上层开始使用底层构建或者组装依赖。而是从底层开始设计叠加，感觉有点像是从递归到动态规划的过程。比较明显的一个就是React中的高阶组件（HOC）
 
@@ -35,7 +35,7 @@ title: 组件库设计
 
 在目前前端开发中，样式的变量创建方式主要有两种：一是基于css原生支持的自定义变量，二是基于`less`、`scss`等css预编译器。考虑到自定义变量可能存在的浏览器兼容性问题，组件库可以采用了less作为样式开发的语言。less 是一门 CSS 预处理语言，除了之前提到的变量功能，还有嵌套、混合（mixin）、函数等方便的功能。
 
-### 前端组件设计原则
+## 前端组件设计原则
 
 - 层次结构和 UML 类图
 - 扁平化、面向数据的 state/props
@@ -46,10 +46,17 @@ title: 组件库设计
 - 及时模块化
 - 集中/统一的状态管理
 
-### Element-ui
+## 原子化设计
 
-- [Element-UI（2.11.1） 构建流程](https://juejin.cn/post/6844904003541663757)
-- [Element-UI 技术揭秘- 组件库的整体设计](https://juejin.cn/post/6844903925632466951)
+原子设计是一种方法论，由原子、分子、组织、模板和页面共同协作以创造出更有效的用户界面系统的一种设计方法。
+
+原子设计的五个阶段分别是：
+
+1. Atoms原子。 为网页构成的基本元素。例如标签、输入，或是一个按钮，也可以为抽象的概念，例如字体、色调等。
+2. Molecules分子。 由原子构成的简单UI组件。例如，一个表单标签，搜索框和按钮共同打造了一个搜索表单分子。
+3. Organisms组织。 由原子及分子组成的相对复杂的UI构成物
+4. Templates模版。 将以上元素进行排版，显示设计的底层内容结构。
+5. Pages页面。 将实际内容（图片、文章等）套件在特定模板，页面是模板的具体实例
 
 ## How to build a component library
 
@@ -202,7 +209,6 @@ When building design system, these requirements need answer:
 - Responsiveness — it should support all screen sizes and devices.
 - Maintainability: it should be easy and seamless to modify and maintain.
 
-
 ### shadcn/ui
 
 - [shadcn/ui 是什么、使用方式、实现原理](https://mp.weixin.qq.com/s/Vo6gz7YiyPmHSyVssyJJ9A)
@@ -212,8 +218,9 @@ Shadcn UI 组件的通用架构如下：
 ![](./image/shadcn_base_infa_design.png)
 
 shadcn/ui基于核心原则构建，即组件的设计应与其实现分开。因此，shadcn/ui中的每个组件都具有两层架构。即：
-* 结构和行为层
-* 样式层
+
+- 结构和行为层
+- 样式层
 
 ## reference
 
