@@ -430,6 +430,42 @@ promise2
 
 在每一个 eventLoop 阶段完成后会去检查这个队列，如果里面有任务，会让这部分任务**优先于微任务**执行。
 
+bellow from doc: [nodejs doc - Understanding setImmediate()](https://nodejs.org/zh-cn/learn/asynchronous-work/understanding-setimmediate)
+
+A function passed to `process.nextTick()` is going to be executed **on the current iteration of the event loop**, after the current operation ends. This means it will always execute before `setTimeout` and `setImmediate`.
+
+A `process.nextTick` callback is added to **process.nextTick queue**. A `Promise.then()` callback is added to **promises microtask queue**. A `setTimeout`, `setImmediate` callback is added to **macrotask queue**.
+
+Event loop executes tasks in **process.nextTick queue** first, and then executes **promises microtask queue**, and then executes **macrotask queue**.
+
+```js
+const baz = () => console.log('baz');
+const foo = () => console.log('foo');
+const zoo = () => console.log('zoo');
+
+const start = () => {
+  console.log('start');
+  setImmediate(baz);
+  new Promise((resolve, reject) => {
+    resolve('bar');
+  }).then(resolve => {
+    console.log(resolve);
+    process.nextTick(zoo);
+  });
+  process.nextTick(foo);
+};
+
+start();
+
+// start foo bar zoo baz
+```
+上面打印的结构是`CommonJS cases`，但in ES Modules, e.g. `mjs` files, the execution order will be different:
+```js
+// start bar foo zoo baz
+```
+
+This is because the ES Module being loaded is wrapped as an asynchronous operation, and thus the entire script is actually already in the **promises microtask queue**. So when the promise is immediately resolved, its callback is appended to the **microtask queue**. Node.js will attempt to clear the queue until moving to any other queue, and hence you will see it outputs bar first.
+
 ### [setInterval](http://caibaojian.com/setinterval.html),[requestAnimationFrame](https://github.com/sisterAn/blog/issues/30)代替绘制动画
 
 ## Examples

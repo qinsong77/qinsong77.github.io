@@ -434,8 +434,35 @@ function split(input, delimiter = ",") {
 const trimLowerCaseAndSplit = compose(trim, lowerCase, split);
 trimLowerCaseAndSplit(" a,B,C "); // ["a", "b", "c"]
 
-
 ```
+
+#### 中间件和洋葱模型
+
+compose 函数也是实现中间件和洋葱模型的关键
+
+```js
+function compose(middleware) {
+  // 省略部分代码
+  return function (context, next) {
+    let index = -1;
+    return dispatch(0);
+    function dispatch(i) {
+      if (i <= index)
+        return Promise.reject(new Error("next() called multiple times"));
+      index = i;
+      let fn = middleware[i];
+      if (i === middleware.length) fn = next;
+      if (!fn) return Promise.resolve();
+      try {
+        return Promise.resolve(fn(context, dispatch.bind(null, i + 1)));
+      } catch (err) {
+        return Promise.reject(err);
+      }
+    }
+  };
+}
+```
+![](../image/achieve/compose.png)
 
 ### [深拷贝](https://segmentfault.com/a/1190000020255831)
 > [使用proxy](https://github.com/KieSun/FE-advance-road/blob/master/wheels/deepClone/index.md)
