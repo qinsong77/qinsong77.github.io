@@ -373,7 +373,7 @@ npm 的版本匹配策略
 
 这里采用了 `changesets` 来做依赖包的管理。选用 `changesets` 的主要原因还是文档更加清晰一些，个人感觉上手比较容易。而`rushjs` 不止于管理release（rush是为大型团队准备的，它可以给你提供一个仓库下维护多个项目的构建和发布方案。），
 
-按照 `changesets` 文档介绍的，`changesets`主要是做了两件事：
+按照 [`changesets`](https://github.com/changesets/changesets) 文档介绍的，`changesets`主要是做了两件事：
 
 > Changesets hold two key bits of information: a version type (following semver), and change information to be added to a changelog.
 
@@ -386,24 +386,25 @@ npm 的版本匹配策略
 
 1. `changeset init`
 - 新项目执行该命令，完成对项目的初始化
-- 会在根目录下生成 .changeset 目录，config.json配置文件
+- 会在根目录下生成 `.changeset` 目录，`config.json`配置文件
 
 2. `changeset`
 
-- 执行该命令，进行版本管理，会交互式选择不同项目，以及确定发布的版本
-- 会生成一些 .md 文件在目录下，会在 version 的时候消耗
+- 执行该命令，进行版本管理，会交互式选择不同项目，以及确定发布的版本（如：major, minor, patch）
+- 会生成一些 `.md` 文件在目录下，会在 `version` 的时候消耗
 
 3. `changeset version`
 
-- 消耗上一步生成的相关的一些版本信息及记录内容的 .md 文件，并生成或更新 CHANGELOG.md 文件，之后 .md 文件会被自动删除
-- 相应的 package.json 中的 version 信息也会同步更新
+- 消耗上一步生成的相关的一些版本信息及记录内容的 `.md` 文件，并生成或更新 `CHANGELOG.md` 文件，之后 `.md` 文件会被自动删除
+- 相应的 `package.json` 中的 `version` 信息也会同步更新
 
 4. `changeset publish`
 
 - 发布包到远程 npm 源
-- 前置条件是你已经进行了 npm 账户登录，如果包名称为 @ah-ailpha/components该类型，还需要在 npm 账户中设置组织
+- 前置条件是你已经进行了 npm 账户登录，如果包名称为` @ah-ailpha/components`该类型，还需要在 npm 账户中设置组织
+- 在使用 `changeset publish` 之前，通常还需要运行 `npm run build` 或类似的构建命令，以确保所有更改都已经构建完成。
 
-* 安装
+### 安装
 
 ```shell
 # 安装
@@ -537,7 +538,7 @@ pnpm changeset pre exit
 
 如果用户想查看当前的 `changesets` 文件消耗状态，那么可以使用 `changeset status` 命令。
 
-##### what else?
+#### what else?
 
 业务项目发布流是怎么样的？
 

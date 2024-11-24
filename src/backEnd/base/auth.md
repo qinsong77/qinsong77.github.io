@@ -1,5 +1,10 @@
 # Auth
 
+## Authentication & Authorization
+
+- Authentication: Verifies if the user is who they say they are. It requires the user to prove their identity with something they have, such as a username and password. 用户认证：验证用户的身份，确认用户是谁。一般使用账号密码实现。
+- Authorization: Decides what routes and data the user can access. 用户授权：确定用户是否有权限执行某个操作，确定用户可以做什么。
+
 ## OAuth 2.0 协议及相关概念
 
 在认证与授权方面，经常会提及的两个协议：OAuth 2.0 协议和OpenID connect 协议，其中OAuth 2.0定义了授权相关概念，OpenID connect 定义了认证相关概念。

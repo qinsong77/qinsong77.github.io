@@ -130,6 +130,11 @@ const nav: DefaultTheme.NavItem[] = [
         link: '/backEnd/database/'
       },
       {
+        text: 'AI',
+        activeMatch: `^/backEnd/ai/`,
+        link: '/backEnd/ai/'
+      },
+      {
         text: 'python',
         activeMatch: `^/backEnd/python/`,
         link: '/backEnd/python/'
@@ -552,6 +557,14 @@ export const sidebar: DefaultTheme.Sidebar = {
         {
           text: 'Auth',
           link: '/backEnd/base/auth'
+        },
+        {
+          text: 'Architecture',
+          link: '/backEnd/base/architecture'
+        },
+        {
+          text: 'Collection',
+          link: '/backEnd/base/collection'
         }
       ]
     },
@@ -615,8 +628,21 @@ export const sidebar: DefaultTheme.Sidebar = {
           link: '/backEnd/database/'
         },
         {
+          text: 'PostgreSQL',
+          link: '/backEnd/database/postgresql'
+        },
+        {
           text: 'My sql',
           link: '/backEnd/database/mysql'
+        }
+      ]
+    },
+    {
+      text: 'AI',
+      items: [
+        {
+          text: 'Summary',
+          link: '/backEnd/ai/'
         }
       ]
     },
@@ -717,7 +743,7 @@ export default defineConfig({
     footer: {
       message:
         "In case I don't see you. Good afternoon, good evening, and good night.",
-      copyright: 'Copyright © 2019-present Notend'
+      copyright: 'Copyright © 2019-present <a href="https://github.com/qinsong77" target="_blank">Sysuke</a>'
     }
   },
   head: [

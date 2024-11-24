@@ -1,7 +1,21 @@
 # collections
 
 ## Library
+
 - [Lottie](https://airbnb.io/lottie/#/) parses Adobe After Effects **animations** exported as **JSON** with Bodymovin and renders them natively on mobile and on the web!
+
+## Framework
+
+- express.js
+- nest.js
+- [fastify.js](https://fastify.dev/docs/latest/Guides/Getting-Started/)
+- [feathersjs](https://feathersjs.com/)
+- [adonisjs](https://docs.adonisjs.com/guides/preface/introduction)
+- [foalts](https://foalts.org/)
+- [Hono](https://hono.dev/)
+- [Encore.ts](https://github.com/encoredev/encore)
+
+看起来大一点的项目选`adonisjs`，小的选`Hono`
 
 ## Node
 
@@ -36,6 +50,11 @@ RPC 框架通常是可以跨语言进行调用的，比如 `gRPC` 框架，然�
 - [pokeapi](https://pokeapi.co/docs/v2)
 - [article-Free API – 90+ Public APIs For Testing No Key](https://apipheny.io/free-api/#apis-without-key)
 - [MockLib](https://www.mocklib.com/)
+
+## how to run typescript
+
+- [tsx](https://github.com/privatenumber/tsx)
+- ts-node
 
 ## Keeping noticing
 

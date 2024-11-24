@@ -1,5 +1,9 @@
 # Summary
 
+- [Hands-on Clean Architecture Template](https://github.com/macdao/hands-on-clean-architecture-template), 可学习参考，可落地的整洁架构模板。旨在成为项目的代码库模板选项之一。
+
+使用了当前最新的技术和工具、推荐的使用/配置方式和最佳实践。
+
 Java是介于编译型语言和解释型语言之间。编译型语言如C、C++，代码是直接编译成机器码执行，但是不同的平台（x86、ARM等）CPU的指令集不同，因此，需要编译出每一种平台的对应机器码。解释型语言如Python、Ruby没有这个问题，可以由解释器直接加载源码然后运行，代价是运行效率太低。而Java是将代码编译成一种“字节码”，它类似于抽象的CPU指令，然后，针对不同平台编写虚拟机，不同平台的虚拟机负责加载字节码并执行，这样就实现了“一次编写，到处运行”的效果。
 
 * Java SE：Standard Edition
