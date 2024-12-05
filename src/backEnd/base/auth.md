@@ -5,14 +5,47 @@
 - Authentication: Verifies if the user is who they say they are. It requires the user to prove their identity with something they have, such as a username and password. 用户认证：验证用户的身份，确认用户是谁。一般使用账号密码实现。
 - Authorization: Decides what routes and data the user can access. 用户授权：确定用户是否有权限执行某个操作，确定用户可以做什么。
 
+Below are found in the [backend roadmap](https://roadmap.sh/backend) Authentication items.
+
+## Basic Authentication
+
+![](https://roadmap.sh/guides/basic-authentication.png)
+
+## OAuth — Open Authorization
+
+From: https://roadmap.sh/guides/oauth
+![](./image/OAuth.png)
+
+## Token Based Authentication
+
+![](https://roadmap.sh/guides/token-authentication.png)
+
+## Session Based Authentication
+
+From: https://roadmap.sh/guides/session-authentication
+
+![](./image/session-authentication.png)
+
+## JWT Authentication
+
+From: https://roadmap.sh/guides/jwt-authentication
+
+![](./image/jwt-authentication.png)
+
+### SSO
+
+From: https://roadmap.sh/guides/sso.png
+
+![](./image/sso.png)
+
 ## OAuth 2.0 协议及相关概念
 
 在认证与授权方面，经常会提及的两个协议：OAuth 2.0 协议和OpenID connect 协议，其中OAuth 2.0定义了授权相关概念，OpenID connect 定义了认证相关概念。
 
-
 ### OAuth 2.0 协议和OpenID connect 协议
 
 OAuth 2.0 在RFC6749的定义是：
+
 > OAuth 2.0 框架能让第三方应用以有限的权限访问 HTTP 服务，可以通过构建资源 拥有者与 HTTP 服务间的许可交互机制，让第三方应用代表资源拥有者访问服务，或者 通过授予权限给第三方应用，让其代表自己访问服务。
 
 OAuth 2.0 是一个授权协议，它允许软件代表资源拥有者去访问资源拥有者的资源。应用向资源拥有者请求授权，然后取得令牌(token)，并用它来访问资源。
@@ -23,7 +56,7 @@ OpenID Connect是一个位于OAuth 2.0框架之上的协议。它定义了一种
 
 OAuth 2.0 协议通过`access token`提供授权，OpenID connect 协议引入了`id token`的概念，用作认证。
 
-### Authorization Code Flow
+## Authorization Code Flow
 
 OAuth 2.0 协议定义了多种授权方式，在这里主要说明的是Authorization Code这种方式。在详细描述授权方式之前，由几个基本概念需要了解。
 
@@ -54,13 +87,15 @@ OAuth 2.0 协议定义了多种授权方式，在这里主要说明的是Authori
 - ❼❽客户端携带access token向资源服务器发起对受保护资源的请求并得到响应。
 
 ### PKCE （Proof Key for Code Exchange）Flow
+
 PKCE（Proof Key for Code Exchange）是增强版的Authorization Code授权方式，为了防止CSRF和授权码注入攻击。什么是授权码注入攻击？
 
 假设在上图中❹返回的code被劫持，那么攻击方在预先获取客户端的client id 的情况下，可以模拟请求方发送请求给授权服务器获得token。
 
-PKCE的引入就是为了防范这种攻击的。具体就是在上图中❶中引入额外的参数code verifier 和code challenge。code verifier 是客户端随机生成的字符串，在43-128位之间，由`[A-Z]` / `[a-z]` / `[0-9]` / "-" / "." / "_" / "~"组成。code challenge的计算公式是BASE64URL-ENCODE(SHA256(ASCII(code verifier)))，如果客户端不支持SHA256编码，那么code challenge的值就是code verifier。code challenge会被存储在授权服务器端，在❺中客户端会带上code verifier参数，授权服务器会把code verifier和存储的code challenge 在处理之后作比对，防止授权码的注入攻击。
+PKCE的引入就是为了防范这种攻击的。具体就是在上图中❶中引入额外的参数code verifier 和code challenge。code verifier 是客户端随机生成的字符串，在43-128位之间，由`[A-Z]` / `[a-z]` / `[0-9]` / "-" / "." / "\_" / "~"组成。code challenge的计算公式是BASE64URL-ENCODE(SHA256(ASCII(code verifier)))，如果客户端不支持SHA256编码，那么code challenge的值就是code verifier。code challenge会被存储在授权服务器端，在❺中客户端会带上code verifier参数，授权服务器会把code verifier和存储的code challenge 在处理之后作比对，防止授权码的注入攻击。
 
 ### 集成OpenID connect做认证
+
 如何集成OpenID connect到上述流程中做认证？
 
 在上述的流程中，❺ 中请求的参数scope可以设置为openid,标识该请求希望获取授权服务器上的用户信息，那么在❻中返回的token集合除了包含access token， refresh token，还会包含id token。id token是OpenID connect 协议引入的，id token中包含了用户的信息。
