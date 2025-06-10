@@ -41,7 +41,7 @@ title: 手写实现
 
 
 
-### Object.create的实现
+## Object.create的实现
 Object.create原本的行为：
 
 ![An image](../image/achieve/object_create.png)
@@ -49,7 +49,7 @@ Object.create原本的行为：
 
 [Object.create](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create)这个 polyfill 涵盖了主要的应用场景，它创建一个已经选择了原型的新对象，但没有把第二个参数考虑在内。
 
-请注意，尽管在 ES5 中 Object.create支持设置为[[Prototype]]为null，但因为那些ECMAScript5以前版本限制，此 polyfill 无法支持该特性。
+请注意，尽管在 ES5 中 `Object.create`支持设置为`[[Prototype]`]为`null`，但因为那些ECMAScript5以前版本限制，此 polyfill 无法支持该特性。
 ```javascript
 if (typeof Object.create !== "function") {
     Object.create = function (proto, propertiesObject) {
@@ -75,7 +75,7 @@ const obj = Object.create(null, {foo: {
   }})
 ```
 
-### [instanceOf](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/instanceof)
+## [instanceOf](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/instanceof)
 > instanceof 运算符用于检测构造函数的 `prototype` 属性是否出现在某个实例对象的原型链上。
 >实际上，实例对象上的`__proto__`就是指向构造函数的`prototype`
 
@@ -105,7 +105,7 @@ function _instanceOf(instanceObject, classFunc) {
 }
 ```
 
-### new实现
+## new实现
 
 要创建 Person 的实例，应使用 new 操作符。以这种方式调用构造函数会执行如下操作。(JS高级程序设计描述)
 - (1) 在内存中创建一个新对象。
@@ -245,7 +245,7 @@ axisPoint instanceof YAxisPoint; // true
 new YAxisPoint(17, 42) instanceof Point; // true
 ```
 
-##### [官方实现](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
+#### [官方实现](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
 
 [手写bind](https://mp.weixin.qq.com/s/pip27xjxi4oELlZMe7KR-Q)
 ```javascript
@@ -273,7 +273,7 @@ Function.prototype.myBind = function (context) {
 ```
 
 
-### ES5 实现继承
+## ES5 实现继承
 > 寄生组合继承是ES5的最佳实现
 
 所谓寄生组合式继承，即通过借用构造函数来继承属性，通过原型链的形式来继承方法。
@@ -308,7 +308,7 @@ Tom.getAge()
 
 ## [高阶的函数技术](https://juejin.cn/post/6892886272377880583)
 
-### 函数柯里化
+## 函数柯里化
 
 ```javascript
 function curry(func) {
@@ -394,7 +394,7 @@ const findGreater100 = _find(function(item) {
 })
 findGreater100([1, 2, 101, 300, 2, 122]); // [101, 300, 122]
 ```
-### 组合函数的实现
+## 组合函数的实现
 
 ```javascript
 function compose(...fns) {
@@ -464,7 +464,7 @@ function compose(middleware) {
 ```
 ![](../image/achieve/compose.png)
 
-### [深拷贝](https://segmentfault.com/a/1190000020255831)
+## [深拷贝](https://segmentfault.com/a/1190000020255831)
 > [使用proxy](https://github.com/KieSun/FE-advance-road/blob/master/wheels/deepClone/index.md)
 ```javascript
 
@@ -652,7 +652,7 @@ function deepClone2(data) {
 }
 ```
 
-### 手写EventHub（发布-订阅）
+## 手写EventHub（发布-订阅）
 
 #### 定义
 发布-订阅模式其实是一种对象间一对多的依赖关系，当一个对象的状态发送改变时，所有依赖于它的对象都将得到状态改变的通知。
@@ -900,7 +900,7 @@ elem.addEventListener('myEvent', function (e) {
 elem.dispatchEvent(myEvent)
 ```
 
-### 单例模式
+## 单例模式
 
 ```typescript
 // new OpenAI只会创建一次
@@ -979,7 +979,7 @@ var b = Singleton.getInstance('Tom')
 console.log(a === b) 
 ```
 
-### proxy实现响应式
+## proxy实现响应式
 简单的example， 注意是变动logedObj才会触发Proxy的handler
 ```javascript
 const obj = {}
@@ -1044,7 +1044,7 @@ const logedObj = new Proxy(obj, {
 	myText.text = data.text;
 </script>
 ```
-### 数组map实现
+## 数组map实现
 
 依照 [ecma262](https://tc39.es/ecma262/#sec-array.prototype.map) 草案，实现的map的规范如下:
 
@@ -1105,7 +1105,7 @@ function ArrayMap(f, receiver) {
 }
 ```
 
-### 数组reduce实现
+## 数组reduce实现
 
 `arr.reduce(callback(accumulator, currentValue,currentIndex, array)[, initialValue])`
 
@@ -1219,7 +1219,7 @@ function InnerArrayReduce(callback, current, array, length, argumentsLength) {
   return current;
 }
 ```
-### 数组去重
+## 数组去重
  - 1、使用set
 ```javascript
 function unique(array) {
@@ -1252,7 +1252,7 @@ function unique(array) {
 	return arr
 }
 ```
-### 取并集，交集，差集，子集
+## 取并集，交集，差集，子集
 ```javascript
 // 取并集
 const arrayA = [1, 2, 3], arrayB = [2, 4, 3, 5]
@@ -1286,7 +1286,7 @@ console.log(differenceResult)
 
 ```
 
-### 数组扁平化
+## 数组扁平化
 ```javascript
 // es5
 let arr = [
@@ -1377,7 +1377,7 @@ function flatten(input) {
 flatten(arr1);// [1, 2, 3, 1, 2, 3, 4, 2, 3, 4]
 ```
 
-### 数组操作
+## 数组操作
 ```javascript
 const array = [3, 2, 1, 4, 5]
 // 最值
@@ -1422,7 +1422,7 @@ function disorder(array) {
 }
 ```
 
-### JSONP的实现
+## JSONP的实现
 
 需要服务端配合，返回能执行回调函数的js
 
@@ -1472,7 +1472,7 @@ function disorder(array) {
 
 ```
 
-### 基于Promise封装Ajax
+## 基于Promise封装Ajax
 
 ```javascript
 const getJSON = function(url) {
@@ -1551,7 +1551,7 @@ function ajax(method = 'get', url, params) {
 }
 ```
 
-### 异步循环打印
+## 异步循环打印
 
 ```javascript
 const sleep = function (time, i) {
@@ -1572,7 +1572,7 @@ const start = async function () {
 
 start()
 ```
-### 图片懒加载
+## 图片懒加载
 
 #### 监听图片高度
 图片，用一个其他属性存储真正的图片地址：
@@ -1645,7 +1645,7 @@ if (IntersectionObserver) {
 }
 ```
 
-### promise
+## promise
 
 #### promise 实现进度通知
 ```javascript
@@ -2190,7 +2190,7 @@ Promise.defer = Promise.deferred = function () {
 ```
  ::: 
 
-### async的实现
+## async的实现
 
 结合promise和generator，实现async函数
 ```javascript

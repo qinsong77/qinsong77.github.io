@@ -429,7 +429,7 @@ pureObj其实是个原子（原子是JavaScript中的对象的最小单元，它
 
 - [浮点数](https://zhuanlan.zhihu.com/p/339949186)
 
-在 JavaScript 里面，数字均为双精度浮点类型（double-precision 64-bit binary format IEEE 754），即一个介于±2^−1023和±2^+1024之间的数字，或约为±10^−308到±10^+308，数字精度为53位。整数数值仅在±(253 - 1)的范围内可以表示准确。
+在 JavaScript 里面，数字均为双精度浮点类型（double-precision 64-bit binary format IEEE 754），即一个介于±2^−1023和±2^+1024之间的数字，或约为±10^−308到±10^+308，数字精度为53位。整数数值仅在从 `-2^53 + 1` 到 `2^53 - 1`，即从 `-9007199254740991` 到 `9007199254740991`的范围内可以表示准确。
 
 除了能够表示浮点数，数字类型也还能表示三种符号值: +Infinity（正无穷）、-Infinity（负无穷）和 NaN (not-a-number，非数字)
 
@@ -520,6 +520,19 @@ function toFixed(num, s){
     des = parseInt(des, 10) / times
     return des + ''
 }
+
+// Intl.NumberFormat，一个国际化数字格式化工具
+
+function toFixed(value, precision) {
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: precision,
+    maximumFractionDigits: precision,
+  }).format(value);
+}
+
+console.log(toFixed(0.065, 2)); // 输出："0.07"
+console.log(toFixed(0.065, 1)); // 输出："0.1"
+console.log(toFixed(0.065, 0)); // 输出："1"
 ```
 实际上比如2.55存的是2.5499999999999998，给他加上一个很小的数。
 
@@ -807,7 +820,7 @@ words.forEach(function(word) {
 ```
 
 #### Array.from和Array.fill
-`Array.from`第二个参数可以对item进行转换，相当于`map`。eg：构造一个n*m的二维数组：
+`Array.from`第二个参数可以对item进行转换，相当于`map`。eg：构造一个`n*m`的二维数组：
 ```javascript
 let dp = Array.from(new Array(n),() => new Array(m).fill(0));
 ```
@@ -997,7 +1010,7 @@ for (const [key, value] of new Map(arr.map((item, i) => [i, item]))) {
 }
 ```
 
-哪些数据结构部署了 `Symbol.iterator` 属性呢?只要有 `iterator `接口的数据结构,都可以使用 for of循环。
+哪些数据结构部署了 `Symbol.iterator` 属性呢?只要有 `iterator `接口的数据结构,都可以使用 `for of`循环。
 
 - 数组 Array
 - Map
@@ -1006,7 +1019,7 @@ for (const [key, value] of new Map(arr.map((item, i) => [i, item]))) {
 - arguments对象
 - NodeList对象, 就是获取的dom列表集合
 
-以上这些都可以直接使用 for of 循环。 凡是部署了 iterator 接口的数据结构也都可以使用数组的 扩展运算符(...)、和解构赋值等操作。
+以上这些都可以直接使用 `for of` 循环。 凡是部署了 `iterator` 接口的数据结构也都可以使用数组的 扩展运算符(`...`)、和解构赋值等操作。
 
 
 为对象添加`Iterator`遍历器
@@ -1099,9 +1112,9 @@ for (let x of obj) {
 
 - [异步I/O及异步编程](https://sanyuan0704.top/blogs/javascript/js-async/001.html)
 1. 回调方式 --- 嵌套地狱
-2. promise --- then写法代码冗余，语义不清楚
-3. 协程Generator---异步任务的容器，同步的写法，但是需要生成generator，等写法，也比较冗余
-4. async await
+2. `promise` --- `then`写法代码冗余，语义不清楚
+3. 协程`Generator`---异步任务的容器，同步的写法，但是需要生成`generator`，等写法，也比较冗余
+4. `async await`
 
 ### promise
 
@@ -1197,7 +1210,20 @@ function loopTask() {
 }
 ```
   ::: 
-### generator
+
+`resolve` 后面的代码会比 `.then()` 中的代码先执行，调用 `resolve()`，这会将 `.then()` 中的回调函数放入**微任务队列**。
+```js
+new Promise(resolve => setTimeout(() => {
+  console.log("1")
+  resolve()
+  console.log("2")
+
+}, 1000)).then(() => {
+  console.log("3")
+});
+// 输出 1，2，3
+```
+### Generator
 Generator 函数是协程在 ES6 的实现，最大特点就是可以交出函数的执行权（即暂停执行）。
 
 整个 Generator 函数就是一个封装的异步任务，或者说是异步任务的容器。异步操作需要暂停的地方，都用 `yield` 语句注明。
@@ -1613,13 +1639,13 @@ JSON的值只能是以下几种数据格式：
 1. 数字，包含浮点数和整数
 2. 字符串，需要包裹在双引号中
 3. `Bool`值，`true` 或者 `false`
-4. 数组，需要包裹在方括号中 []
-5. 对象，需要包裹在大括号中 {}
+4. 数组，需要包裹在方括号中 `[]`
+5. 对象，需要包裹在大括号中 `{}`
 6. `Null`
 
 #### `JSON.stringify`、`JSON.parse`深拷贝的缺点
 
-- 1. 如果obj里有函数，undefined，则序列化的结果会把函数或 `undefined`丢失；`JSON.parse`传入`undefined`会报错, `JSON.stringify`不会报错。有NaN、Infinity和-Infinity，则序列化的结果会变成null。如果obj里有RegExp(正则表达式的缩写)、Error对象，则序列化的结果将只得到空对象`{}`；
+- 1. 如果object里有函数，`undefined`，则序列化的结果会把函数或 `undefined`丢失；`JSON.parse`传入`undefined`会报错, `JSON.stringify`不会报错。有`NaN`、`Infinity`和`-Infinity`，则序列化的结果会变成`null`。如果obj里有`RegExp`(正则表达式的缩写)、`Error`对象，则序列化的结果将只得到空对象`{}`；
 ```javascript
 var funObj = {
 	name: 'a',
@@ -1642,9 +1668,9 @@ var obj = {
 console.log(JSON.parse(JSON.stringify(obj))) // { name: 'a', reg: {}, error: {} }
 ```
 
-- 2. JSON.stringify()只能序列化对象的可枚举的自有属性，例如 如果obj中的对象是由构造函数生成的， 则使用JSON.parse(JSON.stringify(obj))深拷贝后，会丢弃对象的constructor；
+- 2. `JSON.stringify()`只能序列化对象的可枚举的自有属性，例如 如果obj中的对象是由构造函数生成的， 则使用`JSON.parse(JSON.stringify(obj))`深拷贝后，会丢弃对象的`constructor`；
 - 3. 如果对象中存在循环引用的情况也无法正确实现深拷贝；
-- 4. 如果obj里面有时间对象，则JSON.stringify后再JSON.parse的结果，时间将只是字符串的形式，而不是对象的形式
+- 4. 如果obj里面有时间对象，则`JSON.stringify`后再`JSON.parse`的结果，时间将只是字符串的形式，而不是对象的形式
 ```javascript
 var test = {
 	name: 'a',
@@ -1744,7 +1770,7 @@ V8 把堆内存分成了两部分进行处理——`新生代内存和老生代�
 // 如stream（是否允许错误的解码）和fatal（是否抛出错误而不是替换非法字符）。
 const decoder = new TextDecoder('utf-8', { stream: true, fatal: true });
 ```
-decode方法： TextDecoder 实例有一个decode方法，它接受一个ArrayBuffer或TypedArray作为参数，并将其解码为字符串。如果数据包含不完整的字符，decode方法可以留下未解码的数据以供后续调用使用。
+decode方法： `TextDecoder` 实例有一个decode方法，它接受一个`ArrayBuffer`或`TypedArray`作为参数，并将其解码为字符串。如果数据包含不完整的字符，decode方法可以留下未解码的数据以供后续调用使用。
 ```js
 const buffer = new ArrayBuffer(8);
 // 假设buffer已经被填充了UTF-8编码的数据

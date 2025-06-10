@@ -240,6 +240,17 @@ div.classList.replace("foo", "bar");
 ## [输入URL到页面展示发生了什么](https://zhuanlan.zhihu.com/p/190320054)
 >[git地址](https://github.com/venaissance/myBlog/issues/17)
 
+一个完整的渲染流程大致可总结为如下
+
+1. 渲染进程将 HTML 内容转换为能够读懂的 DOM 树结构。
+2. 渲染引擎将 CSS 样式表转化为浏览器可以理解的 styleSheets，计算并生成 CSSOM 树。
+3. 创建布局树，并计算元素的布局信息。
+4. 对布局树进行分层，并生成图层树。
+5. 为每个图层生成绘制列表，并将其提交到合成线程。
+6. 合成线程将图层分成图块，并在光栅化线程池中将图块转换成位图。
+7. 合成线程发送绘制图块命令 DrawQuad 给浏览器进程。
+8. 浏览器进程根据 DrawQuad 消息生成页面，并显示到显示器上。
+
 ## [事件机制](https://zh.javascript.info/introduction-browser-events)
 ### 事件触发有三个阶段
 1. 捕获阶段：事件从window对象自上而下向目标节点传播的阶段；
@@ -384,7 +395,7 @@ passive 的意思是“顺从的”，表示它不会对事件的默认行为说
 react 把两者视为一样的了
 
 ## [跨域](https://juejin.im/post/6844904126246027278)
-因为浏览器出于安全考虑，有同源策略。也就是说，如果协议、域名或者端口有一个不同就是跨域，Ajax 请求会失败。
+因为浏览器出于安全考虑，有同源策略。也就是说，如果**协议、域名或者端口**有一个不同就是跨域，Ajax 请求会失败。
 
 常用方法解决方法
 ### JSONP
@@ -423,7 +434,7 @@ CORS 需要浏览器和后端同时支持。IE 8 和 9 需要通过 `XDomainRequ
 
 浏览器会自动进行 CORS 通信，实现 CORS 通信的关键是后端。只要后端实现了 CORS，就实现了跨域。
 
-服务端设置 Access-Control-Allow-Origin 就可以开启 CORS。 该属性表示哪些域名可以访问资源，如果设置通配符则表示所有网站都可以访问资源。
+服务端设置 `Access-Control-Allow-Origin` 就可以开启 CORS。 该属性表示哪些域名可以访问资源，如果设置通配符则表示所有网站都可以访问资源。
 
 ### 关于cors的cookie问题
 
@@ -497,7 +508,7 @@ cookie，localStorage，sessionStorage，indexDB
 | same-site |    规定浏览器不能在跨域请求中携带 Cookie，减少 CSRF 攻击     |
 
 ### LocalStorage与SessionStorage的区别
-LocalStorage和SessionStorage之间的主要区别在于浏览器窗口和选项卡之间的数据共享方式不同。
+`LocalStorage`和`SessionStorage`之间的主要区别在于浏览器窗口和选项卡之间的数据共享方式不同。
 
 LocalStorage可跨浏览器窗口和选项卡间共享。就是说如果在多个选项卡和窗口中打开了一个应用程序，而一旦在其中一个选项卡或窗口中更新了LocalStorage，则在所有其他选项卡和窗口中都会看到更新后的LocalStorage数据。
 

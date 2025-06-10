@@ -11,5 +11,6 @@
   - Remove old PWA cache: https://ecosystem.vuejs.press/plugins/remove-pwa.html
 - [ ] Update blog
 - [ ] Go through all of it
+- Add twikoo plugin?
 - GitHub Copilot
 - React ssr, rsc, next.js/remix

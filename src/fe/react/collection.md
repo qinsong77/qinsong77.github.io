@@ -203,6 +203,8 @@ lightService.stop()
 ### 动画
 
 - [Framer Motion](https://www.framer.com/motion/)
+- [reactbits](https://www.reactbits.dev/text-animations/blur-text) 提供各种带动效的组件，可以直接copy code使用
+- [fancy components*](https://www.fancycomponents.dev/docs/introduction) Fancy Components is a collection of fun and weird, ready-to-use components and microinteractions
 
 ## RN
 

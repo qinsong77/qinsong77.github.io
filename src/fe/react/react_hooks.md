@@ -162,7 +162,7 @@ function Test() {
     setSate(state + 1)
     setTimeout(() => {
       setSate((number) => number + 1)
-      // setState(state+1) // 加1不起作用，因为这个state是之前的那个及0，而之前就已经加1变成1了，
+      // setState(state+1) // 加1不起作用，因为这个state是之前的那个即0，而之前就已经加1变成1了，
       // setState(state + 2)// state会变成2
       alert(state) // 0
     }, 3000)
@@ -234,7 +234,7 @@ function Test() {
     setSate(state + 1)
     setTimeout(() => {
       setSate((number) => number + 1)
-      // setState(state+1) // 加1不起作用，因为这个state是之前的那个及0，而之前就已经加1变成1了，
+      // setState(state+1) // 加1不起作用，因为这个state是之前的那个即0，而之前就已经加1变成1了，
       // setState(state + 2)// state会变成2
       alert(state) // 0
     }, 3000)
@@ -304,7 +304,7 @@ export default function Counter2() {
 
 ## useEffect
 
-- [useEffect 完整指南](https://overreacted.io/zh-hans/a-complete-guide-to-useeffect/)
+- [useEffect 完整指南](https://overreacted.io/a-complete-guide-to-useeffect/)
 
 - [源码解读](https://www.jianshu.com/p/a838d8c22089)
 
@@ -1170,8 +1170,8 @@ const FancyButton = React.forwardRef((props, ref) => (
 ))
 
 // 你可以直接获取 DOM button 的 ref：
-const ref = React.createRef()
-;<FancyButton ref={ref}>Click me!</FancyButton>
+const ref = React.createRef();
+<FancyButton ref={ref}>Click me!</FancyButton>
 ```
 
 hooks way
@@ -1207,6 +1207,8 @@ export default forwardRef(Input)
 2. 保持变量引用
 
 和`createRef`的区别
+
+> `createRef`主要用于类组件中，用于访问DOM元素或子组件的实例，每次渲染都会返回一个新的ref对象，因此在类组件中使用时，需要在构造函数中初始化，以确保ref对象的唯一性。
 
 > `useRef` returns a mutable ref object whose `.current` property is initialized to the passed argument (`initialValue`). The returned object will persist for the full lifetime of the component.
 

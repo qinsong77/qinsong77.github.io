@@ -65,9 +65,9 @@ moment('2019-10-10 00:00:00').toDate()
 
 #### cypress 设置time-zone失败
 
-配置`env.TZ=America/New_York`不起作用，可能是和nx结合后失效，当然cypress官网也没查到怎么配置。
+配置`env.TZ=America/New_York`不起作用，可能是和`nx`结合后失效，当然`cypress`官网也没查到怎么配置。
 
-后续是配置在jest中配置cover time-zone测试
+后续是配置在`jest`中配置cover time-zone测试
 
 ```js
 // test-setup/global-setup.js
@@ -132,6 +132,20 @@ UTC 和 GMT 唯一的差别，UTC 有闰秒，GMT 没有。
 new Date();
 // Sat Jun 15 2019 20:36:10 GMT+0800 (中国标准时间)
 
+let date = new Date();
+console.log(date.toUTCString()); // Mon, 24 Mar 2025 15:35:03 GMT
 ```
+
+`Mon, 24 Mar 2025 15:35:03 GMT`它表示的是格林尼治标准时间（GMT），是一种国际时间标准，UTC 时间和 GMT 时间在数值上是相同的。
+
+### ISO 时间
+
+ISO 时间格式是按照 `ISO 8601` 标准来表示日期和时间的。在 JavaScript 中，Date 对象的 `toISOString()` 方法可以生成 ISO 时间格式。例如：
+```js
+let date = new Date();
+console.log(date.toISOString()); // 2025-03-24T15:36:55.102Z
+```
+
+其中，`T`是日期和时间的分隔符，`Z`表示该时间是 UTC 时间。`ISO` 时间格式可以看作是 `UTC` 时间的一种特定格式化表示。
 
 - [前端时间国际化入门](https://mp.weixin.qq.com/s/Gw6UiovEvu76a-9zxL3BdA)

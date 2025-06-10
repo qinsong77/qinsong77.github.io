@@ -1,4 +1,4 @@
-# Next.js - latest(v14)
+# Next.js - latest(v14 & V15)
 
 ## RSC与SSR、SSG
 
@@ -413,13 +413,152 @@ react use和 Suspense
 
 ## Chore
 
-#### NextJS 代理服务器阻塞了SSE的流式数据传输
+### NextJS 代理服务器阻塞了SSE的流式数据传输
 
 SSE 与 WebSocket 作用相似，都是建立浏览器与服务器之间的通信渠道，然后服务器向浏览器推送信息。WebSocket 更强大和灵活。因为它是全双工通道，可以双向通信；SSE 是单向通道，只能服务器向浏览器发送，因为流信息本质上就是下载。
 
-解决办法：服务端接口的 Response Header 内通过设置Cache-Control 为 no-cache, no-transform
+解决办法：服务端接口的 Response Header 内通过设置`Cache-Control` 为 `no-cache`, `no-transform`
 
 `revalidatePath`是在server action使用
+
+### createPortal not working
+
+使用`createPortal` api, 第二个参数是`document.body`时可用，但当是`document.getElementById('customer_id')`，`customer_id`的dom是一个组件，添加在layout时，就添加不上了，
+即使组件是`use client`也不行，并且还判断了也不work
+```tsx
+function AnchorIndicator() {
+  const portalNode =
+    typeof window !== 'undefined'
+      ? document.getElementById(SECTION_ANCHOR_DOM_ID)
+      : null
+  return (
+    <div>
+      something
+      {
+        portalNode
+          ? createPortal(<div>xx</div>, portalNode)
+          : null
+      }
+      </div>
+  )
+}
+
+```
+报错： `Hydration failed because the server rendered HTML didn't match the client....`, 组件加了`use client`，**也会ssr**。
+
+解决参考[examples/with-portals/](https://github.com/vercel/next.js/blob/canary/examples/with-portals/components/ClientOnlyPortal.js)
+
+::: details 点击查看代码
+```tsx
+"use client"
+import { useRef, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+
+export default function ClientOnlyPortal({ children, selector }) {
+  const ref = useRef();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    ref.current = document.querySelector(selector);
+    setMounted(true);
+  }, [selector]);
+
+  return mounted ? createPortal(children, ref.current) : null;
+}
+```
+
+```tsx
+'use client'
+
+import { useEffect, useId, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+
+import { cn } from '@/lib/utils'
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip'
+import { SECTION_ANCHOR_DOM_ID } from './constant'
+
+type SectionTitleProps = {
+  title: string
+  className?: string
+}
+
+export function SectionTitle({ title, className }: SectionTitleProps) {
+  const id = useId()
+  const [mounted, setMounted] = useState(false)
+
+  const portalNode =
+    typeof window !== 'undefined'
+      ? document.getElementById(SECTION_ANCHOR_DOM_ID)
+      : null
+
+  console.log('portalNode', portalNode)
+
+  useEffect(() => setMounted(true), [])
+
+  const handleClick = () => {
+    const element = document.getElementById(id)
+    if (!element) return
+
+    // const top = element.getBoundingClientRect().top + window.scrollY
+    element.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
+  }
+
+  return (
+    <h2
+      id={id}
+      className={cn(
+        'scroll-m-16 text-xl font-semibold tracking-tight text-gray-800',
+        className,
+      )}
+      data-section-title={title}
+    >
+      {title}
+      {portalNode
+        ? createPortal(
+            <div
+              className="flex flex-col items-center"
+              data-section-id={id}
+            >
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      className="-m-2 cursor-pointer p-2"
+                      onClick={handleClick}
+                    >
+                      <span
+                        className={cn(
+                          'inline-block size-3 rounded-full border-2 transition-colors duration-200',
+                          'border-gray-300 bg-white data-[active=true]:border-primary data-[active=true]:bg-primary',
+                        )}
+                        data-active="false"
+                      />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="left">
+                    <p>{title}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>,
+            portalNode,
+          )
+        : null}
+    </h2>
+  )
+}
+```
+:::
 
 ## 原理
 

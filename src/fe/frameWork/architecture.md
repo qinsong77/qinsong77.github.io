@@ -1,6 +1,8 @@
 # Architecture
 
 
+## [Feature-Sliced Design](https://feature-sliced.design/)
+
 ## [通用应用架构——如何设计一个适用于多平台的前端通用架构](https://juejin.cn/post/7390569548367970314)
 
 ### 分层设计

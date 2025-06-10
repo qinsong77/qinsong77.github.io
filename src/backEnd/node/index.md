@@ -124,6 +124,90 @@ http.createServer((req, res) => {
 ```
 不需要逐级地传递请求上下文并且可以在任意异步代码中获取请求上下文
 
+- `run`会同步执行`callback`函数。
+
+```js
+const { AsyncLocalStorage } = require('node:async_hooks');
+const asyncLocalStorage = new AsyncLocalStorage();
+
+asyncLocalStorage.run({}, () => {
+	console.log('inner run');
+});
+console.log('after run');
+// 依次打印
+// inner run
+// after run
+```
+- `callback`内部和其调用的外部函数中都可以获取`store`数据，获取方式是`AsyncLocalStorage`的实例方法`getStore`。
+- `callback`的返回值就是`run`的返回值
+```js
+const { AsyncLocalStorage } = require('node:async_hooks');
+const asyncLocalStorage = new AsyncLocalStorage();
+
+const data =  asyncLocalStorage.run({}, () => {
+   return 'aaa';
+});
+// 打印 aaa
+console.log(data);
+
+```
+- `callback`函数的参数来自于`run`方法中`callback`后面的参数。
+```js
+const { AsyncLocalStorage } = require('node:async_hooks');
+const asyncLocalStorage = new AsyncLocalStorage();
+
+asyncLocalStorage.run({}, (a, b, c) => {
+	// 打印 8 9 10
+	console.log(a, b, c);
+}, 8, 9, 10);
+```
+
+### AsyncResource
+
+`AsyncResource`是一个类，继承于它可以创建一个异步资源类。
+
+`asyncLocalStorage.run`的回调函数中调用外部的函数时，外部函数是可以获取到`asyncLocalStorage.store`的。但是，如果是改成了创建类的实例，仅仅类的构造函数中获取到store，而类的其他
+其他方法中都**无法**获取到。
+
+```js
+const { AsyncLocalStorage, AsyncResource } = require('node:async_hooks')
+const asyncLocalStorage = new AsyncLocalStorage()
+
+class DBQuery extends AsyncResource {
+  constructor() {
+    super('DBQuery')
+    // 可以获取到 requestId
+    console.log('可以获取到 requestId', asyncLocalStorage.getStore())
+  }
+
+  query(query, callback) {
+    setTimeout(() => {
+      this.runInAsyncScope(() => {
+        // 可以获取到 requestId
+        console.log('可以获取到 requestId', asyncLocalStorage.getStore())
+        callback()
+      })
+    }, 500)
+  }
+
+  close() {
+    this.db = null
+  }
+}
+
+for (let requestId = 0; requestId < 3; requestId++) {
+  const db = asyncLocalStorage.run(requestId, () => {
+    // 回调函数内部，成功获取到 requestId
+    console.log('可以获取到 requestId', asyncLocalStorage.getStore())
+    return new DBQuery()
+  })
+  db.query('SELECT * FROM users', (err, results) => {
+    // 可以获取到 requestId
+    console.log('可以获取到 requestId', asyncLocalStorage.getStore())
+  })
+}
+```
+
 ## [Cookie、Session、Token、JWT](https://juejin.im/post/6844904034181070861)
 
 - [Cookie 详解](https://github.com/mqyqingfeng/Blog/issues/157)

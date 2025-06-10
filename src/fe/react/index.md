@@ -277,7 +277,31 @@ console.log(Greeting.prototype.isReactComponent); // ✅ Yes
 
 [React 是如何创建 vdom 和 fiber tree](https://mp.weixin.qq.com/s?__biz=MzI3ODU4MzQ1MA==&mid=2247484766&idx=1&sn=a4f15894db4076c43a7859a5bc77542f&chksm=eb5584abdc220dbd222c5eeb239e0db1cff1385a89381da651476a7730f455f43c9c8d465478&mpshare=1&scene=23&srcid=0205epPsZMYOfNhALNtvAldy&sharer_sharetime=1612515049758&sharer_shareid=1958dfa2b35b63c7a7463d11712f39df#rd)
 
-JSX在编译时会被`Babel`编译为`React.createElement`方法。
+JSX在编译时会被`Babel`(`@babel/preset-react`)编译为`React.createElement`方法。
+
+```jsx
+import React from 'react';
+
+export default function App() {
+  return (
+    <div className="App">
+      <h1>Hello React</h1>
+    </div>
+  );
+}
+```
+=> 
+```jsx
+function App() {
+  return React.createElement(
+    'div',
+    {
+      className: 'App',
+    },
+    React.createElement('h1', null, 'Hello React')
+  );
+}
+```
 
 `React.createElement`最终会调用`ReactElement`方法返回一个包含组件数据的对象，该对象有个参数`$$typeof: REACT_ELEMENT_TYPE`标记了该对象是个`React Element`。
 
@@ -681,13 +705,13 @@ export function usePropsValue<T>(options: Options<T>) {
 
 ## [setState](https://zhuanlan.zhihu.com/p/39512941)
 
-- setState 只在合成事件和钩子函数中是“异步”的，在原生事件和`setTimeout`中都是同步的。
-- setState 的“异步”并不是说内部由异步代码实现，其实本身执行的过程和代码都是同步的，只是合成事件和钩子函数的调用顺序在更新之前，导致在合成事件和钩子函数中没法立马拿到更新后的值，形成了所谓的“异步”，当然可以通过第二个参数 setState(partialState, callback) 中的callback拿到更新后的结果。
-- setState 的批量更新优化也是建立在“异步”（合成事件、钩子函数）之上的，在原生事件和setTimeout 中不会批量更新，在“异步”中如果对同一个值进行多次setState，setState的批量更新策略会对其进行覆盖，取最后一次的执行，如果是同时setState多个不同的值，在更新时会对其进行合并批量更新。
+- `setState` 只在合成事件和钩子函数中是“异步”的，在原生事件和`setTimeout`中都是同步的。
+- `setState` 的“异步”并不是说内部由异步代码实现，其实本身执行的过程和代码都是同步的，只是合成事件和钩子函数的调用顺序在更新之前，导致在合成事件和钩子函数中没法立马拿到更新后的值，形成了所谓的“异步”，当然可以通过第二个参数 setState(partialState, callback) 中的callback拿到更新后的结果。
+- `setState` 的批量更新优化也是建立在“异步”（合成事件、钩子函数）之上的，在原生事件和`setTimeout` 中不会批量更新，在“异步”中如果对同一个值进行多次setState，setState的批量更新策略会对其进行覆盖，取最后一次的执行，如果是同时setState多个不同的值，在更新时会对其进行合并批量更新。
 
 ## react合成事件
 
-- [一文吃透react事件系统原理](https://juejin.cn/post/6955837254250004511)
+- [一文吃透react事件系统原理](https://juejin.cn/post/6955636911214067720)
 
 首先，React Jsx中写的事件，经过`babel`转换成`React.createElement`形式，放在了props参数`onClick`中，最终转成fiber对象放在了`memoizedProps` 和 `pendingProps`。
 真实的dom上的click事件被单独处理，已经被react底层替换成空函数。

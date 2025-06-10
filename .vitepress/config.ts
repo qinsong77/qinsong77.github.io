@@ -58,6 +58,11 @@ const nav: DefaultTheme.NavItem[] = [
         text: '微前端',
         link: '/fe/MicroFrontends/',
         activeMatch: '^/fe/MicroFrontends/'
+      },
+      {
+        text: 'chore',
+        link: '/fe/chore',
+        activeMatch: '^/fe/chore'
       }
     ]
   },
@@ -487,6 +492,10 @@ export const sidebar: DefaultTheme.Sidebar = {
           link: '/fe/MicroFrontends/microapp'
         }
       ]
+    },
+    {
+      text: 'chore',
+      link: '/fe/chore'
     }
   ],
   '/algorithm/': [
@@ -599,6 +608,10 @@ export const sidebar: DefaultTheme.Sidebar = {
         {
           text: 'Summary',
           link: '/backEnd/java/'
+        },
+        {
+          text: 'Chore',
+          link: '/backEnd/java/chore'
         }
       ]
     },
@@ -743,7 +756,8 @@ export default defineConfig({
     footer: {
       message:
         "In case I don't see you. Good afternoon, good evening, and good night.",
-      copyright: 'Copyright © 2019-present <a href="https://github.com/qinsong77" target="_blank">Sysuke</a>'
+      copyright:
+        'Copyright © 2019-present <a href="https://github.com/qinsong77" target="_blank">Sysuke</a>'
     }
   },
   head: [
