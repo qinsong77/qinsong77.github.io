@@ -1,7 +1,4 @@
-
-
 # 实战篇
-
 
 still work on this.
 
@@ -10,7 +7,12 @@ still work on this.
 
 > The more your tests resemble the way your software is used, the more confidence they can give you. - Kent C. Dodds
 
+## help library
+
+- [fast-check](https://github.com/dubzzz/fast-check) 自动生成大量随机输入，去轰炸函数或模块，把隐藏最深、最难想到的 bug 炸出来。
+
 ## Articles
+
 - [React系列（二）：单元测试最佳实践与前端TDD](https://ethan.thoughtworkers.me/#/post/2023-12-10-react-unit-testing-best-practices-v2)，实践证明，在前端以细粒度的UI组件为单元做测试不能很好地支撑重构和需求变化。本文将介绍一种能更好地支撑重构和开发、更能支撑前端TDD的单元测试方案。
 
 ## redux
@@ -31,8 +33,6 @@ still work on this.
 
 ## 漫谈前端测试
 
-TW内部博客摘抄
-
 ### 将组件看成整体，不要测试代码细节
 
 在看到一些前端测试代码时，会常见下面的[例子](https://kentcdodds.com/blog/why-i-never-use-shallow-rendering#what-even-is-shallow-rendering):
@@ -41,27 +41,27 @@ TW内部博客摘抄
 import * as React from 'react'
 
 class Message extends React.Component {
-  static defaultProps = {initialShow: false}
-  state = {show: this.props.initialShow}
+  static defaultProps = { initialShow: false }
+  state = { show: this.props.initialShow }
   toggle = () => {
-    this.setState(({show}) => ({show: !show}))
+    this.setState(({ show }) => ({ show: !show }))
   }
   render() {
     return (
       <div>
         <button onClick={this.toggle}>Toggle</button>
-        {this.state.show?<div>Hello world</div>:null}
+        {this.state.show ? <div>Hello world</div> : null}
       </div>
     )
   }
 }
 
-export default Message   
+export default Message
 ```
 
 ```jsx
 import * as React from 'react'
-import Enzyme, {shallow} from 'enzyme'
+import Enzyme, { shallow } from 'enzyme'
 import Message from '../message'
 
 test('toggle toggles the state of show', () => {
@@ -76,9 +76,9 @@ test('toggle toggles the state of show', () => {
 看起来这个测试并没有什么问题，它充分覆盖了这个组件的状态分支。但是，它可能会导致两种错误：
 
 - 在你正确重构代码的时候测试失败（ False negatives）
-  例如说当我在重构代码时，采用了 [重命名函数](https://refactoring.com/catalog/changeFunctionDeclaration.html)的手法，将  `toggle` 方法名改成了  `setMessageShow` 那么这个时候我的测试会意外的失败。
+  例如说当我在重构代码时，采用了 [重命名函数](https://refactoring.com/catalog/changeFunctionDeclaration.html)的手法，将 `toggle` 方法名改成了 `setMessageShow` 那么这个时候我的测试会意外的失败。
 - 在你破坏代码功能的时候测试依然通过（ False positives）
-  假如说当我在写代码时，不小心把按钮的事件响应  `onClick` 的回调写成了空函数  `()=>{}`，测试依然会通过。
+  假如说当我在写代码时，不小心把按钮的事件响应 `onClick` 的回调写成了空函数 `()=>{}`，测试依然会通过。
   造成这样的原因是，这个测试并没有 **对结果负责**，抽象来看，一个组件最终的结果应该是页面上的元素（实际上常见框架的组件的输出一般是个 JS 对象，简单起见，就略过渲染的过程，都在语法糖的基础上看待了）。
 
 改写一下测试:
@@ -86,7 +86,7 @@ test('toggle toggles the state of show', () => {
 ```jsx
 import * as React from 'react'
 import Message from '../message'
-import {render, screen} from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
 import userEvent from '@testing-library/user-event'
 
@@ -101,6 +101,7 @@ test('toggle toggles the message of show', () => {
 这段测试代码里，我们真正的 对**结果**中的内容和交互负责，从而可以让我们放心地重构修改代码，并在外部表现出错时，快速地给我们反馈。
 
 ### 前端 TDD 的困难
+
 前端项目很多时候架构如下图所示：
 
 ![](./images/bad-fe-art1.png)
@@ -141,8 +142,8 @@ Component 这个组件直接依赖了进程外服务器，当 mock server 之后
 架构清晰了，我们的测试策略也就可以清晰：
 
 1. View 层：
-  1. Stub 所依赖 ViewModel 层 Hook 的返回值，测试 Component 的前端渲染。
-  2. SpyOn 所依赖 ViewModel 层 Hook 的方法，测试 Component 的事件响应调用对应方法。
+   1. Stub 所依赖 ViewModel 层 Hook 的返回值，测试 Component 的前端渲染。
+   2. SpyOn 所依赖 ViewModel 层 Hook 的方法，测试 Component 的事件响应调用对应方法。
 2. ViewModel 层：Hook 和 Store 一起测试，Stub Fetcher 返回值，测试返回数据以及方法调用后的返回数据。
 3. Service 层：Fake/Stub Server，测试请求返回。
 4. utils 进行单元测试
@@ -150,134 +151,139 @@ Component 这个组件直接依赖了进程外服务器，当 mock server 之后
 Example：
 
 - View 层：
+
 ```tsx
 // src/components/__tests__/Hello.test.tsx
 
-import { render } from '../../../tests/test-utils';
-import HelloWrapper from '../Hello';
-import { useHello } from '../../hooks/useHello';
+import { render } from '../../../tests/test-utils'
+import HelloWrapper from '../Hello'
+import { useHello } from '../../hooks/useHello'
 
 // Mock the useHello hook
-jest.mock('../../hooks/useHello');
+jest.mock('../../hooks/useHello')
 
-const mockedUseHello = useHello as jest.Mock;
+const mockedUseHello = useHello as jest.Mock
 
 describe('HelloWrapper component', () => {
   it('renders fallback content and displays the content from Hello component', async () => {
-    const mockHelloMsg = 'Hello, World!';
+    const mockHelloMsg = 'Hello, World!'
 
     mockedUseHello.mockImplementation(() => {
-      return mockHelloMsg;
-    });
+      return mockHelloMsg
+    })
 
-    const { getByText } = render(<HelloWrapper />);
+    const { getByText } = render(<HelloWrapper />)
 
-    expect(getByText(mockHelloMsg)).toBeInTheDocument();
-  });
-});  
+    expect(getByText(mockHelloMsg)).toBeInTheDocument()
+  })
+})
 ```
+
 ```tsx
 //src/components/Hello.tsx
 
-import { Suspense } from 'react';
-import { useHello } from '../hooks/useHello';
+import { Suspense } from 'react'
+import { useHello } from '../hooks/useHello'
 
 const Hello = () => {
-  const helloMsg = useHello();
-  return <h2>{helloMsg}</h2>;
-};
+  const helloMsg = useHello()
+  return <h2>{helloMsg}</h2>
+}
 
 export default () => {
   return (
     <Suspense fallback={<h2>加载中……</h2>}>
       <Hello />
     </Suspense>
-  );
-};
+  )
+}
 ```
 
 - ViewModel 层
+
 ```tsx
 // src/hooks/__tests__/useHello.test.tsx
 
-import { renderHook, waitFor } from '../../../tests/test-utils';
-import { useHello } from '../useHello';
-import { fetchHelloData } from '../../fetcher/hello';
+import { renderHook, waitFor } from '../../../tests/test-utils'
+import { useHello } from '../useHello'
+import { fetchHelloData } from '../../fetcher/hello'
 
 // Mock fetchHelloData
-jest.mock('../../fetcher/hello');
-const mockedFetchHelloData = fetchHelloData as jest.Mock;
+jest.mock('../../fetcher/hello')
+const mockedFetchHelloData = fetchHelloData as jest.Mock
 
 // Mock timer
 beforeEach(() => {
-  jest.useFakeTimers();
-});
+  jest.useFakeTimers()
+})
 
 afterEach(() => {
-  jest.useRealTimers();
-});
+  jest.useRealTimers()
+})
 
 describe('useHello hook', () => {
   it('returns the correct message with mocked timer and helloNameAtom', async () => {
-    const mockTimestamp = 1677649423000;
-    jest.setSystemTime(mockTimestamp);
+    const mockTimestamp = 1677649423000
+    jest.setSystemTime(mockTimestamp)
 
-    const mockName = 'John';
-    const mockMsg = 'Hello, John!';
+    const mockName = 'John'
+    const mockMsg = 'Hello, John!'
 
     // Mock the fetchHelloData response
     mockedFetchHelloData.mockResolvedValue({
       msg: mockMsg,
       timestamp: mockTimestamp,
-      name: mockName,
-    });
+      name: mockName
+    })
 
     const { result, rerender } = renderHook(() => {
-      return useHello();
-    });
-    rerender();
+      return useHello()
+    })
+    rerender()
     await waitFor(() =>
       expect(result.current).toEqual(
         `Now is ${new Date(
           mockTimestamp
         ).toISOString()}, ${mockMsg}, ${mockName}`
       )
-    );
-  });
-});         
+    )
+  })
+})
 ```
+
 ```tsx
 //src/hooks/__tests__/useHello.tsx
 
-import { selector, selectorFamily, useRecoilValue } from 'recoil';
-import { fetchHelloData } from '../fetcher/hello';
-import { helloNameAtom } from '../store/hello';
+import { selector, selectorFamily, useRecoilValue } from 'recoil'
+import { fetchHelloData } from '../fetcher/hello'
+import { helloNameAtom } from '../store/hello'
 
 const helloMsgQuery = selectorFamily({
   key: 'helloMsgQuery',
   get: (name: string) => async () => {
-    return await fetchHelloData(name);
-  },
-});
+    return await fetchHelloData(name)
+  }
+})
 
 const currentHelloMsgQuery = selector({
   key: 'currentHelloMsgQuery',
   get: ({ get }) => {
-    return get(helloMsgQuery(get(helloNameAtom)));
-  },
-});
+    return get(helloMsgQuery(get(helloNameAtom)))
+  }
+})
 
 export const useHello = () => {
-  const { msg, name, timestamp } = useRecoilValue(currentHelloMsgQuery);
-  return `Now is ${new Date(timestamp).toISOString()}, ${msg}, ${name}`;
-};
+  const { msg, name, timestamp } = useRecoilValue(currentHelloMsgQuery)
+  return `Now is ${new Date(timestamp).toISOString()}, ${msg}, ${name}`
+}
 ```
+
 - Service 层：
 
 ```tsx
 // mocks/handlers
 
-import { rest } from 'msw';
+import { rest } from 'msw'
 
 export const handlers = [
   rest.get('/portal/api/hello/:name', (req, res, ctx) => {
@@ -285,60 +291,63 @@ export const handlers = [
       ctx.json({
         msg: 'Hello!',
         timestamp: Date.now().valueOf(),
-        name: req.params.name,
+        name: req.params.name
       })
-    );
-  })] 
+    )
+  })
+]
 ```
+
 ```ts
 // src/fetcher/__tests__/hello.test.ts
 
-import { fetchHelloData } from '../hello';
+import { fetchHelloData } from '../hello'
 
 describe('fetchHelloData', () => {
-  const mockTimestamp = Date.now();
+  const mockTimestamp = Date.now()
   beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(mockTimestamp);
-  });
+    jest.useFakeTimers()
+    jest.setSystemTime(mockTimestamp)
+  })
 
   afterEach(() => {
-    jest.useRealTimers();
-  });
+    jest.useRealTimers()
+  })
 
   it('should return the correct HelloResponse object', async () => {
-    const name = 'John';
-    const response = await fetchHelloData(name);
+    const name = 'John'
+    const response = await fetchHelloData(name)
 
-    expect(response).toHaveProperty('msg', 'Hello!');
-    expect(response).toHaveProperty('timestamp', mockTimestamp);
-    expect(response).toHaveProperty('name', name);
-  });
+    expect(response).toHaveProperty('msg', 'Hello!')
+    expect(response).toHaveProperty('timestamp', mockTimestamp)
+    expect(response).toHaveProperty('name', name)
+  })
 
   it('should return the HelloResponse object with name as empty if not provided', async () => {
-    const response = await fetchHelloData('');
+    const response = await fetchHelloData('')
 
-    expect(response).toHaveProperty('msg', 'Hello!');
-    expect(response).toHaveProperty('timestamp', mockTimestamp);
-    expect(response).toHaveProperty('name', 'empty');
-  });
-});  
+    expect(response).toHaveProperty('msg', 'Hello!')
+    expect(response).toHaveProperty('timestamp', mockTimestamp)
+    expect(response).toHaveProperty('name', 'empty')
+  })
+})
 ```
+
 ```ts
 // src/fetcher/hello.ts
 
-import FetchRequest from '../infra/fetchRequest';
+import FetchRequest from '../infra/fetchRequest'
 
 interface HelloResponse {
-  msg: string;
-  timestamp: number;
-  name: string;
+  msg: string
+  timestamp: number
+  name: string
 }
 
 export const fetchHelloData = async (name: string): Promise<HelloResponse> => {
-  const fetchRequest = new FetchRequest();
-  return await fetchRequest.get(`/hello/${name || 'empty'}`);
-};                                                      
+  const fetchRequest = new FetchRequest()
+  return await fetchRequest.get(`/hello/${name || 'empty'}`)
+}
 ```
 
 自动化测试： **快速反馈、稳定重复**

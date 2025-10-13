@@ -264,15 +264,15 @@ export const sidebar: DefaultTheme.Sidebar = {
           link: '/fe/react/react_native'
         },
         {
-          text: 'Next.js',
-          link: '/fe/react/next'
-        },
-        {
           text: 'React 18 & 19',
           link: '/fe/react/react_18_19'
         },
         {
-          text: 'Next.js latest(14)',
+          text: 'Next.js',
+          link: '/fe/react/next'
+        },
+        {
+          text: 'Next.js latest(14 & 15)',
           link: '/fe/react/next_latest'
         },
         {
@@ -282,6 +282,10 @@ export const sidebar: DefaultTheme.Sidebar = {
         {
           text: 'Collection',
           link: '/fe/react/collection'
+        },
+        {
+          text: 'react router',
+          link: '/fe/react/react-router'
         }
       ]
     },
@@ -570,6 +574,10 @@ export const sidebar: DefaultTheme.Sidebar = {
         {
           text: 'Architecture',
           link: '/backEnd/base/architecture'
+        },
+        {
+          text: 'Soft skill',
+          link: '/backEnd/base/soft'
         },
         {
           text: 'Collection',

@@ -1,5 +1,6 @@
 # Summary
 
+- [MongoDB 极简入门实践](https://mp.weixin.qq.com/s/lcoa6X-aSaUJHzdXFEjuzA)
 - [万字长文详细分享Redis的常见业务场景](https://mp.weixin.qq.com/s/srkd73bS2n3mjIADLVg72A)
 
 ## 查询

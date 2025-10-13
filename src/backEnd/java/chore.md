@@ -775,6 +775,30 @@ Integer age = tuple.getT2(); // 返回第二个元素 30
 
 通过 `getT1()` 和 `getT2()`` 访问元素。
 
+### `Mono.empty()`
+
+`Mono.empty()` 表示一个空的响应式流，它不会发射任何数据，但会正常地完成（即发出一个 `onComplete` 信号）。
+
+- 如果在 `Mono.empty()` 之后调用 `map` 或 `flatMap`，这些操作不会被执行，因为 `Mono.empty()` 不会发射任何数据。
+- 流会在 `Mono.empty()` 处直接完成，后续的 `map` 或 `flatMap` 不会触发。
+
+```java
+import reactor.core.publisher.Mono;
+
+public class ReactorExample {
+    public static void main(String[] args) {
+        Mono.empty()
+            .map(value -> "Transformed value: " + value)
+            .flatMap(value -> Mono.just("Flattened value: " + value))
+            .subscribe(
+                value -> System.out.println("Received: " + value),
+                error -> System.out.println("Error: " + error),
+                () -> System.out.println("Completed")
+            );
+    }
+}
+```
+输出：`Completed`
 ## R2DBC
 
 R2DBC（Reactive Relational Database Connectivity）是一个基于`Reactive Streams`规范的**非阻塞API**，用于在Java应用程序中以响应式编程的方式访问关系型数据库。它解决了传统JDBC（Java Database Connectivity）的阻塞问题，允许开发者在响应式编程环境中高效地与SQL数据库交互。

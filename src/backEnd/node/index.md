@@ -3,12 +3,26 @@ title: Summary
 ---
 
 # Summary
+
 Node 的特性是**单线程、非阻塞时I/O**
 
+Node.js 架构中有2个核心：
+- JavaScript V8: V8 引擎 只会处理 JavaScript 本身，负责解释并执行JS代码。转成机器码，供计算机直接运行
+- `libuv`：能做到非阻塞、异步的关键，用 C++ 编写的底层库，通过内建了一个线程池（默认 4 个线程），能完成：
+  - 文件系统操作
+  - 网络通信
+  - 定时器处理（setTimeout 等）
+  - 管理 Event Loop（事件循环）
+
+Event loop负责：
+- 统筹调度同步与异步任务的执行顺序
+- 管理任务队列，确保所有操作都有序且不阻塞执行
+
 ## collection
+
+- [通过源码分析 Node.js 原理](https://github.com/theanarkh/understand-nodejs)
 - [一篇文章构建你的 NodeJS 知识体系](https://juejin.cn/post/6844903767926636558)
 - [Node.js 并发能力总结](https://mp.weixin.qq.com/s/6LsPMIHdIOw3KO6F2sgRXg)
-- [MongoDB 极简入门实践](https://mp.weixin.qq.com/s/lcoa6X-aSaUJHzdXFEjuzA)
 
 ### v8
 

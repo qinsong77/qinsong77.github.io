@@ -13,7 +13,7 @@ export default {
     const route = useRoute()
     const initZoom = () => {
       // 为所有图片增加缩放功能
-      mediumZoom('.main img', { background: 'var(--vp-c-bg)' })
+      mediumZoom('#app img', { background: 'var(--vp-c-bg)' })
     }
     onMounted(() => {
       initZoom()

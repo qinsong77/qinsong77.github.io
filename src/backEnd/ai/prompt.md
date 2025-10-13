@@ -88,4 +88,5 @@ I'll fix these tests without changing the scene
 
 ## Cursor
 
-[cursor](https://cursor.directory/)
+- [cursor](https://cursor.directory/)
+- [10x Your Productivity: Secret Cursor AI Techniques I Learned from Building Real Projects](https://cursor.fan/tutorial/Tutorial/10x-your-productivity/)
