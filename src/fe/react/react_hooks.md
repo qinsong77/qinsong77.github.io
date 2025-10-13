@@ -730,7 +730,7 @@ const App = () => {
 
 子组件的 `effet` 首先执行，然后执行父组件的
 
-子组件的 `clean` 执行，然后父组件的 `clean` 也执行，顺序和 `effect` 执行顺序一致
+父组件的 `clean` 执行，然后子组件的 `clean` 也执行
 
 ## useLayoutEffect
 
@@ -791,13 +791,13 @@ export default function FuncCom() {
 
 ### ssr
 
-next.js的ssr中使用useLayoutEffect会有warning，由于 useLayoutEffect 是同步执行的，它会在服务器端和客户端都执行，但由于服务器端没有真实的 DOM 环境，可能会导致一些问题，例如引起样式计算的阻塞，或者导致服务器端和客户端的 DOM 结构不一致。
+next.js的ssr中使用`useLayoutEffect`会有`warning`，由于 `useLayoutEffect` 是同步执行的，它会在服务器端和客户端都执行，但由于服务器端没有真实的 DOM 环境，可能会导致一些问题，例如引起样式计算的阻塞，或者导致服务器端和客户端的 DOM 结构不一致。
 
-为了解决这个问题，Next.js 引入了 useEffect 的替代方案 useLayoutEffect，该钩子函数在服务器端渲染时会被自动替换为 useEffect，以确保在服务器端渲染过程中不会触发同步的 DOM 操作。
+为了解决这个问题，Next.js 引入了 `useEffect` 的替代方案 `useLayoutEffect`，该钩子函数在服务器端渲染时会被自动替换为 `useEffect`，以确保在服务器端渲染过程中不会触发同步的 DOM 操作。
 
 `useEffect happens *after* mount/update, but the server doesn’t mount so it doesn’t happen. it [useEffect] won’t run on the server, but it also won’t warn.`
 
-`useEffect`也不会在ssr时运行，他被设计来就是在dom渲染后的执行副作用。可以用在ssr，但不会run,也不会像useLayoutEffect那样有 warning。
+`useEffect`也不会在ssr时运行，他被设计来就是在dom渲染后的执行副作用。可以用在ssr，但不会run，也不会像`useLayoutEffect`那样有 `warning`。
 
 ## 自定义 Hooks
 
@@ -1460,20 +1460,6 @@ function useCallback<T extends (...args: any[]) => any>(
 
 ![](./image/usecallback.png)
 
-## 优化总结
-
-React 的性能优化方向主要是两个：**一个是减少重新 render 的次数(或者说减少不必要的渲染)**，**另一个是减少计算的量。**
-
-一个组件重新重新渲染，一般三种情况：
-
-1. 要么是组件自己的状态改变
-2. 要么是父组件重新渲染，导致子组件重新渲染，但是父组件的 props 没有改变
-3. 要么是父组件重新渲染，导致子组件重新渲染，但是父组件传递的 props 改变
-
-减少不必要的渲染，可以使用`use.memo`和`useCallback`，或者之前的`shouldComponentUpdate`和`pureComponent`
-
-**`useMemo` 做计算结果缓存**
-
 ## 原理
 
 - [前端面试必考题：React Hooks 原理剖析](https://juejin.cn/post/6844904205371588615)
@@ -1568,7 +1554,7 @@ update 阶段：**updateEffect**
 1. 遍历链表
 2. 如果遇到`Effect.tag`被标记上`NoHookEffect`的节点则跳过。
 3. 如果`Effect.destroy为`函数类型，则需要执行该清除副作用的函数（至于这`Effect.destroy`是从哪里来的，下面马上说到）
-4. 执行`Effect.create`，并将执行结果保存到`Effect.destroy`（如果开发者没有配置 return，那得到的自然是 undefined 了，也就是说，开发者认为对于当前 `useEffect` 代码段，不存在需要清除的副作用）；注意由于闭包的缘故，
+4. 执行`Effect.create`，并将执行结果保存到`Effect.destroy`（如果开发者没有配置 return，那得到的自然是 `undefined` 了，也就是说，开发者认为对于当前 `useEffect` 代码段，不存在需要清除的副作用）；注意由于闭包的缘故，
    `Effect.destroy`实际上可以访问到本次`Effect.create`函数作用域内的变量。
 
 **是先清除上一轮的副作用，然后再执行本轮的 effect 的。**

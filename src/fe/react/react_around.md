@@ -247,6 +247,21 @@ react-redux 可以将 react 组件分为，`展示组件`和`容器组件`，容
 
 ## React Css 方案
 
+- [CSS in React Server Components](https://www.joshwcomeau.com/react/css-in-rsc/) Understanding the future of CSS-in-JS and React
+
+| 方案                               | 一句话定位                 | 优点                          | 痛点                        | 典型场景                    |
+|----------------------------------|-----------------------|-----------------------------|---------------------------|-------------------------|
+| **普通 CSS / PostCSS**             | 最熟悉、零学习成本             | 原生、可配合 autoprefixer、cssnano | 全局污染、命名冲突、难以 tree-shaking | 小项目、一次性页面               |
+| **CSS Modules**                  | 文件级局部作用域              | 不写框架特有语法、与构建无关              | 文件名哈希、无法动态主题、样式复用差        | 中后台、组件库                 |
+| **Sass / Less / Stylus**         | 变量、mixin、嵌套一把梭        | 功能强大、生态成熟                   | 全局作用域、构建时间、包体             | 已有大量遗留样式                |
+| **Styled-Components**            | CSS-in-JS 扛把子         | 完全动态、主题系统、SSR 支持好           | 运行时开销、TypeScript 类型体操、包体  | 高度品牌化、需要主题切换            |
+| **Emotion**                      | Styled-Components 平替  | 体积小、支持 css 属性写法、runtime 可选  | API 稍碎、同运行时成本             | 需要更细粒度控制                |
+| **Linaria**                      | 零运行时 CSS-in-JS        | 构建时抽离成 .css、无运行时            | 需 Babel、webpack 配置、动态值限制  | 追求 0 运行时 + CSS-in-JS 语法 |
+| **Vanilla Extract**              | TypeScript 写样式，也是零运行时 | 100% 静态、类型安全、tree-shaking   | 构建插件、动态值需 CSS 变量          | 大型 TS 代码库、设计系统          |
+| **Tailwind CSS**                 | 原子类一把梭                | 开发飞快、设计 token 化、体积小         | 类名冗长、记忆曲线、HTML 膨胀         | 快速原型、设计系统已固化            |
+| **UnoCSS / Windi**               | Tailwind JIT 超集       | 按需生成、插件生态、极速 HMR            | 社区新、生态碎片化                 | 想要更轻更快、Vite 优先          |
+| **Chakra UI / MUI / Ant Design** | 组件级主题                 | 现成组件、主题系统、无障碍               | 样式黑盒、定制成本高                | 业务优先、少设计资源              |
+
 1. css modules
 
 类似 Vue 的`scoped`，可以解决 CSS 变量名冲突

@@ -1,4 +1,4 @@
 # MicroApp
 
 
-- [micro-app](https://github.com/micro-zoe/micro-app)
+- [micro-app](https://github.com/jd-opensource/micro-app)
