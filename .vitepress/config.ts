@@ -779,7 +779,20 @@ export default defineConfig({
       { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }
     ],
     ['meta', { name: 'msapplication-TileColor', content: '#333' }],
-    ['link', { rel: 'apple-touch-icon', href: '/icons/128.ico' }]
+    ['link', { rel: 'apple-touch-icon', href: '/icons/128.ico' }],
+    // Google analytics
+    [
+      'script',
+      { async: '', src: 'https://www.googletagmanager.com/gtag/js?id=G-T9ZPVY6BX0' }
+    ],
+    [
+      'script',
+      {},
+      `window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-T9ZPVY6BX0');`
+    ]
     // 百度统计
     // [
     //   'script',
