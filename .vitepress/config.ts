@@ -190,6 +190,17 @@ const nav: DefaultTheme.NavItem[] = [
         link: '/demo'
       }
     ]
+  },
+  {
+    text: 'life',
+    activeMatch: `^/life/`,
+    items: [
+      {
+        text: 'finance',
+        link: `/life/finance/`,
+        activeMatch: '^/life/finance'
+      }
+    ]
   }
 ]
 
@@ -726,6 +737,17 @@ export const sidebar: DefaultTheme.Sidebar = {
         }
       ]
     }
+  ],
+  '/life': [
+    {
+      text: 'finance',
+      items: [
+        {
+          text: '投资理财知识',
+          link: '/life/finance/'
+        }
+      ]
+    }
   ]
 }
 
@@ -790,9 +812,15 @@ export default defineConfig({
       {},
       `window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-T9ZPVY6BX0');`
-    ]
+      if (window.location.hostname !== 'localhost') {
+        gtag('js', new Date());
+        gtag('config', 'G-T9ZPVY6BX0');
+        console.log('Google Analytics is ACTIVE.');
+      } else {
+        console.log('Google Analytics is DISABLED on localhost.');
+      }
+      `
+    ],
     // 百度统计
     // [
     //   'script',
