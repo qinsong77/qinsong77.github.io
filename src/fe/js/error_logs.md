@@ -1,151 +1,135 @@
-#  犯错记录
+# 犯错记录
 
-## 处理 YYYY-MM-DD 这样的日期字符串
+## 日期字符串解析的时区陷阱
 
-```js
-// code is runningg on GMT +08:00
-const d = new Date('2019-10-10');
-const date = d.getDate();
-
-// 10
-// Good!
-
-
-// code is runningg on GMT -10:00
-const d = new Date('2019-10-10');
-const date = d.getDate();
-
-// 9
-// WTF?!
-```
-
-在小于0时区的地方，直接用 `new Date('YYYY-MM-DD')` 这样的方式实例化日期并且获取日期，永远会少一天。但是使用 `new Date('YYYY-MM-DD 00:00:00')` 就不会。
-
-其实是使用 `new Date()` 转换年月日字符串日期，只是`YYYY-MM-DD`这种格式，有bug，就是会自动根据本地时区，在传入日期的基础上，加上或者减去时差。
+### 问题现象
 
 ```js
-const timeOffset = new Date('2019-09-01').getTime() - new Date('2019/09/01').getTime()
-console.log(timeOffset/(1000 * 60 * 60)) // => 8
+// GMT+08:00 环境
+new Date('2019-10-10').getDate() // 10 ✅
+
+// GMT-10:00 环境
+new Date('2019-10-10').getDate() // 9 ❌
 ```
+
+### 根本原因
+
+JS 解析日期字符串时，**不同分隔符使用不同规则**：
+
+- `YYYY-MM-DD`（连字符）→ 解析为 **UTC 午夜**（遵循 ISO 8601）
+- `YYYY/MM/DD` 或 `YYYY-M-D`（非严格格式）→ 解析为**本地时间午夜**
 
 ```js
-// 中国时区，自动加了8个小时
-console.log(new Date('2019-09-01')) // Sun Sep 01 2019 08:00:00 GMT+0800 (中国标准时间)
-
-console.log(new Date('2019-9-01')) // Sun Sep 01 2019 00:00:00 GMT+0800 (中国标准时间)
-console.log(new Date('2019-9-1')) // Sun Sep 01 2019 00:00:00 GMT+0800 (中国标准时间)
-console.log(new Date('2019/09/01')) // Sun Sep 01 2019 00:00:00 GMT+0800 (中国标准时间)
-console.log(new Date('2019/9/1')) // Sun Sep 01 2019 00:00:00 GMT+0800 (中国标准时间)
+// 中国时区（GMT+8）下，连字符格式被当作 UTC，显示时加了 8 小时
+new Date('2019-09-01')   // Sun Sep 01 2019 08:00:00 GMT+0800
+new Date('2019/09/01')   // Sun Sep 01 2019 00:00:00 GMT+0800
+new Date('2019-9-1')     // Sun Sep 01 2019 00:00:00 GMT+0800
 ```
-问题本质，就在于 js 在解析**日期字符串**时，对于不同的分隔符，使用了不同的 规则。
 
-2种解决办法：
-1. 强行指定时间
-```js
-console.log(new Date('2019-09-01 00:00:00'))
-// Sun Sep 01 2019 00:00:00 GMT+0800 (中国标准时间)
-```
-2. 使用`/`分割符号
+因此在 **负时区**环境下，UTC 午夜转为本地时间后会倒退到前一天，导致 `getDate()` 少 1。
+
+### 解决方案
 
 ```js
-import { parse } from 'date-fns'
-parse('1993-12-24', 'yyyy-MM-dd', new Date())
+// ❌ 避免：依赖模糊的字符串解析
+new Date('2024-01-15')
+
+// ✅ 明确指定本地时间（追加时间部分）
+new Date('2024-01-15 00:00:00')
+
+// ✅ 使用多参数构造（本地时区）
+new Date(2024, 0, 15)
+
+// ✅ 明确指定 UTC
+new Date(Date.UTC(2024, 0, 15))
+
+// ✅ 明确指定时区偏移
+new Date('2024-01-15T00:00:00+08:00')
+
+// ✅ 使用日期库（推荐）
+import dayjs from 'dayjs'
+dayjs('2024-01-15').toDate()
 ```
-所以一般最好用库处理时间：`dayjs`, `date-fns`, `moment.js`(体积太大了)
 
-````js
-moment('2019-10-10').toDate()
-// Thu Oct 10 2019 00:00:00 GMT+0800 (中国标准时间)
+> 推荐使用 `dayjs` 或 `date-fns` 处理日期，避免手动解析字符串。
 
-moment('2019-10-10 00:00:00').toDate()
-// Thu Oct 10 2019 00:00:00 GMT+0800 (中国标准时间)
+---
 
-````
-[时区与JS中的Date对象](https://juejin.cn/post/6844903885505576968)
+## 时间标准简介
 
-#### cypress 设置time-zone失败
+### GMT
 
-配置`env.TZ=America/New_York`不起作用，可能是和`nx`结合后失效，当然`cypress`官网也没查到怎么配置。
+**Greenwich Mean Time**，格林威治标准时间。以英国格林威治天文台为基准，全球 24 个时区均以与 GMT 的偏移量表示，例如：
 
-后续是配置在`jest`中配置cover time-zone测试
+- 北京：GMT+8（CST，中国标准时间）
+- 纽约：GMT-4（夏令时）
+
+### UTC
+
+**Coordinated Universal Time**，协调世界时。基于原子钟，是目前全球通用的时间标准。UTC 与 GMT 在数值上几乎相同，唯一区别是 **UTC 有闰秒，GMT 没有**。通常说的"UTC 时间"默认指 UTC+0。
+
+### ISO 8601
+
+日期时间的**格式规范**，例如 `2024-01-15T10:30:45.123Z`。其中：
+
+- `T` 分隔日期与时间
+- `Z` 表示 UTC 时间，等价于 `+00:00`
+- 也可携带时区偏移：`2024-01-15T10:30:45+08:00`
+
+---
+
+## JS 中的时间 API
+
+`Date` 对象内部以 **UTC 时间戳**（自 1970-01-01 00:00:00 UTC 起的毫秒数）存储时间，所有本地时间方法都是基于运行环境的时区转换而来。
+
+```js
+const now = new Date()
+
+// 时间戳（与时区无关）
+now.getTime()           // e.g. 1705316045123
+
+// 本地时间方法
+now.getFullYear()       // 本地年份
+now.getHours()          // 本地小时
+
+// UTC 方法
+now.getUTCFullYear()    // UTC 年份
+now.getUTCHours()       // UTC 小时
+
+// 格式化输出
+now.toISOString()       // "2024-01-15T10:30:45.123Z"  (始终 UTC)
+now.toUTCString()       // "Mon, 15 Jan 2024 10:30:45 GMT"
+```
+
+**时间戳**（timestamp）：从 `1970-01-01 00:00:00 UTC` 起至今的毫秒数，与时区无关。
+
+```js
+new Date('1970-01-01T00:00:00Z').getTime() // 0
+new Date('1969-12-31T00:00:00Z').getTime() // -86400000
+```
+
+---
+
+## 测试环境设置时区
+
+在 Jest 中，可通过 `globalSetup` 覆盖时区：
 
 ```js
 // test-setup/global-setup.js
 module.exports = async () => {
-    process.env.TZ = "America/New_York"
+  process.env.TZ = 'America/New_York'
 }
-```
-```js
-// jest config.js
 
+// jest.config.js
 module.exports = {
-    globalSetup: './test-setup/global-setup.js'
+  globalSetup: './test-setup/global-setup.js'
 }
 ```
 
-### 常见的时间标准
+> Cypress 配置 `env.TZ` 在与 Nx 集成时可能不生效，建议用 Jest 覆盖时区进行相关测试。
 
-#### GMT
+---
 
-GMT 即 Greenwich Mean Time， 代表格林威治标准时间。
-
-对全球而言，这里所设定的时间是世界时间参考点，全球都以格林威治的时间作为标准来设定时间。
-由此也确认了全球24小时自然时区的划分，所有时区都以和GMT之间的偏移量作为参考。全球划分为24个时区，东、西各12个时区，每个时区横跨15个经纬度相当于一个小时。
-
-比如:
-- 美国纽约时区为： GMT -4
-- 成都时区为： GMT +8 即CST(china standard time)
-
-
-
-```js
-new Date()
-// Sat Jun 15 2019 17:55:58 GMT+0800 (中国标准时间)
-
-new Date('2020-10-10 00:08:19')
-// Sat Oct 10 2020 00:08:19 GMT+0800 (中国标准时间)
-
-```
-
-常说的 时间戳，`timestamp` 就是指格林威治时间`1970年01月01日00时00分00秒`(北京时间1970年01月01日08时00分00秒)起至现在的总秒数，js 中出输出的 timestamp 是到毫秒级的。
-```js
-new Date('1970-01-01').getTime();
-// 0
-
-new Date('1969-12-31').getTime();
-// -86400000
-
-```
-
-### UTC
-UTC 即 Coordinated Universal Time，代表世界协调时间或协调世界时。
-
-UTC是经过平均太阳时(以格林威治时间GMT为准)、地轴运动修正后的新时标以及以“秒”为单位的国际原子时所综合精算而成的时间，计算过程相当严谨精密。协调世界时是最接近GMT的几个替代时间系统之一。
-普遍认为，UTC时间被认为能与GMT时间互换，但GMT时间已不再被科学界所确定。
-一般来说，当我们提到 UTC 时间 而不带任何别的修饰时，常指 UTC 0点。
-UTC 和 GMT 唯一的差别，UTC 有闰秒，GMT 没有。
-
-
-不同的浏览器显示效果相同，Chrome会显示 GMT，以及一个已经翻译好的地方时区标准：
-
-```js
-new Date();
-// Sat Jun 15 2019 20:36:10 GMT+0800 (中国标准时间)
-
-let date = new Date();
-console.log(date.toUTCString()); // Mon, 24 Mar 2025 15:35:03 GMT
-```
-
-`Mon, 24 Mar 2025 15:35:03 GMT`它表示的是格林尼治标准时间（GMT），是一种国际时间标准，UTC 时间和 GMT 时间在数值上是相同的。
-
-### ISO 时间
-
-ISO 时间格式是按照 `ISO 8601` 标准来表示日期和时间的。在 JavaScript 中，Date 对象的 `toISOString()` 方法可以生成 ISO 时间格式。例如：
-```js
-let date = new Date();
-console.log(date.toISOString()); // 2025-03-24T15:36:55.102Z
-```
-
-其中，`T`是日期和时间的分隔符，`Z`表示该时间是 UTC 时间。`ISO` 时间格式可以看作是 `UTC` 时间的一种特定格式化表示。
-
+参考：
 - [前端时间国际化入门](https://mp.weixin.qq.com/s/Gw6UiovEvu76a-9zxL3BdA)
+- [时区与 JS 中的 Date 对象](https://juejin.cn/post/6844903885505576968)

@@ -296,7 +296,7 @@ export const sidebar: DefaultTheme.Sidebar = {
         },
         {
           text: 'react router',
-          link: '/fe/react/react-router'
+          link: '/fe/react/react_router'
         }
       ]
     },

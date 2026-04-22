@@ -1,5 +1,9 @@
 # Architecture
 
+## Articles
+
+- [React 项目文件分层原则](https://mp.weixin.qq.com/s/INNwbrax3NHiC5fganeFlQ)
+- [Comprehensive Next.js Full Stack App Architecture Guide](https://arno.surfacew.com/posts/nextjs-architecture)
 
 ## [Feature-Sliced Design](https://feature-sliced.design/)
 

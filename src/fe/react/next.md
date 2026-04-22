@@ -2,6 +2,7 @@
 
 - [官网](https://nextjs.org/)
 - [NextJS / React SSR: 21 Universal Data Fetching Patterns & Best Practices](https://wundergraph.com/blog/nextjs_and_react_ssr_21_universal_data_fetching_patterns_and_best_practices)
+- [Comprehensive Next.js Full Stack App Architecture Guide](https://arno.surfacew.com/posts/nextjs-architecture)
 
 在 Next.js 中支持两种形式的预渲染(预渲染是指数据和 HTML 的拼接在服务器端提前完成。)
 

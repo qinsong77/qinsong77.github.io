@@ -34,36 +34,61 @@ title: 想法和总结
 
 ## 项目目录结构
 
-```
-├─src               //  项目目录
-│  ├─api                //  数据请求
-│  ├─assets             //  资源
-│  │  ├─baseData            //  静态数据
-│  │  └─images              //  较小图片资源
-│  ├─components         //  组件
-│  │    ├─base              //  基础组件
-│  │    └─business          //  业务组件
-│  ├─routes             //  路由
-│  ├─mixins             //  混入
-│  ├─store              //  状态管理
-│  ├─style              //  样式
-│  ├─views              //  页面
-│  ├─utils              //  工具
-│  └─main.js            //  入口文件
-└─static            //  静态资源
+- [React 项目文件分层原则](https://mp.weixin.qq.com/s/INNwbrax3NHiC5fganeFlQ)
 
+```markdown
+project-root/
+├── .github/                     # GitHub 相关
+│   └── workflows/               # CI/CD 配置
+│       └── deploy.yml
+├── .husky/                      # Git Hooks
+│   ├── pre-commit               # 提交前检查
+│   └── commit-msg               # commit 信息检查
+├── .vscode/                     # VS Code 配置
+│   ├── settings.json            # 编辑器设置
+│   ├── extensions.json          # 推荐插件
+│   └── launch.json              # 调试配置
+├── public/                      # 静态资源
+│   ├── favicon.ico
+│   ├── robots.txt
+│   └── manifest.json
+├── scripts/                     # 自定义脚本
+│   ├── build.js                 # 构建脚本
+│   ├── deploy.js                # 部署脚本
+│   └── generate-component.js    # 组件生成脚本
+├── src/
+│   ├── assets/                  # 资源文件
+│   │   ├── images/
+│   │   ├── fonts/
+│   │   └── icons/
+│   ├── components/              # 通用组件
+│   ├── features/                # 业务功能
+│   ├── pages/                   # 页面组件
+│   ├── layouts/                 # 布局组件
+│   ├── hooks/                   # 自定义 Hooks
+│   ├── services/                # API 服务
+│   ├── store/                   # 状态管理
+│   ├── utils/                   # 工具函数
+│   ├── types/                   # TS 类型定义
+│   ├── constants/               # 常量
+│   ├── config/                  # 配置
+│   ├── styles/                  # 全局样式
+│   ├── App.tsx                  # 根组件
+│   ├── main.tsx                 # 入口文件
+│   └── vite-env.d.ts            # Vite 类型声明
+├── tests/                       # 测试文件
+│   ├── unit/                    # 单元测试
+│   ├── integration/             # 集成测试
+│   └── e2e/                     # 端到端测试
+├── .env.example                 # 环境变量示例
+├── .eslintrc.js
+├── .prettierrc
+├── .gitignore
+├── tsconfig.json
+├── vite.config.ts
+├── package.json
+└── README.md
 ```
-1. api：主要负责提供数据请求的方法
-2. assets：提供业务中所需要的数据资源以及较小的图片资源，vue-cli会把较小的图片编译成base64
-3. components：承载了业务中所有需要用到的组件，使用base和business对基础组件进一步划分
-4. routes：编写路由结构
-5. mixins：公用代码的混入
-6. store：页面中的状态管理
-7. style：页面和组件样式
-8. views：存放页面
-9. utils：页面或组件中所需要用到的工具，以及对于其他第三方工具的二次封装
-10. main.js：程序的入口文件
-11. static：较大的静态资源文件
 
 ## 前端工作流
 

@@ -14,6 +14,145 @@ title: collection
 
 - [React 开发思想纲领](https://github.com/mithi/react-philosophies) - [翻译](https://juejin.cn/post/7076244324614144014)
 - [bulletproof-react](https://github.com/alan2207/bulletproof-react) - A simple, scalable, and powerful architecture for building production ready React applications.
+- [React 项目文件分层原则](https://mp.weixin.qq.com/s/INNwbrax3NHiC5fganeFlQ)
+
+### 核心分层原则
+
+#### 1. 单一职责原则 (Single Responsibility Principle)
+- **组件**：只负责UI渲染
+- **Hook**：专注逻辑复用
+- **Service**：只负责API调用
+
+#### 2. 依赖方向原则 (Dependency Direction)
+
+高层模块(业务层)可以依赖低层模块(通用层),但低层模块不应依赖高层模块。依赖关系应该是单向的、自上而下的。
+
+依赖关系单向自上而下：
+> 页面路由层 → 业务功能层 → 业务组件层 → 通用组件层 → 工具函数层
+
+#### 3. 就近原则 (Colocation Principle)
+
+相关联的文件应该物理位置靠近,只在需要跨模块共享时才提升到更高层级。
+
+决策流程:
+
+1. 代码只在一个组件内使用 → 写在组件内部
+2. 代码在一个功能模块内多处使用 → 放在该功能目录下
+3. 代码被多个功能模块使用 → 提升到全局 `components/` 或 `hooks/`
+4. 代码被多个项目使用 → 考虑抽取为独立 npm 包
+
+#### 4. 显式命名原则 (Explicit Naming)
+文件名和目录名应该清晰表达其内容和用途,避免缩写和模糊命名。
+
+
+### 组件分组策略
+
+#### 按功能分组 (Feature-Based)
+::: details 点击查看目录
+```markdown
+src/
+├── features/                    # 业务功能模块
+│   ├── authentication/         # 用户认证功能
+│   │   ├── components/
+│   │   │   ├── LoginForm.jsx
+│   │   │   ├── SignupForm.jsx
+│   │   │   └── OAuthButton.jsx
+│   │   ├── hooks/
+│   │   │   └── useAuth.js
+│   │   ├── services/
+│   │   │   └── authAPI.js
+│   │   ├── LoginPage.jsx       # 功能入口页面
+│   │   └── index.js             # 导出接口
+│   ├── product/
+│   │   ├── components/
+│   │   │   ├── ProductCard.jsx
+│   │   │   ├── ProductList.jsx
+│   │   │   └── ProductFilter.jsx
+│   │   ├── hooks/
+│   │   │   ├── useProducts.js
+│   │   │   └── useProductFilters.js
+│   │   ├── ProductListPage.jsx
+│   │   ├── ProductDetailPage.jsx
+│   │   └── index.js
+│   └── order/
+│       ├── components/
+│       ├── OrderPage.jsx
+│       └── index.js
+├── components/                  # 全局通用组件
+│   ├── Button/
+│   │   ├── Button.jsx
+│   │   ├── Button.module.css
+│   │   └── index.js
+│   ├── Input/
+│   └── Modal/
+```
+:::
+#### 按类型分组 (Atomic Design)
+
+1. Atoms 原子组件 - 最小的可复用单元
+2. Molecules 分子组件 - 简单的组合单元
+3. Organisms 组织组件 - 复杂的功能块
+4. Templates 模板 - 页面布局结构
+5. Pages 页面 - 具体实例
+
+::: details 点击查看目录
+```markdown
+src/
+├── components/
+│   ├── atoms/
+│   │   ├── Button/
+│   │   │   ├── Button.jsx
+│   │   │   ├── Button.module.css
+│   │   │   └── Button.test.js
+│   │   ├── Input/
+│   │   ├── Icon/
+│   │   └── Label/
+│   ├── molecules/
+│   │   ├── SearchBar/
+│   │   ├── FormField/
+│   │   └── Pagination/
+│   ├── organisms/
+│   │   ├── Header/
+│   │   ├── Footer/
+│   │   ├── ProductCard/
+│   │   └── CommentList/
+│   └── templates/
+│       ├── DashboardTemplate/
+│       └── AuthTemplate/
+├── pages/
+│   ├── HomePage.jsx
+│   ├── LoginPage.jsx
+│   └── ProductListPage.jsx
+```
+:::
+#### 混合方案推荐 (最佳实践)
+
+::: details 点击查看目录
+```markdown
+src/
+├── components/                  # 通用组件按 Atomic Design 分类
+│   ├── atoms/                  # 基础组件
+│   ├── molecules/              # 组合组件
+│   └── organisms/              # 复杂组件
+├── features/                    # 业务功能按 Feature 分组
+│   ├── authentication/
+│   │   ├── components/         # 该功能专用组件
+│   │   ├── hooks/
+│   │   └── services/
+│   └── product/
+├── pages/                       # 页面组件
+```
+:::
+
+### 样式文件组织
+
+#### 基础原则
+
+样式组织的核心是:就近原则 + 层级分离。样式应该和对应组件放在一起,同时全局样式和组件样式要有清晰边界。
+
+#### 全局样式分层
+
+无论使用哪种方案,全局样式都应该分层管理
 
 ## State Manage
 
@@ -208,21 +347,11 @@ lightService.stop()
 - [reactbits](https://www.reactbits.dev/text-animations/blur-text) 提供各种带动效的组件，可以直接copy code使用
 - [fancy components*](https://www.fancycomponents.dev/docs/introduction) Fancy Components is a collection of fun and weird, ready-to-use components and microinteractions
 
-## RN
-
-- [react-native-ui-lib](https://github.com/wix/react-native-ui-lib)
-- [Tamagui](https://tamagui.dev/docs/intro/introduction)
-- [gluestack](https://gluestack.io/)
-- [react-strict-dom：React官方跨平台方案](https://github.com/react-native-community/discussions-and-proposals/pull/496)
-
-- [ignite](https://github.com/infinitered/ignite) the battle-tested React Native boilerplate
-
-- [React Native Testing Library (RNTL) Cookbook](https://callstack.github.io/react-native-testing-library/cookbook/index)
-
-## project
+## Project
 
 - [Turbopack](https://github.com/vercel/turbo)
 - [Bit.dev](https://bit.dev/docs/quick-start) Bit.dev是一种快速、动态化、协同式构建团队组件库的解决方案
+- [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack) A modern CLI tool for scaffolding end-to-end type-safe TypeScript projects with best practices and customizable configurations
 
 ## Articles
 

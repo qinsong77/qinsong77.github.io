@@ -204,6 +204,62 @@ export default PostsPage
 - 适用场景：需要初始数据快速加载和客户端无限滚动等高级数据获取模式。
 - 优势：结合服务器端和客户端数据获取的优势。
 
+##### 方案一：Prefetch + Hydration
+
+- [advanced-ssr](https://tanstack.com/query/latest/docs/framework/react/guides/advanced-ssr)
+
+```tsx
+// app/posts/page.tsx
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from '@tanstack/react-query'
+import Posts from './posts'
+
+export default async function PostsPage() {
+  const queryClient = new QueryClient()
+
+  await queryClient.prefetchQuery({
+    queryKey: ['posts'],
+    queryFn: getPosts,
+  })
+
+  return (
+    // Neat! Serialization is now as easy as passing props.
+    // HydrationBoundary is a Client Component, so hydration will happen there.
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <Posts />
+    </HydrationBoundary>
+  )
+}
+```
+
+---
+```tsx
+// app/posts/posts.tsx
+'use client'
+
+export default function Posts() {
+  // This useQuery could just as well happen in some deeper
+  // child to <Posts>, data will be available immediately either way
+  const { data } = useQuery({
+    queryKey: ['posts'],
+    queryFn: () => getPosts(),
+  })
+
+  // This query was not prefetched on the server and will not start
+  // fetching until on the client, both patterns are fine to mix.
+  const { data: commentsData } = useQuery({
+    queryKey: ['posts-comments'],
+    queryFn: getComments,
+  })
+
+  // ...
+}
+```
+
+##### 方案二： pass initialData to useQuery from RSC
 ```tsx
 import { getPosts } from '@/features/post/queries/get-posts'
 import { PostList } from './_components/post-list'
@@ -571,6 +627,8 @@ export function SectionTitle({ title, className }: SectionTitleProps) {
 
 - [nuqs](https://github.com/47ng/nuqs) Type-safe search params state manager for Next.js - Like React.useState, but stored in the URL query string.
 - [next-safe-action](https://github.com/TheEdoRan/next-safe-action) Type safe and validated Server Actions in your Next.js project.
+- [nextra](https://github.com/shuding/nextra) Make beautiful websites
+  with Next.js & MDX
 
 ## [Hydration Failed](https://juejin.cn/post/7365793739892228096)
 水合错误，“水合（Hydration）指 React 在客户端把预渲染的 HTML 与组件树进行匹配，重建内部状态并绑定事件处理器，从而将其激活为完全可交互应用的过程。”
